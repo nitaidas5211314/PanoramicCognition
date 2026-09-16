@@ -362,11 +362,14 @@
     {
       "slug": "BTC-均线体系：200周 - 200日 - 两年均线乘数",
       "title": "BTC-均线体系：200周 / 200日 / 两年均线乘数",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-17 00:40:29",
+      "finished": "2026-09-17 00:44:18",
+      "duration_sec": 229,
+      "outputs": [
+        "reports/BTC-均线体系：200周 - 200日 - 两年均线乘数.html",
+        "reports/BTC-均线体系：200周 - 200日 - 两年均线乘数.md"
+      ],
       "error": null
     },
     {
@@ -617,7 +620,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 00:39",
+  "updated": "2026-09-17 00:44",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

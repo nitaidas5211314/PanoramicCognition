@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-均线体系：200周 / 200日 / 两年均线乘数 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × Moving Average Stack</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路径</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-均线体系：200周 / 200日 / 两年均线乘数</h1>
+  <p class="sub">把<strong>200 周地板</strong>、<strong>200 日体制</strong>与 <strong>Philip Swift 两年×5 带</strong>叠成慢变量仪表盘——底信号仍有用，顶信号在 ETF 时代<strong>集体静音</strong></p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>BTC 均线三件套</strong> = 三条不同时间尺度的「集体记忆线」：<strong>200 周</strong>（≈3.8 年，慢速地板）、<strong>200 日</strong>（≈10 个月，牛熊体制开关）、<strong>2 年 ×5</strong>（Philip Swift 估值带，绿线积累 / 红线止盈参考）。</p>
+<p>2026-09 读数<span class="tag t-chk">待验证</span>：现价 <strong>~$78,200</strong> → 高于 200D（<strong>+11.8%</strong>）、高于 200W（<strong>+26.2%</strong>）、高于 2yr MA（<strong>1.43×</strong>），距 5× 上轨仅 <strong>28.5%</strong>——<strong>体制偏多但远离 Swift 顶区</strong>。核心纪律：<strong>200W 是参考线不是铁底</strong>（历史约 <strong>8.7%–18%</strong> 周线收盘在其下方）；<strong>200D 策略胜率仅 ~23%</strong> 但靠少数大赢覆盖<span class="tag t-ana">分析</span>；任何「均线金叉必胜」都要减<strong>随机持币漂移基准</strong>。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>研究的是：<strong>如何用 200 周 / 200 日 / 两年均线乘数三条慢变量，读 BTC 在长周期中的位置、体制与估值极端</strong>——不是预测下一根 K 线，而是回答「我们现在在慢牛、深熊还是趋势争夺？」</p>
+<div class="note red"><b>先划清边界</b><p>本手册<strong>不提供</strong>买卖信号。均线是<strong>滞后 coincident 指标</strong>——看不见 ETF 实物流、链上 cohort、衍生品 gamma。把它当<strong>周期仪表盘</strong>，不当单点触发器。</p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>200W 地板、200D 体制、2yr MA×5 带、50W/200W 走廊、回测批评</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界</td>
+<td>不含订单簿 HFT；不预测监管；不替代仓位管理</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>日/周收盘价、SMA 均线、价/均线比值、斜率</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>Philip Swift、Galaxy Research、LookIntoBitcoin、量化回测社区</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>Price、MA200d、MA200w、MA730、Multiplier</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察</td>
+<td>交易所日/周收盘、CoinGlass/TradingView 公开图</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察</td>
+<td>各平台 SMA 起算日、是否含周末缺口</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>价格→均线滞后跟随；均线位→算法单聚集→短期反弹/破位</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>SMA 公式 = <span class="tag t-fact">事实</span>；破 200W→底 = <span class="tag t-inf">推论</span>已多次 falsify</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>价/均线比与价格机械相关——非独立 alpha</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层</td>
+<td>「200W 永不出售」「200D 金叉必牛」「5× 必顶」</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层</td>
+<td>成本锚 + 趋势滤波 + 周期振幅均值回归</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>破线恐慌→抄底叙事→买盘→价回升→「神线」强化</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>延迟</td>
+<td>200D 滞后 ~200 日；200W 滞后 ~4 年</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>正：牛市远离均线→FOMO；负：破线→ capitulation 叙事</td>
+</tr>
+</tbody>
+</table></div>
+<h3>三线定义速查</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>线</th>
+<th>窗口</th>
+<th>频率</th>
+<th>典型用途</th>
+<th>2026-09 量级<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>200 日 SMA</strong></td>
+<td>200 交易日</td>
+<td>日</td>
+<td>牛熊体制、趋势滤波</td>
+<td>MA <strong>~$69,953</strong> · 价比 <strong>1.12×</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>200 周 SMA</strong></td>
+<td>200 周</td>
+<td>周</td>
+<td>慢速地板、周期底参考</td>
+<td>MA <strong>~$61,977</strong> · 价比 <strong>1.26×</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>2 年 SMA</strong></td>
+<td>730 日</td>
+<td>日</td>
+<td>Swift 绿线（积累）</td>
+<td>MA <strong>~$54,800</strong> · 价比 <strong>1.43×</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>2yr ×5</strong></td>
+<td>MA730×5</td>
+<td>日</td>
+<td>Swift 红线上轨（止盈参考）</td>
+<td><strong>~$274,000</strong> · 现价仅上轨 <strong>28.5%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<div class="note amber"><b>乘数含义</b><p>Philip Swift 强调：<strong>×5 是均线价格的倍数，不是时间窗口的倍数</strong><span class="tag t-fact">事实</span>。绿线 = 2yr MA；红线 = 2yr MA × 5（可调 3×/4× 观察）。</p></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：三条线覆盖三个时间尺度</h3>
+<p>200D 回答「今年牛还是熊」；200W 回答「四年周期底在哪」；2yr×5 回答「相对历史振幅贵不贵」——叠读才能避免用日线逻辑解释周线现象。</p>
+<h3>理由二：2024–2026 是「顶带静音」的 live test</h3>
+<p>2024-03 高点仅 <strong>2.28×</strong> 200W、MA 升温仅 <strong>~4%/4 周</strong>（冷—中温区），从未触及 2017/2021 式「热区」<span class="tag t-chk">待验证</span>。2025 ATH 后 2yr×5 上轨仍远在 <strong>$270K+</strong>——<strong>Swift 顶信号未触发</strong>。这与 MVRV/Pi 的「无狂热顶」叙事一致<span class="tag t-ana">分析</span>。</p>
+<h3>理由三：200W「铁底」叙事已被 2022 与 2026 修正</h3>
+<p>Galaxy：642 周样本中 <strong>56 周（8.7%）</strong> 收盘低于 200W，其中 2022-08–2023-03 占 <strong>36 周</strong>；最深日读 <strong>−34.4%</strong>（2022-11-21）<span class="tag t-ana">分析</span>。2026-06 周线再次跌破<span class="tag t-chk">待验证</span>——<strong>必须叫「参考地板」而非「支撑位」</strong>。</p>
+<h3>理由四：对照基准剥离「均线永远对」</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>μ=50%/年 σ=65%</th>
+<th><strong>随机持币基准</strong></th>
+<th>「200D 多头信号 65% 胜率」真实超额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">20 日</td>
+<td>—</td>
+<td><strong>58.6%</strong></td>
+<td>表面 +6.4 pp → 真实 <strong>+6.4 pp</strong></td>
+</tr>
+<tr>
+<td class="k">40 日</td>
+<td>—</td>
+<td><strong>62.0%</strong></td>
+<td>表面 +3.0 pp → 真实 <strong>+3.0 pp</strong></td>
+</tr>
+<tr>
+<td class="k">90 日</td>
+<td>—</td>
+<td><strong>67.7%</strong></td>
+<td>表面 +2 pp → 真实 <strong>~+2 pp</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>BTC 正漂移使「站上 200D」的表观正确率被系统性抬高——§20 漂移剥离器必跑。</p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从收盘价到均线决策</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 均线三件套 · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">越靠上越「硬数据」，越靠下越「阈值/行为可选择」</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 价格序列</text>
+  <text x="130" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">日/周收盘价 · 交易所聚合</text>
+  <text x="130" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">缺口/停牌日处理差异</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 200 日层</text>
+  <text x="130" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">体制滤波 · 20/60/200 结构 · 金叉/死叉</text>
+  <text x="130" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">~54% 日子在上方【待验证】</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 200 周层</text>
+  <text x="130" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">慢速地板 · 50W/200W 走廊 · MA 从未周线下跌</text>
+  <text x="130" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">8.7% 周收盘在下【Galaxy】</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 2 年乘数层</text>
+  <text x="130" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">Philip Swift 绿/红带 · 730 日 SMA × N</text>
+  <text x="130" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">Cycle 4 未触 5× 顶【待验证】</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 算法单聚集层</text>
+  <text x="130" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">200D 附近 bid/offer 簇 · 假突破/真突破</text>
+  <text x="130" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">自证：线因被看而有效</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ ETF/机构层</text>
+  <text x="130" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">机械买盘压平振幅 · 200W 热图「静音」</text>
+  <text x="130" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">steady grind 替代 parabolic</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 回测与批评层</text>
+  <text x="130" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">23% 胜率 · 金叉跑输 B&H · 震荡假信号</text>
+  <text x="130" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">价值在控回撤非预测顶</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 传播层</text>
+  <text x="130" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">「200W 永不出售」「5× 必卖」KOL 图表</text>
+  <text x="130" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">只展示 2017/2021 顶触线</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="130" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">三线同向 + 链上/流确认 · 分位阈 · 漂移剥离</text>
+  <text x="130" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">单线不交易</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">均线三件套 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 集体记忆价</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 趋势滤波</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 振幅均值回归</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 多尺度嵌套</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• SMA 滚动窗口</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 滞后确认</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 算法单聚集</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• ETF 压平波动</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#b8dcc8" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 三线体制盘</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 200D 周收盘规则</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 200W 距离 %</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 2yr 分位区</text>
+  <path d="M214 146 L240 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#maA)"/>
+  <path d="M440 146 L466 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#maA)"/>
+  <defs><marker id="maA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c848f"/></marker></defs>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>贡献</th>
+<th>与三线关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Philip Swift</strong></td>
+<td>2yr MA Multiplier（2017）</td>
+<td>绿/红带定义方<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Galaxy Research</strong></td>
+<td>50W/200W 走廊研究</td>
+<td>200W「地板」统计<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>LookIntoBitcoin</strong></td>
+<td>公开图表基础设施</td>
+<td>2yr 带可视化<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Hodlometer</strong></td>
+<td>200W 实证统计</td>
+<td>18% 周在下<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Boring Edge / CoinQuant</strong></td>
+<td>200D/金叉回测</td>
+<td>23% 胜率、跑输 B&amp;H<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>机构量化台</strong></td>
+<td>200D 模型嵌入</td>
+<td>加剧「自证」效应<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k"><strong>中文囤币 KOL</strong></td>
+<td>「200W 永不出售」</td>
+<td>幸存者偏差传播<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>2026-09<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>P/MA200d</strong></td>
+<td>日收盘 ÷ 200 日 SMA</td>
+<td><strong>1.118</strong>（+11.8%）</td>
+</tr>
+<tr>
+<td class="k"><strong>P/MA200w</strong></td>
+<td>周收盘 ÷ 200 周 SMA</td>
+<td><strong>1.262</strong>（+26.2%）</td>
+</tr>
+<tr>
+<td class="k"><strong>P/MA2yr</strong></td>
+<td>日收盘 ÷ 730 日 SMA</td>
+<td><strong>1.427</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>P/(MA2yr×5)</strong></td>
+<td>相对 Swift 上轨</td>
+<td><strong>28.5%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>50W/200W</strong></td>
+<td>中期/慢线比</td>
+<td><strong>~1.27×</strong>（走廊收窄）</td>
+</tr>
+<tr>
+<td class="k"><strong>200W MA 4 周变化</strong></td>
+<td>地板斜率</td>
+<td><strong>+1.54%</strong>（冷—中温）</td>
+</tr>
+<tr>
+<td class="k"><strong>200D 策略胜率</strong></td>
+<td>价&gt;MA 进出历史</td>
+<td><strong>~23%</strong><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · 三线体制仪表盘</h3>
+<p>同步读 <strong>200D / 200W / 2yr</strong> 价比，判断宏观体制是否同向。</p>
+<div class="ctrl"><label>现价 ($)<input type="range" id="ma_price" min="30000" max="150000" step="100" value="78200"><output id="ma_priceO">$78,200</output></label></div>
+<div class="ctrl"><label>200 日 SMA ($)<input type="range" id="ma_200d" min="40000" max="120000" step="100" value="69953"><output id="ma_200dO">$69,953</output></label></div>
+<div class="ctrl"><label>200 周 SMA ($)<input type="range" id="ma_200w" min="35000" max="100000" step="100" value="61977"><output id="ma_200wO">$61,977</output></label></div>
+<div class="ctrl"><label>2 年 SMA ($)<input type="range" id="ma_2yr" min="30000" max="90000" step="100" value="54800"><output id="ma_2yrO">$54,800</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">200D 比</span><strong id="ma_rD">1.118×</strong><span id="ma_rDh">+11.8%</span></div>
+<div class="ro"><span class="k">200W 比</span><strong id="ma_rW">1.262×</strong><span id="ma_rWh">+26.2%</span></div>
+<div class="ro"><span class="k">2yr 比</span><strong id="ma_rY">1.427×</strong><span id="ma_rYh">+42.7%</span></div>
+<div class="ro"><span class="k">体制</span><strong id="ma_align">三线多头</strong><span id="ma_alignh">—</span></div>
+<canvas id="ma_tripleChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ma_triple_v">体制偏多</strong><span id="ma_triple_vh">—</span></div>
+</div>
+</div>
+<div class="tool">
+<h3>工具 · 两年均线乘数区</h3>
+<p>Philip Swift 框架：<strong>价 &lt; 2yr MA</strong> 积累参考；<strong>价 ≥ N×2yr MA</strong> 止盈参考。</p>
+<div class="ctrl"><label>现价 ($)<input type="range" id="ma_2y_price" min="20000" max="200000" step="500" value="78200"><output id="ma_2y_priceO">$78,200</output></label></div>
+<div class="ctrl"><label>2 年 SMA ($)<input type="range" id="ma_2y_ma" min="25000" max="80000" step="500" value="54800"><output id="ma_2y_maO">$54,800</output></label></div>
+<div class="ctrl"><label>乘数 N<input type="range" id="ma_2y_mult" min="3" max="6" step="0.1" value="5.0"><output id="ma_2y_multO">5.0×</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">P/2yr</span><strong id="ma_2y_ratio">1.427×</strong><span id="ma_2y_ratioh">—</span></div>
+<div class="ro"><span class="k">上轨</span><strong id="ma_2y_top">$274,000</strong><span id="ma_2y_toph">—</span></div>
+<div class="ro"><span class="k">区间</span><strong id="ma_2y_zone">中性区</strong><span id="ma_2y_zoneh">—</span></div>
+<canvas id="ma_2yChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ma_2y_v">持有/定投常态区</strong><span id="ma_2y_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>因果链：价格 → 均线 → 行为</h3>
+<svg viewBox="0 0 680 340" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">均线因果图 · 实线=滞后跟随 · 红虚线=反馈</text>
+  <rect x="40" y="50" width="100" height="40" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="90" y="75" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">现货需求</text>
+  <rect x="170" y="50" width="90" height="40" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="215" y="75" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">BTC 价格</text>
+  <rect x="290" y="50" width="110" height="40" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="345" y="75" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">200D/200W/2yr</text>
+  <rect x="430" y="50" width="100" height="40" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="480" y="75" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">体制判定</text>
+  <rect x="560" y="50" width="100" height="40" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="610" y="75" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">算法/散户单</text>
+  <rect x="170" y="150" width="120" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="230" y="172" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">破线叙事</text>
+  <text x="230" y="188" font-size="9.5" text-anchor="middle" fill="#7c848f" font-family="sans-serif">恐慌/抄底</text>
+  <rect x="330" y="240" width="120" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="390" y="262" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">ETF 机械流</text>
+  <text x="390" y="278" font-size="9.5" text-anchor="middle" fill="#7c848f" font-family="sans-serif">压平 200W 热图</text>
+  <path d="M140 70 L170 70" stroke="#454c56" stroke-width="1.5" marker-end="url(#maB)"/>
+  <path d="M260 70 L290 70" stroke="#454c56" stroke-width="1.5" marker-end="url(#maB)"/>
+  <path d="M400 70 L430 70" stroke="#454c56" stroke-width="1.5" marker-end="url(#maB)"/>
+  <path d="M530 70 L560 70" stroke="#454c56" stroke-width="1.5" marker-end="url(#maB)"/>
+  <path d="M215 90 L230 150" stroke="#454c56" stroke-width="1.5" marker-end="url(#maB)"/>
+  <path d="M610 90 L230 150" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#maC)"/>
+  <path d="M230 194 L215 90" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#maC)"/>
+  <path d="M390 240 L345 90" stroke="#454c56" stroke-width="1.5" marker-end="url(#maB)"/>
+  <defs>
+    <marker id="maB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker>
+    <marker id="maC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+  </defs>
+</svg>
+<p><strong>读图要点</strong>：均线<strong>滞后</strong>于价格（因果方向：价→线）；破线叙事与算法单形成<strong>红色反馈</strong>；ETF 流改变振幅但不改变 SMA 公式本身。</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>隐藏关系一：200W 从未下跌 ≠ 价格不会破线</h3>
+<p>Galaxy 与 Hodlometer 均记录：200 周 SMA 在可测历史上<strong>每周都在上升</strong><span class="tag t-ana">分析</span>——因为旧低价不断滚出窗口。但这只说明「地板在抬升」，<strong>不说明价格不能跌到地板下方</strong>（2022 最深 <strong>0.66×</strong>）。</p>
+<h3>隐藏关系二：50W/200W 走廊收窄 = 熊末特征</h3>
+<p>Galaxy 2026：50W/200W 从熊底典型 <strong>2.3–2.5×</strong> 收窄至 <strong>1.27×</strong>——历史上仅 2022 曾出现「天花板低于地板」的 47 周倒挂<span class="tag t-ana">分析</span>。窄走廊意味<strong>波动压缩</strong>，不是「必涨」。</p>
+<div class="tool">
+<h3>工具 · 200 周地板距离计</h3>
+<p>调节 <strong>价÷200W</strong>，对照 2015/2018/2022 底与 2024 顶历史比值。</p>
+<div class="ctrl"><label>价 ÷ 200W<input type="range" id="ma_w_ratio" min="0.55" max="3" step="0.01" value="1.262"><output id="ma_w_ratioO">1.262×</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">偏离</span><strong id="ma_w_dist">+26.2%</strong><span id="ma_w_disth">—</span></div>
+<div class="ro"><span class="k">历史区</span><strong id="ma_w_hist">牛市常态</strong><span id="ma_w_histh">—</span></div>
+<canvas id="ma_wChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ma_w_v">长期多头结构</strong><span id="ma_w_vh">—</span></div>
+</div>
+</div>
+<h3>隐藏关系三：跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>BTC 均线体系</th>
+<th>其他领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>多尺度滤波</strong></td>
+<td>200D/200W/2yr</td>
+<td>宏观 DSGE 慢/快变量</td>
+</tr>
+<tr>
+<td class="k"><strong>滞后交叉</strong></td>
+<td>50/200 金叉</td>
+<td>MACD 信号线</td>
+</tr>
+<tr>
+<td class="k"><strong>振幅带</strong></td>
+<td>2yr×5</td>
+<td>布林带上轨</td>
+</tr>
+<tr>
+<td class="k"><strong>体制开关</strong></td>
+<td>价 vs 200D</td>
+<td>信用利差 vs 趋势线</td>
+</tr>
+<tr>
+<td class="k"><strong>胜率漂移</strong></td>
+<td>随机持币基准</td>
+<td>股票长期正 drift</td>
+</tr>
+<tr>
+<td class="k"><strong>自证预言</strong></td>
+<td>200D 算法单聚集</td>
+<td>期权 strike 墙</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>三线叠读：三问三分频</h3>
+<ol>
+<li><strong>体制问（200D）</strong>：价在均线上方且均线向上？→ 牛市结构；下方且向下 → 熊市结构。</li>
+<li><strong>地板问（200W）</strong>：价距地板多远？&lt;1.0× 是「贴线测试」不是「铁底确认」。</li>
+<li><strong>振幅问（2yr×5）</strong>：价在上轨几分位？Cycle 4 从未触顶 → <strong>顶阈可能整体上移或失效</strong><span class="tag t-hyp">假设</span>。</li>
+</ol>
+<p><strong>三者同向</strong>（价&gt;三均线且未近 5×）= 慢牛持有区；<strong>分歧</strong>（价&gt;200D 但贴 200W）= 典型调整。</p>
+<h3>200D 策略运行机制</h3>
+<p>Boring Edge 2018–2026 回测<span class="tag t-ana">分析</span>：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>200D 进出</th>
+<th>买入持有</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">CAGR</td>
+<td><strong>26.1%</strong></td>
+<td>24.8%</td>
+</tr>
+<tr>
+<td class="k">最大回撤</td>
+<td><strong>−64.1%</strong></td>
+<td>−76.6%</td>
+</tr>
+<tr>
+<td class="k">胜率</td>
+<td><strong>23%</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td class="k">平均盈利/亏损比</td>
+<td><strong>17.6 : 4.5</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>机制</strong>：大量小亏假突破 + 少数大趋势大赢。价值在<strong>控回撤</strong>，不在高胜率。</p>
+<div class="tool">
+<h3>工具 · 200 日趋势过滤器</h3>
+<p>读 <strong>相对 200D 偏离 %</strong> + <strong>均线斜率</strong>，模拟周收盘体制规则。</p>
+<div class="ctrl"><label>偏离 200D (%)<input type="range" id="ma_d_pct" min="-40" max="80" step="0.1" value="11.8"><output id="ma_d_pctO">+11.8%</output></label></div>
+<div class="ctrl"><label>200D 斜率<input type="range" id="ma_d_slope" min="0" max="1" step="1" value="1"><output id="ma_d_slopeO">上行</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">体制区</span><strong id="ma_d_reg">健康牛市</strong><span id="ma_d_regh">—</span></div>
+<div class="ro"><span class="k">策略信号</span><strong id="ma_d_sig">持有多头/定投</strong><span id="ma_d_sigh">—</span></div>
+<canvas id="ma_dChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ma_d_v">200D 过滤器：多头</strong><span id="ma_d_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>历史锚点与 2024–2026 异常</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>时点</th>
+<th>P/200W</th>
+<th>P/200D</th>
+<th>P/2yr</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2015 底</td>
+<td>~1.0×</td>
+<td>—</td>
+<td>&lt;1×</td>
+<td>经典贴 200W<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2017 顶</td>
+<td>&gt;3×</td>
+<td>极端上方</td>
+<td>近 5×</td>
+<td>200W 热图「热区」<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2022-11 底</td>
+<td><strong>~0.66×</strong></td>
+<td>&lt;−20%</td>
+<td>&lt;1×</td>
+<td>200W 最大失败<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">2024-03 顶</td>
+<td><strong>~2.28×</strong></td>
+<td>上方</td>
+<td>&lt;5×</td>
+<td>热图未进热区<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2026-06</td>
+<td><strong>&lt;1.0×</strong></td>
+<td>争夺</td>
+<td>&gt;1×</td>
+<td>周线再破 200W<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2026-09</td>
+<td><strong>1.26×</strong></td>
+<td>+11.8%</td>
+<td>1.43×</td>
+<td>收复 200W<span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 均线体系 · 演化时间轴</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="80" cy="100" r="6" fill="#0f8a4d"/><text x="80" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2015 贴200W</text>
+  <circle cx="180" cy="100" r="6" fill="#d5342c"/><text x="180" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2017 热区</text>
+  <circle cx="280" cy="100" r="6" fill="#d5342c"/><text x="280" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2022 破200W</text>
+  <circle cx="380" cy="100" r="6" fill="#b8730a"/><text x="380" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024 静音顶</text>
+  <circle cx="480" cy="100" r="6" fill="#b8730a"/><text x="480" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2025 ATH</text>
+  <circle cx="580" cy="100" r="6" fill="#0f8a4d"/><text x="580" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2026 再测200W</text>
+  <text x="380" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">2.28× 未热</text>
+  <text x="580" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">非铁底</text>
+  <text x="340" y="170" font-size="11" text-anchor="middle" fill="#7c848f" font-family="sans-serif">振幅压缩 · 顶带静音 · 地板仍会被破</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>利益方</th>
+<th>激励</th>
+<th>对均线叙事的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>LookIntoBitcoin</strong></td>
+<td>图表订阅</td>
+<td>推广 2yr 固定 5×</td>
+</tr>
+<tr>
+<td class="k"><strong>Galaxy</strong></td>
+<td>研报权威</td>
+<td>「地板」措辞吸引读者</td>
+</tr>
+<tr>
+<td class="k"><strong>交易所</strong></td>
+<td>交易量</td>
+<td>金叉/死叉短讯刺激交易</td>
+</tr>
+<tr>
+<td class="k"><strong>囤币 KOL</strong></td>
+<td>传播</td>
+<td>「200W 永不出售」简化叙事</td>
+</tr>
+<tr>
+<td class="k"><strong>量化基金</strong></td>
+<td>夏普</td>
+<td>200D 规则同质化</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>资金流：均线位如何影响挂单结构</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 资金流 · 均线「抽水」与聚集效应</text>
+  <rect x="40" y="50" width="240" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="160" y="80" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">ETF 机械买盘 · 抬升 200D/200W</text>
+  <rect x="400" y="50" width="240" height="50" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="520" y="80" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">散户/算法 · 200D 附近挂单</text>
+  <rect x="140" y="130" width="400" height="40" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="340" y="155" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">价格测试均线 → 流动性吸收 / 假突破损耗</text>
+  <path d="M160 100 L160 130 L340 130 L340 170" stroke="#1d4ed8" stroke-width="1.5" fill="none" marker-end="url(#maD)"/>
+  <path d="M520 100 L520 130 L340 130" stroke="#b8730a" stroke-width="1.5" fill="none" marker-end="url(#maD)"/>
+  <rect x="240" y="190" width="200" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="340" y="210" font-size="11" text-anchor="middle" fill="#d5342c" font-family="sans-serif">震荡市「抽水」</text>
+  <text x="340" y="226" font-size="9.5" text-anchor="middle" fill="#7c848f" font-family="sans-serif">2021Q3–Q4：9 连亏假突破【分析】</text>
+  <defs><marker id="maD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker></defs>
+</svg>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>三线同向确认</strong></td>
+<td>200D 体制 + 200W 距离 + 2yr 分位 ≥2 票</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>周收盘规则</strong></td>
+<td>200D/200W 用周线，过滤日噪</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>200W 改叫参考地板</strong></td>
+<td>破线=风险升，非「不可能」</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>2yr 顶阈降级</strong></td>
+<td>5× 作「极端参考」非 veto</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>50W/200W 走廊</strong></td>
+<td>收窄=波动压缩情景</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>漂移剥离</strong></td>
+<td>任何胜率减 p_base</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>配链上/ETF</strong></td>
+<td>均线 alone 不够</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>接受 23% 胜率</strong></td>
+<td>200D 策略心理预备</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>写比值日志</strong></td>
+<td>每周记 P/200D、P/200W、P/2yr</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>30 分钟三线检</strong></td>
+<td>§22</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「200W 是铁底」</summary><div class="dbody"><p>2022 最深 <strong>0.66×</strong>、2026-06 周线再破<span class="tag t-ana">分析</span>。<strong>对策</strong>：称「参考地板」，破线加大风控而非否认数据。</p></div></details>
+<details><summary>2. 「200D 金叉 = 立刻梭哈」</summary><div class="dbody"><p>金叉滞后；Golden Cross 8 年 CAGR <strong>20%</strong> 跑输 B&amp;H <strong>25.4%</strong><span class="tag t-ana">分析</span>。<strong>对策</strong>：金叉=体制转暖，非入场点。</p></div></details>
+<details><summary>3. 「2yr×5 必顶」</summary><div class="dbody"><p>Cycle 4 ATH 时距 5× 仅 <strong>~28%</strong><span class="tag t-chk">待验证</span>。<strong>对策</strong>：顶阈降级，配 MVRV/资金流。</p></div></details>
+<details><summary>4. 「200W 从未下跌所以只涨」</summary><div class="dbody"><p>MA 上升只因旧低价滚出<span class="tag t-fact">事实</span>，与现价方向无关。<strong>对策</strong>：看价比，不看 MA 斜率 alone。</p></div></details>
+<details><summary>5. 日频追逐 200W</summary><div class="dbody"><p>200W 是<strong>周线</strong>工具。<strong>对策</strong>：周线收盘读一次。</p></div></details>
+<details><summary>6. 「200D 策略高胜率」</summary><div class="dbody"><p>历史胜率 <strong>~23%</strong><span class="tag t-ana">分析</span>。<strong>对策</strong>：接受低胜率 + 大赢覆盖。</p></div></details>
+<details><summary>7. 忽视震荡抽水</summary><div class="dbody"><p>2021 Q3–Q4 九连亏<span class="tag t-ana">分析</span>。<strong>对策</strong>：趋势滤波 + 减少横盘交易。</p></div></details>
+<details><summary>8. 单指标 All-in</summary><div class="dbody"><p>公开均线位被 trade against。<strong>对策</strong>：私有确认栈。</p></div></details>
+<details><summary>9. 把二手统计当【事实】</summary><div class="dbody"><p>8.7% vs 18% 样本口径不同<span class="tag t-chk">待验证</span>。<strong>对策</strong>：标来源，自己算。</p></div></details>
+<details><summary>10. 胜率不算漂移</summary><div class="dbody"><p>90 日基准 <strong>67.7%</strong>。<strong>对策</strong>：§20 漂移剥离器。</p></div></details>
+<details><summary>11. 「跌破 200D 必深熊」</summary><div class="dbody"><p>上升 200D 上的 brief dip 常 V 反<span class="tag t-ana">分析</span>。<strong>对策</strong>：看斜率 + 周线。</p></div></details>
+<details><summary>12. 用 2017 热图校准 2026</summary><div class="dbody"><p>ETF 时代 MA 升温更慢<span class="tag t-ana">分析</span>。<strong>对策</strong>：分时期校准。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实映射</th>
+<th>可观察代理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">集体记忆价</td>
+<td>200D SMA</td>
+<td><strong>$69,953</strong></td>
+</tr>
+<tr>
+<td class="k">慢速地板</td>
+<td>200W SMA</td>
+<td><strong>$61,977</strong></td>
+</tr>
+<tr>
+<td class="k">振幅带</td>
+<td>2yr×5</td>
+<td>上轨 <strong>$274K</strong></td>
+</tr>
+<tr>
+<td class="k">体制</td>
+<td>价 vs 200D + 斜率</td>
+<td><strong>+11.8% · 上行</strong></td>
+</tr>
+<tr>
+<td class="k">走廊收窄</td>
+<td>50W/200W</td>
+<td><strong>1.27×</strong></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<p><strong>决策漏斗</strong>：</p>
+<ol>
+<li><strong>体制</strong>：200D 周收盘在上且斜率向上？</li>
+<li><strong>地板</strong>：P/200W 处于哪个历史带（§08 工具）？</li>
+<li><strong>振幅</strong>：P/2yr 与 P/(2yr×5) 分位？</li>
+<li><strong>确认</strong>：ETF 流 + MVRV 是否同向？</li>
+<li><strong>执行</strong>：仅当 ≥3 层同向；仓位匹配<strong>月</strong>尺度</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 观察者</summary><div class="dbody"><ul>
+<li>[ ] 手算 P/200D、P/200W、P/2yr</li>
+<li>[ ] 说出 200W 与 200D 频率差异</li>
+<li>[ ] 解释 2yr×5 乘数含义</li>
+</ul></div></details>
+<details><summary>L2 · 分析师</summary><div class="dbody"><ul>
+<li>[ ] 叠 §06 三线体制盘</li>
+<li>[ ] 复述 2022 破 200W 数据</li>
+<li>[ ] 漂移剥离 65% vs 62% 基准</li>
+</ul></div></details>
+<details><summary>L3 · 建模者</summary><div class="dbody"><ul>
+<li>[ ] 自建日/周 SMA 管道</li>
+<li>[ ] 50W/200W 走廊日志</li>
+<li>[ ] 200D 策略回测（含费）</li>
+</ul></div></details>
+<details><summary>L4 · 系统设计者</summary><div class="dbody"><ul>
+<li>[ ] 均线+链上+流 信号栈</li>
+<li>[ ] 分位阈替代固定 5×</li>
+<li>[ ] 反事实清单（§20）</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：均线领航员（MA Navigator）。<strong>等级</strong>越高，越不信单线，越会写「哪条线被 falsify」。<strong>Boss</strong>：「2026 破 200W」——考验你是否还叫它铁底。<strong>装备</strong>：三线盘、地板计、2yr 带、漂移剥离器。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>等级</th>
+<th>任务</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Lv.1</td>
+<td>手算三价比</td>
+<td>解锁「体制盘」</td>
+</tr>
+<tr>
+<td class="k">Lv.2</td>
+<td>解释 2022 0.66×</td>
+<td>解锁「地板计」</td>
+</tr>
+<tr>
+<td class="k">Lv.3</td>
+<td>漂移剥离 &lt;5pp 超额</td>
+<td>解锁「2yr 带」</td>
+</tr>
+<tr>
+<td class="k">Lv.4</td>
+<td>4 周三线日志</td>
+<td>通关</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>任务</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日</td>
+<td>记录收盘价</td>
+<td>7 日表</td>
+</tr>
+<tr>
+<td class="k">每周</td>
+<td>三线价比 + 体制</td>
+<td>§06 截图</td>
+</tr>
+<tr>
+<td class="k">每月</td>
+<td>50W/200W 比</td>
+<td>与 Galaxy 对照</td>
+</tr>
+<tr>
+<td class="k">每季</td>
+<td>2yr 分位 vs 5×</td>
+<td>§06 工具</td>
+</tr>
+<tr>
+<td class="k">每年</td>
+<td>更新破 200W 周数</td>
+<td>§10 表追加</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A · 若 200W 真是铁底</button><button class="tab" data-pane="tb1-1">情景 B · 若 2yr×5 仍有效顶阈</button><button class="tab" data-pane="tb1-2">情景 C · 若 200D 策略高胜率</button><button class="tab" data-pane="tb1-3">情景 D · 若无 ETF 压平</button></div>
+<div class="pane on" id="tb1-0"><p>2022 不应跌至 0.66×。实际最深 <strong>−34.4%</strong>——<strong>地板叙事 falsify</strong><span class="tag t-ana">分析</span>。</p></div><div class="pane" id="tb1-1"><p>2025 ATH 应触线。实际距 5× 仅 <strong>~28%</strong>——<strong>顶阈静音</strong><span class="tag t-chk">待验证</span>。</p></div><div class="pane" id="tb1-2"><p>胜率应 &gt;50%。实际 <strong>~23%</strong>——靠盈亏比生存<span class="tag t-ana">分析</span>。</p></div><div class="pane" id="tb1-3"><p>2024 顶应触 200W 热区。实际 MA 升温仅 <strong>~4%/4 周</strong>——<strong>steady grind 假说</strong><span class="tag t-hyp">假设</span>。</p></div>
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>「200D 多头 65% 胜率」？先减<strong>随机持币基准</strong>（μ=50%/年 σ=65%）。</p>
+<div class="ctrl"><label>持有期（日）<input type="range" id="ma_T" min="5" max="180" step="5" value="40"><output id="ma_TO">40 日</output></label></div>
+<div class="ctrl"><label>信号胜率 (%)<input type="range" id="ma_ps" min="50" max="85" step="0.1" value="65.0"><output id="ma_psO">65.0%</output></label></div>
+<div class="ctrl"><label>年化漂移 μ (%)<input type="range" id="ma_mu" min="0" max="100" step="1" value="50"><output id="ma_muO">50.0%</output></label></div>
+<div class="ctrl"><label>年化波动 σ (%)<input type="range" id="ma_sg" min="30" max="100" step="1" value="65"><output id="ma_sgO">65%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="ma_base">62.0%</strong><span id="ma_baseh">—</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="ma_dp">+3.0 pp</strong><span id="ma_dph">—</span></div>
+<div class="ro"><span class="k">所需样本 n</span><strong id="ma_n">2083</strong><span id="ma_nh">—</span></div>
+<canvas id="ma_driftChart" height="176" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ma_drift_v">超额有限</strong><span id="ma_drift_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>目标</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 会读三线</strong></td>
+<td>3 天</td>
+<td>P/MA 手算</td>
+<td>误差 &lt;1%</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 会拆失效</strong></td>
+<td>1 周</td>
+<td>2022 破 200W + 顶静音</td>
+<td>漂移剥离</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 会叠确认</strong></td>
+<td>2 周</td>
+<td>均线+链上+ETF</td>
+<td>三联日志</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 会迭代</strong></td>
+<td>1 月+</td>
+<td>分位阈+回测</td>
+<td>2 月无口诀交易</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>任务</strong>：「均线三线检」——算、叠、判。</p>
+<ol>
+<li><strong>8 分钟 · 三价比</strong>：现价 <strong>$78,200</strong> ÷ 200D <strong>$69,953</strong> = <strong>1.118</strong>；÷ 200W <strong>$61,977</strong> = <strong>1.262</strong>；÷ 2yr <strong>$54,800</strong> = <strong>1.427</strong>。</li>
+<li><strong>7 分钟 · 体制</strong>：§09 工具默认 <strong>+11.8%</strong>、斜率上行 → <strong>健康牛市</strong>。</li>
+<li><strong>8 分钟 · 地板</strong>：§08 工具 <strong>1.262×</strong> → <strong>牛市常态</strong>（非贴线）。</li>
+<li><strong>7 分钟 · 漂移</strong>：§20 工具 40 日 65% → 基准 <strong>62.0%</strong>，超额 <strong>+3.0 pp</strong>，<strong>n≈2083</strong>。</li>
+</ol>
+<p><strong>验证</strong>：三价比与 §06 误差 <strong>&lt;0.01</strong>；禁止写「200W 铁底」。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>三线定义</td>
+<td>LookIntoBitcoin + Galaxy 200W 文</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>200D 体制</td>
+<td>Boring Edge 200D 回测</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>200W 地板</td>
+<td>Hodlometer 统计 + 2022 案例</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>2yr 乘数</td>
+<td>Philip Swift 原文</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>工具</td>
+<td>§06–§20 五个模型</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>批评</td>
+<td>金叉跑输 B&amp;H</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>合成</td>
+<td>1 页个人三线规则</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<p><strong>Week 1</strong>：三线定义 + 手算（L1）
+<strong>Week 2</strong>：失效案例 + 漂移剥离（L2）
+<strong>Week 3</strong>：50W/200W + ETF 对照（L3）
+<strong>Week 4</strong>：信号栈 + 分位阈（L4）</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>最大坑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>200D 体制</strong></td>
+<td>价 vs 慢趋势</td>
+<td>震荡假突破</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>200W 地板</strong></td>
+<td>四年尺度参考</td>
+<td>非铁底</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>2yr×5 带</strong></td>
+<td>Swift 振幅框</td>
+<td>Cycle 4 未触顶</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>50W/200W 走廊</strong></td>
+<td>波动压缩计</td>
+<td>倒挂罕见</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>200W 热图斜率</strong></td>
+<td>MA 变化率</td>
+<td>ETF 时代静音</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>200D 进出回测</strong></td>
+<td>控回撤</td>
+<td>23% 胜率</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>Golden Cross</strong></td>
+<td>50/200 交叉</td>
+<td>跑输 B&amp;H</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>对照基准</strong></td>
+<td>p_base 公式</td>
+<td>必减漂移</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>三线同向</strong></td>
+<td>多尺度确认</td>
+<td>单线不足</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>周收盘规则</strong></td>
+<td>滤日噪</td>
+<td>日频误用 200W</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>200D</summary><div class="dbody"><ul>
+<li>价在 200D 上方还是下方？斜率？</li>
+<li>偏离 % 处于哪个带（§09）？</li>
+<li>周收盘确认了吗？</li>
+</ul></div></details>
+<details><summary>200W</summary><div class="dbody"><ul>
+<li>P/200W 多少？贴线还是远离？</li>
+<li>本轮是否曾周线跌破？</li>
+<li>50W/200W 走廊多窄？</li>
+</ul></div></details>
+<details><summary>2yr 乘数</summary><div class="dbody"><ul>
+<li>P/2yr 是否 &lt;1（积累区）？</li>
+<li>距 5× 上轨几分位？</li>
+<li>Cycle 4 顶静音是否延续？</li>
+</ul></div></details>
+<details><summary>决策</summary><div class="dbody"><ul>
+<li>三线几票同向？</li>
+<li>胜率扣过漂移吗？</li>
+<li>写什么会改变主线？</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>动态乘数</strong>：3×/4×/5× 滚动回测哪个在 ETF 时代最稳</li>
+<li><strong>200W 热图 + 链上</strong>：MA 斜率与 MVRV 联合分布</li>
+<li><strong>50W/200W 倒挂预警</strong>：历史仅 2022 一次——是否复现</li>
+<li><strong>周 vs 日 SMA</strong>：同一「200」不同频率的系统性偏差</li>
+<li><strong>第五周期预演</strong>：2028 减半前后三线如何重置</li>
+</ol>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2yr MA Multiplier 定义</td>
+<td>原创指标</td>
+<td>Philip Swift / LookIntoBitcoin 2017</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">200W 8.7% 周在下</td>
+<td>机构研报</td>
+<td>Galaxy Research 2026</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">200W 18% / 最深 −34.4%</td>
+<td>行业统计</td>
+<td>Hodlometer 2026</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2024 顶 2.28× 200W</td>
+<td>行业分析</td>
+<td>BTCOAK 200W 热图 2026</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">200D 策略回测</td>
+<td>回测报告</td>
+<td>Boring Edge 2018–2026</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">Golden Cross 跑输 B&amp;H</td>
+<td>回测报告</td>
+<td>Boring Edge 2018–2026</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">2026-09 三均线估算</td>
+<td>计算</td>
+<td>手册默认参数</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">50W/200W 1.27×</td>
+<td>机构研报</td>
+<td>Galaxy 2026</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">漂移基准公式</td>
+<td>手册规范</td>
+<td>panorama-handbook §1</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">EMA 交叉批评</td>
+<td>回测博客</td>
+<td>CoinQuant 2018–2025</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供研究与学习，<strong>不构成任何投资建议</strong>。比特币极高波动，可能发生 &gt;50% 的 drawdown；200 周均线、200 日均线、两年均线乘数及任何固定阈值均<strong>不保证</strong>未来价格路径。历史统计（如「8.7% 周线跌破 200W」「2yr×5 顶区」）在现货 ETF 时代可能<strong>结构性失效</strong>。请勿依据单一均线进行杠杆交易或集中配置。中国大陆对虚拟货币相关业务有严格监管，请遵守当地法律法规。作者不对使用本手册造成的任何损失负责。</p>
+</section>
+<footer>  <p>《BTC-均线体系：200周 / 200日 / 两年均线乘数 · 全景认知与实践操作手册》 · 生成于 2026-09-17 · 耗时 3 分 49 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC-均线体系：200周 / 200日 / 两年均线乘数》主题脚本
+   四个可调模型：
+     1. 三线体制仪表盘   — 200D / 200W / 2yr MA 相对位置
+     2. 200 日趋势过滤器 — 价 vs 200D + 斜率判定
+     3. 200 周地板距离计 — 价/200W 比值与历史分位
+     4. 两年均线乘数区   — Philip Swift 2yr MA × N
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  function pBase(mu, sig, T) {
+    return ncdf(mu * (T / 252) / (sig * Math.sqrt(T / 252)));
+  }
+
+  function sampleN(pb, ps) {
+    var z196 = 1.96, z84 = 0.84;
+    var num = z196 * Math.sqrt(pb * (1 - pb)) + z84 * Math.sqrt(ps * (1 - ps));
+    return Math.ceil(Math.pow(num, 2) / Math.pow(ps - pb, 2));
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function fmtUsd(v) {
+    if (!isFinite(v)) return '—';
+    if (v >= 1000) return '$' + Math.round(v).toLocaleString('en-US');
+    return '$' + v.toFixed(0);
+  }
+
+  function regime200d(pct, slopeUp) {
+    if (pct >= 50) return { t: '过热延伸', c: '#d5342c', h: '历史晚期牛市区' };
+    if (pct >= 10 && slopeUp) return { t: '健康牛市', c: '#0f8a4d', h: '+10%~+50% · 趋势向上' };
+    if (pct >= -5 && pct < 10) return { t: '趋势争夺', c: '#b8730a', h: '±5% · 假突破高发' };
+    if (pct >= -20) return { t: '熊市结构', c: '#1d4ed8', h: '低于 200D · 多数熊市在此' };
+    return { t: 'Capitulation', c: '#0f8a4d', h: '<−20% · 历史底区' };
+  }
+
+  function zone2yr(ratio, mult) {
+    if (ratio < 1) return { t: '积累区', c: '#0f8a4d', h: '价 < 2yr MA · Swift 买入区' };
+    if (ratio < mult * 0.6) return { t: '中性区', c: '#1d4ed8', h: '2yr MA ~ 2yr×' + mult + ' 之间' };
+    if (ratio < mult) return { t: '偏热区', c: '#b8730a', h: '接近 ' + mult + '× 上轨' };
+    return { t: '周期顶区', c: '#d5342c', h: '≥ ' + mult + '× · 历史止盈参考' };
+  }
+
+  /* ══ 工具 1 · 三线体制仪表盘 ══ */
+  (function tripleDash() {
+    var priceEl = $('ma_price'), dEl = $('ma_200d'), wEl = $('ma_200w'), yEl = $('ma_2yr');
+    if (!priceEl || !dEl || !wEl || !yEl) return;
+    var priceO = $('ma_priceO'), dO = $('ma_200dO'), wO = $('ma_200wO'), yO = $('ma_2yrO');
+    var rD = $('ma_rD'), rDh = $('ma_rDh');
+    var rW = $('ma_rW'), rWh = $('ma_rWh');
+    var rY = $('ma_rY'), rYh = $('ma_rYh');
+    var align = $('ma_align'), alignh = $('ma_alignh');
+    var vEl = $('ma_triple_v'), vhEl = $('ma_triple_vh');
+    var cv = $('ma_tripleChart');
+
+    function draw(ratios) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var labels = ['200D', '200W', '2yr'];
+      var cols = ['#1d4ed8', '#b8730a', '#0f8a4d'];
+      var maxR = 2.0;
+      var barH = ih / 4;
+      ratios.forEach(function (r, i) {
+        var y = pad.t + i * (barH + 14);
+        var bw = Math.min(r.r, maxR) / maxR * iw;
+        ctx.fillStyle = '#f4f6f9';
+        ctx.fillRect(pad.l, y, iw, barH);
+        ctx.fillStyle = cols[i];
+        ctx.fillRect(pad.l, y, bw, barH);
+        ctx.fillStyle = '#15181d';
+        ctx.font = 'bold 11px -apple-system,sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(labels[i], 8, y + barH * 0.65);
+        ctx.textAlign = 'right';
+        ctx.fillText(r.r.toFixed(3) + '×', pad.l + iw + 4, y + barH * 0.65);
+        ctx.strokeStyle = '#c9d0d9';
+        ctx.setLineDash([3, 3]);
+        var x1 = pad.l + (1 / maxR) * iw;
+        ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x1, y + barH); ctx.stroke();
+        ctx.setLineDash([]);
+      });
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('价格 ÷ 各均线（虚线 = 1.0×）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var price = parseFloat(priceEl.value);
+      var maD = parseFloat(dEl.value);
+      var maW = parseFloat(wEl.value);
+      var maY = parseFloat(yEl.value);
+      if (maD <= 0 || maW <= 0 || maY <= 0) return;
+      var rd = price / maD;
+      var rw = price / maW;
+      var ry = price / maY;
+      txt(priceO, fmtUsd(price));
+      txt(dO, fmtUsd(maD));
+      txt(wO, fmtUsd(maW));
+      txt(yO, fmtUsd(maY));
+      txt(rD, rd.toFixed(3) + '×');
+      txt(rDh, ((rd - 1) * 100 >= 0 ? '+' : '') + ((rd - 1) * 100).toFixed(1) + '%');
+      txt(rW, rw.toFixed(3) + '×');
+      txt(rWh, ((rw - 1) * 100 >= 0 ? '+' : '') + ((rw - 1) * 100).toFixed(1) + '%');
+      txt(rY, ry.toFixed(3) + '×');
+      txt(rYh, ((ry - 1) * 100 >= 0 ? '+' : '') + ((ry - 1) * 100).toFixed(1) + '%');
+      var bull = rd > 1 && rw > 1 && ry > 1;
+      var bear = rd < 1 && rw < 1;
+      var alignTxt = bull ? '三线多头（价>三均线）' : bear ? '双线下破（D+W）' : '均线分歧';
+      var alignCol = bull ? '#0f8a4d' : bear ? '#d5342c' : '#b8730a';
+      txt(align, alignTxt);
+      tint(align, alignCol);
+      txt(alignh, bull ? '宏观牛市结构' : bear ? '需防深跌' : '慢牛/调整常见');
+      txt(vEl, bull ? '体制偏多 · 200D 作回撤支撑' : bear ? '体制偏空 · 200W 为下一锚' : '体制混合 · 看 200D 斜率');
+      tint(vEl, alignCol);
+      txt(vhEl, '200D=' + rd.toFixed(2) + ' · 200W=' + rw.toFixed(2) + ' · 2yr=' + ry.toFixed(2));
+      draw([{ r: rd }, { r: rw }, { r: ry }]);
+    }
+
+    [priceEl, dEl, wEl, yEl].forEach(function (el) {
+      el.addEventListener('input', update);
+    });
+    update();
+  })();
+
+  /* ══ 工具 2 · 200 日趋势过滤器 ══ */
+  (function filter200d() {
+    var pctEl = $('ma_d_pct'), slopeEl = $('ma_d_slope');
+    if (!pctEl || !slopeEl) return;
+    var pctO = $('ma_d_pctO'), slopeO = $('ma_d_slopeO');
+    var regEl = $('ma_d_reg'), reghEl = $('ma_d_regh');
+    var sigEl = $('ma_d_sig'), sighEl = $('ma_d_sigh');
+    var vEl = $('ma_d_v'), vhEl = $('ma_d_vh');
+    var cv = $('ma_dChart');
+
+    function draw(pct) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var bands = [
+        { lo: -60, hi: -20, col: '#e8f5ee' },
+        { lo: -20, hi: -5, col: '#eaf0ff' },
+        { lo: -5, hi: 10, col: '#fff7e6' },
+        { lo: 10, hi: 50, col: '#e8f5ee' },
+        { lo: 50, hi: 90, col: '#fdf3f2' }
+      ];
+      var minP = -60, maxP = 90;
+      var sx = function (v) { return pad.l + ((v - minP) / (maxP - minP)) * iw; };
+      bands.forEach(function (b) {
+        ctx.fillStyle = b.col;
+        ctx.fillRect(sx(b.lo), pad.t, sx(b.hi) - sx(b.lo), ih);
+      });
+      [-20, -5, 10, 50].forEach(function (ref) {
+        var x = sx(ref);
+        ctx.strokeStyle = '#c9d0d9';
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '9px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText((ref > 0 ? '+' : '') + ref + '%', x, y1 + 13);
+      });
+      var mx = sx(pct);
+      ctx.strokeStyle = '#15181d';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(mx, pad.t); ctx.lineTo(mx, y1); ctx.stroke();
+      ctx.fillStyle = '#15181d';
+      ctx.beginPath(); ctx.arc(mx, pad.t + ih * 0.5, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.font = 'bold 11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText((pct >= 0 ? '+' : '') + pct.toFixed(1) + '%', mx, pad.t + ih * 0.5 - 12);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillText('相对 200 日均线偏离', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var pct = parseFloat(pctEl.value);
+      var slopeUp = parseInt(slopeEl.value, 10) === 1;
+      txt(pctO, (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%');
+      txt(slopeO, slopeUp ? '上行' : '下行');
+      var reg = regime200d(pct, slopeUp);
+      txt(regEl, reg.t);
+      tint(regEl, reg.c);
+      txt(reghEl, reg.h);
+      var longSig = pct > 0 && slopeUp;
+      var cashSig = pct < 0 && !slopeUp;
+      txt(sigEl, longSig ? '持有多头/定投' : cashSig ? '现金/减仓参考' : '观望 · 等周线确认');
+      tint(sigEl, longSig ? '#0f8a4d' : cashSig ? '#d5342c' : '#b8730a');
+      txt(sighEl, '周收盘确认可减少假突破');
+      txt(vEl, longSig ? '200D 过滤器：多头' : cashSig ? '200D 过滤器：空头' : '200D 过滤器：中性');
+      tint(vEl, longSig ? '#0f8a4d' : cashSig ? '#d5342c' : '#b8730a');
+      txt(vhEl, '偏离 ' + pct.toFixed(1) + '% · 斜率' + (slopeUp ? '↑' : '↓'));
+      draw(pct);
+    }
+
+    [pctEl, slopeEl].forEach(function (el) { el.addEventListener('input', update); });
+    update();
+  })();
+
+  /* ══ 工具 3 · 200 周地板距离计 ══ */
+  (function floor200w() {
+    var ratioEl = $('ma_w_ratio');
+    if (!ratioEl) return;
+    var ratioO = $('ma_w_ratioO');
+    var distEl = $('ma_w_dist'), disthEl = $('ma_w_disth');
+    var histEl = $('ma_w_hist'), histhEl = $('ma_w_histh');
+    var vEl = $('ma_w_v'), vhEl = $('ma_w_vh');
+    var cv = $('ma_wChart');
+
+    function histLabel(r) {
+      if (r < 0.75) return { t: '极端低估', c: '#0f8a4d', h: '2022-11 最深 ~0.66×' };
+      if (r < 0.95) return { t: '地板测试', c: '#0f8a4d', h: '2015/2018/2022 底区' };
+      if (r < 1.05) return { t: '贴线震荡', c: '#b8730a', h: '2026-06 曾周线跌破' };
+      if (r < 1.5) return { t: '牛市常态', c: '#1d4ed8', h: '多数牛市在此区间' };
+      if (r < 2.5) return { t: '周期偏热', c: '#b8730a', h: '2024-03 约 2.28×' };
+      return { t: '历史过热', c: '#d5342c', h: '2017/2021 极端带' };
+    }
+
+    function draw(ratio) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var minR = 0.5, maxR = 3.0;
+      var sx = function (v) { return pad.l + ((v - minR) / (maxR - minR)) * iw; };
+      var zones = [
+        { lo: 0.5, hi: 0.95, col: '#e8f5ee' },
+        { lo: 0.95, hi: 1.05, col: '#fff7e6' },
+        { lo: 1.05, hi: 2.5, col: '#eaf0ff' },
+        { lo: 2.5, hi: 3.0, col: '#fdf3f2' }
+      ];
+      zones.forEach(function (z) {
+        ctx.fillStyle = z.col;
+        ctx.fillRect(sx(z.lo), pad.t, sx(z.hi) - sx(z.lo), ih);
+      });
+      [0.68, 1.0, 2.28].forEach(function (ref) {
+        var x = sx(ref);
+        ctx.strokeStyle = ref === 1 ? '#15181d' : '#c9d0d9';
+        ctx.setLineDash(ref === 1 ? [] : [4, 3]);
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '9px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(ref + '×', x, y1 + 13);
+      });
+      var mx = sx(Math.min(Math.max(ratio, minR), maxR));
+      ctx.strokeStyle = '#b8730a';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(mx, pad.t); ctx.lineTo(mx, y1); ctx.stroke();
+      ctx.fillStyle = '#b8730a';
+      ctx.beginPath(); ctx.arc(mx, pad.t + ih * 0.5, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('价格 ÷ 200 周均线', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var ratio = parseFloat(ratioEl.value);
+      var pct = (ratio - 1) * 100;
+      txt(ratioO, ratio.toFixed(3) + '×');
+      txt(distEl, (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%');
+      tint(distEl, pct >= 0 ? '#0f8a4d' : '#d5342c');
+      txt(disthEl, ratio < 1 ? '周线收盘低于 200W' : '高于慢速地板');
+      var hist = histLabel(ratio);
+      txt(histEl, hist.t);
+      tint(histEl, hist.c);
+      txt(histhEl, hist.h);
+      txt(vEl, ratio < 1 ? '地板被破 · 非铁底' : ratio < 1.5 ? '长期多头结构' : '远离地板 · 回撤风险升');
+      tint(vEl, hist.c);
+      txt(vhEl, '历史约 8.7% 周线收盘低于 200W【Galaxy】');
+      draw(ratio);
+    }
+
+    ratioEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 4 · 两年均线乘数区 ══ */
+  (function mult2yr() {
+    var priceEl = $('ma_2y_price'), maEl = $('ma_2y_ma'), multEl = $('ma_2y_mult');
+    if (!priceEl || !maEl || !multEl) return;
+    var priceO = $('ma_2y_priceO'), maO = $('ma_2y_maO'), multO = $('ma_2y_multO');
+    var ratioEl = $('ma_2y_ratio'), ratiohEl = $('ma_2y_ratioh');
+    var topEl = $('ma_2y_top'), tophEl = $('ma_2y_toph');
+    var zoneEl = $('ma_2y_zone'), zonehEl = $('ma_2y_zoneh');
+    var vEl = $('ma_2y_v'), vhEl = $('ma_2y_vh');
+    var cv = $('ma_2yChart');
+
+    function draw(price, ma, mult, ratio) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 56, r: 16, t: 28, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var yBot = pad.t + ih * 0.72;
+      var yTop = pad.t + ih * 0.18;
+      var x0 = pad.l, x1 = pad.l + iw;
+      ctx.fillStyle = '#e8f5ee';
+      ctx.fillRect(x0, yBot - 8, iw, ih * 0.28 + 8);
+      ctx.fillStyle = '#fdf3f2';
+      ctx.fillRect(x0, pad.t, iw, ih * 0.22 + 8);
+      ctx.strokeStyle = '#0f8a4d';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x0, yBot); ctx.lineTo(x1, yBot); ctx.stroke();
+      ctx.strokeStyle = '#d5342c';
+      ctx.beginPath(); ctx.moveTo(x0, yTop); ctx.lineTo(x1, yTop); ctx.stroke();
+      ctx.fillStyle = '#0f8a4d';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('2yr MA ' + fmtUsd(ma), x0 + 4, yBot + 14);
+      ctx.fillStyle = '#d5342c';
+      ctx.fillText(mult + '× = ' + fmtUsd(ma * mult), x0 + 4, yTop - 6);
+      var logLo = Math.log(ma * 0.5);
+      var logHi = Math.log(ma * mult * 1.2);
+      var logP = Math.log(price);
+      var py = pad.t + ih - ((logP - logLo) / (logHi - logLo)) * ih;
+      py = Math.max(pad.t + 4, Math.min(y1 - 4, py));
+      ctx.fillStyle = '#15181d';
+      ctx.beginPath(); ctx.arc(pad.l + iw * 0.55, py, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 11px -apple-system,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(fmtUsd(price) + ' (' + ratio.toFixed(2) + '×)', pad.l + iw * 0.55 + 12, py + 4);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Philip Swift 2yr MA 乘数带', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var price = parseFloat(priceEl.value);
+      var ma = parseFloat(maEl.value);
+      var mult = parseFloat(multEl.value);
+      if (ma <= 0) return;
+      var ratio = price / ma;
+      var top = ma * mult;
+      var pctTop = (price / top) * 100;
+      txt(priceO, fmtUsd(price));
+      txt(maO, fmtUsd(ma));
+      txt(multO, mult.toFixed(1) + '×');
+      txt(ratioEl, ratio.toFixed(3) + '×');
+      txt(ratiohEl, ratio < 1 ? '低于绿线 · 积累' : '高于绿线');
+      txt(topEl, fmtUsd(top));
+      txt(tophEl, '现价 = 上轨的 ' + pctTop.toFixed(1) + '%');
+      var z = zone2yr(ratio, mult);
+      txt(zoneEl, z.t);
+      tint(zoneEl, z.c);
+      txt(zonehEl, z.h);
+      txt(vEl, ratio < 1 ? 'Swift 买入参考区' : pctTop > 80 ? '接近止盈参考带' : '持有/定投常态区');
+      tint(vEl, z.c);
+      txt(vhEl, '2yr=' + ratio.toFixed(2) + '× · 顶轨=' + pctTop.toFixed(0) + '%');
+      draw(price, ma, mult, ratio);
+    }
+
+    [priceEl, maEl, multEl].forEach(function (el) { el.addEventListener('input', update); });
+    update();
+  })();
+
+  /* ══ 工具 5 · 漂移剥离器（200D 策略胜率） ══ */
+  (function driftStrip() {
+    var TEl = $('ma_T'), psEl = $('ma_ps'), muEl = $('ma_mu'), sgEl = $('ma_sg');
+    if (!TEl || !psEl || !muEl || !sgEl) return;
+    var TO = $('ma_TO'), psO = $('ma_psO'), muO = $('ma_muO'), sgO = $('ma_sgO');
+    var baseEl = $('ma_base'), basehEl = $('ma_baseh');
+    var dpEl = $('ma_dp'), dphEl = $('ma_dph');
+    var nEl = $('ma_n'), nhEl = $('ma_nh');
+    var vEl = $('ma_drift_v'), vhEl = $('ma_drift_vh');
+    var cv = $('ma_driftChart');
+
+    function draw(T, pb, ps) {
+      var s = fit(cv, 176);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 44, r: 12, t: 16, b: 36 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 36;
+      var bx = pad.l, bw = iw * 0.35;
+      var sx = pad.l + iw * 0.55;
+      var bh = ih * pb, sh = ih * ps;
+      ctx.fillStyle = '#eaf0ff';
+      ctx.fillRect(bx, y1 - bh, bw, bh);
+      ctx.fillStyle = '#e8f5ee';
+      ctx.fillRect(sx, y1 - sh, bw, sh);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('基准 ' + (pb * 100).toFixed(1) + '%', bx + bw / 2, y1 + 12);
+      ctx.fillText('信号 ' + (ps * 100).toFixed(1) + '%', sx + bw / 2, y1 + 12);
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 11px -apple-system,sans-serif';
+      ctx.fillText('T=' + T + ' 日', pad.l + iw / 2, pad.t + 8);
+    }
+
+    function update() {
+      var T = parseInt(TEl.value, 10);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sg = parseFloat(sgEl.value) / 100;
+      var pb = pBase(mu, sg, T);
+      var excess = ps - pb;
+      var n = sampleN(pb, ps);
+      txt(TO, T + ' 日');
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(1) + '%');
+      txt(sgO, (sg * 100).toFixed(0) + '%');
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(basehEl, 'μ=' + (mu * 100).toFixed(0) + '% σ=' + (sg * 100).toFixed(0) + '%');
+      txt(dpEl, (excess >= 0 ? '+' : '') + (excess * 100).toFixed(1) + ' pp');
+      tint(dpEl, excess >= 3 ? '#0f8a4d' : excess >= 1 ? '#b8730a' : '#d5342c');
+      txt(dphEl, excess < 2 ? '超额微弱 · 可能是漂移' : '有一定统计意义');
+      txt(nEl, String(n));
+      txt(nhEl, '80% 功效双尾检验');
+      txt(vEl, excess < 2 ? '表面胜率≈随机持币' : excess < 5 ? '超额有限' : '需警惕过拟合');
+      tint(vEl, excess < 2 ? '#d5342c' : '#b8730a');
+      txt(vhEl, '200D 策略历史胜率仅 ~23%【Boring Edge】');
+      draw(T, pb, ps);
+    }
+
+    [TEl, psEl, muEl, sgEl].forEach(function (el) { el.addEventListener('input', update); });
+    update();
+  })();
+})();
+</script>
+</body>
+</html>
