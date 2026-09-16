@@ -113,11 +113,14 @@
     {
       "slug": "安同良团队拆解逐浪抱团",
       "title": "安同良团队拆解逐浪抱团",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 21:00:18",
+      "finished": "2026-09-16 21:03:21",
+      "duration_sec": 183,
+      "outputs": [
+        "reports/安同良团队拆解逐浪抱团.html",
+        "reports/安同良团队拆解逐浪抱团.md"
+      ],
       "error": null
     },
     {
@@ -189,7 +192,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 20:58",
+  "updated": "2026-09-16 21:03",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
