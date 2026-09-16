@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-恐惧贪婪指数与资金费率 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × Sentiment × Perpetual Funding</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路径</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-恐惧贪婪指数与资金费率</h1>
+  <p class="sub">恐惧贪婪指数是<strong>滞后情绪温度计</strong>，资金费率是<strong>杠杆拥挤税</strong>——两者共振时才值得谈反向，单指标往往是价格回声</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>Alternative.me 恐惧贪婪指数（F&amp;G）</strong> 把波动、动量、社交、主导率、搜索五类信号合成 <strong>0–100</strong> 日度读数<span class="tag t-fact">事实</span>——<strong>0=极度恐惧，100=极度贪婪</strong>。永续合约 <strong>资金费率</strong> 则是多空之间的周期性支付：正费率 = 多头付空头，基线约 <strong>0.01%/8h（年化 10.95%）</strong><span class="tag t-fact">事实</span>。</p>
+<p>社媒常把「极度恐惧买入、极度贪婪卖出」当铁律——但研究指出 <strong>价格变动驱动指数远多于指数驱动价格</strong><span class="tag t-ana">分析</span>；资金费率 carry 策略在预注册检验中 <strong>被 falsified</strong>（单笔成本 <strong>0.48%</strong> &gt; 均值 funding 收入 <strong>0.22%</strong>）<span class="tag t-ana">分析</span>。真正有用的是：<strong>(1) 判 F&amp;G 哪一分量在驱动 (2) funding z-score 是否确认拥挤 (3) 两指标是否共振 (4) 胜率是否扣过 BTC 正漂移</strong>。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>「BTC-恐惧贪婪指数与资金费率」研究的是：<strong>用日度情绪合成指数与永续合约资金费率，刻画杠杆端拥挤与散户/衍生品情绪——并检验「极端读数反向交易」与「费率 carry/反向」在何种条件下成立、何时只是价格的滞后回声</strong>。</p>
+<div class="note red"><b>先划清边界</b><p>本手册<strong>不提供</strong>「F&amp;G&lt;25 就买入」或「费率&gt;0.1% 就做空」的信号。F&amp;G 是 <strong>BTC 专用</strong>、<strong>日频滞后</strong> 的情绪温度计；资金费率受 <strong>0.01%/8h 结构正偏</strong> 影响，长期为正不代表多头永远拥挤<span class="tag t-fact">事实</span>。</p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>F&amp;G 五分量、资金费率公式、z-score 拥挤、共振反向、carry 拆解</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>Alternative.me F&amp;G（非 CMC 版）；CEX 永续 funding（非期权 IV）</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>F&amp;G 0–100、8h funding rate、premium index、OI、基差</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>Alternative.me、Binance/OKX/Bybit MM、套利基金、散户杠杆多头</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>F&amp;G 分量、funding rate、z-score、年化 carry、OI 变化</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察的</td>
+<td>alternative.me API、Coinglass funding、交易所公示公式</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察但可推断</td>
+<td>调查分量暂停后的权重再分配、跨所套利库存</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>价格→F&amp;G 分量→指数；溢价→funding→多头成本→去杠杆</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>溢价→费率 = <span class="tag t-fact">事实</span>；极端恐惧→见底 = <span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>F&amp;G 与次日收益 r 弱<span class="tag t-chk">待验证</span>——共变≠预测</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>「FG=10 必涨」「费率永远正=永远牛市」</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>行为金融情绪 + 永续锚定现货的套利定价</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>极端恐惧报道→抄底买盘；高 funding→多头平仓→价跌</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>时间延迟</td>
+<td>F&amp;G 日收盘更新；funding 每 8h（2025 起可动态缩至 1h）</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>正：涨→贪婪读数↑；负：高 funding→去杠杆螺旋</td>
+</tr>
+</tbody>
+</table></div>
+<h3>F&amp;G vs 资金费率：两种「情绪」</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>恐惧贪婪指数</th>
+<th>资金费率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>本质</strong></td>
+<td>多源情绪合成</td>
+<td>合约溢价 + 利息的定价结果</td>
+</tr>
+<tr>
+<td class="k"><strong>频率</strong></td>
+<td>日度</td>
+<td>8h/4h/2h/1h（2025 动态结算）</td>
+</tr>
+<tr>
+<td class="k"><strong>方向</strong></td>
+<td>0 恐惧 ↔ 100 贪婪</td>
+<td>正=多头付 / 负=空头付</td>
+</tr>
+<tr>
+<td class="k"><strong>BTC 专用</strong></td>
+<td>是<span class="tag t-fact">事实</span></td>
+<td>是（本手册聚焦 BTC 永续）</td>
+</tr>
+<tr>
+<td class="k"><strong>结构偏置</strong></td>
+<td>无（各分量 0–100）</td>
+<td><strong>正偏</strong>：I=0.01%/8h 基线<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>典型误用</strong></td>
+<td>当日抄底</td>
+<td>费率正=永远做多</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：衍生品已占加密成交量 ~93%</h3>
+<p>永续合约约占加密期货成交量 <strong>93%</strong><span class="tag t-chk">待验证</span>（MDPI 2025）——<strong>funding 是杠杆端的「心跳」</strong>，与 F&amp;G 这类散户情绪仪表形成 <strong>现货叙事 + 衍生品定价</strong> 的双轨观察。</p>
+<h3>理由二：两指标互补而非冗余</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>F&amp;G</th>
+<th>Funding</th>
+<th>读法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>2022-11 底</strong></td>
+<td>FG≈<strong>20</strong> 极度恐惧<span class="tag t-chk">待验证</span></td>
+<td>funding 转负、空头付<span class="tag t-chk">待验证</span></td>
+<td>共振反向做多</td>
+</tr>
+<tr>
+<td class="k"><strong>2021-11 顶</strong></td>
+<td>FG&gt;<strong>80</strong><span class="tag t-chk">待验证</span></td>
+<td>funding <strong>&gt;0.05%/8h</strong><span class="tag t-chk">待验证</span></td>
+<td>共振反向做空</td>
+</tr>
+<tr>
+<td class="k"><strong>2024 牛市中段</strong></td>
+<td>FG 50–70 中性偏贪</td>
+<td>funding 基线 <strong>0.01%</strong> 附近</td>
+<td>无极端——不反向</td>
+</tr>
+<tr>
+<td class="k"><strong>费率极端但 F&amp;G 中性</strong></td>
+<td>FG≈55</td>
+<td>z&gt;<strong>2</strong></td>
+<td>仅 fade 拥挤侧</td>
+</tr>
+</tbody>
+</table></div>
+<h3>理由三：任何「胜率」都要和对照基准比</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>BTC μ=50%/年 σ=65%</th>
+<th><strong>随机持币基准</strong></th>
+<th>「极度恐惧 10 日反弹 68%」真实超额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">5 日</td>
+<td>—</td>
+<td><strong>54.3%</strong></td>
+<td>表面 +13.7 pp</td>
+</tr>
+<tr>
+<td class="k">10 日</td>
+<td>—</td>
+<td><strong>56.1%</strong></td>
+<td>表面 <strong>+11.9 pp</strong></td>
+</tr>
+<tr>
+<td class="k">20 日</td>
+<td>—</td>
+<td><strong>58.6%</strong></td>
+<td>若 70% → 真实 <strong>+11.4 pp</strong></td>
+</tr>
+<tr>
+<td class="k">40 日</td>
+<td>—</td>
+<td><strong>62.0%</strong></td>
+<td>若 65% → 真实 <strong>+3.0 pp</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>BTC 正漂移使 <strong>短期反向超额看似可观、长期快速衰减</strong>；证明显需样本 <strong>n≈131</strong>（68% vs 56.1%），远超历史极端恐惧事件 <strong>~40 次</strong><span class="tag t-inf">推论</span>。</p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从价格，到情绪，到杠杆税</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">F&G + Funding · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">越靠上越「硬数据」，越靠下越「解读可选择」</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 现货价格层</text>
+  <text x="148" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">BTC 现货 · 指数价格 · 波动率</text>
+  <text x="148" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">F&G 与 funding 的共同输入</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 永续溢价层</text>
+  <text x="148" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">Perp 价格 − 指数价格 → Premium Index</text>
+  <text x="148" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">套利者锚定现货</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 资金费率层</text>
+  <text x="148" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">F = P + clamp(I−P) · 每 8h 结算</text>
+  <text x="148" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">基线 0.01%/8h ≈ 年化 10.95%</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ F&G 分量层</text>
+  <text x="148" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">波动25% · 动量25% · 社交15% · 主导10% · 搜索10%</text>
+  <text x="148" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">调查 15% 已暂停【事实】</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 合成指数层</text>
+  <text x="148" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">Alternative.me 日度 0–100 · BTC 专用</text>
+  <text x="148" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">日收盘更新 · 非实时</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 拥挤/杠杆层</text>
+  <text x="148" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">OI · funding z-score · 年化 carry</text>
+  <text x="148" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">z&gt;2 → 多头拥挤 · z&lt;−2 → 空头拥挤</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 共振信号层</text>
+  <text x="148" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">FG&lt;25 + z&lt;−1.5 → 反向做多质量↑</text>
+  <text x="148" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">单指标极端不够</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 传播层</text>
+  <text x="148" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">「FG=10 抄底」· 「费率 100% 年化」标题党</text>
+  <text x="148" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">忽略结构正偏与样本量</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="148" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">分量→共振→漂移剥离→仓位</text>
+  <text x="148" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">§22 四联检</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">F&G + Funding · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 市场情绪</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 杠杆拥挤</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 反向指标</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• Carry 收入</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 五分量加权</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• Premium+Interest</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 多空支付</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 去杠杆螺旋</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#b8dcc8" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 读 F&G API</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 算 funding z</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• §06 分量合成</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• §20 共振判定</text>
+  <path d="M214 146 L240 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#fgA)"/>
+  <path d="M440 146 L466 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#fgA)"/>
+  <defs><marker id="fgA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c848f"/></marker></defs>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>做什么</th>
+<th>与两指标的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Alternative.me</strong></td>
+<td>发布 F&amp;G 指数</td>
+<td>方法论公开；调查分量暂停<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Binance / OKX / Bybit</strong></td>
+<td>永续合约 + funding 结算</td>
+<td>2025 公式/动态结算升级<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>做市商 / 套利基金</strong></td>
+<td>现货-永续套利</td>
+<td>压缩溢价 → funding 回归基线</td>
+</tr>
+<tr>
+<td class="k"><strong>Ethena 类协议</strong></td>
+<td>Delta-neutral carry</td>
+<td>压缩 funding 极端<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k"><strong>散户杠杆多头</strong></td>
+<td>高 funding 时付息</td>
+<td>拥挤侧 → 反向 fade 对象</td>
+</tr>
+<tr>
+<td class="k"><strong>Coinglass / CoinGlass</strong></td>
+<td>Funding 聚合</td>
+<td>跨所 z-score 计算</td>
+</tr>
+<tr>
+<td class="k"><strong>MDPI 2025 学者</strong></td>
+<td>跨所 funding 套利研究</td>
+<td>17% 价差但多数扣除成本后亏损<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>2026-09 量级<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>F&amp;G 指数</strong></td>
+<td>五分量加权 0–100</td>
+<td>常态 <strong>35–65</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>波动分量</strong></td>
+<td>当前波动 vs 30/90 日均</td>
+<td>权重 <strong>25%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>动量/量分量</strong></td>
+<td>成交量+价格动量</td>
+<td>权重 <strong>25%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Funding rate</strong></td>
+<td>每 8h 结算费率</td>
+<td>基线 <strong>0.01%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Funding z</strong></td>
+<td>(rate−μ)/σ 滚动</td>
+<td>|z|&gt;<strong>2</strong> = 极端</td>
+</tr>
+<tr>
+<td class="k"><strong>年化 carry</strong></td>
+<td>rate×3×365</td>
+<td>基线 <strong>10.95%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>OI</strong></td>
+<td>未平仓合约</td>
+<td>与 funding 共振判拥挤</td>
+</tr>
+<tr>
+<td class="k"><strong>Premium index</strong></td>
+<td>合约溢价率</td>
+<td>驱动 funding 主变量</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · F&G 分量合成器</h3>
+<p>五分量各 <strong>0–100</strong>，按 Alternative.me 权重加权（调查 15% 已暂停不计）【事实】。</p>
+<div class="ctrl"><label>波动分量<input type="range" id="fg_vol" min="0" max="100" step="1" value="30"><output id="fg_volO">30</output></label></div>
+<div class="ctrl"><label>动量/量分量<input type="range" id="fg_mom" min="0" max="100" step="1" value="20"><output id="fg_momO">20</output></label></div>
+<div class="ctrl"><label>社交分量<input type="range" id="fg_soc" min="0" max="100" step="1" value="36"><output id="fg_socO">36</output></label></div>
+<div class="ctrl"><label>BTC 主导率分量<input type="range" id="fg_dom" min="0" max="100" step="1" value="30"><output id="fg_domO">30</output></label></div>
+<div class="ctrl"><label>搜索趋势分量<input type="range" id="fg_trend" min="0" max="100" step="1" value="22"><output id="fg_trendO">22</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">合成指数</span><strong id="fg_index">23</strong><span id="fg_indexh">—</span></div>
+<div class="ro"><span class="k">区间</span><strong id="fg_zone">极度恐惧</strong><span id="fg_zoneh">—</span></div>
+<canvas id="fgChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="fg_v">情绪温度计偏冷</strong><span id="fg_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>因果链与反馈</h3>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">F&G + Funding 因果图 · 实线=因果 · 红虚线=反馈</text>
+  <rect x="30" y="50" width="100" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="80" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">BTC 价格</text>
+  <rect x="160" y="50" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="215" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">波动/成交量</text>
+  <rect x="300" y="50" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="355" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">F&G 分量</text>
+  <rect x="440" y="50" width="100" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="490" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">F&G 指数</text>
+  <rect x="160" y="160" width="110" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="215" y="188" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">Perp 溢价</text>
+  <rect x="300" y="160" width="110" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="355" y="188" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">Funding rate</text>
+  <rect x="440" y="160" width="110" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="495" y="188" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">多头付息/去杠杆</text>
+  <rect x="200" y="250" width="140" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="270" y="278" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">社媒反向叙事</text>
+  <path d="M130 72 L160 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#fgB)"/>
+  <path d="M270 72 L300 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#fgB)"/>
+  <path d="M410 72 L440 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#fgB)"/>
+  <path d="M80 94 L80 160 L215 160 L215 94" stroke="#454c56" stroke-width="1.5" marker-end="url(#fgB)"/>
+  <path d="M270 160 L270 94" stroke="#454c56" stroke-width="1.5" marker-end="url(#fgB)"/>
+  <path d="M410 160 L355 94" stroke="#454c56" stroke-width="1.5" marker-end="url(#fgB)"/>
+  <path d="M495 204 L495 250 L340 250 L340 204" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#fgC)"/>
+  <path d="M270 250 L355 94" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#fgC)"/>
+  <path d="M495 94 L495 160" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#fgC)"/>
+  <defs>
+    <marker id="fgB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker>
+    <marker id="fgC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+  </defs>
+</svg>
+<p><strong>读图要点</strong>：<strong>价格→波动/成交量→F&amp;G</strong> 是主因果方向<span class="tag t-ana">分析</span>——指数更多是 <strong>温度计而非方向盘</strong>。溢价→funding→多头成本是衍生品机械链<span class="tag t-fact">事实</span>。红色反馈：极端恐惧社媒帖→抄底；高 funding→去杠杆→价跌。</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>隐藏关系一：价格驱动指数 &gt; 指数驱动价格</h3>
+<p>Tradelize 2023 综述<span class="tag t-ana">分析</span>：价格变动对 F&amp;G 的影响 <strong>大于</strong> F&amp;G 对价格的预测力。波动分量（25%）和动量分量（25%）合计 <strong>50%</strong> 权重直接来自价格行为——<strong>「FG=10 所以会涨」混淆了因果方向</strong>。</p>
+<h3>隐藏关系二：Funding 结构正偏 ≠ 永远牛市</h3>
+<p>公式 <code>F = P + clamp(I−P, ±0.05%)</code> 中 <strong>I=0.01%/8h</strong><span class="tag t-fact">事实</span>（OKX/BitMEX）。即使溢价 P≈0，费率仍 <strong>+0.01%</strong>——2024–25 周期 funding <strong>绝大多数时间为正</strong><span class="tag t-ana">分析</span>（BitMEX Q3 2025），这是 <strong>公式设计</strong> 而非单纯多头狂热。</p>
+<h3>隐藏关系三：跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>本领域</th>
+<th>其他领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>情绪合成指数</strong></td>
+<td>F&amp;G</td>
+<td>CNN 股市 F&amp;G、VIX</td>
+</tr>
+<tr>
+<td class="k"><strong>拥挤税</strong></td>
+<td>Funding rate</td>
+<td>股票融券费率、基差</td>
+</tr>
+<tr>
+<td class="k"><strong>反向极端</strong></td>
+<td>FG&lt;25 买入</td>
+<td>Put/Call&gt;1.2 买 SPX</td>
+</tr>
+<tr>
+<td class="k"><strong>Carry 衰减</strong></td>
+<td>funding 套利压缩</td>
+<td>外汇 carry trade 平仓</td>
+</tr>
+<tr>
+<td class="k"><strong>双轨确认</strong></td>
+<td>F&amp;G+funding 共振</td>
+<td>价量+期权 skew 共振</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · 资金费率累计算器</h3>
+<p>仓位 × 费率/8h × 期数 → 实际支付；基线 <strong>0.01%/8h = 年化 10.95%</strong>【事实】。</p>
+<div class="ctrl"><label>仓位 ($)<input type="range" id="fr_pos" min="10000" max="500000" step="5000" value="100000"><output id="fr_posO">$100,000</output></label></div>
+<div class="ctrl"><label>费率/8h (%)<input type="range" id="fr_rate" min="-0.05" max="0.15" step="0.001" value="0.05"><output id="fr_rateO">0.050%</output></label></div>
+<div class="ctrl"><label>持有期数 (×8h)<input type="range" id="fr_periods" min="1" max="9" step="1" value="3"><output id="fr_periodsO">3 期</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">累计支付</span><strong id="fr_cost">−$150</strong><span id="fr_costh">—</span></div>
+<div class="ro"><span class="k">年化 carry</span><strong id="fr_annual">54.8%</strong><span id="fr_annualh">—</span></div>
+<canvas id="frChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="fr_v">偏高但未极端</strong><span id="fr_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>四模式循环</h3>
+<ol>
+<li><strong>基线模式</strong>：funding≈<strong>0.01%/8h</strong>，F&amp;G <strong>40–60</strong> → 无极端信号</li>
+<li><strong>贪婪拥挤模式</strong>：FG&gt;<strong>75</strong> + funding z&gt;<strong>+2</strong> → 多头付高息 + 情绪过热<span class="tag t-inf">推论</span></li>
+<li><strong>恐惧 capitulation 模式</strong>：FG<strong>&lt;25</strong> + funding z<strong>&lt;−1.5</strong> → 共振反向窗口<span class="tag t-inf">推论</span></li>
+<li><strong>脱钩模式</strong>：FG 极端但 funding 中性 → <strong>单指标不可交易</strong></li>
+</ol>
+<div class="note amber"><b>2025 监管动态</b><p>OKX 2025-04 起分三批更新 funding 公式；Binance/OKX/Bybit 引入 <strong>动态结算</strong>（触及 cap 时缩至 1h）<span class="tag t-fact">事实</span>——极端费率持续时间缩短，z-score 策略需更新持有期。</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>F&amp;G + Funding 里程碑时间轴</h3>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">F&G + Funding · 演化时间轴</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="70" cy="100" r="6" fill="#1d4ed8"/><text x="70" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2018-02</text><text x="70" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">F&G 上线</text>
+  <circle cx="150" cy="100" r="6" fill="#d5342c"/><text x="150" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2021-11</text><text x="150" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">FG&gt;80 顶</text>
+  <circle cx="250" cy="100" r="6" fill="#0f8a4d"/><text x="250" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2022-11</text><text x="250" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">FG≈20 底</text>
+  <circle cx="350" cy="100" r="6" fill="#b8730a"/><text x="350" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024</text><text x="350" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">ETF 牛市 funding 基线化</text>
+  <circle cx="450" cy="100" r="6" fill="#1d4ed8"/><text x="450" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2025-04</text><text x="450" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">OKX 公式更新</text>
+  <circle cx="550" cy="100" r="6" fill="#b8730a"/><text x="550" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2025 Q3</text><text x="550" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">动态 1h 结算</text>
+  <text x="340" y="170" font-size="11" text-anchor="middle" fill="#7c848f" font-family="sans-serif">从「费率极端频繁」到「套利压缩+动态结算」</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>利益方</th>
+<th>激励</th>
+<th>对指标的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Alternative.me</strong></td>
+<td>流量/API</td>
+<td>推极端区间标题</td>
+</tr>
+<tr>
+<td class="k"><strong>交易所</strong></td>
+<td>永续成交量</td>
+<td>funding 收入来自交易者互付<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Coinglass 等</strong></td>
+<td>订阅</td>
+<td>推 z-score 警报</td>
+</tr>
+<tr>
+<td class="k"><strong>套利基金</strong></td>
+<td>压缩价差</td>
+<td>让极端 funding 更快回归</td>
+</tr>
+<tr>
+<td class="k"><strong>社媒 KOL</strong></td>
+<td>点击</td>
+<td>「FG=历史最低」</td>
+</tr>
+<tr>
+<td class="k"><strong>Ethena 类</strong></td>
+<td>Carry 收益</td>
+<td>系统性做空 perp 收 funding</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>Funding → 多头/空头的「抽水」</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">Funding rate → 多空抽水</text>
+  <rect x="40" y="50" width="200" height="50" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="140" y="80" font-size="12" text-anchor="middle" fill="#454c56" font-family="sans-serif">多头持仓 · 付 funding</text>
+  <rect x="440" y="50" width="200" height="50" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="540" y="80" font-size="12" text-anchor="middle" fill="#454c56" font-family="sans-serif">空头持仓 · 收 funding</text>
+  <rect x="240" y="130" width="200" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="340" y="160" font-size="12" text-anchor="middle" fill="#454c56" font-family="sans-serif">交易所撮合 · 每 8h 结算</text>
+  <path d="M140 100 L140 130 L240 130 L240 155" stroke="#d5342c" stroke-width="2" fill="none" marker-end="url(#fgD)"/>
+  <text x="90" y="120" font-size="10" fill="#d5342c" font-family="sans-serif">rate&gt;0 支付</text>
+  <path d="M540 100 L540 130 L440 130" stroke="#0f8a4d" stroke-width="2" fill="none" marker-end="url(#fgE)"/>
+  <text x="560" y="120" font-size="10" fill="#0f8a4d" font-family="sans-serif">收取</text>
+  <path d="M340 180 L340 220" stroke="#7c848f" stroke-width="1.5" marker-end="url(#fgF)"/>
+  <rect x="200" y="220" width="280" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="340" y="247" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">高费率 → 多头去杠杆 → 价格下行压力</text>
+  <defs>
+    <marker id="fgD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+    <marker id="fgE" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#0f8a4d"/></marker>
+    <marker id="fgF" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c848f"/></marker>
+  </defs>
+</svg>
+<p><strong>信息流</strong>：现货价→溢价→funding 公式→交易所结算→Coinglass 聚合→CT 警报→交易者行为。<strong>F&amp;G 并行路径</strong>：价→分量→alternative.me→社媒。</p>
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>「极度恐惧 10 日反弹 <strong>68%</strong>」？先减<strong>随机持币基准 56.1%</strong>（μ=50%、σ=65%）。</p>
+<div class="ctrl"><label>持有期（日）<input type="range" id="fg_T" min="5" max="40" step="5" value="10"><output id="fg_TO">10 日</output></label></div>
+<div class="ctrl"><label>信号胜率 (%)<input type="range" id="fg_ps" min="50" max="95" step="0.1" value="68.0"><output id="fg_psO">68.0%</output></label></div>
+<div class="ctrl"><label>年化漂移 μ (%)<input type="range" id="fg_mu" min="0" max="100" step="1" value="50"><output id="fg_muO">50.0%</output></label></div>
+<div class="ctrl"><label>年化波动 σ (%)<input type="range" id="fg_sg" min="30" max="100" step="1" value="65"><output id="fg_sgO">65%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="fg_base">56.1%</strong><span id="fg_baseh">—</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="fg_dp">+11.9 pp</strong><span id="fg_dph">—</span></div>
+<div class="ro"><span class="k">所需样本 n</span><strong id="fg_n">131</strong><span id="fg_nh">—</span></div>
+<canvas id="fgDriftChart" height="176" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="fg_drift_v">样本严重不足</strong><span id="fg_drift_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>判 F&amp;G 驱动分量</strong></td>
+<td>波动驱动 vs 社交驱动——质量不同</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>Funding z-score</strong></td>
+<td>|z|&gt;2 才谈拥挤</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>共振确认</strong></td>
+<td>FG 极端 + funding 同向拥挤</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>漂移剥离胜率</strong></td>
+<td>68% 默认仅 +11.9 pp（10 日）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>结构正偏意识</strong></td>
+<td>0.01% 基线 ≠ 多头狂热</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>分解 carry</strong></td>
+<td>funding-only vs price-only PnL</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>持有期匹配</strong></td>
+<td>funding 反向默认 8–24h</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>跨所对照</strong></td>
+<td>CEX 主导价格发现<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>写双指标日志</strong></td>
+<td>每日 FG + Binance funding</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>30 分钟四联检</strong></td>
+<td>§22 最小实践</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「FG&lt;25 就买入」</summary><div class="dbody"><p><strong>错因</strong>：指数 <strong>50% 权重来自价格</strong>——恐惧往往是跌出来的回声<span class="tag t-ana">分析</span>。<strong>对策</strong>：等 funding 确认空头拥挤。</p></div></details>
+<details><summary>2. 「Funding 永远正 = 永远牛市」</summary><div class="dbody"><p><strong>错因</strong>：<strong>I=0.01%/8h 结构正偏</strong><span class="tag t-fact">事实</span>。<strong>对策</strong>：看 z-score 而非符号。</p></div></details>
+<details><summary>3. 忽视调查分量暂停</summary><div class="dbody"><p><strong>错因</strong>：15% 权重悬空，再分配未公开<span class="tag t-ana">分析</span>。<strong>对策</strong>：总分变化时查分量驱动。</p></div></details>
+<details><summary>4. 把 CMC F&amp;G 当 Alternative.me</summary><div class="dbody"><p><strong>错因</strong>：CMC 含 ETH IV、SSR 等，方法论不同<span class="tag t-fact">事实</span>。<strong>对策</strong>：固定数据源。</p></div></details>
+<details><summary>5. Carry 策略不看成本</summary><div class="dbody"><p><strong>错因</strong>：预注册检验单笔成本 <strong>0.48%</strong> &gt; 均值 funding <strong>0.22%</strong><span class="tag t-ana">分析</span>。<strong>对策</strong>：分解 PnL。</p></div></details>
+<details><summary>6. Funding 反向不过拟合检验</summary><div class="dbody"><p><strong>错因</strong>：Sharpe 0.77 仅 <strong>125 笔</strong>且参数优化<span class="tag t-chk">待验证</span>。<strong>对策</strong>：walk-forward + DSR。</p></div></details>
+<details><summary>7. 胜率不算漂移</summary><div class="dbody"><p><strong>错因</strong>：10 日基准 <strong>56.1%</strong> 非 50%。<strong>对策</strong>：§12 工具。</p></div></details>
+<details><summary>8. 单所 funding 代表全市场</summary><div class="dbody"><p><strong>错因</strong>：CEX-DEX 相关差 <strong>61%</strong><span class="tag t-ana">分析</span>。<strong>对策</strong>：以 Binance 为主、跨所验证。</p></div></details>
+<details><summary>9. 极端费率持续持有 carry</summary><div class="dbody"><p><strong>错因</strong>：2025 动态 1h 结算压缩极端<span class="tag t-fact">事实</span>。<strong>对策</strong>：缩短持有期。</p></div></details>
+<details><summary>10. 忽视 basis drift</summary><div class="dbody"><p><strong>错因</strong>：SOL carry 收入 0.55% 仍亏——两腿价差 <strong>−0.23%</strong><span class="tag t-ana">分析</span>。<strong>对策</strong>：现货-永续基差监控。</p></div></details>
+<details><summary>11. 把 F&amp;G 当 altcoin 情绪</summary><div class="dbody"><p><strong>错因</strong>：官方写明 <strong>bitcoin only</strong><span class="tag t-fact">事实</span>。<strong>对策</strong>：山寨用其他指标。</p></div></details>
+<details><summary>12. 共振缺失仍交易</summary><div class="dbody"><p><strong>错因</strong>：单指标极端历史上 false positive 多<span class="tag t-inf">推论</span>。<strong>对策</strong>：§20 共振判定器。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实映射</th>
+<th>可观察代理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">极度恐惧</td>
+<td>capitulation</td>
+<td>FG&lt;25 + funding z&lt;−1.5</td>
+</tr>
+<tr>
+<td class="k">多头拥挤</td>
+<td>高杠杆付息</td>
+<td>funding z&gt;+2 + OI↑</td>
+</tr>
+<tr>
+<td class="k">情绪滞后</td>
+<td>价跌后 FG 才低</td>
+<td>波动分量骤降</td>
+</tr>
+<tr>
+<td class="k">Carry 收入</td>
+<td>收 funding</td>
+<td>空头 perp + 多头现货</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<p><strong>决策漏斗</strong>：</p>
+<ol>
+<li><strong>数据源</strong>：Alternative.me FG + Binance BTC funding</li>
+<li><strong>分量</strong>：哪一分量驱动 FG 变化？</li>
+<li><strong>拥挤</strong>：funding z 是否 |z|&gt;2？</li>
+<li><strong>共振</strong>：FG 极端与 funding 同向拥挤？</li>
+<li><strong>统计</strong>：胜率是否扣过漂移？n 是否够？</li>
+<li><strong>执行</strong>：共振→考虑反向；否则→不交易</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 观察者</summary><div class="dbody"><ul>
+<li>[ ] 读 alternative.me 当日 FG</li>
+<li>[ ] 读 Coinglass 8h funding</li>
+<li>[ ] 说出 0.01% 基线含义</li>
+</ul></div></details>
+<details><summary>L2 · 分析师</summary><div class="dbody"><ul>
+<li>[ ] 算 funding z-score</li>
+<li>[ ] §06 分量合成理解 FG=23</li>
+<li>[ ] §12 剥离 68% 胜率</li>
+</ul></div></details>
+<details><summary>L3 · 建模者</summary><div class="dbody"><ul>
+<li>[ ] 分解 funding-only / price-only PnL</li>
+<li>[ ] 回测 z&gt;2 fade（自填 n）</li>
+<li>[ ] 对照 F&amp;G 共振条件</li>
+</ul></div></details>
+<details><summary>L4 · 系统设计者</summary><div class="dbody"><ul>
+<li>[ ] 多信号：FG+funding+链上</li>
+<li>[ ] 自动共振警报</li>
+<li>[ ] 季度样本外更新</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：情绪-杠杆审计员（Sentiment &amp; Leverage Auditor）。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>等级</th>
+<th>任务</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Lv.1</td>
+<td>连续 5 天抄 FG + funding</td>
+<td>解锁「分量合成」</td>
+</tr>
+<tr>
+<td class="k">Lv.2</td>
+<td>识别一次结构正偏误导</td>
+<td>解锁「费率计算器」</td>
+</tr>
+<tr>
+<td class="k">Lv.3</td>
+<td>算 10 日真实超额</td>
+<td>解锁「漂移剥离器」</td>
+</tr>
+<tr>
+<td class="k">Lv.4</td>
+<td>判定一次共振/脱钩</td>
+<td>解锁「共振判定器」</td>
+</tr>
+<tr>
+<td class="k">Lv.5</td>
+<td>写「两指标不能回答什么」</td>
+<td>通关</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>任务</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日</td>
+<td>记录 FG + Binance funding + z</td>
+<td>7 日表</td>
+</tr>
+<tr>
+<td class="k">每周</td>
+<td>标一次共振/脱钩</td>
+<td>§20 截图</td>
+</tr>
+<tr>
+<td class="k">每月</td>
+<td>读一篇 funding 批评文</td>
+<td>3 行摘要</td>
+</tr>
+<tr>
+<td class="k">每季</td>
+<td>更新极端事件样本 n</td>
+<td>与 §12 对照</td>
+</tr>
+<tr>
+<td class="k">每年</td>
+<td>对比 carry vs fade PnL</td>
+<td>假设日志</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A · 若 FG 能预测价格</button><button class="tab" data-pane="tb1-1">情景 B · 若无结构正偏 I=0.01%</button><button class="tab" data-pane="tb1-2">情景 C · 若 carry 无成本</button><button class="tab" data-pane="tb1-3">情景 D · 若 2025 无动态结算</button></div>
+<div class="pane on" id="tb1-0"><p>极端恐惧后 10 日应显著跑赢基准——扣除漂移后仅 <strong>+11.9 pp</strong>，且 n 需 <strong>131</strong> &gt; 历史 <strong>~40</strong> 次<span class="tag t-inf">推论</span>→ <strong>预测力被严重高估</strong>。</p></div><div class="pane" id="tb1-1"><p>Funding 应在零附近对称——实际长期正偏<span class="tag t-fact">事实</span>→ <strong>「永远正=牛市」叙事被 falsified</strong>。</p></div><div class="pane" id="tb1-2"><p>Delta-neutral 收 funding 应稳定正——预注册检验 <strong>falsified</strong>（成本 0.48%&gt;收入 0.22%）<span class="tag t-ana">分析</span>。</p></div><div class="pane" id="tb1-3"><p>极端 funding 持续数天——动态 1h 结算缩短窗口<span class="tag t-fact">事实</span>→ z&gt;2 策略持有期须缩短。</p></div>
+<div class="tool">
+<h3>工具 · 极端共振判定器</h3>
+<p>F&G 极端 + funding z-score → 10 日内均值回归概率（模型估计）。默认 <strong>FG=18 · z=−2.5 · 持有 8h</strong>。</p>
+<div class="ctrl"><label>F&G 指数<input type="range" id="fg_extreme" min="0" max="100" step="1" value="18"><output id="fg_extremeO">18</output></label></div>
+<div class="ctrl"><label>Funding z-score<input type="range" id="fr_z" min="-4" max="4" step="0.1" value="-2.5"><output id="fr_zO">−2.5σ</output></label></div>
+<div class="ctrl"><label>预期持有 (h)<input type="range" id="fr_hold" min="8" max="48" step="8" value="8"><output id="fr_holdO">8h</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">共振概率</span><strong id="fg_conf">68.0%</strong><span id="fg_confh">—</span></div>
+<div class="ro"><span class="k">信号类型</span><strong id="fg_sig">恐惧+空头拥挤</strong><span id="fg_sigh">—</span></div>
+<canvas id="fgConfChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="fg_conf_v">中等共振</strong><span id="fg_conf_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>目标</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 会读数</strong></td>
+<td>3 天</td>
+<td>FG + funding 日表</td>
+<td>口算年化 carry</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 会分解</strong></td>
+<td>1 周</td>
+<td>分量 + z-score</td>
+<td>§06–§08 工具</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 会检验</strong></td>
+<td>2 周</td>
+<td>漂移剥离 + 共振</td>
+<td>§12–§20 工具</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 会迭代</strong></td>
+<td>1 月+</td>
+<td>双指标系统</td>
+<td>2 月日志</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>任务</strong>：「FG + Funding 四联检」——读、算、共振、漂移。</p>
+<ol>
+<li><strong>7 分钟 · 读数</strong>：打开 <a href="https://alternative.me/crypto/fear-and-greed-index/">alternative.me/crypto/fear-and-greed-index</a> 抄当日 FG；Coinglass 抄 Binance BTC 8h funding。</li>
+<li><strong>8 分钟 · 分量</strong>：§06 工具，设波动 <strong>30</strong>、动量 <strong>20</strong>、社交 <strong>36</strong>、主导 <strong>30</strong>、搜索 <strong>22</strong> → 合成 <strong>23</strong>（极度恐惧）。</li>
+<li><strong>8 分钟 · 费率</strong>：§08 工具，仓位 <strong>$100,000</strong>、费率 <strong>0.05%/8h</strong>、<strong>3 期</strong> → 支付 <strong>$150</strong>、年化 <strong>54.8%</strong>。</li>
+<li><strong>7 分钟 · 共振+漂移</strong>：§20 设 FG=<strong>18</strong>、z=<strong>−2.5</strong> → 共振 <strong>68.0%</strong>；§12 设 10 日 <strong>68%</strong> → 基准 <strong>56.1%</strong>，超额 <strong>+11.9 pp</strong>，需 <strong>n=131</strong>。</li>
+</ol>
+<p><strong>验证</strong>：四步数字与页面默认读数误差 <strong>&lt;0.2 pp</strong>；结论必含「样本不足，不交易」。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>F&amp;G 机制</td>
+<td>Alternative.me 五分量 + 调查暂停</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>Funding 公式</td>
+<td>OKX 文档 F=P+clamp(I−P)</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>结构正偏</td>
+<td>0.01% 基线 vs z-score</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>工具</td>
+<td>§06–§12 四个模型</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>批评</td>
+<td>carry falsification 摘要</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>共振案例</td>
+<td>2022-11 底 vs 2021-11 顶</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>合成</td>
+<td>1 页「何时共振/脱钩」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<p><strong>Week 1</strong>：机制 + 日读数 + 分量合成（L1）
+<strong>Week 2</strong>：Funding 公式 + z-score + 费率计算（L2）
+<strong>Week 3</strong>：漂移剥离 + 共振判定 + 批评文献（L3）
+<strong>Week 4</strong>：个人双指标日志 + 样本更新（L4）</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>最大坑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>F&amp;G 五分量</strong></td>
+<td>加权 0–100</td>
+<td>50% 来自价格</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>Funding 公式</strong></td>
+<td>P + clamp(I−P)</td>
+<td>结构正偏</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>Funding z</strong></td>
+<td>拥挤度量</td>
+<td>忽略基线</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>年化 carry</strong></td>
+<td>rate×3×365</td>
+<td>与 z 混淆</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>共振条件</strong></td>
+<td>FG 极端 + z 极端</td>
+<td>单指标交易</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>对照基准</strong></td>
+<td>随机持币胜率</td>
+<td>μ,σ 敏感</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>Carry 分解</strong></td>
+<td>funding vs price PnL</td>
+<td>忽视 basis</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>Fade 拥挤</strong></td>
+<td>z&gt;2 反向</td>
+<td>过拟合</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>动态结算</strong></td>
+<td>1h 压缩极端</td>
+<td>持有期过时</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>因果方向</strong></td>
+<td>价→FG</td>
+<td>反向因果幻觉</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>日频</summary><div class="dbody"><ul>
+<li>今日 FG 多少？哪分量变化最大？</li>
+<li>Binance 8h funding？z-score？</li>
+<li>年化 carry 是否 &gt;30%？</li>
+</ul></div></details>
+<details><summary>共振</summary><div class="dbody"><ul>
+<li>FG 是否 &lt;25 或 &gt;75？</li>
+<li>funding z 是否 |z|&gt;2？</li>
+<li>两指标是否同向拥挤？</li>
+</ul></div></details>
+<details><summary>统计</summary><div class="dbody"><ul>
+<li>信号胜率是否扣过漂移？</li>
+<li>样本 n 是否 ≥ 证明显需？</li>
+<li>carry 是否扣过 0.48% 成本？</li>
+</ul></div></details>
+<details><summary>决策</summary><div class="dbody"><ul>
+<li>共振 or 脱钩？</li>
+<li>持有期是否匹配结算频率？</li>
+<li>≥3 独立信号是否一致？</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>F&amp;G 分量实时拆解 API</strong>：调查暂停后权重如何再分配？<span class="tag t-chk">待验证</span></li>
+<li><strong>FG+funding+ETF 流三指标合成</strong>：预测力是否超单指标？<span class="tag t-hyp">假设</span></li>
+<li><strong>动态结算后 z&gt;2 策略持有期优化</strong>：8h vs 24h 样本外对比</li>
+<li><strong>CEX-DEX funding 价差</strong>：MDPI 两阶层结构的可交易子集</li>
+<li><strong>Ethena 规模 vs funding 压缩</strong>：系统性 carry 的边际效应</li>
+</ol>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">F&amp;G 五分量权重</td>
+<td>方法论</td>
+<td>alternative.me 官网</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">调查 15% 暂停</td>
+<td>方法论</td>
+<td>alternative.me / Entropikaizen 2025</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">BTC-only 指数</td>
+<td>文档</td>
+<td>alternative.me</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Funding 公式</td>
+<td>交易所文档</td>
+<td>OKX 2025-04 公告</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">I=0.01%/8h 基线</td>
+<td>行业</td>
+<td>BitMEX Q3 2025 报告</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">永续占期货 93%</td>
+<td>论文</td>
+<td>MDPI 2025</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Carry falsification</td>
+<td>预注册回测</td>
+<td>Mykola-Quant 2025</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">跨所套利 17% 价差</td>
+<td>论文</td>
+<td>MDPI 2025</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">动态 1h 结算</td>
+<td>交易所</td>
+<td>Binance 2025-05 / OKX 2025-09</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">价格驱动 F&amp;G</td>
+<td>综述</td>
+<td>Tradelize 2023</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">z&gt;2 fade Sharpe 0.77</td>
+<td>学术项目</td>
+<td>CFRM Strategy Project<span class="tag t-chk">待验证</span></td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">CMC F&amp;G 差异</td>
+<td>对比</td>
+<td>CryptoSlate 2025</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供研究与学习，<strong>不构成任何投资建议</strong>。比特币与永续合约均可出现极端波动、流动性缺口与强制平仓；恐惧贪婪指数、资金费率及任何共振统计均<strong>不保证</strong>未来价格路径。历史极端事件样本不足，请勿依据单一情绪或费率读数加杠杆或集中配置。永续合约在多国受严格监管或禁止，请遵守当地法律法规。作者不对使用本手册造成的任何损失负责。</p>
+</section>
+<footer>  <p>《BTC-恐惧贪婪指数与资金费率 · 全景认知与实践操作手册》 · 生成于 2026-09-17 · 耗时 4 分 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC-恐惧贪婪指数与资金费率》主题脚本
+   四个可调模型：
+     1. F&G 分量合成器    — 五分量加权 → 0–100 指数
+     2. 资金费率累计算器  — 仓位 × 费率 × 期数 → 成本/收入
+     3. 漂移剥离器        — 极端恐惧反弹胜率 vs 随机持币基准
+     4. 极端共振判定器    — F&G + funding z → 反向信号质量
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  /* ══ 工具 1 · F&G 分量合成器 ══
+     权重：波动25% 动量25% 社交15% 主导10% 搜索10%（调查15%已暂停） */
+  (function fgSynth() {
+    var volEl = $('fg_vol'), momEl = $('fg_mom'), socEl = $('fg_soc');
+    var domEl = $('fg_dom'), trendEl = $('fg_trend');
+    /* 默认分量 → 合成 ≈23（极度恐惧区） */
+    if (!volEl || !momEl || !socEl || !domEl || !trendEl) return;
+    var volO = $('fg_volO'), momO = $('fg_momO'), socO = $('fg_socO');
+    var domO = $('fg_domO'), trendO = $('fg_trendO');
+    var idxEl = $('fg_index'), idxHEl = $('fg_indexh');
+    var zoneEl = $('fg_zone'), zoneHEl = $('fg_zoneh');
+    var vEl = $('fg_v'), vhEl = $('fg_vh');
+    var cv = $('fgChart');
+    var W = [0.25, 0.25, 0.15, 0.10, 0.10];
+
+    function zone(s) {
+      if (s <= 24) return { t: '极度恐惧', c: '#0f8a4d', h: '0–24 · 反向叙事常在此激活', v: '情绪温度计偏冷', vh: '须配 funding 与链上' };
+      if (s <= 49) return { t: '恐惧', c: '#454c56', h: '25–49 · 偏弱但未极端', v: '观察分量来源', vh: '波动驱动 vs 社交驱动' };
+      if (s <= 74) return { t: '贪婪', c: '#b8730a', h: '50–74 · 偏热', v: '顺周期情绪', vh: '勿单独做空' };
+      return { t: '极度贪婪', c: '#d5342c', h: '75–100 · 过热警告区', v: '反向空头叙事区', vh: '2021 顶常>80' };
+    }
+
+    function draw(scores, total) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 88, r: 20, t: 24, b: 46 };
+      var iw = w - pad.l - pad.r;
+      var y1 = h - 46;
+      var labels = ['波动', '动量', '社交', '主导', '搜索'];
+      var cols = ['#1d4ed8', '#b8730a', '#7c3aed', '#0f8a4d', '#d5342c'];
+      var barH = 22, gap = 8;
+      var maxS = 100;
+      scores.forEach(function (sc, i) {
+        var y = pad.t + i * (barH + gap);
+        var bw = (sc / maxS) * iw;
+        ctx.fillStyle = '#eef1f5';
+        ctx.fillRect(pad.l, y, iw, barH);
+        ctx.fillStyle = cols[i];
+        ctx.fillRect(pad.l, y, bw, barH);
+        ctx.fillStyle = '#454c56';
+        ctx.font = '11px -apple-system,sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(labels[i], pad.l - 8, y + 15);
+        ctx.textAlign = 'left';
+        ctx.fillText(sc.toFixed(0), pad.l + bw + 4, y + 15);
+      });
+      var tx = pad.l + (total / maxS) * iw;
+      ctx.strokeStyle = '#15181d';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(tx, pad.t - 4); ctx.lineTo(tx, pad.t + 5 * (barH + gap)); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('合成 ' + total.toFixed(0), tx, pad.t - 8);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillText('各分量 0–100 · 加权合成 F&G 指数', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var scores = [
+        parseFloat(volEl.value), parseFloat(momEl.value),
+        parseFloat(socEl.value), parseFloat(domEl.value),
+        parseFloat(trendEl.value)
+      ];
+      var total = 0;
+      for (var i = 0; i < 5; i++) total += scores[i] * W[i];
+      total = clamp(total, 0, 100);
+      var z = zone(total);
+      txt(volO, scores[0].toFixed(0));
+      txt(momO, scores[1].toFixed(0));
+      txt(socO, scores[2].toFixed(0));
+      txt(domO, scores[3].toFixed(0));
+      txt(trendO, scores[4].toFixed(0));
+      txt(idxEl, total.toFixed(0));
+      txt(idxHEl, '五分量加权（调查 15% 已暂停不计）');
+      txt(zoneEl, z.t);
+      tint(zoneEl, z.c);
+      txt(zoneHEl, z.h);
+      txt(vEl, z.v);
+      txt(vhEl, z.vh);
+      draw(scores, total);
+    }
+
+    [volEl, momEl, socEl, domEl, trendEl].forEach(function (el) {
+      el.addEventListener('input', update);
+    });
+    update();
+  })();
+
+  /* ══ 工具 2 · 资金费率累计算器 ══ */
+  (function frCalc() {
+    var posEl = $('fr_pos'), rateEl = $('fr_rate'), perEl = $('fr_periods');
+    if (!posEl || !rateEl || !perEl) return;
+    var posO = $('fr_posO'), rateO = $('fr_rateO'), perO = $('fr_periodsO');
+    var costEl = $('fr_cost'), costHEl = $('fr_costh');
+    var annualEl = $('fr_annual'), annualHEl = $('fr_annualh');
+    var vEl = $('fr_v'), vhEl = $('fr_vh');
+    var cv = $('frChart');
+
+    function update() {
+      var pos = parseFloat(posEl.value);
+      var rate = parseFloat(rateEl.value) / 100;
+      var periods = parseInt(perEl.value, 10);
+      var cost = pos * rate * periods;
+      var daily = rate * 3;
+      var annual = daily * 365 * 100;
+      var isLongPay = rate > 0;
+      txt(posO, '$' + pos.toLocaleString('en-US'));
+      txt(rateO, (rate * 100).toFixed(3) + '%');
+      txt(perO, periods + ' 期');
+      txt(costEl, (isLongPay ? '−' : '+') + '$' + Math.abs(Math.round(cost)).toLocaleString('en-US'));
+      tint(costEl, isLongPay ? '#0f8a4d' : '#d5342c');
+      txt(costHEl, (isLongPay ? '多头支付' : '空头支付') + ' · ' + periods + '×8h');
+      txt(annualEl, annual.toFixed(1) + '%');
+      tint(annualEl, annual > 30 ? '#d5342c' : annual > 15 ? '#b8730a' : '#454c56');
+      txt(annualHEl, '日化 ' + (daily * 100).toFixed(3) + '% × 365');
+      if (annual > 50) {
+        txt(vEl, '杠杆多头难持续');
+        txt(vhEl, '年化>' + annual.toFixed(0) + '%——拥挤平仓风险↑');
+      } else if (annual > 15) {
+        txt(vEl, '偏高但未极端');
+        txt(vhEl, '关注 z-score 是否>2');
+      } else {
+        txt(vEl, '接近基线 10.95%');
+        txt(vhEl, '0.01%/8h 结构正偏——常态');
+      }
+      drawFr(cv, rate * 100, annual);
+    }
+
+    function drawFr(cv, ratePct, annual) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxA = 120;
+      var sx = function (v) { return pad.l + (v / maxA) * iw; };
+      ctx.fillStyle = '#f4f6f9';
+      ctx.fillRect(pad.l, pad.t, iw, ih);
+      ctx.fillStyle = '#fff7e6';
+      ctx.fillRect(sx(0), pad.t, sx(10.95) - sx(0), ih);
+      ctx.fillStyle = '#fdf3f2';
+      ctx.fillRect(sx(30), pad.t, sx(maxA) - sx(30), ih);
+      [10.95, 30, 60].forEach(function (ref) {
+        var x = sx(ref);
+        ctx.strokeStyle = ref === 10.95 ? '#0f8a4d' : '#c9d0d9';
+        ctx.setLineDash(ref === 10.95 ? [4, 3] : []);
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(ref + '%', x, y1 + 13);
+      });
+      var ax = sx(Math.min(annual, maxA));
+      ctx.strokeStyle = annual > 30 ? '#d5342c' : '#1d4ed8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(ax, pad.t); ctx.lineTo(ax, y1); ctx.stroke();
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 12px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(annual.toFixed(1) + '% 年化', ax, pad.t + ih * 0.5 - 14);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillText('费率 ' + ratePct.toFixed(3) + '%/8h → 年化 carry', pad.l + iw / 2, y1 + 31);
+    }
+
+    posEl.addEventListener('input', update);
+    rateEl.addEventListener('input', update);
+    perEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 3 · 漂移剥离器 ══ */
+  (function driftStrip() {
+    var TEl = $('fg_T'), psEl = $('fg_ps'), muEl = $('fg_mu'), sgEl = $('fg_sg');
+    if (!TEl || !psEl || !muEl || !sgEl) return;
+    var TO = $('fg_TO'), psO = $('fg_psO'), muO = $('fg_muO'), sgO = $('fg_sgO');
+    var baseEl = $('fg_base'), baseHEl = $('fg_baseh');
+    var dpEl = $('fg_dp'), dpHEl = $('fg_dph');
+    var nEl = $('fg_n'), nHEl = $('fg_nh');
+    var vEl = $('fg_drift_v'), vhEl = $('fg_drift_vh');
+    var cv = $('fgDriftChart');
+
+    function pBase(mu, sig, T) {
+      return ncdf(mu * (T / 252) / (sig * Math.sqrt(T / 252)));
+    }
+
+    function nReq(pb, ps) {
+      if (ps <= pb) return Infinity;
+      var a = 1.96 * Math.sqrt(pb * (1 - pb));
+      var b = 0.84 * Math.sqrt(ps * (1 - ps));
+      return Math.ceil(Math.pow(a + b, 2) / Math.pow(ps - pb, 2));
+    }
+
+    function update() {
+      var T = parseInt(TEl.value, 10);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sig = parseFloat(sgEl.value) / 100;
+      var pb = pBase(mu, sig, T);
+      var dp = ps - pb;
+      var n = nReq(pb, ps);
+      txt(TO, T + ' 日');
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(1) + '%');
+      txt(sgO, (sig * 100).toFixed(0) + '%');
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(baseHEl, 'Φ(μ·√T/σ) · T=' + T);
+      txt(dpEl, (dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp');
+      tint(dpEl, dp >= 0.05 ? '#d5342c' : dp >= 0.02 ? '#b8730a' : '#7c848f');
+      txt(dpHEl, '信号胜率 − 随机持币基准');
+      txt(nEl, isFinite(n) ? String(n) : '∞');
+      txt(nHEl, 'α=0.05 · power=80%');
+      if (!isFinite(n) || n > 80) {
+        txt(vEl, '样本严重不足');
+        txt(vhEl, '极端恐惧事件 n≈40 << 需 n=' + (isFinite(n) ? n : '∞'));
+      } else if (n > 40) {
+        txt(vEl, '超额可观但难证实');
+        txt(vhEl, '需 n=' + n + ' · 历史样本不够');
+      } else {
+        txt(vEl, '统计上可检验');
+        txt(vhEl, '但仍需 out-of-sample');
+      }
+      drawDrift(cv, pb, ps, T);
+    }
+
+    function drawDrift(cv, pb, ps, T) {
+      var s = fit(cv, 176);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 20, t: 20, b: 40 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 40;
+      var sx = function (v) { return pad.l + v * iw; };
+      ctx.fillStyle = '#eef1f5';
+      ctx.fillRect(pad.l, pad.t, iw, ih);
+      var bx = sx(pb), sx2 = sx(ps);
+      ctx.fillStyle = '#eaf0ff';
+      ctx.fillRect(bx, pad.t, sx2 - bx, ih);
+      ctx.strokeStyle = '#0f8a4d';
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(bx, pad.t); ctx.lineTo(bx, y1); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#0f8a4d';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('基准 ' + (pb * 100).toFixed(1) + '%', bx, y1 + 13);
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillRect(pad.l, pad.t + ih * 0.55, sx2 - pad.l, 20);
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 11px -apple-system,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('信号 ' + (ps * 100).toFixed(1) + '% · +' + ((ps - pb) * 100).toFixed(1) + 'pp · T=' + T + 'd', pad.l + 4, pad.t + ih * 0.55 + 14);
+    }
+
+    TEl.addEventListener('input', update);
+    psEl.addEventListener('input', update);
+    muEl.addEventListener('input', update);
+    sgEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 4 · 极端共振判定器 ══
+     F&G 极端 + funding z → 反向信号质量 */
+  (function confluence() {
+    var fgEl = $('fg_extreme'), zEl = $('fr_z'), holdEl = $('fr_hold');
+    if (!fgEl || !zEl || !holdEl) return;
+    var fgO = $('fg_extremeO'), zO = $('fr_zO'), holdO = $('fr_holdO');
+    var confEl = $('fg_conf'), confHEl = $('fg_confh');
+    var sigEl = $('fg_sig'), sigHEl = $('fg_sigh');
+    var vEl = $('fg_conf_v'), vhEl = $('fg_conf_vh');
+    var cv = $('fgConfChart');
+
+    function quality(fg, z, hold) {
+      var q = 0.40;
+      if (fg <= 15) q += 0.22;
+      else if (fg <= 24) q += 0.14;
+      else if (fg <= 35) q += 0.06;
+      else if (fg >= 75) q += 0.14;
+      else if (fg >= 85) q += 0.20;
+      if (z <= -2) q += 0.12;
+      else if (z <= -1) q += 0.05;
+      else if (z >= 2) q += 0.12;
+      else if (z >= 1) q += 0.05;
+      if (hold >= 16) q += 0.04;
+      else if (hold >= 8) q += 0.02;
+      return clamp(q, 0.35, 0.88);
+    }
+
+    function sigType(fg, z) {
+      if (fg <= 24 && z <= -1.5) return { t: '恐惧+空头拥挤', h: '经典反向做多共振', c: '#0f8a4d' };
+      if (fg <= 24) return { t: '恐惧但未拥挤', h: 'F&G 单独——质量中等', c: '#454c56' };
+      if (fg >= 75 && z >= 1.5) return { t: '贪婪+多头拥挤', h: '反向做空共振', c: '#d5342c' };
+      if (fg >= 75) return { t: '贪婪但未拥挤', h: '费率未确认——谨慎', c: '#b8730a' };
+      if (Math.abs(z) >= 2) return { t: '费率极端中性 F&G', h: '仅 fade 拥挤侧', c: '#1d4ed8' };
+      return { t: '无极端共振', h: '两指标均未极端——不交易', c: '#7c848f' };
+    }
+
+    function verdict(q, fg, z) {
+      if (fg > 24 && fg < 75 && Math.abs(z) < 1.5) return { t: '信号关闭', h: '等待极端共振' };
+      if (q >= 0.72) return { t: '高共振质量', h: '结构类似 2022-11 底 / 2021-11 顶' };
+      if (q >= 0.58) return { t: '中等共振', h: '须配链上/宏观确认' };
+      return { t: '弱共振', h: '单指标极端不够' };
+    }
+
+    function update() {
+      var fg = parseFloat(fgEl.value);
+      var z = parseFloat(zEl.value);
+      var hold = parseInt(holdEl.value, 10);
+      var q = quality(fg, z, hold);
+      var st = sigType(fg, z);
+      var vd = verdict(q, fg, z);
+      txt(fgO, String(Math.round(fg)));
+      txt(zO, (z >= 0 ? '+' : '') + z.toFixed(1) + 'σ');
+      txt(holdO, hold + 'h');
+      txt(confEl, (q * 100).toFixed(1) + '%');
+      txt(confHEl, '10 日内均值回归概率（模型）');
+      txt(sigEl, st.t);
+      tint(sigEl, st.c);
+      txt(sigHEl, st.h);
+      txt(vEl, vd.t);
+      txt(vhEl, vd.h);
+      drawConf(cv, fg, z, q);
+    }
+
+    function drawConf(cv, fg, z, q) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 48, t: 28, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var cx = pad.l + (fg / 100) * iw;
+      var cy = pad.t + ih * 0.5 - (z / 4) * ih * 0.4;
+      ctx.fillStyle = '#f4f6f9';
+      ctx.fillRect(pad.l, pad.t, iw, ih);
+      ctx.fillStyle = 'rgba(15,138,77,0.12)';
+      ctx.fillRect(pad.l, pad.t + ih * 0.55, iw * 0.28, ih * 0.45);
+      ctx.fillStyle = 'rgba(213,52,44,0.12)';
+      ctx.fillRect(pad.l + iw * 0.72, pad.t, iw * 0.28, ih * 0.45);
+      ctx.strokeStyle = '#c9d0d9';
+      ctx.beginPath(); ctx.moveTo(pad.l, cy); ctx.lineTo(pad.l + iw, cy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx, pad.t); ctx.lineTo(cx, y1); ctx.stroke();
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('F&G', pad.l + iw / 2, y1 + 31);
+      ctx.save();
+      ctx.translate(pad.l - 12, pad.t + ih / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('funding z', 0, 0);
+      ctx.restore();
+      var r = 8 + q * 14;
+      ctx.fillStyle = q >= 0.72 ? '#0f8a4d' : q >= 0.58 ? '#b8730a' : '#7c848f';
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText((q * 100).toFixed(0) + '%', cx, cy + 4);
+      ctx.fillStyle = '#15181d';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('FG=' + Math.round(fg) + ' · z=' + z.toFixed(1), pad.l + 4, pad.t + 14);
+    }
+
+    fgEl.addEventListener('input', update);
+    zEl.addEventListener('input', update);
+    holdEl.addEventListener('input', update);
+    update();
+  })();
+})();
+</script>
+</body>
+</html>

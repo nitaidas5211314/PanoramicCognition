@@ -401,11 +401,14 @@
     {
       "slug": "BTC-恐惧贪婪指数与资金费率",
       "title": "BTC-恐惧贪婪指数与资金费率",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-17 00:53:40",
+      "finished": "2026-09-17 00:57:40",
+      "duration_sec": 240,
+      "outputs": [
+        "reports/BTC-恐惧贪婪指数与资金费率.html",
+        "reports/BTC-恐惧贪婪指数与资金费率.md"
+      ],
       "error": null
     },
     {
@@ -626,7 +629,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 00:53",
+  "updated": "2026-09-17 00:57",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
