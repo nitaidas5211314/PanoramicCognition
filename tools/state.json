@@ -349,11 +349,14 @@
     {
       "slug": "BTC-矿工成本线 - 矿工底",
       "title": "BTC-矿工成本线 / 矿工底",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-17 00:35:50",
+      "finished": "2026-09-17 00:39:34",
+      "duration_sec": 224,
+      "outputs": [
+        "reports/BTC-矿工成本线 - 矿工底.html",
+        "reports/BTC-矿工成本线 - 矿工底.md"
+      ],
       "error": null
     },
     {
@@ -614,7 +617,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 00:35",
+  "updated": "2026-09-17 00:39",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

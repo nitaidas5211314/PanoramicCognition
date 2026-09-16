@@ -1,0 +1,662 @@
+---
+slug: BTC-矿工成本线 - 矿工底
+title: BTC-矿工成本线 / 矿工底
+subtitle: 用<strong>现金成本线 + Hash Ribbons + Puell</strong>读矿工 capitulation——成本线不是铁底，<strong>恢复交叉</strong>才是可操作信号
+brand_sub: Bitcoin × Mining Economics × On-Chain
+kicker: Panoramic Cognition & Practice Engine
+chips: 28 节 · 交互式 | 4 个可调模型 | 数据截至 2026-09 | 非投资建议
+date: 2026-09-17
+data_asof: 2026 年 9 月
+tags: [比特币, 矿工, Hash Ribbons, Puell, hashprice, 成本线]
+theme_js_file: BTC-矿工成本线 - 矿工底.js
+md_raw: hint
+md_raw_hint: （此处含交互模型与示意图，见 HTML 版）
+footer_note: 本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。
+---
+
+<!-- nav:入口 -->
+
+# 一句话理解
+
+**矿工成本线**回答「挖 1 枚 BTC 要花多少钱」；**矿工底**回答「当挖不动时，抛压与算力出清是否接近局部底」。【事实】2026 年 9 月 JPMorgan 估算上市矿商**全成本约 ¥546,000（$78,000）**，BTC 现货约 **¥539,000（$77,000）**，价低于成本已持续约 **5 个月**【待验证】。但成本线是**慢变量、异质分布**——别在「跌破成本」当天梭哈；Hash Ribbons 的**可操作规则**是：30 日算力均线**重新上穿** 60 日均线（恢复交叉），而非 capitulation 开始【分析】。
+
+# 这个领域到底是什么
+
+## 一句话定位
+
+「BTC-矿工成本线 / 矿工底」研究的是：**比特币挖矿经济学如何把算力、难度、电价与区块奖励编织成一条「供给侧成本锚」，以及这条锚在周期底部识别中的有效边界**。它横跨链上算力数据、矿商财报与宏观流动性——不是单一指标，而是一套**供给侧清算叙事**。
+
+:::note red 先划清边界
+本手册**不提供**「跌破成本就抄底」的交易指令。矿工成本是**分布**（高效矿场 $55k vs 老旧矿机 $95k），链上「生产成本」模型（如 checkonchain Difficulty Regression）与**现金成本**口径不同。任何胜率都要和**随机持币基准**比。
+:::
+
+## 回答 15 个问题
+
+| # | 问题 | 回答 |
+|---|---|---|
+| 1 | 研究什么 | 现金/全成本线、hashprice、难度调整、Hash Ribbons、Puell、 capitulation |
+| 2 | 边界在哪 | 不含矿池内部分配；不预测监管；不替代现货订单流分析 |
+| 3 | 核心对象 | 算力、难度、区块奖励、电价、矿机效率、矿工储备抛售 |
+| 4 | 参与者 | 矿工、矿池、ASIC 厂商、电力商、链上数据商、AI/HPC 转型者 |
+| 5 | 关键变量 | Hashprice、Puell、成本线、算力 30/60 MA、难度、费率占比 |
+| 6 | 可观察的 | 全网算力、难度、矿商财报成本、hashprice 指数、矿工流出 |
+| 7 | 不可观察但可推断 | 私有矿场真实电价、场外矿机折旧、暗池抛售 |
+| 8 | 谁影响谁 | 价↓→利润↓→关机→算力↓→难度↓（滞后）→hashprice 企稳 |
+| 9 | 因果 | 难度每 2016 块重算 = 【事实】；价<成本→底 = 【推论】 |
+| 10 | 只是相关 | Hash Ribbon 买入与反弹高度共线，非独立因果 |
+| 11 | 表层现象 | 「跌破 $78k 就是铁底」社交媒体口号 |
+| 12 | 底层机制 | 边际矿工出清 + 强制抛售 + 难度滞后调节 hashprice |
+| 13 | 反馈 | 价跌→抛 BTC 付电费→价更跌；算力出清→难度降→利润修复 |
+| 14 | 时间延迟 | 难度调整 **~14 天**一轮；财报成本滞后 **1–2 季度** |
+| 15 | 正负反馈 | 负：死亡螺旋抛售；正：出清后 hashprice 反弹吸引算力回流 |
+
+## 三条「成本线」别混用
+
+| 口径 | 定义 | 2026-09 参考【待验证】 | 适用场景 |
+|---|---|---|---|
+| **现金成本** | 电费 + 运营，不含折旧 | CoinShares 上市矿商加权 **~$76k–$80k** | 短期关机决策 |
+| **全成本** | 现金 + 折旧 + 管理费用 | JPMorgan **~$78,000** | 上市矿商盈亏 |
+| **链上生产成本** | 难度回归模型（非财报） | checkonchain **~$66,000** | 宏观估值锚，非现金 |
+
+# 为什么值得研究
+
+## 理由一：矿工是 BTC 唯一的「原生供给侧」
+
+ETF 与法币买盘是需求侧；**矿工是唯一持续将新 BTC 注入流通层的原生卖方**【事实】。当 **~20%** 全球产能亏损运营时【待验证】，强制抛售与算力出清会同时改变**供给节奏**与**安全预算**叙事——这是其他链上指标（MVRV、HODL Wave）看不到的切面。
+
+## 理由二：2025–2026 是「后减半 + AI 转型」压力测试
+
+第四次减半（2024-04）后区块补贴 **3.125 BTC**；2025-10 价从 **$126k** 高点回落，hashprice 于 2026-06 跌至 **$27.7/PH/s/日** 历史低位【待验证】。上市矿商 Q1 2026 合计抛售 **~32,000 BTC** 创纪录【待验证】——同时 **AI/HPC** 托管收入占比上升，**算力与价格的关系正在变形**【分析】。
+
+## 理由三：学会「信号 ≠ 时点」
+
+| 持有期 | BTC μ=50%/年 σ=65% | **随机持币基准** | Hash Ribbon 买入 ~64% 胜率【待验证】真实超额 |
+|---|---|---|---|
+| 30 日 | — | **55.8%** | 表面 +8.2 pp → 真实 **+8.2 pp** |
+| 90 日 | — | **71.4%** | 表面 −7.4 pp → 真实 **−7.4 pp**（跑输基准） |
+| 180 日 | — | **77.9%** | 需更长窗口才显优势 |
+
+**capitulation 开始往往早于底**——2026-02 价仍可从 $90k 跌至 **~$60k**【待验证】。可操作边沿在**恢复交叉**，不在「ribbon 变红」。
+
+<!-- nav:世界模型 -->
+
+# 世界地图
+
+## 九层结构：从 nonce 猜测，到「矿工底」叙事
+
+:::raw
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">矿工成本线 · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">越靠上越「协议硬规则」，越靠下越「指标/叙事可选择」</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 共识层</text>
+  <text x="148" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">PoW · 10 分钟出块 · 补贴 3.125 BTC</text>
+  <text x="148" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">失效：费率占比仍 &lt;2%【待验证】</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 难度调整层</text>
+  <text x="148" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">每 2016 块重算 · 单轮调整上限 ±4×</text>
+  <text x="148" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">滞后 ~14 天 · 2026 β≈0.62【待验证】</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 算力商品层</text>
+  <text x="148" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">Hashrate ~1020 EH/s · ASIC 效率竞赛</text>
+  <text x="148" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">峰值 1160 EH/s（2025-10）→ 850 EH/s（2026-02）</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 单位经济学层</text>
+  <text x="148" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">Hashprice $/PH/s/日 · 2026-06 低 $27.7</text>
+  <text x="148" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">回升至 ~$38（BTC $77k 时）【待验证】</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 成本线层</text>
+  <text x="148" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">现金/全成本 ~$76k–$78k · 链上模型 ~$66k</text>
+  <text x="148" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">口径混用是最常见误读</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 抛售压力层</text>
+  <text x="148" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">矿工储备流出 · Q1 2026 上市矿商售 ~32k BTC</text>
+  <text x="148" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">亏损期「卖币付电费」自我强化</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 指标层</text>
+  <text x="148" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">Hash Ribbons · Puell · 矿工储备</text>
+  <text x="148" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">恢复交叉 &gt; capitulation 开始</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 结构变迁层</text>
+  <text x="148" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">AI/HPC 托管 · 算力离线升级 ≠ 纯 capitulation</text>
+  <text x="148" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">2026 年部分矿商 AI 收入可达 70%【待验证】</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="148" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">多信号 + 漂移剥离 + 样本量意识</text>
+  <text x="148" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">成本线当「压力仪表盘」，不当单点触发器</text>
+</svg>
+:::
+
+# 核心概念地图
+
+## 抽象 ↔ 机制 ↔ 操作
+
+:::raw
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">矿工底 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 边际供给出清</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• commodity 成本曲线</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 安全预算</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 均值回归叙事</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 价&lt;成本→关机</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 难度滞后下调</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• hashprice 修复</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 强制抛售反馈</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#b8dcc8" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 读 Hash Ribbons 恢复</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• Puell &lt;0.75 确认</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 配 MVRV/ETF 流</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 漂移剥离胜率</text>
+  <path d="M214 146 L240 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#mcA)"/>
+  <path d="M440 146 L466 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#mcA)"/>
+  <defs><marker id="mcA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c848f"/></marker></defs>
+</svg>
+:::
+
+# 核心参与者
+
+| 角色 | 做什么 | 与成本线/矿工底的关系 |
+|---|---|---|
+| **Charles Edwards** | 2019 提出 Hash Ribbons | 30/60 日算力 MA 框架【事实】 |
+| **David Puell** | Puell Multiple | 矿工日收入 / 365 日均【事实】 |
+| **上市矿商** (MARA, RIOT, CLSK…) | 挖 + 卖 + 转型 AI | Q1 2026 售币 ~32k BTC【待验证】 |
+| **CoinShares / JPMorgan** | 行业成本估算 | 现金成本 ~$76k–$80k【待验证】 |
+| **checkonchain** | 链上生产成本模型 | Difficulty Regression ~$66k【待验证】 |
+| **矿池 (Foundry, Antpool)** | 算力聚合 | 算力估计噪声来源 |
+| **AI/HPC 客户** | 买电力/机房 | 扭曲「算力下降= capitulation」解读【分析】 |
+| **Princeton (Eyal et al.)** | 安全预算批评 | 补贴归零后 fee 机制稳定性【分析】 |
+
+# 核心变量
+
+| 变量 | 定义 | 2026-09 量级【待验证】 |
+|---|---|---|
+| **BTC 现货** | 交易所价格 | **~$77,000** |
+| **全成本线** | JPM 上市矿商加权 | **~$78,000** |
+| **Hashprice** | (区块奖励+费) USD ÷ 算力 PH/s | **~$38/PH/s/日** |
+| **全网算力** | 估计哈希/秒 | **~1,020 EH/s** |
+| **Puell Multiple** | 日矿工收入 ÷ 年均 | **~0.60–0.67** |
+| **费率占比** | 费 ÷ (费+补贴) | **&lt;2%** |
+| **难度** | 挖矿目标倒数 | 2026 年两次 **~10%** 下调【待验证】 |
+
+:::raw
+<div class="tool">
+<h3>工具 · 矿工盈亏线</h3>
+<p>现货价 vs <strong>现金/全成本</strong>。默认 JPM 口径 $78k、现货 $77k。</p>
+<div class="ctrl"><label>BTC 现货 ($)<input type="range" id="mc_px" min="40000" max="130000" step="500" value="77000"><output id="mc_pxO">$77,000</output></label></div>
+<div class="ctrl"><label>全成本线 ($)<input type="range" id="mc_cost" min="50000" max="100000" step="500" value="78000"><output id="mc_costO">$78,000</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">利润率</span><strong id="mc_margin">-1.3%</strong><span id="mc_marginh">—</span></div>
+<div class="ro"><span class="k">价差</span><strong id="mc_gap">-$1,000</strong><span id="mc_gaph">—</span></div>
+<canvas id="mcChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="mc_v">亏损运营</strong><span id="mc_vh">—</span></div>
+</div>
+</div>
+:::
+
+# 因果关系
+
+## 因果链与反馈
+
+:::raw
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">矿工 capitulation 因果图 · 实线=因果 · 红虚线=反馈</text>
+  <rect x="30" y="50" width="110" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="85" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">BTC 价格</text>
+  <rect x="170" y="50" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="225" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">Hashprice</text>
+  <rect x="310" y="50" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="365" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">矿工利润</text>
+  <rect x="450" y="50" width="110" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="505" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">抛售 BTC</text>
+  <rect x="580" y="50" width="80" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="620" y="78" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">价格压力</text>
+  <rect x="170" y="150" width="120" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="230" y="178" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">关机 / 算力↓</text>
+  <rect x="330" y="150" width="120" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="390" y="178" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">难度调整↓</text>
+  <rect x="490" y="150" width="120" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="550" y="178" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">Hashprice 修复</text>
+  <rect x="310" y="250" width="140" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="380" y="278" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">算力回流 / 底?</text>
+  <path d="M140 72 L170 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M280 72 L310 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M420 72 L450 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M560 72 L580 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M365 94 L230 150" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M290 172 L330 172" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M450 172 L490 172" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M550 150 L365 94" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M380 250 L365 94" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M620 94 L85 94" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#mcC)"/>
+  <path d="M505 94 L365 94" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#mcC)"/>
+  <defs>
+    <marker id="mcB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker>
+    <marker id="mcC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+  </defs>
+</svg>
+:::
+
+**读图要点**：红色反馈环是「卖币付电费」死亡螺旋；绿色修复链依赖**难度滞后下调**（通常需 **4–12 周**【分析】）。两条链赛跑决定 capitulation 持续多久。
+
+# 隐藏关系
+
+## 隐藏关系一：成本线是分布，不是单点
+
+JPM **$78k** 是上市矿商加权【待验证】；CoinShares Q4 2025 现金成本 **~$79,995**【待验证】。Texas 风电托管可能 **$55k**，老旧 S19 **$90k+**【推论】。**「全网平均成本」对个体矿工无意义**——市场出清的是**边际**产能。
+
+## 隐藏关系二：算力下降 ≠ 纯 capitulation
+
+2026 年 Cango **31%** 算力离线做 AI 升级【待验证】——Hash Ribbons 会把这类「主动下线」与「亏损关机」混为一谈【分析】。**必须配矿商公告与电力合同**，不能只看链上算力。
+
+:::raw
+<div class="tool">
+<h3>工具 · Hashprice 计算器</h3>
+<p><strong>Hashprice = 日区块奖励(USD) ÷ 全网算力(PH/s)</strong>。默认 BTC $77k、算力 1020 EH/s、费率 1%。</p>
+<div class="ctrl"><label>BTC 价格 ($)<input type="range" id="hp_px" min="40000" max="130000" step="500" value="77000"><output id="hp_pxO">$77,000</output></label></div>
+<div class="ctrl"><label>全网算力 (EH/s)<input type="range" id="hp_hr" min="700" max="1300" step="10" value="1020"><output id="hp_hrO">1020 EH/s</output></label></div>
+<div class="ctrl"><label>费率占奖励 (%)<input type="range" id="hp_fee" min="0" max="5" step="0.1" value="1.0"><output id="hp_feeO">1.0%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">Hashprice</span><strong id="hp_val">$34.31</strong><span id="hp_valh">—</span></div>
+<div class="ro"><span class="k">日产 BTC</span><strong id="hp_daily">454.5 BTC</strong><span id="hp_dailyh">—</span></div>
+<canvas id="hpChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="hp_v">压榨区间</strong><span id="hp_vh">—</span></div>
+</div>
+</div>
+:::
+
+## 隐藏关系三：跨域同构
+
+| 结构 | 矿工领域 | 其他领域 |
+|---|---|---|
+| **边际成本出清** | 高成本矿机关机 | 页岩油盈亏线、铝冶炼停产 |
+| **库存强制抛售** | 矿工卖 BTC 付电费 | 农民收割期供给冲击 |
+| **滞后调节器** | 难度调整 ±4×/14 天 | 央行利率传导滞后 |
+| **Ribbon 恢复信号** | Hash Ribbons 30>60 | 均线金叉（但标度不同） |
+| **安全预算** | 补贴→费率转型 | 公用事业资本回收 |
+
+# 系统运行机制
+
+## 难度调整：市场的「慢刹车」
+
+每 **2016** 块（约 14 天），节点按实际出块时间重算难度【事实】：
+
+$$\text{新难度} \approx \text{旧难度} \times \mathrm{clamp}\!\left(\frac{2\text{周}}{\text{实际耗时}},\,0.25,\,4\right)$$
+
+2026 年 JPM 测算难度对价格的 **β≈0.62**【待验证】——比以往更高，说明更多矿工坐在成本地板上「开关机」而非长期稳态运营【分析】。2026-01 与 **2026-06** 各出现约 **10%** 难度下调【待验证】。
+
+## 四阶段 capitulation 循环
+
+1. **扩张**：价涨 → hashprice 高 → 新矿机上架 → 算力竞赛
+2. **挤压**：价跌 + 难度仍高 → 利润压缩 → Puell &lt;0.75
+3. **capitulation**：30d 算力 MA &lt; 60d → 抛售 + 关机（可 **4–12 周**）
+4. **恢复**：30d 上穿 60d → hashprice 修复 → 历史底部区【推论】
+
+:::note amber Hash Ribbons 两阶段
+**阶段 A（变红）**：30d &lt; 60d = capitulation **开始**——价往往仍跌。**阶段 B（买入）**：30d **上穿** 60d = 恢复——Charles Edwards 原始规则的可操作边沿【分析】。2025-11 至 2026-02 为阶段 A；2026-03 起接近阶段 B【待验证】。
+:::
+
+# 时间演化
+
+## 历次矿工 stress 与价格
+
+| 事件 | 时期 | 特征 | BTC 后续【待验证】 |
+|---|---|---|---|
+| 中国禁令 | 2021-05 | 算力暴跌 ~50% | $30k 附近震荡后反弹 |
+| Luna/三箭 | 2022-06 | Puell &lt;0.5 | 继续跌至 $15.5k |
+| FTX | 2022-11 | Hash Ribbon 恢复 | 2023 牛市起点 |
+| 2025-11 capitulation | 2025-11~ | 算力自峰值 -15% | $81k→$60k 后再反弹 |
+| 2026 AI 转型 | 2026 H1 | 售币 + 算力结构性Offline | hashprice $27.7 低点 |
+
+:::raw
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">矿工 stress 演化时间轴</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="100" cy="100" r="6" fill="#d5342c"/><text x="100" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2021-05</text><text x="100" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">中国禁令</text>
+  <circle cx="220" cy="100" r="6" fill="#d5342c"/><text x="220" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2022-11</text><text x="220" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">FTX 底</text>
+  <circle cx="340" cy="100" r="6" fill="#b8730a"/><text x="340" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024-04</text><text x="340" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">第4次减半</text>
+  <circle cx="460" cy="100" r="6" fill="#d5342c"/><text x="460" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2025-10</text><text x="460" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">$126k 顶</text>
+  <circle cx="560" cy="100" r="6" fill="#0f8a4d"/><text x="560" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2026-06</text><text x="560" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">HP $27.7</text>
+  <text x="340" y="170" font-size="11" text-anchor="middle" fill="#7c848f" font-family="sans-serif">减半抬高成本地板 · AI 转型扭曲算力信号 · 费率占比仍极低</text>
+</svg>
+:::
+
+# 利益与激励
+
+| 利益方 | 激励 | 对矿工底叙事的影响 |
+|---|---|---|
+| **高效矿商** | 挤出对手、收廉价矿机 | 欢迎 capitulation 叙事 |
+| **低效矿商** | 卖币 survival | 放大抛售压力 |
+| **数据/KOL** | 指标传播 | 强调「跌破成本=底」简化故事 |
+| **AI 托管客户** | 稳定电力 | 算力下降≠ BTC 利空 |
+| **ETF 发行商** | 规模 | 吸收矿工抛压【推论】 |
+| **学术批评者** | 指出 fee 不足 | 长期安全预算隐忧【分析】 |
+
+# 资源与信息流
+
+## 资金流：区块奖励 → 矿工 → 市场
+
+:::raw
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">矿工收入抽水图（资金流）</text>
+  <rect x="40" y="50" width="600" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="340" y="80" font-size="12" text-anchor="middle" fill="#454c56" font-family="sans-serif">日区块奖励 ~450 BTC × $77k ≈ $34.7M/日</text>
+  <rect x="40" y="120" width="280" height="36" rx="6" fill="#fff7e6" stroke="#b8730a" stroke-width="1.2"/>
+  <text x="180" y="143" font-size="11" text-anchor="middle" fill="#b8730a" font-family="sans-serif">电费 + 运营 (~70–85%)</text>
+  <rect x="340" y="120" width="140" height="36" rx="6" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="410" y="143" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">折旧 (~10–15%)</text>
+  <rect x="500" y="120" width="140" height="36" rx="6" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.2"/>
+  <text x="570" y="143" font-size="11" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">净利润 (~5%)</text>
+  <path d="M180 156 L180 200 L340 200 L340 230" stroke="#d5342c" stroke-width="1.5" fill="none" marker-end="url(#mcD)"/>
+  <path d="M410 156 L410 200 L340 200" stroke="#b8730a" stroke-width="1.5" fill="none" marker-end="url(#mcE)"/>
+  <path d="M570 156 L570 200 L480 200 L480 230" stroke="#0f8a4d" stroke-width="1.5" fill="none" marker-end="url(#mcF)"/>
+  <rect x="240" y="230" width="200" height="40" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="340" y="255" font-size="11" text-anchor="middle" fill="#d5342c" font-family="sans-serif">亏损期：卖储备 BTC → 现货抛压</text>
+  <text x="520" y="225" font-size="10" fill="#0f8a4d" font-family="sans-serif">盈利期：囤币/扩产</text>
+  <defs>
+    <marker id="mcD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+    <marker id="mcE" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b8730a"/></marker>
+    <marker id="mcF" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#0f8a4d"/></marker>
+  </defs>
+</svg>
+:::
+
+**信息流**：矿池出块数据 → 算力估计（区块时间×难度）→ Glassnode/Blockchain.com → Hash Ribbons 面板 → 社媒「矿工底」叙事 → 现货/ETF 订单。**瓶颈**：算力是**反推估计值**，短期噪声大【分析】；费率 &lt;2% 时 hashprice 几乎完全跟随补贴【事实】。
+
+:::raw
+<div class="tool">
+<h3>工具 · Puell 压力表</h3>
+<p><strong>Puell = 矿工日收入 ÷ 365 日日均收入</strong>。默认日收入 $45M、年均 $67M（≈0.67）。</p>
+<div class="ctrl"><label>矿工日收入 ($M)<input type="range" id="pl_val" min="20" max="120" step="0.5" value="45"><output id="pl_valO">$45M/日</output></label></div>
+<div class="ctrl"><label>365 日均 ($M)<input type="range" id="pl_avg" min="30" max="100" step="0.5" value="67"><output id="pl_avgO">$67M/日</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">Puell</span><strong id="pl_ratio">0.67</strong><span id="pl_ratioh">—</span></div>
+<div class="ro"><span class="k">相对年均</span><strong id="pl_rev">67%</strong><span id="pl_revh">—</span></div>
+<canvas id="plChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="pl_v">温和压力</strong><span id="pl_vh">—</span></div>
+</div>
+</div>
+:::
+
+<!-- nav:杠杆与陷阱 -->
+
+# 关键杠杆点
+
+按 **重要性 × 杠杆率 × 可操作性 ÷ 学习成本** 排序：
+
+| # | 杠杆点 | 动作 |
+|---|---|---|
+| 1 | **分清三条成本线** | 现金 / 全成本 / 链上模型不混读 |
+| 2 | **等恢复交叉** | Hash Ribbons 买入 = 30d 上穿 60d |
+| 3 | **Puell 确认** | &lt;0.75 压力；&lt;0.5 高确信【分析】 |
+| 4 | **读 hashprice 不用只看价** | 价×算力×补贴联动 |
+| 5 | **配矿工流出** | 储备下降 + ribbon 更可信 |
+| 6 | **漂移剥离胜率** | 64% 信号 vs 71% 基准（90 日） |
+| 7 | **识别 AI 扭曲** | 算力 offline ≠ 亏损关机 |
+| 8 | **难度 β 上升** | 出清更快但更「锯齿」 |
+| 9 | **多样本 n 意识** | ~14 次历史信号，统计力有限 |
+| 10 | **30 分钟三联检** | 算、比、判——§22 |
+
+# 常见认知陷阱
+
+:::details 1. 「跌破成本线 = 铁底」
+**错因**：2026 年价低于 $78k 已 **~5 个月**，期间仍跌至 **~$60k**【待验证】。**对策**：成本线是**压力区**，不是单点。
+:::
+
+:::details 2. 「Hash Ribbon 变红就买入」
+**错因**：变红 = capitulation **开始**，价常继续跌。**对策**：等 **30d 上穿 60d** 恢复信号。
+:::
+
+:::details 3. 混淆链上生产成本与现金成本
+**错因**：checkonchain ~$66k vs JPM ~$78k 差 **~15%**。**对策**：交易决策用**现金成本**；宏观估值用链上模型。
+:::
+
+:::details 4. 「Puell&lt;1 一定见底」
+**错因**：2025-11 Puell **0.67** 后价仍跌 **~30%**【待验证】。**对策**：Puell 是**确认滤镜**，非独立触发器。
+:::
+
+:::details 5. 忽视算力估计噪声
+**错因**：短期区块时间波动可扭曲 30/60 MA。**对策**：capitulation 需持续 **≥7 天**【分析】。
+:::
+
+:::details 6. 把 AI 算力离线当 capitulation
+**错因**：2026 矿商主动转型 HPC【待验证】。**对策**：读公司公告 + 电力合同。
+:::
+
+:::details 7. 忽视费率占比极低
+**错因**：费率 &lt;2% 时「安全预算转型」仍遥远【分析】。**对策**：hashprice ≈ 补贴驱动，减半效应主导。
+:::
+
+:::details 8. 单指标 All-in
+**错因**：公开指标被 front-run；2021 两次恢复信号 1 年后亏损【分析】。**对策**：≥3 独立信号（MVRV、ETF 流、ribbon）。
+:::
+
+:::details 9. 胜率不算漂移
+**错因**：90 日随机持币基准 **71.4%**，64% 信号**跑输**。**对策**：§12 漂移剥离器。
+:::
+
+:::details 10. 忽视上市矿商售币潮
+**错因**：Q1 2026 售 **32k BTC** 创纪录【待验证】。**对策**：配矿工储备变化。
+:::
+
+:::details 11. 用 Princeton 安全预算吓自己
+**错因**：补贴归零在 **2140** 年后【事实】；近期 fee 波动被 Ordinals 打破预期【分析】。**对策**：区分**长期**与**周期**问题。
+:::
+
+:::details 12. 把二手数字当【事实】
+**错因**：$78k、64% 胜率传播链过长。**对策**：标【待验证】，交叉 CoinShares/JPM/Glassnode。
+:::
+
+<!-- nav:落地 -->
+
+# 从抽象到现实
+
+| 抽象 | 现实映射 | 可观察代理 |
+|---|---|---|
+| 边际成本 | 德州 $0.03/kWh 矿场 vs 欧洲 $0.12 | 矿商财报电价披露 |
+| 供给侧抛压 | 上市矿商售币 | TheEnergyMag 追踪 |
+| 算力出清 | 矿机关机 | 全网算力 30/60 MA |
+| 单位收入 | Hashprice | Hashrate Index |
+| 周期底 | 多信号共振 | Ribbon 恢复 + Puell + MVRV Z |
+
+# 从理论到行动
+
+## 决策漏斗（非交易建议）
+
+1. **环境**：BTC 是否低于现金成本线 **>30 天**？
+2. **压力**：Puell **&lt;0.75**？Hash Ribbons 是否 **capitulation 态**？
+3. **触发**：30d 算力 MA **上穿** 60d？
+4. **确认**：矿工储备企稳？ETF 净流入？MVRV Z **&lt;1**？
+5. **风控**：假设信号后仍可能 **-15%** 回撤【推论】；仓位与期权保护。
+
+# 技能树
+
+:::details L1 · 观察者（能读面板）
+- [ ] 解释 hashprice 公式与三成本线区别
+- [ ] 在 Glassnode 找到 Hash Ribbons 与 Puell
+- [ ] 说出难度调整 ±4× 规则
+:::
+
+:::details L2 · 分析者（能拆机制）
+- [ ] 手算 hashprice：$77k × 450 BTC ÷ 1.02M PH/s ≈ **$34.3**
+- [ ] 解释死亡螺旋 vs 难度修复两条链
+- [ ] 识别 AI 转型对算力信号的污染
+:::
+
+:::details L3 · 模拟者（能跑反事实）
+- [ ] 用 §12 工具模拟价跌 20% 对利润率影响
+- [ ] 漂移剥离 Hash Ribbon 64% 胜率
+- [ ] 对比 2022 vs 2026 capitulation 时长
+:::
+
+:::details L4 · 实践者（能建系统）
+- [ ] 自建每周矿工 stress 检查表（5 项指标）
+- [ ] 写「成本线穿越」事件日志
+- [ ] 与 MVRV/ETF 流做联合回测笔记
+:::
+
+# 游戏化世界
+
+**角色扮演：你是「矿场首席财务官」**
+
+| 关卡 | 场景 | 任务 | 通关条件 |
+|---|---|---|---|
+| 1 | BTC $90k，成本 $78k | 决定是否扩产 | 算出利润率 **+15.4%** |
+| 2 | BTC 跌至 $70k | 选择关机比例 | 识别 ~20% 产能应离线【待验证】 |
+| 3 | 难度下调 10% | 重算 hashprice | HP 从 $28→约 **$31**（价不变） |
+| 4 | Hash Ribbon 恢复 | 向董事会汇报 | 强调**恢复交叉**非变红 |
+| 5 | AI 客户出价购电 | 权衡挖 vs 租 | 列出机会成本，非单纯利空 |
+
+# 任务系统
+
+| 任务 ID | 类型 | 描述 | 奖励 |
+|---|---|---|---|
+| T01 | 日常 | 记录当日 hashprice + BTC 价 | +10 XP |
+| T02 | 日常 | 检查 30/60 算力 MA 关系 | +15 XP |
+| T03 | 周常 | 读一家矿商财报成本披露 | +40 XP |
+| T04 | 周常 | 更新 Puell 与成本线价差表 | +35 XP |
+| T05 | 挑战 | 完整跑 §22 三十分钟实践 | +100 XP |
+| T06 | 挑战 | 写 1 页 capitulation 反事实报告 | +120 XP |
+
+# 反事实模拟
+
+:::tabs
+@@情景 A：BTC 稳在 $58k（Q2 2026 实际）
+- 现金成本 $78k → 利润率 **-25.6%**
+- hashprice 约 **$27–28**（历史低区）
+- 上市矿商普遍低于现金盈亏平衡【待验证】
+- **推论**：capitulation 延长，售币压力最大
+
+@@情景 B：BTC 回升 $100k（CoinShares 情景）
+- 利润率 **+28.2%**；hashprice 约 **$37–59** 区间【待验证】
+- 多数矿场重回盈利；算力重新上行
+- **推论**：矿工底叙事消退，抛压转囤币
+
+@@情景 C：AI 收入占 70%（2026 结构变迁）
+- 算力下降 **不必然**等于 BTC 利空
+- Hash Ribbons 假阳性上升【假设】
+- **对策**：矿工指标权重下调，ETF/宏观权重上调
+:::
+
+:::raw
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>Hash Ribbon 历史买入胜率约 <strong>64%</strong>【待验证】——先和随机持币基准比。</p>
+<div class="ctrl"><label>持有期（日）<input type="range" id="mc_d_T" min="5" max="365" step="5" value="90"><output id="mc_d_TO">90 日</output></label></div>
+<div class="ctrl"><label>信号胜率 (%)<input type="range" id="mc_d_ps" min="50" max="90" step="0.1" value="64.0"><output id="mc_d_psO">64.0%</output></label></div>
+<div class="ctrl"><label>年化漂移 μ (%)<input type="range" id="mc_d_mu" min="0" max="100" step="1" value="50"><output id="mc_d_muO">50%</output></label></div>
+<div class="ctrl"><label>年化波动 σ (%)<input type="range" id="mc_d_sg" min="30" max="100" step="1" value="65"><output id="mc_d_sgO">65%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="mc_d_base">71.4%</strong><span id="mc_d_baseh">—</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="mc_d_dp">-7.4 pp</strong><span id="mc_d_dph">—</span></div>
+<div class="ro"><span class="k">所需样本 n</span><strong id="mc_d_n">203</strong><span id="mc_d_nh">—</span></div>
+<canvas id="mc_dChart" height="176" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="mc_d_v">超额有限</strong><span id="mc_d_vh">—</span></div>
+</div>
+</div>
+:::
+
+# 四级能力路线
+
+| 级别 | 时间 | 目标 | 检验标准 |
+|---|---|---|---|
+| **L1 观察者** | 1–2 周 | 读懂矿工面板 | 能口述 hashprice + 三成本线 |
+| **L2 分析者** | 1 月 | 拆 capitulation 机制 | 能画四阶段循环 |
+| **L3 模拟者** | 2–3 月 | 反事实 + 漂移剥离 | 独立完成 §20 三情景 |
+| **L4 实践者** | 持续 | 联合指标系统 | 每周 miner stress 日志 ≥8 周 |
+
+# 30分钟最小实践
+
+**目标**：用公开数据判断「当前是否处于矿工 stress 区」，**不下单**。
+
+1. **（8 分）算 hashprice**：打开 Hashrate Index 或手算——$77,000 × 450 BTC ÷ 1,020,000 PH/s ≈ **$34.3/PH/s/日**。记下与 $27.7 低点的距离。
+2. **（7 分）比成本线**：JPM ~$78k vs 现货 ~$77k → 利润率 **-1.3%**。写下「压力区」而非「铁底」。
+3. **（8 分）读 Ribbons**：查 30d vs 60d 算力 MA——capitulation 还是恢复？**只有上穿才可操作【分析】**。
+4. **（7 分）漂移剥离**：90 日基准 **71.4%** vs 信号 64% → **跑输 7.4 pp**。结论：矿工指标需**更长持有期或联合确认**。
+
+**产出**：一张 A4「矿工 stress 三联表」（hashprice / 成本差 / ribbon 状态），可拍照存档。
+
+# 7天计划
+
+| 天 | 主题 | 行动 |
+|---|---|---|
+| D1 | 协议层 | 读难度调整规则（Bitcoin Core `pow.cpp` 摘要） |
+| D2 | 单位经济学 | 手算 3 组 hashprice（$58k/$77k/$100k） |
+| D3 | 成本线 | 对比 JPM vs CoinShares vs checkonchain 口径 |
+| D4 | Hash Ribbons | 标注 2022-11 与 2025-11 两次 capitulation |
+| D5 | Puell | 记录当前 Puell 与 2022 底 0.3 的距离 |
+| D6 | 抛售 | 读 Q1 2026 上市矿商售币新闻摘要 |
+| D7 | 综合 | 完成 §22 实践 + 写 200 字结论 |
+
+# 30天计划
+
+| 周 | 焦点 | 交付物 |
+|---|---|---|
+| W1 | 概念与公式 | hashprice + 成本线速查卡 |
+| W2 | 历史 capitulation | 5 次事件对比表 |
+| W3 | 2026 结构变迁 | AI 转型对 3 家矿商影响笔记 |
+| W4 | 联合系统 | 矿工 + MVRV + ETF 流 联合检查表 v1 |
+
+# 10 个核心模型
+
+| # | 模型 | 一句话 | 在本主题的角色 |
+|---|---|---|---|
+| 1 | **边际成本出清** | 最高成本产能先退出 | 成本线本质 |
+| 2 | **难度滞后调节** | 14 天慢刹车 | capitulation 时长 |
+| 3 | **Hashprice 恒等式** | 奖励÷算力 | 单位经济学核心 |
+| 4 | **死亡螺旋** | 卖币→价跌→更卖 | 红色反馈环 |
+| 5 | **Hash Ribbons** | 30/60 算力 MA | 可操作恢复信号 |
+| 6 | **Puell Multiple** | 日收入/年均 | 压力确认 |
+| 7 | **漂移基准** | BTC 正漂移 | 剥离虚假 alpha |
+| 8 | **安全预算** | 补贴→费率 | 长期批评维度 |
+| 9 | **难度 β** | 价-难度敏感度 | 2026 结构变化 |
+| 10 | **联合滤波** | 多信号一致 | 降低假阳性 |
+
+# 关键问题清单
+
+:::details 读之前问自己
+1. 我说的是现金成本还是链上生产成本？
+2. Hash Ribbons 是变红还是已恢复上穿？
+3. 算力下降有多少比例来自 AI 转型？
+4. 我的持有期是否长于 capitulation 本身？
+5. 信号胜率是否已减随机持币基准？
+:::
+
+:::details 读之后追问
+1. 若 BTC 在成本线下方再横盘 6 个月，矿工如何融资？
+2. 第五次减半（2028）前成本地板会抬升多少？
+3. ETF 买盘能否结构性吸收矿工抛压？
+4. 费率占比要到多少才能缓解安全预算焦虑？
+5. 2021 两次 ribbon 恢复后 1 年亏损说明什么？
+:::
+
+# 下一阶段探索
+
+- **矿工–ETF 博弈模型**：上市矿商售币 vs ETF 日均净流入谁更大？【待验证】
+- **AI 算力离线分类器**：能否从公告 NLP 分离「主动 offline」与 capitulation？
+- **费率占比临界点**：补贴每减半一次，需要多少链上活动才能稳住 hashprice？
+- **跨资产对照**：BTC 矿工成本线 vs 黄金 AISC 成本曲线有何同构？
+- **联合回测**：Ribbon 恢复 + Puell&lt;0.5 + MVRV Z&lt;1 三因子样本外检验
+
+# 附录：数据来源与标记约定 {.appendix}
+
+| 内容 | 来源类型 | 具体来源 | 标记 |
+|---|---|---|---|
+| 全成本 ~$78k | 投行研报 | JPMorgan 2026 客户笔记【待验证】 | 【待验证】 |
+| 现金成本 ~$76k–$80k | 行业研报 | CoinShares Q4 2025 / Q2 2026 挖矿报告 | 【待验证】 |
+| Hashprice $27.7 低点 | 行业数据 | CoinShares Q2 2026 | 【待验证】 |
+| Hash Ribbons 定义 | 指标原创 | Charles Edwards, 2019 | 【事实】 |
+| Puell Multiple | 指标原创 | David Puell | 【事实】 |
+| 难度调整公式 | 协议代码 | Bitcoin Core `pow.cpp` | 【事实】 |
+| 安全预算批评 | 学术论文 | Eyal et al., Princeton CCS | 【分析】 |
+| 上市矿商 Q1 售币 32k | 媒体报道 | TheEnergyMag / JPM 引用【待验证】 | 【待验证】 |
+| Hash Ribbon ~64% 胜率 | 二手回测 | 多来源传播【待验证】 | 【待验证】 |
+| AI 收入占比 ~70% | 行业预测 | CoinShares Butterfill 访谈【待验证】 | 【待验证】 |
+
+# 免责声明 {.appendix}
+
+本手册仅供教育与认知框架构建，**不构成任何投资建议**。比特币价格波动极大；矿工成本估算方法不一，历史 capitulation 样本有限（约十余次），**过去表现不保证未来**。链上算力为估计值，指标可能被市场结构变迁（ETF、AI 托管）削弱。任何交易决策应咨询合资格顾问，并仅使用你可承受损失的资金。

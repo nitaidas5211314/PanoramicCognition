@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-矿工成本线 / 矿工底 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × Mining Economics × On-Chain</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>附录：数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-矿工成本线 / 矿工底</h1>
+  <p class="sub">用<strong>现金成本线 + Hash Ribbons + Puell</strong>读矿工 capitulation——成本线不是铁底，<strong>恢复交叉</strong>才是可操作信号</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>矿工成本线</strong>回答「挖 1 枚 BTC 要花多少钱」；<strong>矿工底</strong>回答「当挖不动时，抛压与算力出清是否接近局部底」。<span class="tag t-fact">事实</span>2026 年 9 月 JPMorgan 估算上市矿商<strong>全成本约 ¥546,000（$78,000）</strong>，BTC 现货约 <strong>¥539,000（$77,000）</strong>，价低于成本已持续约 <strong>5 个月</strong><span class="tag t-chk">待验证</span>。但成本线是<strong>慢变量、异质分布</strong>——别在「跌破成本」当天梭哈；Hash Ribbons 的<strong>可操作规则</strong>是：30 日算力均线<strong>重新上穿</strong> 60 日均线（恢复交叉），而非 capitulation 开始<span class="tag t-ana">分析</span>。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>「BTC-矿工成本线 / 矿工底」研究的是：<strong>比特币挖矿经济学如何把算力、难度、电价与区块奖励编织成一条「供给侧成本锚」，以及这条锚在周期底部识别中的有效边界</strong>。它横跨链上算力数据、矿商财报与宏观流动性——不是单一指标，而是一套<strong>供给侧清算叙事</strong>。</p>
+<div class="note red"><b>先划清边界</b><p>本手册<strong>不提供</strong>「跌破成本就抄底」的交易指令。矿工成本是<strong>分布</strong>（高效矿场 $55k vs 老旧矿机 $95k），链上「生产成本」模型（如 checkonchain Difficulty Regression）与<strong>现金成本</strong>口径不同。任何胜率都要和<strong>随机持币基准</strong>比。</p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>现金/全成本线、hashprice、难度调整、Hash Ribbons、Puell、 capitulation</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>不含矿池内部分配；不预测监管；不替代现货订单流分析</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>算力、难度、区块奖励、电价、矿机效率、矿工储备抛售</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>矿工、矿池、ASIC 厂商、电力商、链上数据商、AI/HPC 转型者</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>Hashprice、Puell、成本线、算力 30/60 MA、难度、费率占比</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察的</td>
+<td>全网算力、难度、矿商财报成本、hashprice 指数、矿工流出</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察但可推断</td>
+<td>私有矿场真实电价、场外矿机折旧、暗池抛售</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>价↓→利润↓→关机→算力↓→难度↓（滞后）→hashprice 企稳</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>难度每 2016 块重算 = <span class="tag t-fact">事实</span>；价&lt;成本→底 = <span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>Hash Ribbon 买入与反弹高度共线，非独立因果</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>「跌破 $78k 就是铁底」社交媒体口号</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>边际矿工出清 + 强制抛售 + 难度滞后调节 hashprice</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>价跌→抛 BTC 付电费→价更跌；算力出清→难度降→利润修复</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>时间延迟</td>
+<td>难度调整 <strong>~14 天</strong>一轮；财报成本滞后 <strong>1–2 季度</strong></td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>负：死亡螺旋抛售；正：出清后 hashprice 反弹吸引算力回流</td>
+</tr>
+</tbody>
+</table></div>
+<h3>三条「成本线」别混用</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>口径</th>
+<th>定义</th>
+<th>2026-09 参考<span class="tag t-chk">待验证</span></th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>现金成本</strong></td>
+<td>电费 + 运营，不含折旧</td>
+<td>CoinShares 上市矿商加权 <strong>~$76k–$80k</strong></td>
+<td>短期关机决策</td>
+</tr>
+<tr>
+<td class="k"><strong>全成本</strong></td>
+<td>现金 + 折旧 + 管理费用</td>
+<td>JPMorgan <strong>~$78,000</strong></td>
+<td>上市矿商盈亏</td>
+</tr>
+<tr>
+<td class="k"><strong>链上生产成本</strong></td>
+<td>难度回归模型（非财报）</td>
+<td>checkonchain <strong>~$66,000</strong></td>
+<td>宏观估值锚，非现金</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：矿工是 BTC 唯一的「原生供给侧」</h3>
+<p>ETF 与法币买盘是需求侧；<strong>矿工是唯一持续将新 BTC 注入流通层的原生卖方</strong><span class="tag t-fact">事实</span>。当 <strong>~20%</strong> 全球产能亏损运营时<span class="tag t-chk">待验证</span>，强制抛售与算力出清会同时改变<strong>供给节奏</strong>与<strong>安全预算</strong>叙事——这是其他链上指标（MVRV、HODL Wave）看不到的切面。</p>
+<h3>理由二：2025–2026 是「后减半 + AI 转型」压力测试</h3>
+<p>第四次减半（2024-04）后区块补贴 <strong>3.125 BTC</strong>；2025-10 价从 <strong>$126k</strong> 高点回落，hashprice 于 2026-06 跌至 <strong>$27.7/PH/s/日</strong> 历史低位<span class="tag t-chk">待验证</span>。上市矿商 Q1 2026 合计抛售 <strong>~32,000 BTC</strong> 创纪录<span class="tag t-chk">待验证</span>——同时 <strong>AI/HPC</strong> 托管收入占比上升，<strong>算力与价格的关系正在变形</strong><span class="tag t-ana">分析</span>。</p>
+<h3>理由三：学会「信号 ≠ 时点」</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>BTC μ=50%/年 σ=65%</th>
+<th><strong>随机持币基准</strong></th>
+<th>Hash Ribbon 买入 ~64% 胜率<span class="tag t-chk">待验证</span>真实超额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">30 日</td>
+<td>—</td>
+<td><strong>55.8%</strong></td>
+<td>表面 +8.2 pp → 真实 <strong>+8.2 pp</strong></td>
+</tr>
+<tr>
+<td class="k">90 日</td>
+<td>—</td>
+<td><strong>71.4%</strong></td>
+<td>表面 −7.4 pp → 真实 <strong>−7.4 pp</strong>（跑输基准）</td>
+</tr>
+<tr>
+<td class="k">180 日</td>
+<td>—</td>
+<td><strong>77.9%</strong></td>
+<td>需更长窗口才显优势</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>capitulation 开始往往早于底</strong>——2026-02 价仍可从 $90k 跌至 <strong>~$60k</strong><span class="tag t-chk">待验证</span>。可操作边沿在<strong>恢复交叉</strong>，不在「ribbon 变红」。</p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从 nonce 猜测，到「矿工底」叙事</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">矿工成本线 · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">越靠上越「协议硬规则」，越靠下越「指标/叙事可选择」</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 共识层</text>
+  <text x="148" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">PoW · 10 分钟出块 · 补贴 3.125 BTC</text>
+  <text x="148" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">失效：费率占比仍 &lt;2%【待验证】</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 难度调整层</text>
+  <text x="148" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">每 2016 块重算 · 单轮调整上限 ±4×</text>
+  <text x="148" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">滞后 ~14 天 · 2026 β≈0.62【待验证】</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 算力商品层</text>
+  <text x="148" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">Hashrate ~1020 EH/s · ASIC 效率竞赛</text>
+  <text x="148" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">峰值 1160 EH/s（2025-10）→ 850 EH/s（2026-02）</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 单位经济学层</text>
+  <text x="148" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">Hashprice $/PH/s/日 · 2026-06 低 $27.7</text>
+  <text x="148" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">回升至 ~$38（BTC $77k 时）【待验证】</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 成本线层</text>
+  <text x="148" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">现金/全成本 ~$76k–$78k · 链上模型 ~$66k</text>
+  <text x="148" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">口径混用是最常见误读</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 抛售压力层</text>
+  <text x="148" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">矿工储备流出 · Q1 2026 上市矿商售 ~32k BTC</text>
+  <text x="148" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">亏损期「卖币付电费」自我强化</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 指标层</text>
+  <text x="148" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">Hash Ribbons · Puell · 矿工储备</text>
+  <text x="148" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">恢复交叉 &gt; capitulation 开始</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 结构变迁层</text>
+  <text x="148" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">AI/HPC 托管 · 算力离线升级 ≠ 纯 capitulation</text>
+  <text x="148" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">2026 年部分矿商 AI 收入可达 70%【待验证】</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="148" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">多信号 + 漂移剥离 + 样本量意识</text>
+  <text x="148" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">成本线当「压力仪表盘」，不当单点触发器</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">矿工底 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 边际供给出清</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• commodity 成本曲线</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 安全预算</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 均值回归叙事</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 价&lt;成本→关机</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 难度滞后下调</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• hashprice 修复</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 强制抛售反馈</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#b8dcc8" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 读 Hash Ribbons 恢复</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• Puell &lt;0.75 确认</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 配 MVRV/ETF 流</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 漂移剥离胜率</text>
+  <path d="M214 146 L240 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#mcA)"/>
+  <path d="M440 146 L466 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#mcA)"/>
+  <defs><marker id="mcA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c848f"/></marker></defs>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>做什么</th>
+<th>与成本线/矿工底的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Charles Edwards</strong></td>
+<td>2019 提出 Hash Ribbons</td>
+<td>30/60 日算力 MA 框架<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>David Puell</strong></td>
+<td>Puell Multiple</td>
+<td>矿工日收入 / 365 日均<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>上市矿商</strong> (MARA, RIOT, CLSK…)</td>
+<td>挖 + 卖 + 转型 AI</td>
+<td>Q1 2026 售币 ~32k BTC<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k"><strong>CoinShares / JPMorgan</strong></td>
+<td>行业成本估算</td>
+<td>现金成本 ~$76k–$80k<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k"><strong>checkonchain</strong></td>
+<td>链上生产成本模型</td>
+<td>Difficulty Regression ~$66k<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k"><strong>矿池 (Foundry, Antpool)</strong></td>
+<td>算力聚合</td>
+<td>算力估计噪声来源</td>
+</tr>
+<tr>
+<td class="k"><strong>AI/HPC 客户</strong></td>
+<td>买电力/机房</td>
+<td>扭曲「算力下降= capitulation」解读<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Princeton (Eyal et al.)</strong></td>
+<td>安全预算批评</td>
+<td>补贴归零后 fee 机制稳定性<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>2026-09 量级<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>BTC 现货</strong></td>
+<td>交易所价格</td>
+<td><strong>~$77,000</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>全成本线</strong></td>
+<td>JPM 上市矿商加权</td>
+<td><strong>~$78,000</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Hashprice</strong></td>
+<td>(区块奖励+费) USD ÷ 算力 PH/s</td>
+<td><strong>~$38/PH/s/日</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>全网算力</strong></td>
+<td>估计哈希/秒</td>
+<td><strong>~1,020 EH/s</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Puell Multiple</strong></td>
+<td>日矿工收入 ÷ 年均</td>
+<td><strong>~0.60–0.67</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>费率占比</strong></td>
+<td>费 ÷ (费+补贴)</td>
+<td><strong>&lt;2%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>难度</strong></td>
+<td>挖矿目标倒数</td>
+<td>2026 年两次 <strong>~10%</strong> 下调<span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · 矿工盈亏线</h3>
+<p>现货价 vs <strong>现金/全成本</strong>。默认 JPM 口径 $78k、现货 $77k。</p>
+<div class="ctrl"><label>BTC 现货 ($)<input type="range" id="mc_px" min="40000" max="130000" step="500" value="77000"><output id="mc_pxO">$77,000</output></label></div>
+<div class="ctrl"><label>全成本线 ($)<input type="range" id="mc_cost" min="50000" max="100000" step="500" value="78000"><output id="mc_costO">$78,000</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">利润率</span><strong id="mc_margin">-1.3%</strong><span id="mc_marginh">—</span></div>
+<div class="ro"><span class="k">价差</span><strong id="mc_gap">-$1,000</strong><span id="mc_gaph">—</span></div>
+<canvas id="mcChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="mc_v">亏损运营</strong><span id="mc_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>因果链与反馈</h3>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">矿工 capitulation 因果图 · 实线=因果 · 红虚线=反馈</text>
+  <rect x="30" y="50" width="110" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="85" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">BTC 价格</text>
+  <rect x="170" y="50" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="225" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">Hashprice</text>
+  <rect x="310" y="50" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="365" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">矿工利润</text>
+  <rect x="450" y="50" width="110" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="505" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">抛售 BTC</text>
+  <rect x="580" y="50" width="80" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="620" y="78" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">价格压力</text>
+  <rect x="170" y="150" width="120" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="230" y="178" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">关机 / 算力↓</text>
+  <rect x="330" y="150" width="120" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="390" y="178" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">难度调整↓</text>
+  <rect x="490" y="150" width="120" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="550" y="178" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">Hashprice 修复</text>
+  <rect x="310" y="250" width="140" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="380" y="278" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">算力回流 / 底?</text>
+  <path d="M140 72 L170 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M280 72 L310 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M420 72 L450 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M560 72 L580 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M365 94 L230 150" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M290 172 L330 172" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M450 172 L490 172" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M550 150 L365 94" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M380 250 L365 94" stroke="#454c56" stroke-width="1.5" marker-end="url(#mcB)"/>
+  <path d="M620 94 L85 94" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#mcC)"/>
+  <path d="M505 94 L365 94" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#mcC)"/>
+  <defs>
+    <marker id="mcB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker>
+    <marker id="mcC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+  </defs>
+</svg>
+<p><strong>读图要点</strong>：红色反馈环是「卖币付电费」死亡螺旋；绿色修复链依赖<strong>难度滞后下调</strong>（通常需 <strong>4–12 周</strong><span class="tag t-ana">分析</span>）。两条链赛跑决定 capitulation 持续多久。</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>隐藏关系一：成本线是分布，不是单点</h3>
+<p>JPM <strong>$78k</strong> 是上市矿商加权<span class="tag t-chk">待验证</span>；CoinShares Q4 2025 现金成本 <strong>~$79,995</strong><span class="tag t-chk">待验证</span>。Texas 风电托管可能 <strong>$55k</strong>，老旧 S19 <strong>$90k+</strong><span class="tag t-inf">推论</span>。<strong>「全网平均成本」对个体矿工无意义</strong>——市场出清的是<strong>边际</strong>产能。</p>
+<h3>隐藏关系二：算力下降 ≠ 纯 capitulation</h3>
+<p>2026 年 Cango <strong>31%</strong> 算力离线做 AI 升级<span class="tag t-chk">待验证</span>——Hash Ribbons 会把这类「主动下线」与「亏损关机」混为一谈<span class="tag t-ana">分析</span>。<strong>必须配矿商公告与电力合同</strong>，不能只看链上算力。</p>
+<div class="tool">
+<h3>工具 · Hashprice 计算器</h3>
+<p><strong>Hashprice = 日区块奖励(USD) ÷ 全网算力(PH/s)</strong>。默认 BTC $77k、算力 1020 EH/s、费率 1%。</p>
+<div class="ctrl"><label>BTC 价格 ($)<input type="range" id="hp_px" min="40000" max="130000" step="500" value="77000"><output id="hp_pxO">$77,000</output></label></div>
+<div class="ctrl"><label>全网算力 (EH/s)<input type="range" id="hp_hr" min="700" max="1300" step="10" value="1020"><output id="hp_hrO">1020 EH/s</output></label></div>
+<div class="ctrl"><label>费率占奖励 (%)<input type="range" id="hp_fee" min="0" max="5" step="0.1" value="1.0"><output id="hp_feeO">1.0%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">Hashprice</span><strong id="hp_val">$34.31</strong><span id="hp_valh">—</span></div>
+<div class="ro"><span class="k">日产 BTC</span><strong id="hp_daily">454.5 BTC</strong><span id="hp_dailyh">—</span></div>
+<canvas id="hpChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="hp_v">压榨区间</strong><span id="hp_vh">—</span></div>
+</div>
+</div>
+<h3>隐藏关系三：跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>矿工领域</th>
+<th>其他领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>边际成本出清</strong></td>
+<td>高成本矿机关机</td>
+<td>页岩油盈亏线、铝冶炼停产</td>
+</tr>
+<tr>
+<td class="k"><strong>库存强制抛售</strong></td>
+<td>矿工卖 BTC 付电费</td>
+<td>农民收割期供给冲击</td>
+</tr>
+<tr>
+<td class="k"><strong>滞后调节器</strong></td>
+<td>难度调整 ±4×/14 天</td>
+<td>央行利率传导滞后</td>
+</tr>
+<tr>
+<td class="k"><strong>Ribbon 恢复信号</strong></td>
+<td>Hash Ribbons 30&gt;60</td>
+<td>均线金叉（但标度不同）</td>
+</tr>
+<tr>
+<td class="k"><strong>安全预算</strong></td>
+<td>补贴→费率转型</td>
+<td>公用事业资本回收</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>难度调整：市场的「慢刹车」</h3>
+<p>每 <strong>2016</strong> 块（约 14 天），节点按实际出块时间重算难度<span class="tag t-fact">事实</span>：</p>
+<p>$$\text{新难度} \approx \text{旧难度} \times \mathrm{clamp}!\left(\frac{2\text{周}}{\text{实际耗时}},\,0.25,\,4\right)$$</p>
+<p>2026 年 JPM 测算难度对价格的 <strong>β≈0.62</strong><span class="tag t-chk">待验证</span>——比以往更高，说明更多矿工坐在成本地板上「开关机」而非长期稳态运营<span class="tag t-ana">分析</span>。2026-01 与 <strong>2026-06</strong> 各出现约 <strong>10%</strong> 难度下调<span class="tag t-chk">待验证</span>。</p>
+<h3>四阶段 capitulation 循环</h3>
+<ol>
+<li><strong>扩张</strong>：价涨 → hashprice 高 → 新矿机上架 → 算力竞赛</li>
+<li><strong>挤压</strong>：价跌 + 难度仍高 → 利润压缩 → Puell &lt;0.75</li>
+<li><strong>capitulation</strong>：30d 算力 MA &lt; 60d → 抛售 + 关机（可 <strong>4–12 周</strong>）</li>
+<li><strong>恢复</strong>：30d 上穿 60d → hashprice 修复 → 历史底部区<span class="tag t-inf">推论</span></li>
+</ol>
+<div class="note amber"><b>Hash Ribbons 两阶段</b><p><strong>阶段 A（变红）</strong>：30d &lt; 60d = capitulation <strong>开始</strong>——价往往仍跌。<strong>阶段 B（买入）</strong>：30d <strong>上穿</strong> 60d = 恢复——Charles Edwards 原始规则的可操作边沿<span class="tag t-ana">分析</span>。2025-11 至 2026-02 为阶段 A；2026-03 起接近阶段 B<span class="tag t-chk">待验证</span>。</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>历次矿工 stress 与价格</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>事件</th>
+<th>时期</th>
+<th>特征</th>
+<th>BTC 后续<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">中国禁令</td>
+<td>2021-05</td>
+<td>算力暴跌 ~50%</td>
+<td>$30k 附近震荡后反弹</td>
+</tr>
+<tr>
+<td class="k">Luna/三箭</td>
+<td>2022-06</td>
+<td>Puell &lt;0.5</td>
+<td>继续跌至 $15.5k</td>
+</tr>
+<tr>
+<td class="k">FTX</td>
+<td>2022-11</td>
+<td>Hash Ribbon 恢复</td>
+<td>2023 牛市起点</td>
+</tr>
+<tr>
+<td class="k">2025-11 capitulation</td>
+<td>2025-11~</td>
+<td>算力自峰值 -15%</td>
+<td>$81k→$60k 后再反弹</td>
+</tr>
+<tr>
+<td class="k">2026 AI 转型</td>
+<td>2026 H1</td>
+<td>售币 + 算力结构性Offline</td>
+<td>hashprice $27.7 低点</td>
+</tr>
+</tbody>
+</table></div>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">矿工 stress 演化时间轴</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="100" cy="100" r="6" fill="#d5342c"/><text x="100" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2021-05</text><text x="100" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">中国禁令</text>
+  <circle cx="220" cy="100" r="6" fill="#d5342c"/><text x="220" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2022-11</text><text x="220" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">FTX 底</text>
+  <circle cx="340" cy="100" r="6" fill="#b8730a"/><text x="340" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024-04</text><text x="340" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">第4次减半</text>
+  <circle cx="460" cy="100" r="6" fill="#d5342c"/><text x="460" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2025-10</text><text x="460" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">$126k 顶</text>
+  <circle cx="560" cy="100" r="6" fill="#0f8a4d"/><text x="560" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2026-06</text><text x="560" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">HP $27.7</text>
+  <text x="340" y="170" font-size="11" text-anchor="middle" fill="#7c848f" font-family="sans-serif">减半抬高成本地板 · AI 转型扭曲算力信号 · 费率占比仍极低</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>利益方</th>
+<th>激励</th>
+<th>对矿工底叙事的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>高效矿商</strong></td>
+<td>挤出对手、收廉价矿机</td>
+<td>欢迎 capitulation 叙事</td>
+</tr>
+<tr>
+<td class="k"><strong>低效矿商</strong></td>
+<td>卖币 survival</td>
+<td>放大抛售压力</td>
+</tr>
+<tr>
+<td class="k"><strong>数据/KOL</strong></td>
+<td>指标传播</td>
+<td>强调「跌破成本=底」简化故事</td>
+</tr>
+<tr>
+<td class="k"><strong>AI 托管客户</strong></td>
+<td>稳定电力</td>
+<td>算力下降≠ BTC 利空</td>
+</tr>
+<tr>
+<td class="k"><strong>ETF 发行商</strong></td>
+<td>规模</td>
+<td>吸收矿工抛压<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k"><strong>学术批评者</strong></td>
+<td>指出 fee 不足</td>
+<td>长期安全预算隐忧<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>资金流：区块奖励 → 矿工 → 市场</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">矿工收入抽水图（资金流）</text>
+  <rect x="40" y="50" width="600" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="340" y="80" font-size="12" text-anchor="middle" fill="#454c56" font-family="sans-serif">日区块奖励 ~450 BTC × $77k ≈ $34.7M/日</text>
+  <rect x="40" y="120" width="280" height="36" rx="6" fill="#fff7e6" stroke="#b8730a" stroke-width="1.2"/>
+  <text x="180" y="143" font-size="11" text-anchor="middle" fill="#b8730a" font-family="sans-serif">电费 + 运营 (~70–85%)</text>
+  <rect x="340" y="120" width="140" height="36" rx="6" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="410" y="143" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">折旧 (~10–15%)</text>
+  <rect x="500" y="120" width="140" height="36" rx="6" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.2"/>
+  <text x="570" y="143" font-size="11" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">净利润 (~5%)</text>
+  <path d="M180 156 L180 200 L340 200 L340 230" stroke="#d5342c" stroke-width="1.5" fill="none" marker-end="url(#mcD)"/>
+  <path d="M410 156 L410 200 L340 200" stroke="#b8730a" stroke-width="1.5" fill="none" marker-end="url(#mcE)"/>
+  <path d="M570 156 L570 200 L480 200 L480 230" stroke="#0f8a4d" stroke-width="1.5" fill="none" marker-end="url(#mcF)"/>
+  <rect x="240" y="230" width="200" height="40" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="340" y="255" font-size="11" text-anchor="middle" fill="#d5342c" font-family="sans-serif">亏损期：卖储备 BTC → 现货抛压</text>
+  <text x="520" y="225" font-size="10" fill="#0f8a4d" font-family="sans-serif">盈利期：囤币/扩产</text>
+  <defs>
+    <marker id="mcD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+    <marker id="mcE" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b8730a"/></marker>
+    <marker id="mcF" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#0f8a4d"/></marker>
+  </defs>
+</svg>
+<p><strong>信息流</strong>：矿池出块数据 → 算力估计（区块时间×难度）→ Glassnode/Blockchain.com → Hash Ribbons 面板 → 社媒「矿工底」叙事 → 现货/ETF 订单。<strong>瓶颈</strong>：算力是<strong>反推估计值</strong>，短期噪声大<span class="tag t-ana">分析</span>；费率 &lt;2% 时 hashprice 几乎完全跟随补贴<span class="tag t-fact">事实</span>。</p>
+<div class="tool">
+<h3>工具 · Puell 压力表</h3>
+<p><strong>Puell = 矿工日收入 ÷ 365 日日均收入</strong>。默认日收入 $45M、年均 $67M（≈0.67）。</p>
+<div class="ctrl"><label>矿工日收入 ($M)<input type="range" id="pl_val" min="20" max="120" step="0.5" value="45"><output id="pl_valO">$45M/日</output></label></div>
+<div class="ctrl"><label>365 日均 ($M)<input type="range" id="pl_avg" min="30" max="100" step="0.5" value="67"><output id="pl_avgO">$67M/日</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">Puell</span><strong id="pl_ratio">0.67</strong><span id="pl_ratioh">—</span></div>
+<div class="ro"><span class="k">相对年均</span><strong id="pl_rev">67%</strong><span id="pl_revh">—</span></div>
+<canvas id="plChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="pl_v">温和压力</strong><span id="pl_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>分清三条成本线</strong></td>
+<td>现金 / 全成本 / 链上模型不混读</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>等恢复交叉</strong></td>
+<td>Hash Ribbons 买入 = 30d 上穿 60d</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>Puell 确认</strong></td>
+<td>&lt;0.75 压力；&lt;0.5 高确信<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>读 hashprice 不用只看价</strong></td>
+<td>价×算力×补贴联动</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>配矿工流出</strong></td>
+<td>储备下降 + ribbon 更可信</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>漂移剥离胜率</strong></td>
+<td>64% 信号 vs 71% 基准（90 日）</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>识别 AI 扭曲</strong></td>
+<td>算力 offline ≠ 亏损关机</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>难度 β 上升</strong></td>
+<td>出清更快但更「锯齿」</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>多样本 n 意识</strong></td>
+<td>~14 次历史信号，统计力有限</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>30 分钟三联检</strong></td>
+<td>算、比、判——§22</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「跌破成本线 = 铁底」</summary><div class="dbody"><p><strong>错因</strong>：2026 年价低于 $78k 已 <strong>~5 个月</strong>，期间仍跌至 <strong>~$60k</strong><span class="tag t-chk">待验证</span>。<strong>对策</strong>：成本线是<strong>压力区</strong>，不是单点。</p></div></details>
+<details><summary>2. 「Hash Ribbon 变红就买入」</summary><div class="dbody"><p><strong>错因</strong>：变红 = capitulation <strong>开始</strong>，价常继续跌。<strong>对策</strong>：等 <strong>30d 上穿 60d</strong> 恢复信号。</p></div></details>
+<details><summary>3. 混淆链上生产成本与现金成本</summary><div class="dbody"><p><strong>错因</strong>：checkonchain ~$66k vs JPM ~$78k 差 <strong>~15%</strong>。<strong>对策</strong>：交易决策用<strong>现金成本</strong>；宏观估值用链上模型。</p></div></details>
+<details><summary>4. 「Puell&amp;lt;1 一定见底」</summary><div class="dbody"><p><strong>错因</strong>：2025-11 Puell <strong>0.67</strong> 后价仍跌 <strong>~30%</strong><span class="tag t-chk">待验证</span>。<strong>对策</strong>：Puell 是<strong>确认滤镜</strong>，非独立触发器。</p></div></details>
+<details><summary>5. 忽视算力估计噪声</summary><div class="dbody"><p><strong>错因</strong>：短期区块时间波动可扭曲 30/60 MA。<strong>对策</strong>：capitulation 需持续 <strong>≥7 天</strong><span class="tag t-ana">分析</span>。</p></div></details>
+<details><summary>6. 把 AI 算力离线当 capitulation</summary><div class="dbody"><p><strong>错因</strong>：2026 矿商主动转型 HPC<span class="tag t-chk">待验证</span>。<strong>对策</strong>：读公司公告 + 电力合同。</p></div></details>
+<details><summary>7. 忽视费率占比极低</summary><div class="dbody"><p><strong>错因</strong>：费率 &lt;2% 时「安全预算转型」仍遥远<span class="tag t-ana">分析</span>。<strong>对策</strong>：hashprice ≈ 补贴驱动，减半效应主导。</p></div></details>
+<details><summary>8. 单指标 All-in</summary><div class="dbody"><p><strong>错因</strong>：公开指标被 front-run；2021 两次恢复信号 1 年后亏损<span class="tag t-ana">分析</span>。<strong>对策</strong>：≥3 独立信号（MVRV、ETF 流、ribbon）。</p></div></details>
+<details><summary>9. 胜率不算漂移</summary><div class="dbody"><p><strong>错因</strong>：90 日随机持币基准 <strong>71.4%</strong>，64% 信号<strong>跑输</strong>。<strong>对策</strong>：§12 漂移剥离器。</p></div></details>
+<details><summary>10. 忽视上市矿商售币潮</summary><div class="dbody"><p><strong>错因</strong>：Q1 2026 售 <strong>32k BTC</strong> 创纪录<span class="tag t-chk">待验证</span>。<strong>对策</strong>：配矿工储备变化。</p></div></details>
+<details><summary>11. 用 Princeton 安全预算吓自己</summary><div class="dbody"><p><strong>错因</strong>：补贴归零在 <strong>2140</strong> 年后<span class="tag t-fact">事实</span>；近期 fee 波动被 Ordinals 打破预期<span class="tag t-ana">分析</span>。<strong>对策</strong>：区分<strong>长期</strong>与<strong>周期</strong>问题。</p></div></details>
+<details><summary>12. 把二手数字当【事实】</summary><div class="dbody"><p><strong>错因</strong>：$78k、64% 胜率传播链过长。<strong>对策</strong>：标<span class="tag t-chk">待验证</span>，交叉 CoinShares/JPM/Glassnode。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实映射</th>
+<th>可观察代理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">边际成本</td>
+<td>德州 $0.03/kWh 矿场 vs 欧洲 $0.12</td>
+<td>矿商财报电价披露</td>
+</tr>
+<tr>
+<td class="k">供给侧抛压</td>
+<td>上市矿商售币</td>
+<td>TheEnergyMag 追踪</td>
+</tr>
+<tr>
+<td class="k">算力出清</td>
+<td>矿机关机</td>
+<td>全网算力 30/60 MA</td>
+</tr>
+<tr>
+<td class="k">单位收入</td>
+<td>Hashprice</td>
+<td>Hashrate Index</td>
+</tr>
+<tr>
+<td class="k">周期底</td>
+<td>多信号共振</td>
+<td>Ribbon 恢复 + Puell + MVRV Z</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<h3>决策漏斗（非交易建议）</h3>
+<ol>
+<li><strong>环境</strong>：BTC 是否低于现金成本线 <strong>&gt;30 天</strong>？</li>
+<li><strong>压力</strong>：Puell <strong>&lt;0.75</strong>？Hash Ribbons 是否 <strong>capitulation 态</strong>？</li>
+<li><strong>触发</strong>：30d 算力 MA <strong>上穿</strong> 60d？</li>
+<li><strong>确认</strong>：矿工储备企稳？ETF 净流入？MVRV Z <strong>&lt;1</strong>？</li>
+<li><strong>风控</strong>：假设信号后仍可能 <strong>-15%</strong> 回撤<span class="tag t-inf">推论</span>；仓位与期权保护。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 观察者（能读面板）</summary><div class="dbody"><ul>
+<li>[ ] 解释 hashprice 公式与三成本线区别</li>
+<li>[ ] 在 Glassnode 找到 Hash Ribbons 与 Puell</li>
+<li>[ ] 说出难度调整 ±4× 规则</li>
+</ul></div></details>
+<details><summary>L2 · 分析者（能拆机制）</summary><div class="dbody"><ul>
+<li>[ ] 手算 hashprice：$77k × 450 BTC ÷ 1.02M PH/s ≈ <strong>$34.3</strong></li>
+<li>[ ] 解释死亡螺旋 vs 难度修复两条链</li>
+<li>[ ] 识别 AI 转型对算力信号的污染</li>
+</ul></div></details>
+<details><summary>L3 · 模拟者（能跑反事实）</summary><div class="dbody"><ul>
+<li>[ ] 用 §12 工具模拟价跌 20% 对利润率影响</li>
+<li>[ ] 漂移剥离 Hash Ribbon 64% 胜率</li>
+<li>[ ] 对比 2022 vs 2026 capitulation 时长</li>
+</ul></div></details>
+<details><summary>L4 · 实践者（能建系统）</summary><div class="dbody"><ul>
+<li>[ ] 自建每周矿工 stress 检查表（5 项指标）</li>
+<li>[ ] 写「成本线穿越」事件日志</li>
+<li>[ ] 与 MVRV/ETF 流做联合回测笔记</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色扮演：你是「矿场首席财务官」</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>关卡</th>
+<th>场景</th>
+<th>任务</th>
+<th>通关条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>BTC $90k，成本 $78k</td>
+<td>决定是否扩产</td>
+<td>算出利润率 <strong>+15.4%</strong></td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>BTC 跌至 $70k</td>
+<td>选择关机比例</td>
+<td>识别 ~20% 产能应离线<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>难度下调 10%</td>
+<td>重算 hashprice</td>
+<td>HP 从 $28→约 <strong>$31</strong>（价不变）</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>Hash Ribbon 恢复</td>
+<td>向董事会汇报</td>
+<td>强调<strong>恢复交叉</strong>非变红</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>AI 客户出价购电</td>
+<td>权衡挖 vs 租</td>
+<td>列出机会成本，非单纯利空</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务 ID</th>
+<th>类型</th>
+<th>描述</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T01</td>
+<td>日常</td>
+<td>记录当日 hashprice + BTC 价</td>
+<td>+10 XP</td>
+</tr>
+<tr>
+<td class="k">T02</td>
+<td>日常</td>
+<td>检查 30/60 算力 MA 关系</td>
+<td>+15 XP</td>
+</tr>
+<tr>
+<td class="k">T03</td>
+<td>周常</td>
+<td>读一家矿商财报成本披露</td>
+<td>+40 XP</td>
+</tr>
+<tr>
+<td class="k">T04</td>
+<td>周常</td>
+<td>更新 Puell 与成本线价差表</td>
+<td>+35 XP</td>
+</tr>
+<tr>
+<td class="k">T05</td>
+<td>挑战</td>
+<td>完整跑 §22 三十分钟实践</td>
+<td>+100 XP</td>
+</tr>
+<tr>
+<td class="k">T06</td>
+<td>挑战</td>
+<td>写 1 页 capitulation 反事实报告</td>
+<td>+120 XP</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A：BTC 稳在 $58k（Q2 2026 实际）</button><button class="tab" data-pane="tb1-1">情景 B：BTC 回升 $100k（CoinShares 情景）</button><button class="tab" data-pane="tb1-2">情景 C：AI 收入占 70%（2026 结构变迁）</button></div>
+<div class="pane on" id="tb1-0"><ul>
+<li>现金成本 $78k → 利润率 <strong>-25.6%</strong></li>
+<li>hashprice 约 <strong>$27–28</strong>（历史低区）</li>
+<li>上市矿商普遍低于现金盈亏平衡<span class="tag t-chk">待验证</span></li>
+<li><strong>推论</strong>：capitulation 延长，售币压力最大</li>
+</ul></div><div class="pane" id="tb1-1"><ul>
+<li>利润率 <strong>+28.2%</strong>；hashprice 约 <strong>$37–59</strong> 区间<span class="tag t-chk">待验证</span></li>
+<li>多数矿场重回盈利；算力重新上行</li>
+<li><strong>推论</strong>：矿工底叙事消退，抛压转囤币</li>
+</ul></div><div class="pane" id="tb1-2"><ul>
+<li>算力下降 <strong>不必然</strong>等于 BTC 利空</li>
+<li>Hash Ribbons 假阳性上升<span class="tag t-hyp">假设</span></li>
+<li><strong>对策</strong>：矿工指标权重下调，ETF/宏观权重上调</li>
+</ul></div>
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>Hash Ribbon 历史买入胜率约 <strong>64%</strong>【待验证】——先和随机持币基准比。</p>
+<div class="ctrl"><label>持有期（日）<input type="range" id="mc_d_T" min="5" max="365" step="5" value="90"><output id="mc_d_TO">90 日</output></label></div>
+<div class="ctrl"><label>信号胜率 (%)<input type="range" id="mc_d_ps" min="50" max="90" step="0.1" value="64.0"><output id="mc_d_psO">64.0%</output></label></div>
+<div class="ctrl"><label>年化漂移 μ (%)<input type="range" id="mc_d_mu" min="0" max="100" step="1" value="50"><output id="mc_d_muO">50%</output></label></div>
+<div class="ctrl"><label>年化波动 σ (%)<input type="range" id="mc_d_sg" min="30" max="100" step="1" value="65"><output id="mc_d_sgO">65%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="mc_d_base">71.4%</strong><span id="mc_d_baseh">—</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="mc_d_dp">-7.4 pp</strong><span id="mc_d_dph">—</span></div>
+<div class="ro"><span class="k">所需样本 n</span><strong id="mc_d_n">203</strong><span id="mc_d_nh">—</span></div>
+<canvas id="mc_dChart" height="176" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="mc_d_v">超额有限</strong><span id="mc_d_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>目标</th>
+<th>检验标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 观察者</strong></td>
+<td>1–2 周</td>
+<td>读懂矿工面板</td>
+<td>能口述 hashprice + 三成本线</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 分析者</strong></td>
+<td>1 月</td>
+<td>拆 capitulation 机制</td>
+<td>能画四阶段循环</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 模拟者</strong></td>
+<td>2–3 月</td>
+<td>反事实 + 漂移剥离</td>
+<td>独立完成 §20 三情景</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 实践者</strong></td>
+<td>持续</td>
+<td>联合指标系统</td>
+<td>每周 miner stress 日志 ≥8 周</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<p><strong>目标</strong>：用公开数据判断「当前是否处于矿工 stress 区」，<strong>不下单</strong>。</p>
+<ol>
+<li><strong>（8 分）算 hashprice</strong>：打开 Hashrate Index 或手算——$77,000 × 450 BTC ÷ 1,020,000 PH/s ≈ <strong>$34.3/PH/s/日</strong>。记下与 $27.7 低点的距离。</li>
+<li><strong>（7 分）比成本线</strong>：JPM ~$78k vs 现货 ~$77k → 利润率 <strong>-1.3%</strong>。写下「压力区」而非「铁底」。</li>
+<li><strong>（8 分）读 Ribbons</strong>：查 30d vs 60d 算力 MA——capitulation 还是恢复？<strong>只有上穿才可操作<span class="tag t-ana">分析</span></strong>。</li>
+<li><strong>（7 分）漂移剥离</strong>：90 日基准 <strong>71.4%</strong> vs 信号 64% → <strong>跑输 7.4 pp</strong>。结论：矿工指标需<strong>更长持有期或联合确认</strong>。</li>
+</ol>
+<p><strong>产出</strong>：一张 A4「矿工 stress 三联表」（hashprice / 成本差 / ribbon 状态），可拍照存档。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>行动</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>协议层</td>
+<td>读难度调整规则（Bitcoin Core <code>pow.cpp</code> 摘要）</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>单位经济学</td>
+<td>手算 3 组 hashprice（$58k/$77k/$100k）</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>成本线</td>
+<td>对比 JPM vs CoinShares vs checkonchain 口径</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>Hash Ribbons</td>
+<td>标注 2022-11 与 2025-11 两次 capitulation</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>Puell</td>
+<td>记录当前 Puell 与 2022 底 0.3 的距离</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>抛售</td>
+<td>读 Q1 2026 上市矿商售币新闻摘要</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>综合</td>
+<td>完成 §22 实践 + 写 200 字结论</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>焦点</th>
+<th>交付物</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>概念与公式</td>
+<td>hashprice + 成本线速查卡</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>历史 capitulation</td>
+<td>5 次事件对比表</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>2026 结构变迁</td>
+<td>AI 转型对 3 家矿商影响笔记</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>联合系统</td>
+<td>矿工 + MVRV + ETF 流 联合检查表 v1</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>在本主题的角色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>边际成本出清</strong></td>
+<td>最高成本产能先退出</td>
+<td>成本线本质</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>难度滞后调节</strong></td>
+<td>14 天慢刹车</td>
+<td>capitulation 时长</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>Hashprice 恒等式</strong></td>
+<td>奖励÷算力</td>
+<td>单位经济学核心</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>死亡螺旋</strong></td>
+<td>卖币→价跌→更卖</td>
+<td>红色反馈环</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>Hash Ribbons</strong></td>
+<td>30/60 算力 MA</td>
+<td>可操作恢复信号</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>Puell Multiple</strong></td>
+<td>日收入/年均</td>
+<td>压力确认</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>漂移基准</strong></td>
+<td>BTC 正漂移</td>
+<td>剥离虚假 alpha</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>安全预算</strong></td>
+<td>补贴→费率</td>
+<td>长期批评维度</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>难度 β</strong></td>
+<td>价-难度敏感度</td>
+<td>2026 结构变化</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>联合滤波</strong></td>
+<td>多信号一致</td>
+<td>降低假阳性</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>读之前问自己</summary><div class="dbody"><ol>
+<li>我说的是现金成本还是链上生产成本？</li>
+<li>Hash Ribbons 是变红还是已恢复上穿？</li>
+<li>算力下降有多少比例来自 AI 转型？</li>
+<li>我的持有期是否长于 capitulation 本身？</li>
+<li>信号胜率是否已减随机持币基准？</li>
+</ol></div></details>
+<details><summary>读之后追问</summary><div class="dbody"><ol>
+<li>若 BTC 在成本线下方再横盘 6 个月，矿工如何融资？</li>
+<li>第五次减半（2028）前成本地板会抬升多少？</li>
+<li>ETF 买盘能否结构性吸收矿工抛压？</li>
+<li>费率占比要到多少才能缓解安全预算焦虑？</li>
+<li>2021 两次 ribbon 恢复后 1 年亏损说明什么？</li>
+</ol></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li><strong>矿工–ETF 博弈模型</strong>：上市矿商售币 vs ETF 日均净流入谁更大？<span class="tag t-chk">待验证</span></li>
+<li><strong>AI 算力离线分类器</strong>：能否从公告 NLP 分离「主动 offline」与 capitulation？</li>
+<li><strong>费率占比临界点</strong>：补贴每减半一次，需要多少链上活动才能稳住 hashprice？</li>
+<li><strong>跨资产对照</strong>：BTC 矿工成本线 vs 黄金 AISC 成本曲线有何同构？</li>
+<li><strong>联合回测</strong>：Ribbon 恢复 + Puell&lt;0.5 + MVRV Z&lt;1 三因子样本外检验</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>附录：数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">全成本 ~$78k</td>
+<td>投行研报</td>
+<td>JPMorgan 2026 客户笔记<span class="tag t-chk">待验证</span></td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">现金成本 ~$76k–$80k</td>
+<td>行业研报</td>
+<td>CoinShares Q4 2025 / Q2 2026 挖矿报告</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Hashprice $27.7 低点</td>
+<td>行业数据</td>
+<td>CoinShares Q2 2026</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Hash Ribbons 定义</td>
+<td>指标原创</td>
+<td>Charles Edwards, 2019</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Puell Multiple</td>
+<td>指标原创</td>
+<td>David Puell</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">难度调整公式</td>
+<td>协议代码</td>
+<td>Bitcoin Core <code>pow.cpp</code></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">安全预算批评</td>
+<td>学术论文</td>
+<td>Eyal et al., Princeton CCS</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">上市矿商 Q1 售币 32k</td>
+<td>媒体报道</td>
+<td>TheEnergyMag / JPM 引用<span class="tag t-chk">待验证</span></td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Hash Ribbon ~64% 胜率</td>
+<td>二手回测</td>
+<td>多来源传播<span class="tag t-chk">待验证</span></td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">AI 收入占比 ~70%</td>
+<td>行业预测</td>
+<td>CoinShares Butterfill 访谈<span class="tag t-chk">待验证</span></td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供教育与认知框架构建，<strong>不构成任何投资建议</strong>。比特币价格波动极大；矿工成本估算方法不一，历史 capitulation 样本有限（约十余次），<strong>过去表现不保证未来</strong>。链上算力为估计值，指标可能被市场结构变迁（ETF、AI 托管）削弱。任何交易决策应咨询合资格顾问，并仅使用你可承受损失的资金。</p>
+</section>
+<footer>  <p>《BTC-矿工成本线 / 矿工底 · 全景认知与实践操作手册》 · 生成于 2026-09-17 · 耗时 3 分 44 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC-矿工成本线 / 矿工底》主题脚本
+   四个可调模型：
+     1. 矿工盈亏线 — 现货价 vs 现金成本 → 利润率与关机阈值
+     2. Hashprice 计算器 — 价格×算力×区块奖励 → $/PH/s/日
+     3. Puell 压力表 — 矿工日收入 / 年均收入 →  capitulation 区间
+     4. 漂移剥离器 — Hash Ribbon 买入胜率 vs 随机持币基准
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function fmtUsd(v) {
+    if (!isFinite(v)) return '—';
+    if (v >= 1e6) return '$' + (v / 1e6).toFixed(2) + 'M';
+    if (v >= 1e3) return '$' + Math.round(v).toLocaleString('en-US');
+    return '$' + v.toFixed(2);
+  }
+
+  var SUBSIDY = 3.125;
+  var BLOCKS_PER_DAY = 144;
+
+  /* ══ 工具 1 · 矿工盈亏线 ══ */
+  (function minerBreakeven() {
+    var pxEl = $('mc_px'), costEl = $('mc_cost');
+    if (!pxEl || !costEl) return;
+    var pxO = $('mc_pxO'), costO = $('mc_costO');
+    var marginEl = $('mc_margin'), marginHEl = $('mc_marginh');
+    var gapEl = $('mc_gap'), gapHEl = $('mc_gaph');
+    var vEl = $('mc_v'), vhEl = $('mc_vh');
+    var cv = $('mcChart');
+
+    function zone(marginPct) {
+      if (marginPct >= 20) return { t: '丰厚利润', c: '#d5342c', h: '矿工有强烈扩产与抛售激励' };
+      if (marginPct >= 5) return { t: '温和盈利', c: '#b8730a', h: '多数高效矿场可维持运营' };
+      if (marginPct >= 0) return { t: '盈亏边缘', c: '#454c56', h: '高成本矿机开始关机' };
+      if (marginPct >= -15) return { t: '亏损运营', c: '#0f8a4d', h: '约 15–20% 产能可能离线【待验证】' };
+      return { t: '深度 capitulation', c: '#0f8a4d', h: '历史上常对应局部底，但可持续数月' };
+    }
+
+    function draw(px, cost) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var minP = 40000, maxP = 130000;
+      var sx = function (v) { return pad.l + ((v - minP) / (maxP - minP)) * iw; };
+
+      ctx.fillStyle = '#fdf3f2';
+      ctx.fillRect(pad.l, pad.t, sx(cost) - pad.l, ih);
+      ctx.fillStyle = '#f2f7f4';
+      ctx.fillRect(sx(cost), pad.t, sx(maxP) - sx(cost), ih);
+
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      [50000, 78000, 100000, 126000].forEach(function (ref) {
+        var x = sx(ref);
+        ctx.strokeStyle = ref === cost ? '#0f8a4d' : '#c9d0d9';
+        ctx.setLineDash(ref === cost ? [4, 3] : []);
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = ref === cost ? '#0f8a4d' : '#7c848f';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText((ref / 1000) + 'k', x, y1 + 13);
+      });
+
+      var mx = sx(px);
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(mx, pad.t); ctx.lineTo(mx, y1); ctx.stroke();
+      ctx.fillStyle = '#1d4ed8';
+      ctx.beginPath(); ctx.arc(mx, pad.t + ih * 0.45, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(fmtUsd(px), mx, pad.t + ih * 0.45 - 12);
+
+      ctx.fillStyle = '#0f8a4d';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('成本线以下', pad.l + 4, pad.t + 14);
+      ctx.fillStyle = '#7c848f';
+      ctx.textAlign = 'center';
+      ctx.fillText('BTC 现货价 ($)', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var px = parseFloat(pxEl.value);
+      var cost = parseFloat(costEl.value);
+      var margin = (px - cost) / cost * 100;
+      var gap = px - cost;
+      var z = zone(margin);
+      txt(pxO, fmtUsd(px));
+      txt(costO, fmtUsd(cost));
+      txt(marginEl, (margin >= 0 ? '+' : '') + margin.toFixed(1) + '%');
+      tint(marginEl, margin >= 0 ? '#d5342c' : '#0f8a4d');
+      txt(marginHEl, margin >= 0 ? '价高于成本' : '价低于成本');
+      txt(gapEl, (gap >= 0 ? '+' : '') + fmtUsd(gap));
+      txt(gapHEl, '绝对差额');
+      txt(vEl, z.t);
+      tint(vEl, z.c);
+      txt(vhEl, z.h);
+      draw(px, cost);
+    }
+
+    pxEl.addEventListener('input', update);
+    costEl.addEventListener('input', update);
+    update();
+    window.addEventListener('resize', update);
+  })();
+
+  /* ══ 工具 2 · Hashprice 计算器 ══ */
+  (function hashpriceCalc() {
+    var pxEl = $('hp_px'), hrEl = $('hp_hr'), feeEl = $('hp_fee');
+    if (!pxEl || !hrEl) return;
+    var pxO = $('hp_pxO'), hrO = $('hp_hrO'), feeO = $('hp_feeO');
+    var hpEl = $('hp_val'), hpHEl = $('hp_valh');
+    var dailyEl = $('hp_daily'), dailyHEl = $('hp_dailyh');
+    var vEl = $('hp_v'), vhEl = $('hp_vh');
+    var cv = $('hpChart');
+
+    function hashprice(px, hrEH, feePct) {
+      var hrPH = hrEH * 1e3;
+      var dailyBtc = BLOCKS_PER_DAY * SUBSIDY * (1 + feePct / 100);
+      var dailyUsd = dailyBtc * px;
+      return dailyUsd / hrPH;
+    }
+
+    function zone(hp) {
+      if (hp >= 55) return { t: '牛市 hashprice', c: '#d5342c', h: '2025-07 峰约 $63/PH/s/日【待验证】' };
+      if (hp >= 38) return { t: '盈亏平衡上方', c: '#b8730a', h: '2026-09 回升至约 $38【待验证】' };
+      if (hp >= 28) return { t: '压榨区间', c: '#454c56', h: 'Q1–Q2 2026 多数矿场承压' };
+      return { t: '历史极端低', c: '#0f8a4d', h: '2026-06 月均 $27.7 创新低【待验证】' };
+    }
+
+    function draw(hp) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxH = 70;
+      var sx = function (v) { return pad.l + (v / maxH) * iw; };
+
+      var refs = [
+        { v: 27.7, col: '#0f8a4d', lab: '6月低' },
+        { v: 38, col: '#b8730a', lab: '9月' },
+        { v: 63, col: '#d5342c', lab: '2025峰' }
+      ];
+      refs.forEach(function (r) {
+        ctx.fillStyle = r.col + '18';
+        var x0 = sx(Math.max(0, r.v - 3));
+        ctx.fillRect(x0, pad.t, sx(Math.min(maxH, r.v + 3)) - x0, ih);
+      });
+
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      refs.forEach(function (r) {
+        var x = sx(r.v);
+        ctx.strokeStyle = r.col;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '9px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(r.lab, x, y1 + 13);
+      });
+
+      var mx = sx(Math.min(hp, maxH));
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(mx, pad.t); ctx.lineTo(mx, y1); ctx.stroke();
+      ctx.fillStyle = '#1d4ed8';
+      ctx.font = 'bold 11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('$' + hp.toFixed(1), mx, pad.t + ih * 0.5);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillText('Hashprice ($/PH/s/日)', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var px = parseFloat(pxEl.value);
+      var hr = parseFloat(hrEl.value);
+      var fee = parseFloat(feeEl.value);
+      var hp = hashprice(px, hr, fee);
+      var dailyBtc = BLOCKS_PER_DAY * SUBSIDY * (1 + fee / 100);
+      var z = zone(hp);
+      txt(pxO, fmtUsd(px));
+      txt(hrO, hr.toFixed(0) + ' EH/s');
+      txt(feeO, fee.toFixed(1) + '%');
+      txt(hpEl, '$' + hp.toFixed(2));
+      txt(hpHEl, '/PH/s/日');
+      txt(dailyEl, dailyBtc.toFixed(1) + ' BTC');
+      txt(dailyHEl, '全网日产出（含费）');
+      txt(vEl, z.t);
+      tint(vEl, z.c);
+      txt(vhEl, z.h);
+      draw(hp);
+    }
+
+    pxEl.addEventListener('input', update);
+    hrEl.addEventListener('input', update);
+    feeEl.addEventListener('input', update);
+    update();
+    window.addEventListener('resize', update);
+  })();
+
+  /* ══ 工具 3 · Puell 压力表 ══ */
+  (function puellGauge() {
+    var pEl = $('pl_val'), avgEl = $('pl_avg');
+    if (!pEl) return;
+    var pO = $('pl_valO'), avgO = $('pl_avgO');
+    var ratioEl = $('pl_ratio'), ratioHEl = $('pl_ratioh');
+    var revEl = $('pl_rev'), revHEl = $('pl_revh');
+    var vEl = $('pl_v'), vhEl = $('pl_vh');
+    var cv = $('plChart');
+
+    function zone(pm) {
+      if (pm >= 4) return { t: '矿工暴利', c: '#d5342c', h: '历史上常接近周期顶' };
+      if (pm >= 1.5) return { t: '高于均值', c: '#b8730a', h: '扩产激励上升' };
+      if (pm >= 0.75) return { t: '温和压力', c: '#454c56', h: '2025-11 Puell≈0.67【待验证】' };
+      if (pm >= 0.5) return { t: ' capitulation 区', c: '#0f8a4d', h: '矿工收入显著低于年均' };
+      return { t: '极端低估', c: '#0f8a4d', h: '2022 底约 0.3【待验证】' };
+    }
+
+    function draw(pm) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxP = 5;
+      var sx = function (v) { return pad.l + (v / maxP) * iw; };
+
+      var bands = [
+        { lo: 0, hi: 0.5, col: '#e8f5ee' },
+        { lo: 0.5, hi: 0.75, col: '#f4f6f9' },
+        { lo: 0.75, hi: 1.5, col: '#fff7e6' },
+        { lo: 1.5, hi: maxP, col: '#fdf3f2' }
+      ];
+      bands.forEach(function (b) {
+        ctx.fillStyle = b.col;
+        ctx.fillRect(sx(b.lo), pad.t, sx(b.hi) - sx(b.lo), ih);
+      });
+
+      [0.5, 1, 2, 4].forEach(function (ref) {
+        var x = sx(ref);
+        ctx.strokeStyle = '#c9d0d9';
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(ref), x, y1 + 13);
+      });
+
+      var mx = sx(Math.min(pm, maxP));
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(mx, pad.t); ctx.lineTo(mx, y1); ctx.stroke();
+      ctx.fillStyle = '#1d4ed8';
+      ctx.font = 'bold 12px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(pm.toFixed(2), mx, pad.t + ih * 0.5 - 8);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillText('Puell Multiple', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var daily = parseFloat(pEl.value);
+      var avg = parseFloat(avgEl.value);
+      var pm = avg > 0 ? daily / avg : 0;
+      var z = zone(pm);
+      txt(pO, fmtUsd(daily) + '/日');
+      txt(avgO, fmtUsd(avg) + '/日');
+      txt(ratioEl, pm.toFixed(2));
+      txt(ratioHEl, 'Puell Multiple');
+      txt(revEl, (pm * 100).toFixed(0) + '%');
+      txt(revHEl, '相对年均收入');
+      txt(vEl, z.t);
+      tint(vEl, z.c);
+      txt(vhEl, z.h);
+      draw(pm);
+    }
+
+    pEl.addEventListener('input', update);
+    avgEl.addEventListener('input', update);
+    update();
+    window.addEventListener('resize', update);
+  })();
+
+  /* ══ 工具 4 · 漂移剥离器 ══ */
+  (function driftStripper() {
+    var tEl = $('mc_d_T'), psEl = $('mc_d_ps'), muEl = $('mc_d_mu'), sgEl = $('mc_d_sg');
+    if (!tEl) return;
+    var tO = $('mc_d_TO'), psO = $('mc_d_psO'), muO = $('mc_d_muO'), sgO = $('mc_d_sgO');
+    var baseEl = $('mc_d_base'), baseHEl = $('mc_d_baseh');
+    var dpEl = $('mc_d_dp'), dpHEl = $('mc_d_dph');
+    var nEl = $('mc_d_n'), nHEl = $('mc_d_nh');
+    var vEl = $('mc_d_v'), vhEl = $('mc_d_vh');
+    var cv = $('mc_dChart');
+
+    function sampleN(pb, ps) {
+      var d = ps - pb;
+      if (d <= 0) return Infinity;
+      var z = 1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps));
+      return Math.ceil(z * z / (d * d));
+    }
+
+    function draw(pb, ps) {
+      var s = fit(cv, 176);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 44, r: 12, t: 18, b: 36 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 36;
+      var barH = ih * 0.35;
+
+      ctx.fillStyle = '#f4f6f9';
+      ctx.fillRect(pad.l, pad.t + ih * 0.2, iw, barH);
+      ctx.fillStyle = '#1d4ed8';
+      var bw = (pb / 100) * iw;
+      ctx.fillRect(pad.l, pad.t + ih * 0.2, bw, barH);
+      ctx.fillStyle = '#d5342c';
+      var sw = (ps / 100) * iw;
+      ctx.fillRect(pad.l, pad.t + ih * 0.65, sw, barH);
+
+      ctx.fillStyle = '#454c56';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('基准 ' + (pb * 100).toFixed(1) + '%', pad.l, pad.t + ih * 0.15);
+      ctx.fillText('信号 ' + (ps * 100).toFixed(1) + '%', pad.l, pad.t + ih * 0.6);
+      ctx.fillStyle = '#7c848f';
+      ctx.textAlign = 'center';
+      ctx.fillText('胜率对比', pad.l + iw / 2, y1 + 22);
+    }
+
+    function update() {
+      var T = parseFloat(tEl.value);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sg = parseFloat(sgEl.value) / 100;
+      var t = T / 252;
+      var pb = ncdf(mu * t / (sg * Math.sqrt(t)));
+      var dp = (ps - pb) * 100;
+      var n = sampleN(pb, ps);
+      txt(tO, T + ' 日');
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(0) + '%');
+      txt(sgO, (sg * 100).toFixed(0) + '%');
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(baseHEl, '随机持币基准');
+      txt(dpEl, (dp >= 0 ? '+' : '') + dp.toFixed(1) + ' pp');
+      tint(dpEl, dp >= 5 ? '#d5342c' : dp >= 1 ? '#b8730a' : '#454c56');
+      txt(dpHEl, '真实超额');
+      txt(nEl, isFinite(n) ? String(n) : '∞');
+      txt(nHEl, '显著性所需样本');
+      var verdict = dp < 2 ? '超额有限' : dp < 8 ? '有一定超额' : '超额显著';
+      txt(vEl, verdict);
+      tint(vEl, dp < 2 ? '#454c56' : '#d5342c');
+      txt(vhEl, 'Hash Ribbon 历史买入约 64% 胜率【待验证】');
+      draw(pb, ps);
+    }
+
+    tEl.addEventListener('input', update);
+    psEl.addEventListener('input', update);
+    muEl.addEventListener('input', update);
+    sgEl.addEventListener('input', update);
+    update();
+    window.addEventListener('resize', update);
+  })();
+})();
+</script>
+</body>
+</html>

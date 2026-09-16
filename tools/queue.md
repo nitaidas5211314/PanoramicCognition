@@ -30,7 +30,7 @@
 - [x] BTC-1-yr+ HODL Wave（钻石手占比）
 - [x] BTC-URPD 已实现价格分布
 - [x] BTC-LTH / STH 持仓与成本框架
-- [ ] BTC-矿工成本线 / 矿工底
+- [x] BTC-矿工成本线 / 矿工底
 - [ ] BTC-均线体系：200周 / 200日 / 两年均线乘数
 - [ ] BTC-SSR RSI（稳定币供给比率 RSI）
 - [ ] BTC-ETF 资金流（反向指标）
