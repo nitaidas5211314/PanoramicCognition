@@ -1,0 +1,2186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K线分析 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Candlestick Analysis × Price Action</small></div>
+  <nav id="nav">
+    <div class="navgroup">正文</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">入口</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <div class="navgroup">路径</div>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天实践计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索方向</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>K线分析</h1>
+  <p class="sub">把一根 K 线读成<strong>多空博弈的压缩日志</strong>——它最锋利的地方是逼你看环境，最危险的地方是你把形态名字当成预测</p>
+  <div class="meta">
+    <span class="chip b">27 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p>K 线分析只做一件事：<strong>把某一周期内开、高、低、收四个价格，压缩成一根「多空力量快照」</strong>，然后逼你回答三个问题——<strong>现在是什么环境、这根 K 线在环境里扮演什么角色、我凭什么相信下一根会延续</strong>。</p>
+<p>它的三根支柱是：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>支柱</th>
+<th>一句话</th>
+<th>观测入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">结构律</td>
+<td>单根 K 线没有方向，<strong>序列才有</strong></td>
+<td>连续 K 线的重叠度、高低点递进</td>
+</tr>
+<tr>
+<td class="k">位置律</td>
+<td>同一根锤子线在支撑与阻力意义相反</td>
+<td>当前价在区间中的分位</td>
+</tr>
+<tr>
+<td class="k">期望律</td>
+<td>形态必须算期望，不能只报胜率</td>
+<td>胜率 × 平均盈利 − 败率 × 平均亏损 − 成本</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>它真正稀缺的不是「认形态」，而是「环境优先」</strong>：Al Brooks 的价格行为学把市场分成趋势环境（SOM）与震荡环境（LOM）——十字星在趋势里是延续，在震荡里是反转预备。<strong>名字一样，剧本相反。</strong></p>
+<p>但必须把另一半说清楚：</p>
+<blockquote>
+<p><span class="tag t-ana">分析</span>Marshall、Young &amp; Rose（2006）用 bootstrap 在道琼斯成分股上检验经典蜡烛图策略，<strong>未发现统计显著的超额收益</strong>。<span class="tag t-chk">待验证</span>Gregory Morris 的统计则显示，锤子线准确率约 44%、上吊线约 63%——<strong>同一族形态，位置不同、准确率可差 19 个百分点</strong>。K 线不是无效，而是<strong>被当成「背名字就能赚钱」时最危险</strong>。</p>
+</blockquote>
+<hr />
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话边界</h3>
+<p>K 线分析研究的<strong>不是公司值多少钱，而是给定周期里买卖双方谁更着急、谁更犹豫</strong>。它把连续成交压缩成 OHLC 四元组，再用实体与影线的几何关系，推断<strong>力量对比的瞬时快照</strong>。</p>
+<p><strong>边界</strong>：它解释「行为痕迹」，不解释「行为原因」；它擅长描述<strong>已经发生的博弈</strong>，不擅长单独预测<strong>尚未发生的消息</strong>。</p>
+<h3>用 15 个问题划定边界</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">研究什么</td>
+<td>开高低收构成的<strong>价格-时间结构</strong>，及多根 K 线形成的形态序列</td>
+</tr>
+<tr>
+<td class="k">边界在哪</td>
+<td>只管图形可读的力量对比，不管基本面估值</td>
+</tr>
+<tr>
+<td class="k">核心对象</td>
+<td>单根 K 线（bar）与形态组合（pattern）</td>
+</tr>
+<tr>
+<td class="k">参与者</td>
+<td>主动交易者、做市商、算法、被动资金——都在同一根 K 上留下脚印</td>
+</tr>
+<tr>
+<td class="k">核心变量</td>
+<td>实体比、影线比、收盘位置、重叠度、趋势/震荡环境</td>
+</tr>
+<tr>
+<td class="k">可观察</td>
+<td>OHLC、颜色、序列高低点、区间边界</td>
+</tr>
+<tr>
+<td class="k">不可观察但可推断</td>
+<td>大单意图、止损集群位置、被套盘心理</td>
+</tr>
+<tr>
+<td class="k">谁影响谁</td>
+<td>订单流 → K 线形态 → 技术派跟随 → 流动性变化 → 下一根 K 线</td>
+</tr>
+<tr>
+<td class="k">确定因果</td>
+<td>放量大实体突破区间 → 止损触发 → 加速（在趋势环境中）</td>
+</tr>
+<tr>
+<td class="k">只是相关</td>
+<td>「出现吞没」与「次日上涨」——相关，方向取决于位置与环境</td>
+</tr>
+<tr>
+<td class="k">表层现象</td>
+<td>锤子、黄昏星、三兵等形态标签</td>
+</tr>
+<tr>
+<td class="k">底层机制</td>
+<td>止损集中、流动性真空、行为金融中的处置效应与羊群</td>
+</tr>
+<tr>
+<td class="k">反馈</td>
+<td>正反馈：突破吸引跟随；负反馈：极端波动引发获利了结</td>
+</tr>
+<tr>
+<td class="k">时间延迟</td>
+<td>形态识别到可交易确认，常需 1–3 根 K 线</td>
+</tr>
+<tr>
+<td class="k">正负反馈</td>
+<td>趋势中的趋势 K 线＝正反馈；震荡中的假突破＝负反馈</td>
+</tr>
+</tbody>
+</table></div>
+<h3>历史坐标</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>人物/事件</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">18 世纪</td>
+<td>本间宗久（酒田）· 日本米市</td>
+<td><span class="tag t-fact">事实</span>蜡烛图起源于实物商品，强调<strong>供需情绪的可视化</strong></td>
+</tr>
+<tr>
+<td class="k">1991</td>
+<td>Steve Nison《日本蜡烛图技术》</td>
+<td><span class="tag t-fact">事实</span>系统引入西方，形态命名体系定型</td>
+</tr>
+<tr>
+<td class="k">2006</td>
+<td>Marshall et al. · <em>Journal of Banking &amp; Finance</em></td>
+<td><span class="tag t-fact">事实</span>DJIA 成分股 bootstrap 检验：<strong>经典蜡烛策略无显著超额</strong></td>
+</tr>
+<tr>
+<td class="k">2009</td>
+<td>Lu &amp; Shiu · <em>Quarterly Review of Economics and Finance</em></td>
+<td><span class="tag t-ana">分析</span>再检验：多数蜡烛选股策略<strong>难以击败随机</strong></td>
+</tr>
+<tr>
+<td class="k">2010s–</td>
+<td>Al Brooks 价格行为 · 逐根 K 线</td>
+<td><span class="tag t-ana">分析</span>从「背形态」转向「读环境 + 读序列」</td>
+</tr>
+<tr>
+<td class="k">2024–2025</td>
+<td>中国程序化交易监管框架</td>
+<td><span class="tag t-fact">事实</span>高频/程序化占比上升，<strong>原始 K 线信号的噪声结构改变</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>与相邻方法的区别</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>问的问题</th>
+<th>与 K 线的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">线图/柱状图</td>
+<td>收盘趋势？</td>
+<td>K 线额外提供<strong>日内博弈结构</strong></td>
+</tr>
+<tr>
+<td class="k">西方形态（头肩、双顶）</td>
+<td>大结构反转？</td>
+<td>可叠加：K 线提供<strong>微观确认</strong></td>
+</tr>
+<tr>
+<td class="k">威科夫/量价</td>
+<td>谁在吸筹派发？</td>
+<td>K 线是<strong>微观证据层</strong>，需配合成交量</td>
+</tr>
+<tr>
+<td class="k">指标（MACD/RSI）</td>
+<td>动量/超买超卖？</td>
+<td><span class="tag t-inf">推论</span>指标背离往往<strong>先于</strong>在 K 线上可读</td>
+</tr>
+<tr>
+<td class="k">订单流/Level2</td>
+<td>此刻谁在挂单？</td>
+<td>现代「读磁带」；K 线是<strong>聚合后的结果</strong></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>四个理由</h3>
+<div class="grid g2">
+<div class="card"><h4>它是所有技术分析的「通用字母表」</h4><p>不管学威科夫、道氏还是缠论，<strong>最后都要落到 K 线上</strong>。掌握 OHLC 的读法，等于掌握后续一切方法的输入格式。</p></div>
+<div class="card"><h4>它训练「环境意识」而非「形态迷信」</h4><p>好的 K 线训练不是背 50 个名字，而是<strong>先判趋势/震荡，再判这根 K 在结构中的角色</strong>。这个顺序能迁移到任何决策：先看上下文，再看证据。</p></div>
+<div class="card"><h4>它的失败模式可被统计戳破</h4><p><span class="tag t-fact">事实</span>学术检验与 Morris 形态统计共同说明：<strong>裸形态胜率常在 40%–60% 摇摆</strong>。知道这一点，你就不会再被「65% 胜率」的二手故事唬住。</p></div>
+<div class="card"><h4>它的学习成本极低、验证极快</h4><p>一张图、一支笔、30 分钟遮图测验——<strong>今天就能得到关于自己的客观数据</strong>，不需要昂贵终端。</p></div>
+</div>
+<h3>但也先说清楚：它被严重误用</h3>
+<ul>
+<li><strong>形态通胀</strong>：任何下跌后的长下影都可叫「锤子」，任何上涨后的十字星都可叫「犹豫」——<strong>标签越多，信息越少</strong>。</li>
+<li><strong>周期错配</strong>：用 1 分钟 K 线的 pin bar 去验证周线趋势——<strong>层级错配是散户亏损的头号原因</strong>。</li>
+<li><strong>忽略成本</strong>：形态「胜率 55%」若平均赢 1.5%、输 1.8%、成本 0.3%，期望为负——<strong>不算期望等于没学</strong>。</li>
+</ul>
+<div class="note amber"><b>一句话定性</b><p>K 线分析是一套<strong>高质量的观察协议</strong>，配上一套<strong>中等质量的形态模板</strong>。协议部分几乎无法被替代；模板部分必须你自己重新统计。</p></div>
+<hr />
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>K 线分析要在九个层级之间切换。<strong>用分钟级形态解释月线结构</strong>，是最常见的失败路径。</p>
+<svg viewBox="0 0 680 620" width="100%" style="max-width:680px">
+  <text x="12" y="18" font-size="12.5" font-weight="700" fill="#15181d" font-family="sans-serif">K 线分析的九层世界（自上而下：环境 → 结构 → 事件 → 执行 → 自我）</text>
+  <rect x="12" y="32" width="656" height="52" rx="9" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="26" y="52" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">L1 · 宏观与流动性层</text>
+  <text x="26" y="70" font-size="10.5" fill="#454c56" font-family="sans-serif">利率 · 政策 · 汇率 · 风险溢价 — 决定「趋势能不能延续」</text>
+  <rect x="12" y="92" width="656" height="52" rx="9" fill="#f2f7f4" stroke="#c6dcc9" stroke-width="1.3"/>
+  <text x="26" y="112" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">L2 · 指数与板块层</text>
+  <text x="26" y="130" font-size="10.5" fill="#454c56" font-family="sans-serif">大盘趋势 · 板块轮动 — 个股 K 线再漂亮，逆板块也难做</text>
+  <rect x="12" y="152" width="656" height="52" rx="9" fill="#f7f6f2" stroke="#ded8c4" stroke-width="1.3"/>
+  <text x="26" y="172" font-size="12" font-weight="700" fill="#8a6d1f" font-family="sans-serif">L3 · 多周期结构层</text>
+  <text x="26" y="190" font-size="10.5" fill="#454c56" font-family="sans-serif">月/周/日/小时 — 大周期定方向，小周期定入场；**不可倒置**</text>
+  <rect x="12" y="212" width="656" height="52" rx="9" fill="#fdf3f2" stroke="#f0cdc9" stroke-width="1.3"/>
+  <text x="26" y="232" font-size="12" font-weight="700" fill="#d5342c" font-family="sans-serif">L4 · 市场环境层（SOM / LOM）</text>
+  <text x="26" y="250" font-size="10.5" fill="#454c56" font-family="sans-serif">趋势环境 vs 震荡环境 — **同一根十字星，剧本相反**</text>
+  <rect x="12" y="272" width="656" height="52" rx="9" fill="#fdf3f2" stroke="#f0cdc9" stroke-width="1.3"/>
+  <text x="26" y="292" font-size="12" font-weight="700" fill="#d5342c" font-family="sans-serif">L5 · 区间与关键位层</text>
+  <text x="26" y="310" font-size="10.5" fill="#454c56" font-family="sans-serif">支撑阻力 · 前高前低 · 缺口 — 形态必须「贴」在关键位上才有意义</text>
+  <rect x="12" y="332" width="656" height="52" rx="9" fill="#f6f2fb" stroke="#dccdf0" stroke-width="1.3"/>
+  <text x="26" y="352" font-size="12" font-weight="700" fill="#6b3fa0" font-family="sans-serif">L6 · 单根与短序列层</text>
+  <text x="26" y="370" font-size="10.5" fill="#454c56" font-family="sans-serif">趋势 K 线 · 十字星 · 吞没 · 内包 — 1–5 根 K 线的力量对比</text>
+  <rect x="12" y="392" width="656" height="52" rx="9" fill="#f2f8fb" stroke="#c4dde9" stroke-width="1.3"/>
+  <text x="26" y="412" font-size="12" font-weight="700" fill="#1a6d8a" font-family="sans-serif">L7 · 经典形态组合层</text>
+  <text x="26" y="430" font-size="10.5" fill="#454c56" font-family="sans-serif">启明星 · 黄昏星 · 三兵 · 乌云盖顶 — 3 根以上的模板化组合</text>
+  <rect x="12" y="452" width="656" height="52" rx="9" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="26" y="472" font-size="12" font-weight="700" fill="#454c56" font-family="sans-serif">L8 · 执行与成本层</text>
+  <text x="26" y="490" font-size="10.5" fill="#454c56" font-family="sans-serif">滑点 · 冲击 · 止损距离 · 仓位 — 你的动作会改变被观测的 K 线</text>
+  <rect x="12" y="512" width="656" height="60" rx="9" fill="#fff8ec" stroke="#f0dcb4" stroke-width="1.4"/>
+  <text x="26" y="532" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">L9 · 你的认知与叙事层</text>
+  <text x="26" y="550" font-size="10.5" fill="#454c56" font-family="sans-serif">持仓方向会塑造你对同一根 K 线的解读 — 多头眼里全是「洗盘」，空头眼里全是「诱多」</text>
+  <text x="26" y="566" font-size="10.5" fill="#a06800" font-family="sans-serif">→ 遮图盲测是唯一能绕过 L9 污染的训练</text>
+  <text x="12" y="614" font-size="10.5" fill="#7c848f" font-family="sans-serif">上层约束下层：L4 决定 L6 怎么读；L9 决定你能不能正确执行 L8</text>
+</svg>
+<hr />
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>一根 K 线的四个维度</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>读法</th>
+<th>力量含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">实体大小</td>
+<td>|收−开| ÷ (高−低)</td>
+<td>多空一方是否<strong>控盘收盘</strong></td>
+</tr>
+<tr>
+<td class="k">上影线</td>
+<td>(高−max(开,收)) ÷ 范围</td>
+<td>上方抛压、被拒绝的幅度</td>
+</tr>
+<tr>
+<td class="k">下影线</td>
+<td>(min(开,收)−低) ÷ 范围</td>
+<td>下方承接、买盘防守</td>
+</tr>
+<tr>
+<td class="k">收盘位置</td>
+<td>(收−低) ÷ 范围</td>
+<td>最终谁赢——<strong>比颜色更重要</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>示例</strong>（O=100, H=105, L=98, C=104）：实体比 57.1%，下影 28.6%，上影 14.3%，收盘位置 85.7%——偏多但未极端（力量分约 +0.554）。</p>
+<h3>六类基础 K 线（PA 框架）</h3>
+<div class="grid g3">
+<div class="card"><h4>趋势 K 线（Trend Bar）</h4><p>大实体、小影线。表示一方<strong>一路控盘</strong>，在趋势环境中顺势解读。</p></div>
+<div class="card"><h4>十字星（Doji）</h4><p>开收接近。表示<strong>均衡/犹豫</strong>——在趋势中常是喘息，在震荡边界常是反转预备。</p></div>
+<div class="card"><h4>长影线 K 线（Pin Bar）</h4><p>一侧影线 ≥ 实体 2 倍。表示该方向<strong>被拒绝</strong>——但必须贴在关键位上。</p></div>
+<div class="card"><h4>吞没（Engulfing）</h4><p>后一根实体完全包住前一根。表示<strong>力量反转尝试</strong>——<span class="tag t-chk">待验证</span>单标的回测胜率约 57%–65%，不可外推。</p></div>
+<div class="card"><h4>内包（Inside Bar）</h4><p>高低点完全在前一根之内。表示<strong>波动收缩</strong>，突破方向需等下一根确认。</p></div>
+<div class="card"><h4>外包（Outside Bar）</h4><p>高低点完全包住前一根。表示<strong>波动扩张</strong>，常伴随止损触发与方向选择。</p></div>
+</div>
+<h3>环境二分法（Al Brooks）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>环境</th>
+<th>识别特征</th>
+<th>K 线读法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">SOM（趋势）</td>
+<td>高低点递进、K 线重叠少</td>
+<td>十字星＝顺势延续；回调 K 线＝入场机会</td>
+</tr>
+<tr>
+<td class="k">LOM（震荡）</td>
+<td>K 线密集重叠、区间清晰</td>
+<td>区间边缘的弱 K 线＝逆势机会；中部信号＝噪声</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note blue"><b>顺序比名字重要</b><p>「启明星」三个字没有信息；<strong>「震荡区间下沿 + 放量阳线吞没 + 次日不破低」</strong>这个序列才有信息。乱序出现的事件，优先当噪声。</p></div>
+<hr />
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>在 K 线上留下什么</th>
+<th>如何误读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">趋势跟随者</td>
+<td>连续趋势 K 线、突破放量</td>
+<td>把趋势末端当成「还会涨」</td>
+</tr>
+<tr>
+<td class="k">区间交易者</td>
+<td>边界长影线、假突破</td>
+<td>把第一次刺破当成真突破</td>
+</tr>
+<tr>
+<td class="k">做市商/高频</td>
+<td>瞬间长影线、异常成交量</td>
+<td>误读为「主力吸筹」</td>
+</tr>
+<tr>
+<td class="k">止损集群</td>
+<td>针刺后快速收回（流动性猎取）</td>
+<td>事后贴标签「锤子线」</td>
+</tr>
+<tr>
+<td class="k">被动指数资金</td>
+<td>平滑、低信息成交量</td>
+<td>污染「放量/缩量」信号</td>
+</tr>
+<tr>
+<td class="k">程序化策略</td>
+<td>2024 起须「先报告后交易」</td>
+<td><span class="tag t-fact">事实</span>监管要求验资验券、阈值管理，<strong>微观结构更规范也更「假」</strong></td>
+</tr>
+<tr>
+<td class="k">你（观察者）</td>
+<td>选择性记忆、叙事后贴</td>
+<td>盈利 K 线记得牢，亏损 K 线忘掉快</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note red"><b>现代市场最大的变化</b><p><span class="tag t-chk">待验证</span>量化私募占 A 股流通市值约 2%–3%，却贡献日均成交额 30%–40%。<strong>你看到的 K 线里，有相当一部分是算法博弈的聚合结果</strong>，不是「一个人的情绪」。这不会让 K 线失效，但会降低原始形态的纯度。</p></div>
+<hr />
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>为什么重要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">实体比 b</td>
+<td>|C−O|/(H−L)</td>
+<td>衡量「收盘控盘度」；b→0 为犹豫</td>
+</tr>
+<tr>
+<td class="k">收盘位置 q</td>
+<td>(C−L)/(H−L)</td>
+<td>同为大阳线，q 接近 1 强于 q 接近 0.6</td>
+</tr>
+<tr>
+<td class="k">重叠度 o</td>
+<td>连续 K 线区间交集比例</td>
+<td>o 上升 → 环境从 SOM 滑向 LOM</td>
+</tr>
+<tr>
+<td class="k">位置分位 p</td>
+<td>现价在区间中的百分位</td>
+<td><strong>p&lt;20% 的锤子 ≠ p&gt;80% 的锤子</strong></td>
+</tr>
+<tr>
+<td class="k">量比 v</td>
+<td>当前量 ÷ 均量</td>
+<td>突破/反转的「确认」变量</td>
+</tr>
+<tr>
+<td class="k">期望 E</td>
+<td>p·W − (1−p)·L − c</td>
+<td><strong>唯一决定长期盈亏的汇总变量</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>默认参数下（胜率 55%、赢 3%、输 2%、成本 0.3%）：<strong>E = +0.45%/笔</strong>——看似不错，但样本 100 笔才约 +45%，且未计冲击。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>主因果链：从订单到 K 线再到你的决策</h3>
+<svg viewBox="0 0 680 400" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="klG" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 z" fill="#454c56"/>
+    </marker>
+    <marker id="klR" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+  <rect x="14" y="24" width="140" height="50" rx="8" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="24" y="44" font-size="11.5" font-weight="700" fill="#1d4ed8" font-family="sans-serif">① 订单与流动性</text>
+  <text x="24" y="60" font-size="10" fill="#454c56" font-family="sans-serif">买卖意愿 · 深度</text>
+  <rect x="170" y="24" width="140" height="50" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="180" y="44" font-size="11.5" font-weight="700" fill="#15181d" font-family="sans-serif">② OHLC 聚合</text>
+  <text x="180" y="60" font-size="10" fill="#454c56" font-family="sans-serif">周期内四价定格</text>
+  <rect x="326" y="24" width="140" height="50" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="336" y="44" font-size="11.5" font-weight="700" fill="#15181d" font-family="sans-serif">③ 形态识别</text>
+  <text x="336" y="60" font-size="10" fill="#454c56" font-family="sans-serif">人/算法贴标签</text>
+  <rect x="482" y="24" width="184" height="50" rx="8" fill="#fdf3f2" stroke="#f0cdc9" stroke-width="1.3"/>
+  <text x="492" y="44" font-size="11.5" font-weight="700" fill="#d5342c" font-family="sans-serif">④ 交易执行</text>
+  <text x="492" y="60" font-size="10" fill="#454c56" font-family="sans-serif">你的单也会改变 ①</text>
+  <line x1="156" y1="49" x2="166" y2="49" stroke="#454c56" stroke-width="1.3" marker-end="url(#klG)"/>
+  <line x1="312" y1="49" x2="322" y2="49" stroke="#454c56" stroke-width="1.3" marker-end="url(#klG)"/>
+  <line x1="468" y1="49" x2="478" y2="49" stroke="#454c56" stroke-width="1.3" marker-end="url(#klG)"/>
+  <rect x="200" y="110" width="280" height="50" rx="8" fill="#fff8ec" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="210" y="130" font-size="11.5" font-weight="700" fill="#a06800" font-family="sans-serif">环境过滤器（L4）</text>
+  <text x="210" y="146" font-size="10" fill="#454c56" font-family="sans-serif">SOM/LOM · 多周期 · 关键位 — 决定 ③ 的解读方向</text>
+  <line x1="394" y1="74" x2="340" y2="108" stroke="#a06800" stroke-width="1.2" marker-end="url(#klG)"/>
+  <path d="M340,160 C340,220 120,220 84,160" fill="none" stroke="#d5342c" stroke-width="1.2" stroke-dasharray="5 4" marker-end="url(#klR)"/>
+  <text x="24" y="200" font-size="10.5" fill="#d5342c" font-family="sans-serif">跳过环境 → 形态标签泛滥 → ④ 负期望</text>
+  <rect x="14" y="250" width="652" height="130" rx="9" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="26" y="272" font-size="11.5" font-weight="700" fill="#15181d" font-family="sans-serif">因果 vs 相关（必读）</text>
+  <text x="26" y="292" font-size="10.5" fill="#454c56" font-family="sans-serif">✓ 因果：趋势环境中回调缩量 + 趋势 K 线恢复 → 延续概率上升（机制：浮筹已洗）</text>
+  <text x="26" y="310" font-size="10.5" fill="#454c56" font-family="sans-serif">✗ 相关：出现锤子 → 次日上涨（Morris：锤子仅 44%，常低于随机）</text>
+  <text x="26" y="328" font-size="10.5" fill="#454c56" font-family="sans-serif">✗ 错误：背下 50 个形态 → 稳定盈利（Marshall 2006：bootstrap 下无显著超额）</text>
+  <text x="26" y="346" font-size="10.5" fill="#454c56" font-family="sans-serif">✓ 因果：高期望结构 = 胜率 × 盈亏比 − 成本 &gt; 0 — 这才是可检验的命题</text>
+</svg>
+<hr />
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>隐藏关系一：胜率会随市场漂移自动上升</h3>
+<p><span class="tag t-ana">分析</span>任何「持有 N 日胜率 60%」的宣称，都必须与<strong>随机做多基准</strong>对照。μ=10%、σ=18% 时：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>随机做多基准胜率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">5 日</td>
+<td>53.12%</td>
+</tr>
+<tr>
+<td class="k">10 日</td>
+<td>54.41%</td>
+</tr>
+<tr>
+<td class="k">20 日</td>
+<td>56.22%</td>
+</tr>
+<tr>
+<td class="k">40 日</td>
+<td><strong>58.76%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>若某形态报告 40 日胜率 65%，<strong>真实超额仅约 +6.3 pp</strong>；在 μ=20%、σ=12% 的牛市里，随机做多 40 日胜率升至 <strong>74.7%</strong>——同一数字反而<strong>跑输基准 9.7 pp</strong>。</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 1 · 漂移剥离器：形态胜率里有多少是「市场自己在涨」</h4></div>
+  <p class="tool-sub">p_base = Φ( μ·(T/252) ÷ (σ·√(T/252)) )。把形态报告胜率与随机做多基准对比，看真实超额与所需样本量。</p>
+  <canvas id="klDriftChart" height="176" style="height:176px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="kl_T">持有期（交易日）</label>
+    <input type="range" id="kl_T" min="5" max="60" step="1" value="40">
+    <output id="kl_TO">40 日</output>
+  </div>
+  <div class="ctrl">
+    <label for="kl_ps">形态报告胜率</label>
+    <input type="range" id="kl_ps" min="44" max="70" step="0.1" value="55.0">
+    <output id="kl_psO">55.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="kl_mu">市场年化漂移</label>
+    <input type="range" id="kl_mu" min="0" max="20" step="0.5" value="10">
+    <output id="kl_muO">10%</output>
+  </div>
+  <div class="ctrl">
+    <label for="kl_sg">市场年化波动</label>
+    <input type="range" id="kl_sg" min="10" max="40" step="1" value="18">
+    <output id="kl_sgO">18%</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">随机做多基准</div><div class="val" id="kl_base">58.8%</div><div class="hint" id="kl_baseh">相同持有期</div></div>
+    <div class="ro"><div class="lbl">真实超额</div><div class="val" id="kl_dp">−3.8 pp</div><div class="hint" id="kl_dph">形态 − 基准</div></div>
+    <div class="ro"><div class="lbl">证明非随机所需样本</div><div class="val" id="kl_n">∞</div><div class="hint" id="kl_nh">单侧 5%、检验力 80%</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl">判定</div>
+      <div class="val" id="kl_dv" style="font-size:15px">无超额</div>
+      <div class="hint" id="kl_dvh" style="margin-top:0">扣掉漂移后跑输随机做多</div>
+    </div>
+  </div>
+</div>
+<h3>隐藏关系二：形态挖掘的假阳性洪水</h3>
+<p>你若测试 50 种 K 线形态、显著性 α=5%，在<strong>形态全部无效</strong>的零假设下，仍期望出现 <strong>2.5 个「显著」假阳性</strong>。回测 20 次累计约 <strong>50 个</strong>——这就是为什么「我在历史数据里找到了圣杯」几乎总是数据挖掘。</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 4 · 形态挖掘警示：测试 N 个形态会冒出多少假阳性</h4></div>
+  <canvas id="klFdrChart" height="214" style="height:214px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="kl_patN">形态库数量 N</label>
+    <input type="range" id="kl_patN" min="5" max="100" step="1" value="50">
+    <output id="kl_patNO">50 种</output>
+  </div>
+  <div class="ctrl">
+    <label for="kl_alpha">单次检验显著性 α</label>
+    <input type="range" id="kl_alpha" min="1" max="10" step="0.5" value="5">
+    <output id="kl_alphaO">5.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="kl_trials">回测扫描次数</label>
+    <input type="range" id="kl_trials" min="1" max="50" step="1" value="10">
+    <output id="kl_trialsO">10 次回测</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">期望假阳性</div><div class="val" id="kl_fp">2.5 个</div><div class="hint" id="kl_fph">单次扫描</div></div>
+    <div class="ro"><div class="lbl">Bonferroni 门槛</div><div class="val" id="kl_bon">0.100%</div><div class="hint" id="kl_bonh">α ÷ N</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl">判定</div>
+      <div class="val" id="kl_fv" style="font-size:15px">高危挖掘</div>
+      <div class="hint" id="kl_fvh" style="margin-top:0">发现形态多半只是噪声</div>
+    </div>
+  </div>
+</div>
+<h3>跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>K 线概念</th>
+<th>其他领域的同名结构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">实体 vs 影线</td>
+<td>信号 vs 噪声（信噪比）</td>
+</tr>
+<tr>
+<td class="k">SOM / LOM 环境切换</td>
+<td>动力系统中的相变</td>
+</tr>
+<tr>
+<td class="k">形态回测过拟合</td>
+<td>多重检验 / 粒子物理 5σ</td>
+</tr>
+<tr>
+<td class="k">止损集群被触发</td>
+<td>相变临界点 / 雪崩模型</td>
+</tr>
+<tr>
+<td class="k">期望 E = pW − (1−p)L</td>
+<td>凯利公式 / 赌场优势</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>K 线分析在市场中是一个<strong>三层循环</strong>：</p>
+<pre><code class="language-mermaid">flowchart LR
+  A[价格形成 OHLC] --&gt; B[交易者识别形态]
+  B --&gt; C[下单改变订单流]
+  C --&gt; A
+</code></pre>
+<ol>
+<li><strong>价格层</strong>：撮合引擎把成交聚合为 K 线——这是<span class="tag t-fact">事实</span>层，不可辩驳。</li>
+<li><strong>解释层</strong>：人类与算法给 K 线贴标签——这是<span class="tag t-hyp">假设</span>层，可错。</li>
+<li><strong>反馈层</strong>：解释触发交易，交易改变下一根 K 线——这是【机制】层，也是「技术分析有时看似有效」的来源之一（<strong>自实现预言</strong>，但强度有限）。</li>
+</ol>
+<p><strong>关键洞察</strong>：第 2 层和第 3 层之间隔着<strong>成本、延迟、仓位约束</strong>。大多数人停在第 2 层，以为「认对了就能赚」。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>K 线分析的四次范式迁移</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <line x1="40" y1="140" x2="640" y2="140" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="80" cy="140" r="7" fill="#8a6d1f"/>
+  <text x="80" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#8a6d1f" font-family="sans-serif">1750s</text>
+  <text x="80" y="168" text-anchor="middle" font-size="10" fill="#454c56" font-family="sans-serif">酒田米市</text>
+  <text x="80" y="184" text-anchor="middle" font-size="9.5" fill="#7c848f" font-family="sans-serif">原始蜡烛图</text>
+  <circle cx="220" cy="140" r="7" fill="#1d4ed8"/>
+  <text x="220" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8" font-family="sans-serif">1991</text>
+  <text x="220" y="168" text-anchor="middle" font-size="10" fill="#454c56" font-family="sans-serif">Nison 西传</text>
+  <text x="220" y="184" text-anchor="middle" font-size="9.5" fill="#7c848f" font-family="sans-serif">形态百科全书</text>
+  <circle cx="380" cy="140" r="7" fill="#d5342c"/>
+  <text x="380" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#d5342c" font-family="sans-serif">2006</text>
+  <text x="380" y="168" text-anchor="middle" font-size="10" fill="#454c56" font-family="sans-serif">学术证伪潮</text>
+  <text x="380" y="184" text-anchor="middle" font-size="9.5" fill="#7c848f" font-family="sans-serif">bootstrap 无超额</text>
+  <circle cx="540" cy="140" r="7" fill="#0f8a4d"/>
+  <text x="540" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#0f8a4d" font-family="sans-serif">2010s</text>
+  <text x="540" y="168" text-anchor="middle" font-size="10" fill="#454c56" font-family="sans-serif">价格行为复兴</text>
+  <text x="540" y="184" text-anchor="middle" font-size="9.5" fill="#7c848f" font-family="sans-serif">环境优先·数K线</text>
+  <circle cx="640" cy="140" r="7" fill="#6b3fa0"/>
+  <text x="640" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#6b3fa0" font-family="sans-serif">2024+</text>
+  <text x="640" y="168" text-anchor="middle" font-size="10" fill="#454c56" font-family="sans-serif">程序化监管</text>
+  <text x="640" y="184" text-anchor="middle" font-size="9.5" fill="#7c848f" font-family="sans-serif">微观结构重塑</text>
+  <text x="340" y="248" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">演化方向：从「背形态名字」→「读环境+算期望+样本外验证」</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>时代</th>
+<th>主导玩法</th>
+<th>失效原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">纸带时代</td>
+<td>读日内波动节奏</td>
+<td>市场深度与速度变化</td>
+</tr>
+<tr>
+<td class="k">形态百科时代</td>
+<td>背 50+ 形态</td>
+<td>统计检验暴露过拟合</td>
+</tr>
+<tr>
+<td class="k">PA 时代</td>
+<td>环境 + 序列 + 风控</td>
+<td>需要大量练习，难以速成</td>
+</tr>
+<tr>
+<td class="k">算法共存时代</td>
+<td>K 线 + 订单流 + 监管合规</td>
+<td>噪声上升，需更严的期望计算</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>利益方</th>
+<th>激励</th>
+<th>对 K 线叙事的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">券商/交易所</td>
+<td>交易量 ↑</td>
+<td>鼓励「每天都有信号」的内容</td>
+</tr>
+<tr>
+<td class="k">课程卖家</td>
+<td>卖简单答案</td>
+<td>把 40%–60% 胜率包装成「秘籍」</td>
+</tr>
+<tr>
+<td class="k">财经媒体</td>
+<td>点击率</td>
+<td>事后贴形态标签（「教科书级黄昏星」）</td>
+</tr>
+<tr>
+<td class="k">量化私募</td>
+<td>做市/套利</td>
+<td>利用散户止损集群——<strong>你读的 pin bar 可能是被设计的</strong></td>
+</tr>
+<tr>
+<td class="k">监管</td>
+<td>市场公平</td>
+<td><span class="tag t-fact">事实</span>2024《程序化交易管理规定》：先报告后交易、异常交易监控</td>
+</tr>
+<tr>
+<td class="k">你自己</td>
+<td>快速致富幻想</td>
+<td>选择性记忆盈利形态、遗忘亏损</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>核心错配</strong>：你付费学的是「形态大全」，市场奖励的是「期望为正 + 仓位纪律」——两者不是一回事。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>信息流与「抽水」</h3>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="klP" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 z" fill="#454c56"/>
+    </marker>
+  </defs>
+  <rect x="20" y="40" width="120" height="44" rx="8" fill="#f0f4fd" stroke="#c3d1f0"/>
+  <text x="32" y="66" font-size="11" font-weight="700" fill="#1d4ed8" font-family="sans-serif">交易所撮合</text>
+  <rect x="180" y="40" width="120" height="44" rx="8" fill="#f4f6f9" stroke="#c9d0d9"/>
+  <text x="192" y="66" font-size="11" font-weight="700" fill="#15181d" font-family="sans-serif">OHLC 数据</text>
+  <rect x="340" y="40" width="120" height="44" rx="8" fill="#f4f6f9" stroke="#c9d0d9"/>
+  <text x="352" y="66" font-size="11" font-weight="700" fill="#15181d" font-family="sans-serif">图表平台</text>
+  <rect x="500" y="40" width="160" height="44" rx="8" fill="#fdf3f2" stroke="#f0cdc9"/>
+  <text x="512" y="66" font-size="11" font-weight="700" fill="#d5342c" font-family="sans-serif">你（解释+下单）</text>
+  <line x1="142" y1="62" x2="176" y2="62" stroke="#454c56" marker-end="url(#klP)"/>
+  <line x1="302" y1="62" x2="336" y2="62" stroke="#454c56" marker-end="url(#klP)"/>
+  <line x1="462" y1="62" x2="496" y2="62" stroke="#454c56" marker-end="url(#klP)"/>
+  <rect x="80" y="130" width="520" height="36" rx="6" fill="#fff8ec" stroke="#f0dcb4"/>
+  <text x="92" y="152" font-size="10.5" fill="#a06800" font-family="sans-serif">抽水 1：延迟 — 免费行情晚 3–15 秒，形态已被算法消化</text>
+  <rect x="80" y="178" width="520" height="36" rx="6" fill="#fff8ec" stroke="#f0dcb4"/>
+  <text x="92" y="200" font-size="10.5" fill="#a06800" font-family="sans-serif">抽水 2：成本 — 佣金 + 印花税 + 滑点，直接吃掉期望</text>
+  <rect x="80" y="226" width="520" height="36" rx="6" fill="#fff8ec" stroke="#f0dcb4"/>
+  <text x="92" y="248" font-size="10.5" fill="#a06800" font-family="sans-serif">抽水 3：叙事 — 课程/社群只展示命中案例，幸存者偏差</text>
+  <rect x="80" y="274" width="520" height="36" rx="6" fill="#fdf3f2" stroke="#f0cdc9"/>
+  <text x="92" y="296" font-size="10.5" fill="#d5342c" font-family="sans-serif">抽水 4：自反馈 — 你的大单改变 K 线，你以为「看对了」</text>
+</svg>
+<h3>可信信息源分级</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>来源</th>
+<th>怎么用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">A</td>
+<td>交易所官方行情、监管公告</td>
+<td><span class="tag t-fact">事实</span>基准</td>
+</tr>
+<tr>
+<td class="k">B</td>
+<td>同行评审论文（Marshall 2006 等）</td>
+<td><span class="tag t-ana">分析</span>方法论边界</td>
+</tr>
+<tr>
+<td class="k">C</td>
+<td>Morris/Nison 原书统计</td>
+<td><span class="tag t-chk">待验证</span>需自己复现</td>
+</tr>
+<tr>
+<td class="k">D</td>
+<td>社群「胜率截图」</td>
+<td><span class="tag t-hyp">假设</span>默认无效，除非提供完整交易日志</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序的 10 个杠杆：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>为什么有效</th>
+<th>今天就能做</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>环境优先（SOM/LOM）</strong></td>
+<td>同一信号在不同环境意义相反</td>
+<td>画区间，判重叠度</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>位置过滤</strong></td>
+<td>Morris：锤子 44% vs 上吊 63%——位置差 19pp</td>
+<td>标注现价在区间的分位</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>算期望而非胜率</strong></td>
+<td>E&gt;0 才是可交易命题</td>
+<td>用工具 3 填四个数</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>漂移剥离</strong></td>
+<td>避免把牛市漂移当成形态 alpha</td>
+<td>用工具 1 扣基准</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>确认 K 线</strong></td>
+<td>反转需次日/次根确认，减少假信号</td>
+<td>规则：不确认不进</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>多周期共振</strong></td>
+<td>日线信号需周线结构支持</td>
+<td>同图叠两周期</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>止损结构性</strong></td>
+<td>止损放在形态失效点，而非固定 %</td>
+<td>写下「什么价格证明我错了」</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>遮图盲测</strong></td>
+<td>绕过 L9 叙事污染</td>
+<td>10 张图测命中率</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>预注册形态库</strong></td>
+<td>对抗数据挖掘（工具 4）</td>
+<td>交易前写下要测哪 3 个形态</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>交易日志</strong></td>
+<td>唯一产出真实统计的动作</td>
+<td>每笔一行：假设+结果</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱 1：把形态名字当成预测</summary><div class="dbody"><p><strong>表现</strong>：「出现黄昏星了，明天必跌。」
+<strong>真相</strong>：<span class="tag t-chk">待验证</span>Morris 统计里流星线准确率约 48%，接近抛硬币。
+<strong>对策</strong>：问「在什么环境、什么位置、有无确认？」——三个都答不出就不做。</p></div></details>
+<details><summary>陷阱 2：单根 K 线交易</summary><div class="dbody"><p><strong>表现</strong>：看到 pin bar 就进场。
+<strong>真相</strong>：<span class="tag t-ana">分析</span>PA 铁律：单根没有意义；序列 + 环境才有。
+<strong>对策</strong>：至少等 1 根确认 K 线，或等突破内包线。</p></div></details>
+<details><summary>陷阱 3：忽略漂移基准</summary><div class="dbody"><p><strong>表现</strong>：「我这个策略 40 日胜率 65%，太强了！」
+<strong>真相</strong>：随机做多基准可能已是 58.76%，超额仅 6.3 pp。
+<strong>对策</strong>：工具 1；μ=20% 牛市里 65% 反而跑输。</p></div></details>
+<details><summary>陷阱 4：形态挖掘 / 过拟合</summary><div class="dbody"><p><strong>表现</strong>：测试 50 个形态，挑最亮眼的那个。
+<strong>真相</strong>：期望假阳性 = 50×5% = 2.5 个「显著」噪声。
+<strong>对策</strong>：工具 4；样本外 + Bonferroni。</p></div></details>
+<details><summary>陷阱 5：周期错配</summary><div class="dbody"><p><strong>表现</strong>：5 分钟锤子线决定周线方向。
+<strong>真相</strong>：小周期噪声在大周期上不可见。
+<strong>对策</strong>：大周期定方向，小周期定时机——不可倒置。</p></div></details>
+<details><summary>陷阱 6：幸存者偏差</summary><div class="dbody"><p><strong>表现</strong>：只记得「那次锤子线赚了 20%」。
+<strong>真相</strong>：未记录的 9 次锤子线亏损被遗忘。
+<strong>对策</strong>：强制交易日志；每周复盘命中/未命中。</p></div></details>
+<details><summary>陷阱 7：把相关当因果</summary><div class="dbody"><p><strong>表现</strong>：「放量下跌后总是继续跌。」
+<strong>真相</strong>：区间底部的放量下跌常是恐慌高潮（SC），不是续跌信号。
+<strong>对策</strong>：先标位置分位 p，再读 K 线。</p></div></details>
+<details><summary>陷阱 8：忽视交易成本</summary><div class="dbody"><p><strong>表现</strong>：胜率 55%、赢 1.5%、输 1.4%——「差不多」。
+<strong>真相</strong>：加 0.3% 成本后 E 可能转负。
+<strong>对策</strong>：工具 3 必须把成本滑块拉满你的真实水平。</p></div></details>
+<details><summary>陷阱 9：叙事后贴标签（后视镜）</summary><div class="dbody"><p><strong>表现</strong>：跌完了才说「早就看出黄昏星」。
+<strong>真相</strong>：事前同一图形可被解读为「洗盘」或「出货」。
+<strong>对策</strong>：遮图测验；事前写下假设存档。</p></div></details>
+<details><summary>陷阱 10：把学术证伪当成「K 线无用」</summary><div class="dbody"><p><strong>表现</strong>：「Marshall 说无效，我不学了。」
+<strong>真相</strong>：论文否定的是<strong>简单机械规则</strong>，不是「读环境+算期望」的完整系统。
+<strong>对策</strong>：学观察协议，自建统计；别学形态百科全书。</p></div></details>
+<details><summary>陷阱 11：算法时代仍用纯视觉</summary><div class="dbody"><p><strong>表现</strong>：无视程序化占比对微观结构的影响。
+<strong>真相</strong>：<span class="tag t-fact">事实</span>2025 上交所细则：高频认定每秒申报撤单 ≥300 笔。
+<strong>对策</strong>：大周期为主；关键位结合成交量与订单流（若可得）。</p></div></details>
+<details><summary>陷阱 12：仓位替你做分析</summary><div class="dbody"><p><strong>表现</strong>：已重仓，每根 K 线都读成利多。
+<strong>真相</strong>：L9 层污染——持仓塑造叙事。
+<strong>对策</strong>：用「若我现在空仓，还会进吗？」反问自己。</p></div></details>
+<hr />
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<h3>三层映射：抽象 → 机制 → 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <rect x="20" y="30" width="190" height="240" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.4"/>
+  <text x="36" y="56" font-size="13" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象层</text>
+  <text x="36" y="80" font-size="10.5" fill="#454c56" font-family="sans-serif">· 多空力量均衡被打破</text>
+  <text x="36" y="98" font-size="10.5" fill="#454c56" font-family="sans-serif">· 止损集群被触发</text>
+  <text x="36" y="116" font-size="10.5" fill="#454c56" font-family="sans-serif">· 流动性真空</text>
+  <text x="36" y="134" font-size="10.5" fill="#454c56" font-family="sans-serif">· 正/负反馈循环</text>
+  <text x="36" y="170" font-size="10" fill="#7c848f" font-family="sans-serif">问：机制上发生了什么？</text>
+  <rect x="245" y="30" width="190" height="240" rx="10" fill="#f2f7f4" stroke="#c6dcc9" stroke-width="1.4"/>
+  <text x="261" y="56" font-size="13" font-weight="700" fill="#0f8a4d" font-family="sans-serif">机制层（K 线可读）</text>
+  <text x="261" y="80" font-size="10.5" fill="#454c56" font-family="sans-serif">· 长下影 + 收高 q&gt;0.7</text>
+  <text x="261" y="98" font-size="10.5" fill="#454c56" font-family="sans-serif">· 趋势 K 线序列</text>
+  <text x="261" y="116" font-size="10.5" fill="#454c56" font-family="sans-serif">· 重叠度上升 → LOM</text>
+  <text x="261" y="134" font-size="10.5" fill="#454c56" font-family="sans-serif">· 放量突破区间</text>
+  <text x="261" y="170" font-size="10" fill="#7c848f" font-family="sans-serif">问：图上哪条证据支持？</text>
+  <rect x="470" y="30" width="190" height="240" rx="10" fill="#fdf3f2" stroke="#f0cdc9" stroke-width="1.4"/>
+  <text x="486" y="56" font-size="13" font-weight="700" fill="#d5342c" font-family="sans-serif">操作层</text>
+  <text x="486" y="80" font-size="10.5" fill="#454c56" font-family="sans-serif">· 环境=SOM → 顺势</text>
+  <text x="486" y="98" font-size="10.5" fill="#454c56" font-family="sans-serif">· 止损=形态失效点</text>
+  <text x="486" y="116" font-size="10.5" fill="#454c56" font-family="sans-serif">· 仓位=赔率反推</text>
+  <text x="486" y="134" font-size="10.5" fill="#454c56" font-family="sans-serif">· 日志=可验证</text>
+  <text x="486" y="170" font-size="10" fill="#7c848f" font-family="sans-serif">问：今天具体做什么？</text>
+  <text x="215" y="155" font-size="18" fill="#c9d0d9" font-family="sans-serif">→</text>
+  <text x="440" y="155" font-size="18" fill="#c9d0d9" font-family="sans-serif">→</text>
+  <text x="340" y="290" text-anchor="middle" font-size="10.5" fill="#7c848f" font-family="sans-serif">大多数人从操作层跳到抽象层，跳过机制层 — 于是「感觉对」但「账户错」</text>
+</svg>
+<h3>三个现实案例（简化）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>抽象</th>
+<th>机制（K 线）</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">A 股反弹</td>
+<td>恐慌盘涌出后供应枯竭</td>
+<td>下跌长下影+次日阳线吞没，p&lt;15%</td>
+<td>等确认 K 线，止损破低</td>
+</tr>
+<tr>
+<td class="k">期货趋势</td>
+<td>多头控盘</td>
+<td>连续趋势 K 线，重叠&lt;30%</td>
+<td>回调至 20EMA 出现趋势 K 线入场</td>
+</tr>
+<tr>
+<td class="k">假突破</td>
+<td>流动性猎取</td>
+<td>针刺区间上沿后长上影收回</td>
+<td>不追突破，等回到区间内</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<h3>一笔 K 线交易的最低检查单</h3>
+<ol>
+<li><strong>环境</strong>：SOM 还是 LOM？（重叠度 + 高低点结构）</li>
+<li><strong>位置</strong>：p 分位？关键位上方还是下方？</li>
+<li><strong>K 线证据</strong>：实体比、收盘位置、是否确认？</li>
+<li><strong>期望</strong>：E &gt; 0？盈亏平衡胜率是否低于你的 p？</li>
+<li><strong>证伪</strong>：什么价格/时间证明假设错误？</li>
+</ol>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 2 · K 线力量计：从 OHLC 读出多空力量分</h4></div>
+  <p class="tool-sub">力量分 = dir × (实体比×收盘位置 + 下影×0.35 − 上影×0.25)。示例默认 O=100,H=105,L=98,C=104 → 力量分 +0.554。</p>
+  <canvas id="klBodyChart" height="214" style="height:214px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="kl_O">开盘价 O</label>
+    <input type="range" id="kl_O" min="90" max="110" step="0.5" value="100">
+    <output id="kl_OO">100.0</output>
+  </div>
+  <div class="ctrl">
+    <label for="kl_H">最高价 H</label>
+    <input type="range" id="kl_H" min="90" max="115" step="0.5" value="105">
+    <output id="kl_HO">105.0</output>
+  </div>
+  <div class="ctrl">
+    <label for="kl_L">最低价 L</label>
+    <input type="range" id="kl_L" min="85" max="110" step="0.5" value="98">
+    <output id="kl_LO">98.0</output>
+  </div>
+  <div class="ctrl">
+    <label for="kl_C">收盘价 C</label>
+    <input type="range" id="kl_C" min="90" max="110" step="0.5" value="104">
+    <output id="kl_CO">104.0</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">实体比</div><div class="val" id="kl_br">57.1%</div><div class="hint" id="kl_brh">上影与下影占比</div></div>
+    <div class="ro"><div class="lbl">力量分</div><div class="val" id="kl_str">+0.554</div><div class="hint" id="kl_strh">多空合成</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl">判定</div>
+      <div class="val" id="kl_bv" style="font-size:15px">偏多</div>
+      <div class="hint" id="kl_bvh" style="margin-top:0">仍需趋势环境确认</div>
+    </div>
+  </div>
+</div>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 3 · 期望计算器：胜率与盈亏比是否撑得住成本</h4></div>
+  <p class="tool-sub">E = p×W − (1−p)×L − c。默认 p=55%、W=3%、L=2%、c=0.3% → E=+0.45%。盈亏平衡胜率 = L÷(W+L) = 40%。</p>
+  <div class="ctrl">
+    <label for="kl_eps">胜率 p</label>
+    <input type="range" id="kl_eps" min="40" max="70" step="0.1" value="55.0">
+    <output id="kl_epsO">55.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="kl_win">平均盈利 W</label>
+    <input type="range" id="kl_win" min="0.5" max="10" step="0.1" value="3.0">
+    <output id="kl_winO">3.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="kl_loss">平均亏损 L</label>
+    <input type="range" id="kl_loss" min="0.5" max="10" step="0.1" value="2.0">
+    <output id="kl_lossO">2.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="kl_cost">单边成本 c</label>
+    <input type="range" id="kl_cost" min="0" max="1" step="0.05" value="0.30">
+    <output id="kl_costO">0.30%</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">单笔期望 E</div><div class="val" id="kl_E">+0.45%</div><div class="hint" id="kl_Eh">扣成本后</div></div>
+    <div class="ro"><div class="lbl">盈亏平衡胜率</div><div class="val" id="kl_be">40.0%</div><div class="hint" id="kl_beh">低于此胜率必亏（除非赔率极高）</div></div>
+    <div class="ro"><div class="lbl">盈亏比 W/L</div><div class="val" id="kl_rr">1.50</div><div class="hint" id="kl_rrh">平均盈利÷平均亏损</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl">判定</div>
+      <div class="val" id="kl_ev" style="font-size:15px">正期望</div>
+      <div class="hint" id="kl_evh" style="margin-top:0">仍须样本外验证</div>
+    </div>
+  </div>
+</div>
+<hr />
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>1-1 · 读懂 OHLC 四价</summary><div class="dbody"><p>能口述开高低收各自含义；能画出一根阳线与阴线。</p></div></details>
+<details><summary>1-2 · 计算实体比与收盘位置</summary><div class="dbody"><p>给定四价，30 秒内算出 b 与 q（可用工具 2 校验）。</p></div></details>
+<details><summary>2-1 · 判断 SOM / LOM</summary><div class="dbody"><p>10 张图上标出趋势/震荡环境，命中率 ≥ 70%。</p></div></details>
+<details><summary>2-2 · 标注位置分位 p</summary><div class="dbody"><p>在区间图中标出当前 p；说出「锤子在此 p 是否有意义」。</p></div></details>
+<details><summary>3-1 · 识别六类基础 K 线</summary><div class="dbody"><p>趋势线、十字、pin、吞没、内包、外包——各举 2 个实例。</p></div></details>
+<details><summary>3-2 · 读连续 5 根 K 线</summary><div class="dbody"><p>不看指标，说出多空力量变化（PA 核心练习）。</p></div></details>
+<details><summary>4-1 · 遮图盲测 50 次</summary><div class="dbody"><p>遮住右端 40 根，预测方向；记录命中率与校准度。</p></div></details>
+<details><summary>4-2 · 自建 100 笔交易日志</summary><div class="dbody"><p>含假设、证伪条件、实际结果；算出真实 p、W、L、E。</p></div></details>
+<details><summary>5-1 · 样本外验证一个形态</summary><div class="dbody"><p>预注册规则 → 训练集不调参 → 测试集跑期望。</p></div></details>
+<details><summary>5-2 · 多周期联读</summary><div class="dbody"><p>同一标的周线结构 + 日线入场 + 小时确认，写一份完整剧本。</p></div></details>
+<hr />
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>任务</th>
+<th>奖励（自我反馈）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">读线学徒</td>
+<td>连续 7 天每日读 5 根 K 线</td>
+<td>解锁「环境判断」关卡</td>
+</tr>
+<tr>
+<td class="k">形态猎人</td>
+<td>预注册 3 个形态并记录 30 次</td>
+<td>获得自己的真实胜率表</td>
+</tr>
+<tr>
+<td class="k">漂移侦探</td>
+<td>用工具 1 拆穿 5 个「高胜率」宣传</td>
+<td>+「不再被数字唬住」成就</td>
+</tr>
+<tr>
+<td class="k">盲测大师</td>
+<td>遮图测验命中率 &gt; 55%（大样本）</td>
+<td>证明 L9 污染已下降</td>
+</tr>
+<tr>
+<td class="k">期望会计师</td>
+<td>100 笔日志 E&gt;0 且样本外确认</td>
+<td><strong>唯一算「毕业」的关卡</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Boss 战</strong>：选一只持仓标的，在<strong>不看新闻</strong>的情况下，仅用 K 线结构写出未来 20 日的三种剧本（涨/横/跌）及证伪条件——20 日后对答案。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>频率</th>
+<th>动作</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">晨读 3 根</td>
+<td>每日开盘前</td>
+<td>标环境+位置+力量分</td>
+<td>训练日志 1 行</td>
+</tr>
+<tr>
+<td class="k">形态预注册</td>
+<td>每周日</td>
+<td>写下本周只测哪 2 个形态</td>
+<td>防挖掘契约</td>
+</tr>
+<tr>
+<td class="k">遮图测验</td>
+<td>每周</td>
+<td>10 张盲图</td>
+<td>命中率数字</td>
+</tr>
+<tr>
+<td class="k">漂移剥离</td>
+<td>每月</td>
+<td>用工具 1 复核自己的胜率宣传</td>
+<td>真实超额 pp</td>
+</tr>
+<tr>
+<td class="k">期望审计</td>
+<td>每月</td>
+<td>工具 3 代入日志统计的 p,W,L,c</td>
+<td>E 是否仍为正</td>
+</tr>
+<tr>
+<td class="k">重读陷阱 14</td>
+<td>每月</td>
+<td>自查 12 条</td>
+<td>防复发</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A：锤子线出现在趋势中段（p≈50%）</button><button class="tab" data-pane="tb1-1">情景 B：震荡上沿的「强势阳线」</button><button class="tab" data-pane="tb1-2">情景 C：你测试了 30 个形态，找到「胜率 62%」的那个</button><button class="tab" data-pane="tb1-3">情景 D：监管收紧程序化交易后</button></div>
+<div class="pane on" id="tb1-0"><p><strong>假设</strong>：看到长下影「锤子」，在 SOM 环境中做多。</p>
+<p><strong>反事实</strong>：此处无关键支撑，下影只是正常波动；Morris 统计锤子准确率约 <strong>44%</strong>——<strong>低于随机</strong>。</p>
+<p><strong>洞察</strong>：<strong>位置律</strong>一票否决形态律。对策：只在 p&lt;25% 或明确支撑位使用 pin bar 逻辑。</p></div><div class="pane" id="tb1-1"><p><strong>假设</strong>：LOM 环境，价格触及区间上沿，出现大阳线，认为要突破。</p>
+<p><strong>反事实</strong>：Al Brooks：震荡边缘的强势 K 线常是<strong>诱多</strong>；随后 3 根 K 线重叠回落区间内。</p>
+<p><strong>洞察</strong>：LOM 里应<strong>高抛低吸</strong>，不是追突破。对策：区间上沿做空/减仓，而非追涨。</p></div><div class="pane" id="tb1-2"><p><strong>假设</strong>：历史回测亮眼，实盘开仓。</p>
+<p><strong>反事实</strong>：30×5% = <strong>1.5 个期望假阳性</strong>；未做样本外，未扣成本 0.3%，未扣漂移基准 58.76%。</p>
+<p><strong>洞察</strong>：62% − 58.76% = 仅 <strong>3.2 pp</strong> 超额，约需 <strong>5500+</strong> 笔才够统计检验（工具 1 可算）。</p>
+<p><strong>对策</strong>：预注册 + 样本外 + 工具 1/3/4 三联检。</p></div><div class="pane" id="tb1-3"><p><strong>假设</strong>：仍用 2015 年的「放量=主力进场」口诀。</p>
+<p><strong>反事实</strong>：<span class="tag t-fact">事实</span>2024–2025 程序化细则要求阈值管理、异常监控；微观「放量」结构已变。</p>
+<p><strong>洞察</strong>：<strong>时间演化</strong>——旧口诀需在新环境下重新统计。对策：加大周期权重，降低对单日量的依赖。</p></div>
+<hr />
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>核心能力</th>
+<th>标志</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 新手</td>
+<td>0–6 周</td>
+<td>读 OHLC、判环境、算 b/q</td>
+<td>5 分钟内说出一张图的环境与位置</td>
+</tr>
+<tr>
+<td class="k">L2 进阶</td>
+<td>2–4 月</td>
+<td>六类 K 线 + 确认规则 + 期望计算</td>
+<td>每笔交易前有检查单</td>
+</tr>
+<tr>
+<td class="k">L3 熟练</td>
+<td>4–12 月</td>
+<td>100 笔日志、遮图盲测、漂移剥离</td>
+<td>有自己的 p,W,L,E 统计</td>
+</tr>
+<tr>
+<td class="k">L4 专家</td>
+<td>1 年+</td>
+<td>知何时<strong>不用</strong> K 线（宏观冲击、流动性危机）</td>
+<td>能说出「这套读法今天失效，因为…」</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<h3>今天就做：「三根 K 线剧本」+ 证伪合同</h3>
+<p><strong>成本</strong>：0 元，30 分钟，任意免费行情软件。</p>
+<p><strong>为什么是这一件</strong>：它同时训练环境（L4）、机制（L6）、操作（止损）三层，且<strong>产出可验证</strong>。</p>
+<h4>步骤</h4>
+<p><strong>第 1 步（5 分钟）</strong> 打开你关注的标的<strong>日线图</strong>，画最近 60 根 K 线的区间上下沿。</p>
+<p><strong>第 2 步（5 分钟）</strong> 回答：SOM 还是 LOM？现价位置分位 p=？（估算即可）</p>
+<p><strong>第 3 步（10 分钟）</strong> 只看<strong>最后 3 根</strong> K 线，填写：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>你的填写</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">环境</td>
+<td>SOM / LOM</td>
+</tr>
+<tr>
+<td class="k">位置 p</td>
+<td>___%</td>
+</tr>
+<tr>
+<td class="k">三根 K 的力量变化</td>
+<td>增强 / 减弱 / 犹豫</td>
+</tr>
+<tr>
+<td class="k">假设（一句话）</td>
+<td>「我认为…因为…」</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>第 4 步（5 分钟）</strong> 写下证伪条件（可观测）：</p>
+<blockquote>
+<p>「若收盘价跌破 ¥<strong><em>，或 5 日内未出现</em></strong>，则假设作废。」</p>
+</blockquote>
+<p><strong>第 5 步（5 分钟）</strong> 用工具 3：估 p=50%、W=3%、L=2%、c=0.3%。若 E≤0，写<strong>「本笔不做」</strong>。</p>
+<h4>产出</h4>
+<p>一页纸：<strong>区间图 + 环境 + p + 三根 K 线解读 + 证伪 + E 判定</strong>。标注日期，5 日后对答案。</p>
+<div class="note green"><b>验证标准</b><p>5 日后回看：假设是否被证伪？若证伪，你是否<strong>按计划</strong>退出？——第二个问题比第一个更重要。</p></div>
+<hr />
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天实践计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>任务</th>
+<th>时间</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>完成「三根 K 线剧本」</td>
+<td>30 分钟</td>
+<td>1 份证伪合同</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>工具 2：输入 5 组不同 OHLC，记力量分</td>
+<td>30 分钟</td>
+<td>5 组对照表</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>10 张图判 SOM/LOM</td>
+<td>30 分钟</td>
+<td>环境命中率</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>遮图测验 10 次</td>
+<td>30 分钟</td>
+<td>方向命中率</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>工具 1：拆穿一个「高胜率」宣传</td>
+<td>30 分钟</td>
+<td>真实超额 pp</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>工具 4：理解自己测试过多少形态</td>
+<td>30 分钟</td>
+<td>期望假阳性数</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘本周，写最不确定的一件事</td>
+<td>30 分钟</td>
+<td>1 个具体问题</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>任务</th>
+<th>达标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>基础读线</td>
+<td>每日晨读 3 根；工具 2</td>
+<td>能速算 b、q</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>环境与位置</td>
+<td>判 SOM/LOM + 标 p</td>
+<td>命中率 ≥ 65%</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>期望与漂移</td>
+<td>工具 1+3；开始交易日志</td>
+<td>每笔有 E 估算</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>验证与免疫</td>
+<td>遮图 50 次；工具 4；样本外 1 个形态</td>
+<td>100 行日志或 50 次盲测</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>OHLC 四价压缩</td>
+<td>一根 K 线 = 一个周期的博弈摘要</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>实体-影线分解</td>
+<td>控盘度 vs 被拒绝方向</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>SOM / LOM 环境</td>
+<td>同一信号，剧本相反</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>位置分位 p</td>
+<td>形态必须贴在关键位</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>确认 K 线</td>
+<td>反转需次日/次根验证</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>漂移基准 p_base</td>
+<td>扣掉「市场自己在涨」</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>期望 E</td>
+<td>唯一长期盈亏汇总</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>多重检验假阳性</td>
+<td>测 N 个形态 → Nα 个噪声</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>自实现预言（弱）</td>
+<td>众人同读 → 短暂影响价格</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>L9 叙事污染</td>
+<td>仓位塑造你看 K 线的方式</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>环境</summary><div class="dbody"><p>当前是 SOM 还是 LOM？重叠度是否在上升？若从 SOM 滑向 LOM，我的趋势策略是否该降频？</p></div></details>
+<details><summary>位置</summary><div class="dbody"><p>现价在区间分位 p 的哪里？这个形态在 p&lt;25% 与 p&gt;75% 的解读是否相反？</p></div></details>
+<details><summary>证据</summary><div class="dbody"><p>最后一根 K 线的 b、q、力量分各是多少？有没有确认 K 线？</p></div></details>
+<details><summary>统计</summary><div class="dbody"><p>我的胜率是否扣过漂移基准？样本量是否够证明非随机？是否做过样本外？</p></div></details>
+<details><summary>期望</summary><div class="dbody"><p>p、W、L、c 代入后 E 是否 &gt; 0？盈亏平衡胜率是否低于我的 p？</p></div></details>
+<details><summary>挖掘</summary><div class="dbody"><p>我测试了多少个形态？期望假阳性几个？是否预注册？</p></div></details>
+<details><summary>成本</summary><div class="dbody"><p>滑点+佣金+税是否已计入？高频交易下成本是否被低估？</p></div></details>
+<details><summary>证伪</summary><div class="dbody"><p>什么价格证明我错了？什么时间点假设自动作废？</p></div></details>
+<details><summary>周期</summary><div class="dbody"><p>大周期方向与小周期信号是否一致？若冲突，听谁的？</p></div></details>
+<details><summary>自我</summary><div class="dbody"><p>若我现在空仓，还会进吗？这笔交易是「证据」还是「希望」？</p></div></details>
+<hr />
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索方向</h2>
+<ol>
+<li><strong>与成交量联读</strong>：K 线 + 量比 → 接近威科夫「努力与结果」层。</li>
+<li><strong>订单流验证</strong>：Level2/足迹图检验 pin bar 是否真有吸收。</li>
+<li><strong>机器学习形态识别</strong>：Lin et al. (2021) PLOS ONE——<span class="tag t-chk">待验证</span>需警惕过拟合，走工具 4 流程。</li>
+<li><strong>跨市场检验</strong>：同一形态在 A 股/期货/外汇的 E 是否稳定。</li>
+<li><strong>程序化合规下的微观结构</strong>：2025 上交所细则对瞬时申报监控——大单行为如何改变 K 线统计。</li>
+<li><strong>结合宏观一票否决</strong>：L1 冲击时主动关闭 K 线系统。</li>
+</ol>
+<hr />
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">蜡烛图起源</td>
+<td>学术/历史</td>
+<td>Nison (1991); Titan FX 研究综述</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">DJIA 蜡烛策略 bootstrap</td>
+<td>同行评审</td>
+<td>Marshall, Young &amp; Rose (2006) <em>J. Banking &amp; Finance</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">形态准确率表</td>
+<td>书籍统计</td>
+<td>Gregory Morris《蜡烛图精解》表 10-1</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">台湾烛台策略实证</td>
+<td>学位/期刊</td>
+<td>Airiti 台股 2002–2015 研究</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">SOM/LOM 框架</td>
+<td>方法论</td>
+<td>Al Brooks 价格行为；forecho 博客拆解</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">程序化交易规定</td>
+<td>监管</td>
+<td>证监会 2024 年第 8 号公告；上交所 2025 年第 52 号细则</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">随机做多基准公式</td>
+<td>推导</td>
+<td>Φ(μT/252 ÷ σ√(T/252))，μ=10% σ=18%</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">WMT 吞没回测</td>
+<td>社群</td>
+<td>Reddit r/Trading 单标的样本</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">力量分公式</td>
+<td>本手册模型</td>
+<td>实体比×收盘位置+下影×0.35−上影×0.25</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>标记说明</strong>：<span class="tag t-fact">事实</span>可多方核对；<span class="tag t-ana">分析</span>为权威框架判断；<span class="tag t-inf">推论</span>由本手册推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一或二手来源。</p>
+<hr />
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供学习与研究，<strong>不构成任何投资建议或收益承诺</strong>。K 线/蜡烛图形态的历史统计不代表未来表现；学术研究显示简单蜡烛策略在扣除成本后可能无法产生稳定超额收益。金融市场存在本金损失风险，杠杆交易风险更高。作者不对依据本手册内容做出的任何交易决策承担责任。数据截至 2026 年 9 月，监管规则与市场结构可能已发生变化，请以官方最新公告为准。投资有风险，入市需谨慎。</p>
+</section>
+<footer>  <p>《K线分析 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 5 分 11 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《K线分析》主题脚本
+   四个可调模型：
+     1. 漂移剥离器    — 形态胜率 vs 随机做多基准
+     2. K 线力量计    — 实体/影线比例 → 多空力量分
+     3. 期望计算器    — 胜率 × 盈亏比 − 成本
+     4. 形态挖掘警示  — 多重检验下的假阳性期望
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  /* ── 工具 1 · 漂移剥离器 ── */
+  (function driftStrip() {
+    var TEl = $('kl_T'), psEl = $('kl_ps'), muEl = $('kl_mu'), sgEl = $('kl_sg');
+    if (!TEl || !psEl || !muEl || !sgEl) return;
+    var TO = $('kl_TO'), psO = $('kl_psO'), muO = $('kl_muO'), sgO = $('kl_sgO');
+    var baseEl = $('kl_base'), baseHEl = $('kl_baseh');
+    var dpEl = $('kl_dp'), dpHEl = $('kl_dph');
+    var nEl = $('kl_n'), nHEl = $('kl_nh');
+    var vEl = $('kl_dv'), vhEl = $('kl_dvh');
+    var cv = $('klDriftChart');
+    var ctx = cv ? cv.getContext('2d') : null;
+
+    function draw(pb, ps) {
+      if (!ctx) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.clientWidth || 600, h = 176;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 108, r: 66, t: 30, b: 34 };
+      var bw = w - pad.l - pad.r;
+      var x0 = 0.40, x1 = 1.0;
+      var sx = function (p) { return pad.l + (p - x0) / (x1 - x0) * bw; };
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      [0.5, 0.6, 0.7, 0.8, 0.9, 1.0].forEach(function (g) {
+        var x = sx(g);
+        ctx.strokeStyle = g === 0.5 ? '#c9d0d9' : '#eef1f5';
+        ctx.lineWidth = g === 0.5 ? 1.4 : 1;
+        ctx.beginPath(); ctx.moveTo(x, pad.t - 6); ctx.lineTo(x, h - pad.b); ctx.stroke();
+        ctx.fillStyle = '#7c848f';
+        ctx.fillText((g * 100).toFixed(0) + '%', x, h - pad.b + 15);
+      });
+      var rows = [
+        { label: '随机做多基准', p: pb, col: '#8a6d1f' },
+        { label: '形态报告胜率', p: ps, col: '#1d4ed8' }
+      ];
+      rows.forEach(function (r, i) {
+        var y = pad.t + 22 + i * 58;
+        ctx.fillStyle = '#454c56';
+        ctx.textAlign = 'right';
+        ctx.font = '12px -apple-system,sans-serif';
+        ctx.fillText(r.label, pad.l - 12, y + 17);
+        ctx.fillStyle = '#eef1f5';
+        ctx.fillRect(pad.l, y, bw, 24);
+        ctx.fillStyle = r.col;
+        ctx.fillRect(pad.l, y, Math.max(0, sx(r.p) - pad.l), 24);
+        ctx.fillStyle = r.col;
+        ctx.textAlign = 'left';
+        ctx.font = '700 12.5px -apple-system,sans-serif';
+        ctx.fillText((r.p * 100).toFixed(1) + '%', sx(r.p) + 7, y + 17);
+      });
+      var dp = ps - pb;
+      ctx.strokeStyle = dp >= 0 ? '#d5342c' : '#0f8a4d';
+      ctx.lineWidth = 1.6;
+      var ya = pad.t + 22 + 12, yb = pad.t + 22 + 58 + 12;
+      ctx.beginPath();
+      ctx.moveTo(sx(pb), ya + 14); ctx.lineTo(sx(pb), yb - 14);
+      ctx.moveTo(sx(ps), ya + 14); ctx.lineTo(sx(ps), yb - 14);
+      ctx.stroke();
+      ctx.fillStyle = dp >= 0 ? '#d5342c' : '#0f8a4d';
+      ctx.font = '700 11.5px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText((dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp',
+                   (sx(pb) + sx(ps)) / 2, yb + 16);
+    }
+
+    function upd() {
+      var T = parseFloat(TEl.value);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sg = parseFloat(sgEl.value) / 100;
+      txt(TO, T + ' 日');
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(1) + '%');
+      txt(sgO, (sg * 100).toFixed(0) + '%');
+      var y = T / 252, drift = mu * y, sd = sg * Math.sqrt(y);
+      var pb = ncdf(drift / sd);
+      var dp = ps - pb;
+      var n = null;
+      if (dp > 1e-6) {
+        var num = 1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps));
+        n = Math.ceil(num * num / (dp * dp));
+      }
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(baseHEl, '漂移 ' + (drift * 100).toFixed(2) + '% · 波动 ' + (sd * 100).toFixed(2) + '%');
+      tint(baseEl, '#8a6d1f');
+      txt(dpEl, (dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp');
+      tint(dpEl, dp <= 0 ? 'var(--green)' : (dp < 0.03 ? 'var(--amber)' : 'var(--red)'));
+      txt(dpHEl, dp <= 0 ? '形态没有跑赢"什么都不做"' : '扣除漂移后的净优势');
+      txt(nEl, n === null ? '∞' : n.toLocaleString('en-US'));
+      txt(nHEl, n === null ? '超额非正，无法证明优势' : '单侧 5%、检验力 80%');
+      var label, hint, col;
+      if (dp <= 0) { label = '无超额'; hint = '扣掉漂移后跑输随机做多'; col = 'var(--green)'; }
+      else if (dp < 0.03) { label = '超额可疑'; hint = '很容易被交易成本吃掉'; col = 'var(--amber)'; }
+      else if (dp < 0.06) { label = '超额有限'; hint = '有优势但远小于表面胜率暗示'; col = 'var(--amber)'; }
+      else { label = '超额显著'; hint = '仍须核对样本外与成本'; col = 'var(--red)'; }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(pb, ps);
+    }
+    [TEl, psEl, muEl, sgEl].forEach(function (el) { el.addEventListener('input', upd); });
+    window.addEventListener('resize', upd);
+    upd();
+  })();
+
+  /* ── 工具 2 · K 线力量计 ── */
+  (function bodyMeter() {
+    var oEl = $('kl_O'), hEl = $('kl_H'), lEl = $('kl_L'), cEl = $('kl_C');
+    if (!oEl || !hEl || !lEl || !cEl) return;
+    var oO = $('kl_OO'), hO = $('kl_HO'), lO = $('kl_LO'), cO = $('kl_CO');
+    var brEl = $('kl_br'), brhEl = $('kl_brh');
+    var strEl = $('kl_str'), strhEl = $('kl_strh');
+    var vEl = $('kl_bv'), vhEl = $('kl_bvh');
+    var cv = $('klBodyChart');
+    var ctx = cv ? cv.getContext('2d') : null;
+
+    function drawCandle(O, H, L, C) {
+      if (!ctx) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.clientWidth || 600, h = 214;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 24, t: 20, b: 46 };
+      var y1 = h - 46;
+      var plotH = y1 - pad.t;
+      var lo = L - 1, hi = H + 1;
+      var sy = function (p) { return pad.t + (hi - p) / (hi - lo) * plotH; };
+      var cx = w * 0.5, bw = Math.min(48, w * 0.12);
+      var bull = C >= O;
+      var col = bull ? '#d5342c' : '#0f8a4d';
+      ctx.strokeStyle = col; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(cx, sy(H)); ctx.lineTo(cx, sy(L)); ctx.stroke();
+      var top = sy(Math.max(O, C)), bot = sy(Math.min(O, C));
+      ctx.fillStyle = col;
+      ctx.fillRect(cx - bw / 2, top, bw, Math.max(2, bot - top));
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillStyle = '#7c848f';
+      ctx.textAlign = 'center';
+      ['O ' + O.toFixed(1), 'H ' + H.toFixed(1), 'L ' + L.toFixed(1), 'C ' + C.toFixed(1)].forEach(function (t, i) {
+        ctx.fillText(t, pad.l + i * 72, y1 + 13);
+      });
+      ctx.fillStyle = '#454c56';
+      ctx.fillText('单根 K 线结构示意（涨红跌绿）', w / 2, y1 + 31);
+    }
+
+    function upd() {
+      var O = parseFloat(oEl.value), H = parseFloat(hEl.value);
+      var L = parseFloat(lEl.value), C = parseFloat(cEl.value);
+      if (H < Math.max(O, C)) H = Math.max(O, C);
+      if (L > Math.min(O, C)) L = Math.min(O, C);
+      if (H <= L) { H = L + 0.5; }
+      txt(oO, O.toFixed(1)); txt(hO, H.toFixed(1));
+      txt(lO, L.toFixed(1)); txt(cO, C.toFixed(1));
+      var rng = H - L;
+      var body = Math.abs(C - O) / rng;
+      var upSh = (H - Math.max(O, C)) / rng;
+      var loSh = (Math.min(O, C) - L) / rng;
+      var closePos = (C - L) / rng;
+      var dir = C >= O ? 1 : -1;
+      var strength = dir * (body * closePos + loSh * 0.35 - upSh * 0.25);
+      txt(brEl, (body * 100).toFixed(1) + '%');
+      txt(brhEl, '上影 ' + (upSh * 100).toFixed(0) + '% · 下影 ' + (loSh * 100).toFixed(0) + '%');
+      txt(strEl, (strength >= 0 ? '+' : '') + strength.toFixed(3));
+      tint(strEl, strength > 0.15 ? 'var(--red)' : (strength < -0.15 ? 'var(--green)' : '#454c56'));
+      txt(strhEl, '实体×收盘位置 + 下影×0.35 − 上影×0.25');
+      var label, hint;
+      if (strength > 0.35) { label = '强势多头'; hint = '仍需趋势环境确认，单根不构成信号'; }
+      else if (strength > 0.15) { label = '偏多'; hint = '买盘占优但可能被次日覆盖'; }
+      else if (strength > -0.15) { label = '均衡/犹豫'; hint = '十字星类：方向未定'; }
+      else if (strength > -0.35) { label = '偏空'; hint = '卖压占优但需看位置'; }
+      else { label = '强势空头'; hint = '大实体阴线：趋势延续概率高于反转'; }
+      txt(vEl, label); txt(vhEl, hint);
+      drawCandle(O, H, L, C);
+    }
+    [oEl, hEl, lEl, cEl].forEach(function (el) { el.addEventListener('input', upd); });
+    window.addEventListener('resize', upd);
+    upd();
+  })();
+
+  /* ── 工具 3 · 期望计算器 ── */
+  (function expectancy() {
+    var psEl = $('kl_eps'), wEl = $('kl_win'), lEl = $('kl_loss'), cEl = $('kl_cost');
+    if (!psEl || !wEl || !lEl || !cEl) return;
+    var psO = $('kl_epsO'), wO = $('kl_winO'), lO = $('kl_lossO'), cO = $('kl_costO');
+    var eEl = $('kl_E'), ehEl = $('kl_Eh');
+    var beEl = $('kl_be'), behEl = $('kl_beh');
+    var rrEl = $('kl_rr'), rrhEl = $('kl_rrh');
+    var vEl = $('kl_ev'), vhEl = $('kl_evh');
+
+    function upd() {
+      var ps = parseFloat(psEl.value) / 100;
+      var W = parseFloat(wEl.value) / 100;
+      var L = parseFloat(lEl.value) / 100;
+      var cost = parseFloat(cEl.value) / 100;
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(wO, (W * 100).toFixed(1) + '%');
+      txt(lO, (L * 100).toFixed(1) + '%');
+      txt(cO, (cost * 100).toFixed(2) + '%');
+      var rr = L > 0 ? W / L : 0;
+      var be = rr > 0 ? L / (W + L) : 1;
+      var E = ps * W - (1 - ps) * L - cost;
+      txt(eEl, (E >= 0 ? '+' : '') + (E * 100).toFixed(2) + '%');
+      tint(eEl, E > 0 ? 'var(--red)' : 'var(--green)');
+      txt(ehEl, 'E = p×赢 − (1−p)×输 − 成本');
+      txt(beEl, (be * 100).toFixed(1) + '%');
+      txt(behEl, '盈亏平衡胜率 = 输 ÷ (赢+输)');
+      txt(rrEl, rr.toFixed(2));
+      txt(rrhEl, '平均盈利 ÷ 平均亏损');
+      var label, hint, col;
+      if (E <= 0) { label = '负期望'; hint = '长期执行必然亏损'; col = 'var(--green)'; }
+      else if (E < 0.003) { label = '边缘正期望'; hint = '极易被滑点与冲击成本抹平'; col = 'var(--amber)'; }
+      else if (ps < be) { label = '赔率救场'; hint = '胜率低于平衡线，靠大赢小输维持'; col = 'var(--amber)'; }
+      else { label = '正期望'; hint = '仍须样本外验证与仓位纪律'; col = 'var(--red)'; }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+    }
+    [psEl, wEl, lEl, cEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ── 工具 4 · 形态挖掘警示 ── */
+  (function fdrWarn() {
+    var nEl = $('kl_patN'), aEl = $('kl_alpha'), tEl = $('kl_trials');
+    if (!nEl || !aEl || !tEl) return;
+    var nO = $('kl_patNO'), aO = $('kl_alphaO'), tO = $('kl_trialsO');
+    var fpEl = $('kl_fp'), fphEl = $('kl_fph');
+    var bonEl = $('kl_bon'), bonhEl = $('kl_bonh');
+    var vEl = $('kl_fv'), vhEl = $('kl_fvh');
+    var cv = $('klFdrChart');
+    var ctx = cv ? cv.getContext('2d') : null;
+
+    function draw(fp, sig) {
+      if (!ctx) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.clientWidth || 600, h = 214;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 56, r: 24, t: 28, b: 46 };
+      var y1 = h - 46, bh = y1 - pad.t - 8;
+      var maxV = Math.max(fp + sig, 1);
+      var sx = function (i, n) { return pad.l + i * (w - pad.l - pad.r) / (n - 1 || 1); };
+      var bars = [
+        { label: '期望假阳性', v: fp, col: '#d5342c' },
+        { label: '显著门槛(1)', v: sig, col: '#1d4ed8' }
+      ];
+      bars.forEach(function (b, i) {
+        var x = pad.l + i * ((w - pad.l - pad.r) / 2 + 20);
+        var bw = (w - pad.l - pad.r) / 2 - 40;
+        var bh2 = (b.v / maxV) * bh;
+        ctx.fillStyle = '#eef1f5';
+        ctx.fillRect(x, pad.t, bw, bh);
+        ctx.fillStyle = b.col;
+        ctx.fillRect(x, pad.t + bh - bh2, bw, bh2);
+        ctx.fillStyle = '#454c56';
+        ctx.font = '11px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(b.label, x + bw / 2, pad.t - 8);
+        ctx.font = '700 12px -apple-system,sans-serif';
+        ctx.fillStyle = b.col;
+        ctx.fillText(b.v.toFixed(1), x + bw / 2, pad.t + bh - bh2 - 6);
+      });
+      ctx.fillStyle = '#454c56';
+      ctx.textAlign = 'center';
+      ctx.fillText('在「形态无效」的零假设下，测试 N 个形态期望出现 α×N 个假阳性', w / 2, y1 + 31);
+    }
+
+    function upd() {
+      var N = parseFloat(nEl.value);
+      var alpha = parseFloat(aEl.value) / 100;
+      var trials = parseFloat(tEl.value);
+      txt(nO, N + ' 种');
+      txt(aO, (alpha * 100).toFixed(1) + '%');
+      txt(tO, trials + ' 次回测');
+      var fp = N * alpha;
+      var bon = alpha / N;
+      var cumFp = fp * trials;
+      txt(fpEl, fp.toFixed(1) + ' 个');
+      txt(fphEl, '单次扫描 · 累计 ' + trials + ' 次 ≈ ' + cumFp.toFixed(0) + ' 个假阳性');
+      txt(bonEl, (bon * 100).toFixed(3) + '%');
+      txt(bonhEl, 'Bonferroni 校正后单次检验门槛');
+      var label, hint, col;
+      if (fp >= 3) { label = '高危挖掘'; hint = '你「发现」的形态多半只是噪声'; col = 'var(--green)'; }
+      else if (fp >= 1) { label = '谨慎'; hint = '至少期待 1 个假阳性，须样本外验证'; col = 'var(--amber)'; }
+      else { label = '相对克制'; hint = '形态库仍须预注册，不能事后挑选'; col = 'var(--red)'; }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(fp, 1);
+    }
+    [nEl, aEl, tEl].forEach(function (el) { el.addEventListener('input', upd); });
+    window.addEventListener('resize', upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>

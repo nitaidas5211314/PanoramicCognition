@@ -105,11 +105,14 @@
     {
       "slug": "K线分析",
       "title": "K线分析",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 23:01:44",
+      "finished": "2026-09-16 23:06:55",
+      "duration_sec": 311,
+      "outputs": [
+        "reports/K线分析.html",
+        "reports/K线分析.md"
+      ],
       "error": null
     },
     {
@@ -560,7 +563,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 23:01",
+  "updated": "2026-09-16 23:06",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
