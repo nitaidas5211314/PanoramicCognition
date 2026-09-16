@@ -206,11 +206,14 @@
     {
       "slug": "BTC-反幂律增长与 S-曲线爆发猜想",
       "title": "BTC-反幂律增长与 S-曲线爆发猜想",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 23:43:49",
+      "finished": "2026-09-16 23:50:10",
+      "duration_sec": 381,
+      "outputs": [
+        "reports/BTC-反幂律增长与 S-曲线爆发猜想.html",
+        "reports/BTC-反幂律增长与 S-曲线爆发猜想.md"
+      ],
       "error": null
     },
     {
@@ -581,7 +584,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 23:43",
+  "updated": "2026-09-16 23:50",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
