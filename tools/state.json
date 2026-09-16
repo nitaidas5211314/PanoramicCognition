@@ -375,11 +375,14 @@
     {
       "slug": "BTC-SSR RSI（稳定币供给比率 RSI）",
       "title": "BTC-SSR RSI（稳定币供给比率 RSI）",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-17 00:44:38",
+      "finished": "2026-09-17 00:49:30",
+      "duration_sec": 292,
+      "outputs": [
+        "reports/BTC-SSR RSI（稳定币供给比率 RSI）.html",
+        "reports/BTC-SSR RSI（稳定币供给比率 RSI）.md"
+      ],
       "error": null
     },
     {
@@ -620,7 +623,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 00:44",
+  "updated": "2026-09-17 00:49",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
