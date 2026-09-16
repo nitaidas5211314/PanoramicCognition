@@ -12,7 +12,7 @@
 - [x] 日元加息
 - [x] 日元套利
 - [x] K线分析
-- [ ] BTC-长期估值与演化模型
+- [x] BTC-长期估值与演化模型
 - [ ] BTC-S2F（Stock-to-Flow）存流量比模型
 - [ ] BTC-时间幂律模型（Power Law Theory, PLT）
 - [ ] BTC-MVRV 指标（Market Value to Realized Value）

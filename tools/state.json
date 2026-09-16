@@ -118,11 +118,14 @@
     {
       "slug": "BTC-长期估值与演化模型",
       "title": "BTC-长期估值与演化模型",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 23:07:16",
+      "finished": "2026-09-16 23:11:13",
+      "duration_sec": 237,
+      "outputs": [
+        "reports/BTC-长期估值与演化模型.html",
+        "reports/BTC-长期估值与演化模型.md"
+      ],
       "error": null
     },
     {
@@ -563,7 +566,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 23:06",
+  "updated": "2026-09-16 23:11",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
