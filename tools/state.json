@@ -170,11 +170,14 @@
     {
       "slug": "BTC-NVT（Network Value to Transactions）指标",
       "title": "BTC-NVT（Network Value to Transactions）指标",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 23:27:02",
+      "finished": "2026-09-16 23:31:45",
+      "duration_sec": 283,
+      "outputs": [
+        "reports/BTC-NVT（Network Value to Transactions）指标.html",
+        "reports/BTC-NVT（Network Value to Transactions）指标.md"
+      ],
       "error": null
     },
     {
@@ -575,7 +578,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 23:26",
+  "updated": "2026-09-16 23:31",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
