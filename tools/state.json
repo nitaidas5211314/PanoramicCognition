@@ -126,11 +126,14 @@
     {
       "slug": "安同良团队拆解精准狙击",
       "title": "安同良团队拆解精准狙击",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 21:20:28",
+      "finished": "2026-09-16 21:26:17",
+      "duration_sec": 349,
+      "outputs": [
+        "reports/安同良团队拆解精准狙击.html",
+        "reports/安同良团队拆解精准狙击.md"
+      ],
       "error": null
     },
     {
@@ -192,7 +195,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 21:03",
+  "updated": "2026-09-16 21:26",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
