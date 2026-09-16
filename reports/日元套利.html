@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日元套利 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Yen Carry × Global Leverage</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天计划</a>
+    <div class="navgroup">模型与探索</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>日元套利</h1>
+  <p class="sub">借全球最便宜融资货币、投全球高息资产——不是「无风险套利」，而是<strong>负偏度租金</strong>：多数月份捡硬币，少数日子迎蒸汽机。</p>
+  <div class="meta">
+    <span class="chip b">27 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>日元套利（yen carry trade）= 以低息日元为融资货币，通过 FX swap / cross-currency basis 借入日元，换成美元等高息货币，投资美债、美股、新兴市场债或高 beta 资产，赚取「利差 + 汇率变动」</strong>。</p>
+<p>它不是教科书里的无风险套利——Bruschi, Menkhoff &amp; Sarno（2008）经典论文指出：高 carry 货币回报呈<strong>负偏度</strong>，崩盘与 VIX 上升、套息平仓高度相关【事实·JFE】。BIS 估算 2024 年 3 月以日元计价的跨境套息相关贷款中值约 <strong>¥40 万亿</strong>（约 <strong>$2500 亿</strong>），且明确因数据缺口<strong>向下偏</strong>【待验证·BIS Bulletin 90】。</p>
+<p><strong>2024 年 8 月 5 日</strong>是教科书级 unwind：USD/JPY 自 161 区急贬至 141 区（日元升值约 <strong>12.4%</strong>【推论·已验算】），TOPIX 单日 <strong>−12%</strong>，全球 equity 与 VIX 共振【事实·BIS/日经】。读「日元套利」，核心问题不是「利差还有几个 bp」，而是：<strong>你的资产组合里，有多少收益来自这条全球暗渠？波动率上升时，谁会被迫同时卖 FX 和风险资产？</strong></p>
+<hr />
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话边界</h3>
+<p>「日元套利」研究的是：<strong>以日元为融资端、全球资产为投资端的杠杆链条如何形成、获利、以及在何种条件下同步崩塌</strong>。</p>
+<p>核心对象是 <strong>carry 头寸（融资 leg + 投资 leg + 杠杆 + margin）</strong>，不是「USD/JPY 会不会涨」这一个报价。</p>
+<h3>用 15 个问题划定边界</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">研究什么</td>
+<td>套息结构、融资工具、杠杆、拥挤度、unwind 机制、全球传导</td>
+</tr>
+<tr>
+<td class="k">边界在哪</td>
+<td>宏观 carry vs 微观交易；stock（存量头寸）vs flow（边际平仓）</td>
+</tr>
+<tr>
+<td class="k">核心对象</td>
+<td>借日元 leg、投高息 leg、FX 敞口、杠杆倍数</td>
+</tr>
+<tr>
+<td class="k">参与者</td>
+<td>全球对冲基金、外国银行东京分行、寿险/养老金、日本 uridashi 散户</td>
+</tr>
+<tr>
+<td class="k">核心变量</td>
+<td>美日利差、USD/JPY、VIX、cross-currency basis、头寸规模</td>
+</tr>
+<tr>
+<td class="k">可观察</td>
+<td>CFTC 日元净持仓、BIS 跨境贷款、Tokyo 分行资产、VIX、利差</td>
+</tr>
+<tr>
+<td class="k">不可观察但可推断</td>
+<td>真实杠杆倍数、margin 触发线、crowdedness</td>
+</tr>
+<tr>
+<td class="k">谁影响谁</td>
+<td>低日息→套利空间↑→头寸积累→拥挤↑→一次冲击→同步平仓</td>
+</tr>
+<tr>
+<td class="k">确定因果</td>
+<td>利差↓使 carry 数学收益↓<span class="tag t-inf">推论</span>；VIX↑与 carry 亏损相关【事实·Bruschi et al.】</td>
+</tr>
+<tr>
+<td class="k">只是相关</td>
+<td>「日元弱=套息赚钱」——positioning 与 fiscal 叙事可推翻<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">表层现象</td>
+<td>「借日元买美股」头条</td>
+</tr>
+<tr>
+<td class="k">底层机制</td>
+<td>有限套利资本 + 杠杆约束 → UIP 长期偏离</td>
+</tr>
+<tr>
+<td class="k">反馈</td>
+<td>日元升值→FX 损→margin call→卖风险资产→波动↑→再平仓（正反馈）</td>
+</tr>
+<tr>
+<td class="k">时间延迟</td>
+<td>利差变化→头寸调整：周–月；margin 触发：小时–天</td>
+</tr>
+<tr>
+<td class="k">正负反馈</td>
+<td>Unwind 是正反馈；利差收窄是慢速负反馈</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>这一节是地基：后面四个工具都建立在「carry 的数学与杠杆」之上。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>四个理由</h3>
+<div class="grid g2">
+<div class="card"><h4>它是全球流动性的「暗渠」</h4><p>BIS 称 yen-denominated 跨境贷款 2024 年 3 月约 <strong>¥40 万亿</strong>【待验证·BIS GLI】。这条暗渠不出现在央行资产负债表上，却能在数日内牵动美股、日股、EM 与 crypto。</p></div>
+<div class="card"><h4>它训练「负偏度」思维</h4><p>多数月份小赚、少数日子大亏——与卖虚值期权同构【分析·BIS「nickels vs steamroller」】。不懂偏度，就会把「过去三年都赚」当成「风险很小」。</p></div>
+<div class="card"><h4>它有可验证的数学</h4><p>无杠杆：利差 <strong>+3.75%</strong>、USD/JPY <strong>−5%</strong>、12 月 → 总 <strong>−1.25%</strong>【推论·已验算】。5× 杠杆同一情景 → 总 <strong>−6.25%</strong>——算术比叙事锋利。</p></div>
+<div class="card"><h4>它连接宏观与微观</h4><p>同一机制在 Bruschi 学术论文、BIS 稳定报告、2024-08 头条里反复出现——学会 carry，就读懂了半个全球宏观交易台。</p></div>
+</div>
+<div class="note amber"><b>一句话定性</b><p>日元套利是全球版的「免费杠杆自助餐」——低息端在日本，账单却在波动率飙升时寄给全世界。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>第 01 节划边界，这一节回答「为什么要学」。没有它，后面 27 节会退化成汇率八卦。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>日元套利嵌套在全球货币-杠杆体系九层结构中：</p>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ycA" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#454c56"/>
+    </marker>
+  </defs>
+  <rect x="70" y="20" width="540" height="46" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="40" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 融资端 · 日本低息 · BoJ 政策</text>
+  <text x="86" y="58" font-size="10.5" fill="#454c56" font-family="sans-serif">负利率时代（2016–2024）培育最便宜 funding currency</text>
+  <rect x="70" y="76" width="540" height="46" rx="9" fill="#e7eef6" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="96" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 融资工具 · FX swap · cross-currency basis</text>
+  <text x="86" y="114" font-size="10.5" fill="#454c56" font-family="sans-serif">外国银行东京分行 · uridashi 债券</text>
+  <rect x="70" y="132" width="540" height="46" rx="9" fill="#dfe9f4" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="152" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 套利结构 · 借日元 · 投高息</text>
+  <text x="86" y="170" font-size="10.5" fill="#454c56" font-family="sans-serif">利差 + ΔFX = 总回报（UIP 长期偏离）</text>
+  <rect x="70" y="188" width="540" height="46" rx="9" fill="#d6e3f1" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="208" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 杠杆与保证金 · prime broker · vol target</text>
+  <text x="86" y="226" font-size="10.5" fill="#454c56" font-family="sans-serif">5–10× 常见 · margin 与 redemption 是扳机</text>
+  <rect x="70" y="244" width="540" height="46" rx="9" fill="#cfe0ee" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="264" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 投资端 · 美债 · 美股 · EM · 日股</text>
+  <text x="86" y="282" font-size="10.5" fill="#454c56" font-family="sans-serif">同一批玩家 FX 与 equity 双向持仓</text>
+  <rect x="70" y="300" width="540" height="46" rx="9" fill="#c6dcec" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="320" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 拥挤度 · crowdedness · 有限套利资本</text>
+  <text x="86" y="338" font-size="10.5" fill="#454c56" font-family="sans-serif">头寸越大，一次 unwind 越痛【分析·Sokolovski】</text>
+  <rect x="70" y="356" width="540" height="46" rx="9" fill="#bcd6e8" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="376" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 触发器 · VIX · 非农 · BoJ 意外</text>
+  <text x="86" y="394" font-size="10.5" fill="#454c56" font-family="sans-serif">2024-08：BoJ 加息 + 弱非农双触发</text>
+  <rect x="70" y="412" width="540" height="46" rx="9" fill="#e9ddc9" stroke="#c9b48a" stroke-width="1.2"/>
+  <text x="86" y="432" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 全球传导 · cross-asset 同步去杠杆</text>
+  <text x="86" y="450" font-size="10.5" fill="#454c56" font-family="sans-serif">卖 FX + 卖 beta → 正反馈螺旋</text>
+  <rect x="70" y="468" width="540" height="46" rx="9" fill="#f0d2cd" stroke="#d8a79c" stroke-width="1.2"/>
+  <text x="86" y="488" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 政策回应 · BoJ/Fed · 宏观审慎</text>
+  <text x="86" y="506" font-size="10.5" fill="#454c56" font-family="sans-serif">正常化收紧融资端 · 但实际利率仍可为负</text>
+  <line x1="340" y1="66" x2="340" y2="76" stroke="#454c56" stroke-width="1.5" marker-end="url(#ycA)"/>
+  <line x1="340" y1="122" x2="340" y2="132" stroke="#454c56" stroke-width="1.5" marker-end="url(#ycA)"/>
+  <line x1="340" y1="178" x2="340" y2="188" stroke="#454c56" stroke-width="1.5" marker-end="url(#ycA)"/>
+  <line x1="340" y1="234" x2="340" y2="244" stroke="#454c56" stroke-width="1.5" marker-end="url(#ycA)"/>
+  <line x1="340" y1="290" x2="340" y2="300" stroke="#454c56" stroke-width="1.5" marker-end="url(#ycA)"/>
+  <line x1="340" y1="346" x2="340" y2="356" stroke="#454c56" stroke-width="1.5" marker-end="url(#ycA)"/>
+  <line x1="340" y1="402" x2="340" y2="412" stroke="#454c56" stroke-width="1.5" marker-end="url(#ycA)"/>
+  <line x1="340" y1="458" x2="340" y2="468" stroke="#454c56" stroke-width="1.5" marker-end="url(#ycA)"/>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>九层地图是导航仪：读新闻时先定位——是第 ③ 层利差收窄，还是第 ⑦ 层 VIX 触发 unwind？</p>
+<hr />
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>一句话</th>
+<th>连到谁</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Carry trade</strong></td>
+<td>借低息、投高息，赚利差+汇率</td>
+<td>UIP 偏离</td>
+</tr>
+<tr>
+<td class="k"><strong>Funding currency</strong></td>
+<td>全球最便宜融资货币（日元）</td>
+<td>BoJ 政策、实际利率</td>
+</tr>
+<tr>
+<td class="k"><strong>FX swap / basis</strong></td>
+<td>借日元的技术通道</td>
+<td>Tokyo 分行、CIP 偏离</td>
+</tr>
+<tr>
+<td class="k"><strong>负偏度</strong></td>
+<td>小赚多、大亏少</td>
+<td>卖 OTM put、crash risk</td>
+</tr>
+<tr>
+<td class="k"><strong>Crowdedness</strong></td>
+<td>太多人做同方向</td>
+<td>unwind 幅度</td>
+</tr>
+<tr>
+<td class="k"><strong>Unwind</strong></td>
+<td>被迫平仓：买日元、卖投资端</td>
+<td>VIX、margin</td>
+</tr>
+<tr>
+<td class="k"><strong>UIP 违反</strong></td>
+<td>高息货币未按理论贬值</td>
+<td>carry 利润来源</td>
+</tr>
+<tr>
+<td class="k"><strong>有限套利</strong></td>
+<td>资本约束使偏离可持续</td>
+<td>Bruschi、BIS</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note blue"><b>跨域同构</b><p><strong>日元套利 ↔ 卖虚值期权</strong>：收小保费、偶发大赔。<strong>拥挤度 ↔ 生态位饱和</strong>：同策略过多则一次扰动引发踩踏。<strong>VIX unwind ↔ 银行挤兑</strong>：流动性约束迫使同步撤退。<strong>凯利公式 ↔ 最优杠杆</strong>：2× 凯利以上回报曲线变凹——高杠杆 carry 是在赌偏度。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>概念地图把「套利」从新闻变成关系网——后面因果图与工具都建立在这张网上。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>角色</th>
+<th>对套息叙事的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>全球对冲基金</strong></td>
+<td>核心 carry 玩家，高杠杆</td>
+<td>vol targeting 放大 unwind</td>
+</tr>
+<tr>
+<td class="k"><strong>外国银行东京分行</strong></td>
+<td>FX swap 融资枢纽</td>
+<td>BoJ 数据：2024-03 资产约 <strong>¥13.5 万亿</strong>【待验证·日经/BoJ】</td>
+</tr>
+<tr>
+<td class="k"><strong>日本寿险/养老金</strong></td>
+<td>海外债券配置，部分含货币对冲</td>
+<td>慢变量，与快钱 hedge fund 不同时间尺度</td>
+</tr>
+<tr>
+<td class="k"><strong>日本散户（uridashi 等）</strong></td>
+<td>借日元买外币债</td>
+<td>国内端融资来源之一</td>
+</tr>
+<tr>
+<td class="k"><strong>日本央行</strong></td>
+<td>设定融资端利率</td>
+<td>正常化抬高成本，但实际利率可仍负</td>
+</tr>
+<tr>
+<td class="k"><strong>美联储</strong></td>
+<td>投资端利率定价</td>
+<td>降息收窄利差，但或伴 VIX 上升</td>
+</tr>
+<tr>
+<td class="k"><strong>BIS / IMF</strong></td>
+<td>全球稳定评估</td>
+<td>2019 以来多次警告 yen carry【事实·BIS】</td>
+</tr>
+<tr>
+<td class="k"><strong>Prime broker</strong></td>
+<td>margin、杠杆、赎回</td>
+<td>看不见但决定 forced selling</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>参与者表回答「谁在扛杠杆」——快钱（对冲基金）与慢钱（寿险）的平仓节奏完全不同。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>当前锚点（2026-09）</th>
+<th>读法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>美日短端利差</strong></td>
+<td>演示默认日 <strong>0.50%</strong> vs 美 <strong>4.25%</strong> → <strong>+3.75pp</strong>【假设·工具 1】</td>
+<td>carry 空间</td>
+</tr>
+<tr>
+<td class="k"><strong>USD/JPY</strong></td>
+<td>2024-08 低点 ~<strong>141</strong>；2024 高点 ~<strong>161</strong>【事实·BIS】</td>
+<td>FX leg 损益</td>
+</tr>
+<tr>
+<td class="k"><strong>套息规模</strong></td>
+<td>BIS 中值 <strong>¥40 万亿</strong>【待验证·BIS】</td>
+<td>unwind 上限代理</td>
+</tr>
+<tr>
+<td class="k"><strong>VIX</strong></td>
+<td>2024-08 一度飙升至 <strong>60+</strong> 区【待验证·CBOE】</td>
+<td>unwind 同步指标</td>
+</tr>
+<tr>
+<td class="k"><strong>CFTC 日元净持仓</strong></td>
+<td>2024-07 净空 vs 2025 净多翻转【分析·兴业研究】</td>
+<td>positioning</td>
+</tr>
+<tr>
+<td class="k"><strong>Cross-currency basis</strong></td>
+<td>影响「借日元」真实成本</td>
+<td>CIP 偏离</td>
+</tr>
+<tr>
+<td class="k"><strong>杠杆倍数</strong></td>
+<td>演示默认 <strong>5×</strong>【假设·工具 1】</td>
+<td>放大 FX 损益</td>
+</tr>
+<tr>
+<td class="k"><strong>核心 CPI（日）</strong></td>
+<td>~<strong>2.5%</strong>【事实·BOJ 展望】</td>
+<td>实际融资成本</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>变量表是「每日扫描清单」——先看利差与 VIX，再看 positioning。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<p>套息因果链：<strong>低日息→套利空间→头寸积累→（利差收窄或 VIX↑）→被迫平仓→日元升值+卖风险资产→波动↑→进一步平仓</strong>。实线主传导，红色虚线反馈。</p>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ycC" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#454c56"/>
+    </marker>
+    <marker id="ycR" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+  <rect x="15" y="120" width="95" height="50" rx="8" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="28" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">低日息</text>
+  <text x="28" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">BoJ·实际利率</text>
+  <rect x="125" y="120" width="95" height="50" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="138" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">套利空间</text>
+  <text x="138" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">利差·basis</text>
+  <rect x="235" y="120" width="95" height="50" rx="8" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="248" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">头寸积累</text>
+  <text x="248" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">杠杆·拥挤</text>
+  <rect x="345" y="120" width="95" height="50" rx="8" fill="#fdf2e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="358" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">触发冲击</text>
+  <text x="358" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">VIX·BoJ·非农</text>
+  <rect x="455" y="120" width="95" height="50" rx="8" fill="#f0d2cd" stroke="#d8a79c" stroke-width="1.3"/>
+  <text x="468" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">同步平仓</text>
+  <text x="468" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">买日元·卖资产</text>
+  <rect x="565" y="120" width="95" height="50" rx="8" fill="#e3edf7" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="578" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">全球波动</text>
+  <text x="578" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">股·债·EM</text>
+  <rect x="345" y="220" width="120" height="44" rx="8" fill="#f0d2cd" stroke="#d8a79c" stroke-width="1.3"/>
+  <text x="358" y="240" font-size="10" font-weight="700" fill="#15181d" font-family="sans-serif">利差收窄</text>
+  <text x="358" y="256" font-size="9" fill="#7c848f" font-family="sans-serif">BoJ 加息·Fed 路径</text>
+  <line x1="110" y1="145" x2="120" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#ycC)"/>
+  <line x1="220" y1="145" x2="230" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#ycC)"/>
+  <line x1="330" y1="145" x2="340" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#ycC)"/>
+  <line x1="440" y1="145" x2="450" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#ycC)"/>
+  <line x1="550" y1="145" x2="560" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#ycC)"/>
+  <line x1="617" y1="120" x2="290" y2="90" stroke="#d5342c" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#ycR)"/>
+  <line x1="500" y1="170" x2="400" y2="210" stroke="#d5342c" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#ycR)"/>
+  <line x1="405" y1="220" x2="390" y2="172" stroke="#d5342c" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#ycR)"/>
+  <text x="420" y="95" font-size="9" fill="#d5342c" font-family="sans-serif">日元升值→FX 损</text>
+  <text x="430" y="205" font-size="9" fill="#d5342c" font-family="sans-serif">波动→margin→再平仓</text>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>因果图是手册枢纽：<strong>carry 崩盘往往不是单一新闻，而是「头寸太满 + 流动性收紧」</strong>【分析·BIS Bulletin 90】。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>「套利」不是套利</strong>：有限套利资本使 UIP 偏离可持续——利润是<strong>风险补偿</strong>而非定价错误白捡【事实·Bruschi et al.】。</li>
+<li><strong>日元升值 ≠ 套息者全亏</strong>：已对冲 FX 的实体与慢钱寿险，与裸杠杆 hedge fund 暴露不同<span class="tag t-ana">分析</span>。</li>
+<li><strong>利差仍宽时也可崩盘</strong>：2024-08 美日利差仍大，但 <strong>positioning + VIX</strong> 触发去杠杆——利差是慢变量，margin 是快变量。</li>
+<li><strong>投资端多元化不防 unwind</strong>：美债、美股、EM、crypto 在 forced selling 时<strong>同向</strong>——相关性在危机时→1【分析·BIS】。</li>
+<li><strong>部分 unwind 后重建</strong>：BIS 称 2024-08 后市场快速企稳，头寸有重建【事实·BIS】——「一次清场」是误区。</li>
+<li><strong>crowdedness 难精确观测</strong>：Sokolovski 等指拥挤度与崩盘关联在文献中仍待更强实证【待验证·学术】。</li>
+</ul>
+<blockquote>
+<p><span class="tag t-inf">推论</span>隐藏关系的共同形状：<strong>名义利差 vs 实际融资成本、存量头寸 vs 边际平仓、快钱 vs 慢钱</strong>三层常被混为一谈。</p>
+</blockquote>
+<h3>它在整个系统里的作用</h3>
+<p>这一节是陷阱预警的机理层——§14 里每条谬误几乎都能在这里找到根源。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>全球 carry 机器：<strong>BoJ/市场设定短端→银行/基金通过 swap 融日元→杠杆放大投全球资产→vol 与 margin 监控→冲击时同步去杠杆</strong>。下图是「资金流抽水」。</p>
+<svg viewBox="0 0 680 290" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ycF" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#454c56"/>
+    </marker>
+    <marker id="ycFL" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+  <rect x="20" y="60" width="150" height="170" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="34" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">日元融资池</text>
+  <text x="34" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 政策利率 · swap</text>
+  <text x="34" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· Tokyo 分行</text>
+  <text x="34" y="144" font-size="10.5" fill="#454c56" font-family="sans-serif">· uridashi 资金</text>
+  <rect x="265" y="60" width="170" height="170" rx="9" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.6"/>
+  <text x="279" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">套息引擎</text>
+  <text x="279" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 利差捕获</text>
+  <text x="279" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· 杠杆 5–10×</text>
+  <text x="279" y="144" font-size="10.5" fill="#454c56" font-family="sans-serif">· 负偏度租金</text>
+  <text x="279" y="164" font-size="10.5" fill="#454c56" font-family="sans-serif">· BIS ¥40 万亿代理</text>
+  <rect x="510" y="60" width="150" height="170" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="524" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">全球风险资产</text>
+  <text x="524" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 美股 · 日股</text>
+  <text x="524" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· 美债 · EM 债</text>
+  <text x="524" y="144" font-size="10.5" fill="#454c56" font-family="sans-serif">· 高 beta · crypto</text>
+  <line x1="170" y1="120" x2="260" y2="120" stroke="#454c56" stroke-width="2" marker-end="url(#ycF)"/>
+  <line x1="435" y1="120" x2="505" y2="120" stroke="#454c56" stroke-width="2" marker-end="url(#ycF)"/>
+  <line x1="350" y1="230" x2="350" y2="262" stroke="#d5342c" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#ycFL)"/>
+  <text x="200" y="250" font-size="10.5" fill="#d5342c" font-family="sans-serif">抽水：日元升值 · VIX · margin call · 赎回</text>
+  <text x="200" y="278" font-size="11" font-weight="700" fill="#d5342c" font-family="sans-serif">2024-08：双触发 → 跨市场同步去杠杆</text>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>运行机制图把「借日元买美债」具象化为<strong>全球杠杆管道</strong>——抽水阀是波动率，不是利差 alone。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 210" width="100%" style="max-width:680px">
+  <line x1="50" y1="120" x2="650" y2="120" stroke="#454c56" stroke-width="2"/>
+  <g font-family="sans-serif" font-size="10" fill="#15181d">
+    <circle cx="70" cy="120" r="5" fill="#1d4ed8"/>
+    <text x="70" y="100" text-anchor="middle" font-weight="700">2007</text>
+    <text x="70" y="142" text-anchor="middle">次贷危机前</text>
+    <text x="70" y="156" text-anchor="middle">carry 受挫</text>
+    <circle cx="150" cy="120" r="5" fill="#1d4ed8"/>
+    <text x="150" y="100" text-anchor="middle" font-weight="700">2013</text>
+    <text x="150" y="142" text-anchor="middle">QQE 启动</text>
+    <circle cx="230" cy="120" r="5" fill="#0f8a4d"/>
+    <text x="230" y="100" text-anchor="middle" font-weight="700">2016</text>
+    <text x="230" y="142" text-anchor="middle">负利率</text>
+    <text x="230" y="156" text-anchor="middle">carry 膨胀</text>
+    <circle cx="320" cy="120" r="5" fill="#b8730a"/>
+    <text x="320" y="100" text-anchor="middle" font-weight="700">2019</text>
+    <text x="320" y="142" text-anchor="middle">BIS 警告</text>
+    <text x="320" y="156" text-anchor="middle">yen carry 风险</text>
+    <circle cx="410" cy="120" r="5" fill="#b8730a"/>
+    <text x="410" y="100" text-anchor="middle" font-weight="700">2024-07</text>
+    <text x="410" y="142" text-anchor="middle">BoJ 加息</text>
+    <circle cx="500" cy="120" r="5" fill="#d5342c"/>
+    <text x="500" y="100" text-anchor="middle" font-weight="700">2024-08</text>
+    <text x="500" y="142" text-anchor="middle">史诗 unwind</text>
+    <text x="500" y="156" text-anchor="middle">USD/JPY −12%</text>
+    <circle cx="590" cy="120" r="5" fill="#b8730a"/>
+    <text x="590" y="100" text-anchor="middle" font-weight="700">2025–26</text>
+    <text x="590" y="142" text-anchor="middle">部分重建</text>
+    <text x="590" y="156" text-anchor="middle">利差仍宽</text>
+  </g>
+  <text x="350" y="190" font-size="10.5" fill="#7c848f" font-family="sans-serif" text-anchor="middle">三十年低息培育暗渠 · 数日 unwind 可抹去数月利差</text>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>时间轴说明：<strong>carry 是慢积累、快崩塌</strong>——理解时间不对称，才不会用「过去 12 个月盈利」低估尾部。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>激励</th>
+<th>对叙事的扭曲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>对冲基金</strong></td>
+<td>管理费+业绩提成，偏爱稳定 carry 现金流</td>
+<td>淡化负偏度与 tail risk</td>
+</tr>
+<tr>
+<td class="k"><strong>Prime broker</strong></td>
+<td>利差收入、交易量</td>
+<td>鼓励杠杆直到 margin 事件</td>
+</tr>
+<tr>
+<td class="k"><strong>BoJ</strong></td>
+<td>国内通胀目标 vs 全球金融稳定</td>
+<td>措辞「渐进」淡化外部冲击</td>
+</tr>
+<tr>
+<td class="k"><strong>BIS</strong></td>
+<td>系统性稳定</td>
+<td>「nickels vs steamroller」警告</td>
+</tr>
+<tr>
+<td class="k"><strong>卖方 strategist</strong></td>
+<td>流量与头条</td>
+<td>「史诗平仓」「灰犀牛」标题化</td>
+</tr>
+<tr>
+<td class="k"><strong>学术（Bruschi 等）</strong></td>
+<td>解释 UIP 谜题</td>
+<td>强调 crash risk 非免费午餐</td>
+</tr>
+<tr>
+<td class="k"><strong>散户 uridashi</strong></td>
+<td>追求外币债更高票息</td>
+<td>往往不懂 FX 与赎回风险</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>利益结构解释「为何明知有 tail risk 仍有人做」——<strong>激励在时间轴上不对称</strong>（经理按年考核，崩盘按日发生）。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>资源</th>
+<th>富方</th>
+<th>贫方</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>BIS GLI / Bulletin</strong></td>
+<td>央行、研究机构</td>
+<td>散户</td>
+<td>低估 ¥40 万亿量级</td>
+</tr>
+<tr>
+<td class="k"><strong>CFTC 持仓</strong></td>
+<td>FX desk</td>
+<td>个人</td>
+<td>不知 positioning 翻转</td>
+</tr>
+<tr>
+<td class="k"><strong>Prime broker margin 规则</strong></td>
+<td>机构</td>
+<td>公众</td>
+<td>不知 forced selling 阈值</td>
+</tr>
+<tr>
+<td class="k"><strong>Tokyo 分行数据</strong></td>
+<td>BoJ、BIS</td>
+<td>—</td>
+<td>融资端流量难实时跟踪</td>
+</tr>
+<tr>
+<td class="k"><strong>VIX 与期权 skew</strong></td>
+<td>衍生品台</td>
+<td>宏观散户</td>
+<td>忽视 crash insurance 定价</td>
+</tr>
+<tr>
+<td class="k"><strong>学术论文（JFE 等）</strong></td>
+<td>量化/宏观基金</td>
+<td>—</td>
+<td>二手摘要易丢「负偏度」要点</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><span class="tag t-fact">事实</span>BIS Bulletin 90（2024-08）是理解 2024 unwind 的一手 post-mortem【事实·BIS】。</p>
+</blockquote>
+<h3>它在整个系统里的作用</h3>
+<p>资源地图把套息拉回政治经济学：<strong>看得见的是利差，看不见的是万亿杠杆与 margin</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>为什么是杠杆</th>
+<th>今天就能做</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>杠杆套息数学（工具 1）</strong></td>
+<td>5× 杠杆把 −1.25% 放大成 <strong>−6.25%</strong></td>
+<td>默认验算</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>尾部回收（工具 2）</strong></td>
+<td>0.31%/月 vs 12% 崩盘 → <strong>39 个月</strong>才回本</td>
+<td>理解负偏度</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>VIX 联动（工具 3）</strong></td>
+<td>ΔVIX <strong>+12</strong> → 日元升值约 <strong>+4.2%</strong>（beta=0.35）</td>
+<td>盯 VIX 日历</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>对照基准（工具 4）</strong></td>
+<td>65% 胜率 vs 20 日基准 <strong>56.22%</strong> → 超额 <strong>8.9pp</strong>，需 <strong>n≈239</strong></td>
+<td>别被胜率忽悠</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>BIS 规模代理</strong></td>
+<td>¥40 万亿 × 5% 升值 → 卖压 <strong>¥0.50 万亿</strong></td>
+<td>量级直觉</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>CFTC positioning</strong></td>
+<td>净空 vs 净多 → 价格反应符号相反</td>
+<td>每周更新</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>美日利差</strong></td>
+<td>仍 <strong>+3.75pp</strong> 时 carry 数学仍成立——直到 FX 腿反转</td>
+<td>OIS 利差</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>crowdedness 意识</strong></td>
+<td>头寸越满，下次冲击越大【分析·学术】</td>
+<td>读 BIS 警告</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>投资端相关性</strong></td>
+<td>crisis 时股债 EM 同跌</td>
+<td>检查 portfolio beta</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>实际融资成本</strong></td>
+<td>名义日息 0.5% − CPI 2.5% = 实际 <strong>−2.0%</strong><span class="tag t-inf">推论</span></td>
+<td>真便宜还是名义便宜</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>杠杆点是行动索引——对接 §16 与 §22。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>把 carry 当成无风险套利</summary><div class="dbody"><p>Bruschi et al.：高 carry 回报是<strong>崩盘风险补偿</strong>，非定价错误白捡【事实·JFE】。有限套利资本使偏离可持续。</p></div></details>
+<details><summary>只看利差，不看 FX 腿</summary><div class="dbody"><p>无杠杆 12 月：利差 <strong>+3.75%</strong>、FX <strong>−5%</strong> → 总 <strong>−1.25%</strong>【推论·已验算】。利差为正不等于赚钱。</p></div></details>
+<details><summary>忽视杠杆放大</summary><div class="dbody"><p>5× 杠杆同一情景 → 总 <strong>−6.25%</strong>。8× + 日元升值 9% 可在数周抹平数年收益【推论·工具 1】。</p></div></details>
+<details><summary>以为 VIX 与套息无关</summary><div class="dbody"><p>Bruschi：VIX 上升期 carry <strong>平均亏损</strong>；平仓与 ΔVIX 显著负相关【事实·JFE】。</p></div></details>
+<details><summary>把 BIS ¥40 万亿当精确账本</summary><div class="dbody"><p>BIS 明确 <strong>biased down due to data gaps</strong>【事实·BIS】——作量级，不作审计。</p></div></details>
+<details><summary>2024-08 之后 carry 已消失</summary><div class="dbody"><p>BIS：<strong>仅部分 unwind</strong>，头寸有重建；2025 利差仍宽【事实·BIS】。</p></div></details>
+<details><summary>用「胜率」推销 carry 策略</summary><div class="dbody"><p>20 日随机做多基准 <strong>56.22%</strong>（μ=10%、σ=18%<span class="tag t-hyp">假设</span>）；65% 胜率超额 <strong>8.9pp</strong>，需 <strong>n≈239</strong> 才显著【推论·工具 4】。</p></div></details>
+<details><summary>投资分散就能防 unwind</summary><div class="dbody"><p>forced selling 时相关性→1——美债、美股、EM、crypto 可同步承压【分析·BIS】。</p></div></details>
+<details><summary>日元升值 = 套息全灭</summary><div class="dbody"><p>已对冲 FX 的实体与慢钱，与裸杠杆 hedge fund 不同暴露<span class="tag t-ana">分析</span>。</p></div></details>
+<details><summary>忽视 basis 与借入真实成本</summary><div class="dbody"><p>cross-currency basis 可抬高「借日元」成本——表面利差 ≠ 到手利差<span class="tag t-ana">分析</span>。</p></div></details>
+<details><summary>把学术负偏度当「理论洁癖」</summary><div class="dbody"><p>2024-08 就是负偏度兑现——TOPIX <strong>−12%</strong>、USD/JPY <strong>−12.4%</strong>（161→141<span class="tag t-inf">推论</span>）。</p></div></details>
+<details><summary>认为 BoJ 加息已终结 carry</summary><div class="dbody"><p>2025-12 政策 <strong>0.75%</strong> 减 CPI <strong>2.5%</strong> = 实际 <strong>−1.75%</strong><span class="tag t-inf">推论</span>——融资端仍便宜，carry 或只是「变贵」未「消失」。</p></div></details>
+<h3>它在整个系统里的作用</h3>
+<p>陷阱清单是疫苗——配合 §25 工具当场验算。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 240" width="100%" style="max-width:680px">
+  <rect x="40" y="40" width="180" height="160" rx="10" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.4"/>
+  <text x="56" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">抽象层</text>
+  <text x="56" y="92" font-size="10.5" fill="#454c56" font-family="sans-serif">carry = 利差 + ΔFX</text>
+  <text x="56" y="112" font-size="10.5" fill="#454c56" font-family="sans-serif">负偏度 · UIP 偏离</text>
+  <text x="56" y="132" font-size="10.5" fill="#454c56" font-family="sans-serif">有限套利 · 拥挤度</text>
+  <rect x="250" y="40" width="180" height="160" rx="10" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="266" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">机制层</text>
+  <text x="266" y="92" font-size="10.5" fill="#454c56" font-family="sans-serif">FX swap · Tokyo 分行</text>
+  <text x="266" y="112" font-size="10.5" fill="#454c56" font-family="sans-serif">杠杆 · margin · vol target</text>
+  <text x="266" y="132" font-size="10.5" fill="#454c56" font-family="sans-serif">VIX · CFTC · BIS 规模</text>
+  <rect x="460" y="40" width="180" height="160" rx="10" fill="#fdf2e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="476" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">操作层</text>
+  <text x="476" y="92" font-size="10.5" fill="#454c56" font-family="sans-serif">USD/JPY · TOPIX · VIX</text>
+  <text x="476" y="112" font-size="10.5" fill="#454c56" font-family="sans-serif">美日 OIS 利差</text>
+  <text x="476" y="132" font-size="10.5" fill="#454c56" font-family="sans-serif">CFTC 日元净持仓</text>
+  <text x="230" y="128" font-size="18" fill="#454c56" font-family="sans-serif">→</text>
+  <text x="440" y="128" font-size="18" fill="#454c56" font-family="sans-serif">→</text>
+</svg>
+<p><strong>现实锚点（2024–2026）</strong>：</p>
+<ul>
+<li>2024-03：BoJ 退出负利率，carry 融资成本边际上升【事实·BOJ】</li>
+<li>2024-07-31：加至 <strong>0.25%</strong>；套息数学仍有利差空间【事实·BOJ】</li>
+<li>2024-08-02/05：弱非农 + 全球 unwind；USD/JPY 161→141（<strong>−12.4%</strong><span class="tag t-inf">推论</span>）；TOPIX <strong>−12%</strong>【事实·BIS】</li>
+<li>2024-08 后：BIS 称<strong>部分</strong>平仓，非清零【事实·BIS Bulletin 90】</li>
+<li>2025–2026：美日利差仍宽，carry 或重建；positioning 由净空转净多【分析·兴业研究】</li>
+</ul>
+<h3>它在整个系统里的作用</h3>
+<p>三层映射防止「背概念不知看哪」——每个机制都对应一组可观察报价。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>理论概念</th>
+<th>行动化问题</th>
+<th>观察指标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">杠杆 carry</td>
+<td>5× 下 FX −5% 总回报多少？</td>
+<td>工具 1</td>
+</tr>
+<tr>
+<td class="k">负偏度</td>
+<td>一次 12% 崩盘要几个月「捡硬币」补回？</td>
+<td>工具 2</td>
+</tr>
+<tr>
+<td class="k">VIX 传导</td>
+<td>ΔVIX +12 隐含多少日元升值？</td>
+<td>工具 3</td>
+</tr>
+<tr>
+<td class="k">对照基准</td>
+<td>策略胜率是否显著高于随机做多？</td>
+<td>工具 4</td>
+</tr>
+<tr>
+<td class="k">拥挤度</td>
+<td>头寸是否处于历史高位？</td>
+<td>BIS、CFTC、Tokyo 分行</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>决策框架（非投资建议）</strong>：</p>
+<ol>
+<li><strong>定性</strong>：carry 处于「积累 / 成熟 / unwind」哪一阶段？</li>
+<li><strong>定量</strong>：四工具验算杠杆与 tail</li>
+<li><strong>交叉验证</strong>：VIX、USD/JPY、CFTC 是否同向预警？</li>
+<li><strong>预期差</strong>：市场定价了多少次 BoJ 加息 vs 你的判断？</li>
+</ol>
+<h3>它在整个系统里的作用</h3>
+<p>理论到行动是手册的「执行接口」。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 词汇</summary><div class="dbody"><p>能区分 funding currency、investment currency、unwind、basis。</p></div></details>
+<details><summary>L2 · carry 算术</summary><div class="dbody"><p>能手算：无杠杆总 <strong>−1.25%</strong>；5× 杠杆总 <strong>−6.25%</strong>。</p></div></details>
+<details><summary>L3 · 负偏度直觉</summary><div class="dbody"><p>能解释 0.31%/月 vs 12% 崩盘 → 39 个月回本（工具 2）。</p></div></details>
+<details><summary>L4 · VIX 联动</summary><div class="dbody"><p>能读 ΔVIX 与日元升值的经验关系（工具 3）。</p></div></details>
+<details><summary>L5 · 对照基准</summary><div class="dbody"><p>能算 65% vs 56.22% 基准 → 超额 8.9pp、n≈239（工具 4）。</p></div></details>
+<details><summary>L6 · 情景写作</summary><div class="dbody"><p>能写「下一次 VIX 飙升周」三情景备忘录。</p></div></details>
+<h3>它在整个系统里的作用</h3>
+<p>技能树给学习路径——配合 §21 四级能力路线。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>把日元套利当成 <strong>「全球杠杆暗渠塔防」</strong>：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>游戏元素</th>
+<th>对应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">水源</td>
+<td>日本低息融资池</td>
+</tr>
+<tr>
+<td class="k">管道</td>
+<td>FX swap / Tokyo 分行</td>
+</tr>
+<tr>
+<td class="k">水车</td>
+<td>利差捕获（nickels）</td>
+</tr>
+<tr>
+<td class="k">蒸汽机</td>
+<td>VIX 飙升 + 日元升值（tail）</td>
+</tr>
+<tr>
+<td class="k">管道压力</td>
+<td>杠杆倍数 × 头寸规模</td>
+</tr>
+<tr>
+<td class="k">Boss</td>
+<td>2024-08 双触发周</td>
+</tr>
+<tr>
+<td class="k">Debuff</td>
+<td>margin call、赎回、crowdedness</td>
+</tr>
+<tr>
+<td class="k">迷雾</td>
+<td>BIS 规模下限、真实杠杆</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Boss 战复盘</strong>：2024-08「捡硬币遇蒸汽机」；2025「利差仍宽但 positioning 翻转」。</p>
+<h3>它在整个系统里的作用</h3>
+<p>游戏化降低畏难——carry 是暗渠，不是单机 FX 交易。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务类型</th>
+<th>示例</th>
+<th>奖励（认知）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">日常</td>
+<td>记录 USD/JPY 与 VIX 同日方向</td>
+<td>carry 直觉 +1</td>
+</tr>
+<tr>
+<td class="k">周常</td>
+<td>跑工具 1 用最新 OIS 利率</td>
+<td>杠杆数学 +1</td>
+</tr>
+<tr>
+<td class="k">主线</td>
+<td>跟踪一次「VIX 飙升 + 日元升值」周</td>
+<td>unwind 地图</td>
+</tr>
+<tr>
+<td class="k">支线</td>
+<td>读 Bruschi et al. 摘要或 BIS Bulletin 90</td>
+<td>学术视角</td>
+</tr>
+<tr>
+<td class="k">成就</td>
+<td>第一次提前识别 positioning 翻转</td>
+<td>解锁「卖事实」</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>任务系统把 §23/§24 计划游戏化。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若 2016 年未引入负利率</button><button class="tab" data-pane="tb1-1">若 2024-08 没有弱非农</button><button class="tab" data-pane="tb1-2">若 全球禁止 FX swap 套息</button></div>
+<div class="pane on" id="tb1-0"><p><span class="tag t-inf">推论</span>日元融资优势较弱，全球 carry 暗渠或窄一半——2019 BIS 警告或不会如此醒目。</p></div><div class="pane" id="tb1-1"><p><span class="tag t-inf">推论</span>日元或仍升但全球 equity 冲击或较小——「双触发」模型：BoJ × 宏观 surprise【分析·郭磊/华尔街见闻】。</p></div><div class="pane" id="tb1-2"><p><span class="tag t-hyp">假设</span>¥40 万亿暗渠断裂——美债边际需求、EM 融资与美股杠杆结构将剧变；现实中不可行，但说明系统耦合度。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>反事实训练结构感——知道哪些是承重墙（头寸规模），哪些是扳机（VIX）。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>标志</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识别</td>
+<td>能说出 carry 结构与 2024-08 事件</td>
+<td>读完 §14 并举 3 个陷阱</td>
+</tr>
+<tr>
+<td class="k">L2 计算</td>
+<td>能手算杠杆 carry 与 tail 回收</td>
+<td>完成 §22 工具 1–2</td>
+</tr>
+<tr>
+<td class="k">L3 建模</td>
+<td>能写「VIX 飙升周」三情景</td>
+<td>四工具 + CFTC + VIX</td>
+</tr>
+<tr>
+<td class="k">L4 直觉</td>
+<td>看到 VIX 跳升自动想「carry + positioning」</td>
+<td>持续跟踪 8 周</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>能力路线是进度条。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>目标</strong>：今天就能做、成本≈0、产出可验证。</p>
+<p><strong>① 杠杆套息（8 分钟）</strong>
+工具 1：日 <strong>0.50%</strong>、美 <strong>4.25%</strong>、FX <strong>−5.0%</strong>、<strong>12</strong> 月、杠杆 <strong>5×</strong> → 利差 <strong>+18.75%</strong>、汇率 <strong>−25.00%</strong>、总 <strong>−6.25%</strong>。写下：<strong>杠杆把微利变巨亏</strong>。</p>
+<p><strong>② 尾部回收（7 分钟）</strong>
+工具 2：月均 carry <strong>0.31%</strong>（=3.75%/12）、一次崩盘 <strong>12.0%</strong> → 需 <strong>39 个月</strong>才线性回本。写下：<strong>负偏度不是修辞</strong>。</p>
+<p><strong>③ VIX 联动（8 分钟）</strong>
+工具 3：ΔVIX <strong>+12</strong>、beta <strong>0.35</strong>、头寸 <strong>¥40</strong> 万亿 → 日元升值约 <strong>+4.2%</strong>、估算卖压 <strong>¥0.42</strong> 万亿。写下：VIX 是 carry 的同步指标。</p>
+<p><strong>④ 对照基准（7 分钟）</strong>
+工具 4：策略胜率 <strong>65.1%</strong>、μ=<strong>10%</strong>、σ=<strong>18%</strong>、<strong>20</strong> 日 → 基准 <strong>56.22%</strong>、超额 <strong>+8.9pp</strong>、需 <strong>n≈239</strong>。写下：<strong>别被表面胜率迷惑</strong>。</p>
+<div class="note amber"><b>验收标准</b><p>你能向别人解释「为什么利差仍宽时 carry 也会崩盘」——就算入门。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>§22 是交付验证点。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>结构</td>
+<td>默写「借日元→投什么→谁杠杆」</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>数学</td>
+<td>手算工具 1，验证 −6.25%</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>2024-08</td>
+<td>读 BIS Bulletin 90 一页摘要</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>学术</td>
+<td>读 Bruschi et al. 摘要（负偏度+VIX）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>positioning</td>
+<td>查 CFTC 日元 net</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>VIX</td>
+<td>整理三次 VIX 飙升与 USD/JPY 同日数据</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>整合</td>
+<td>300 字「下一次 unwind 预警」备忘录</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>7 天计划养成数据节奏。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>周次</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">打底</td>
+<td>1–2 周</td>
+<td>L1→L2：结构 + 四工具</td>
+</tr>
+<tr>
+<td class="k">深耕</td>
+<td>第 3 周</td>
+<td>并行跟踪 USD/JPY、VIX、美日利差</td>
+</tr>
+<tr>
+<td class="k">输出</td>
+<td>第 4 周</td>
+<td>「日元套利全球传导备忘录」一页纸</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>30 天计划通 L2→L3。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>跨域同构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>杠杆 carry</strong></td>
+<td>L×(利差+ΔFX)</td>
+<td>↔ 凯利杠杆 ↔ 保证金交易</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>负偏度租金</strong></td>
+<td>小赚多、大亏少</td>
+<td>↔ 卖 OTM put</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>有限套利</strong></td>
+<td>资本约束使 UIP 偏离</td>
+<td>↔ 套利资本供给曲线</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>VIX 联动</strong></td>
+<td>风险厌恶→平仓</td>
+<td>↔ 流动性螺旋</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>crowdedness</strong></td>
+<td>头寸越满越脆</td>
+<td>↔ 生态位饱和</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>双触发</strong></td>
+<td>BoJ × 宏观 surprise</td>
+<td>↔ 与门电路</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>funding currency</strong></td>
+<td>日元全球暗渠</td>
+<td>↔ 平台货币</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>basis 摩擦</strong></td>
+<td>借入真实成本</td>
+<td>↔ 交易成本壁垒</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>对照基准</strong></td>
+<td>超额需减 p_base</td>
+<td>↔ 多重检验</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>部分 unwind</strong></td>
+<td>stock 降、flow 可重建</td>
+<td>↔ 地震后重建</td>
+</tr>
+</tbody>
+</table></div>
+<p>下面四个工具把 #1–#4 与 #9 变成可拖动验证。</p>
+<h4>杠杆套息回报器</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 1 · 杠杆套息回报器</h4></div>
+  <p class="tool-sub">总回报 ≈ L × [(r<sub>US</sub> − r<sub>JP</sub>) × 月/12 + USD/JPY 变动%]。杠杆放大利差与 FX 两端。</p>
+  <div class="ctrl">
+    <label for="ct_rj">日本短端利率（%）</label>
+    <input type="range" id="ct_rj" min="0" max="1.5" step="0.05" value="0.50">
+    <output id="ct_rjO">0.50%</output>
+  </div>
+  <div class="ctrl">
+    <label for="ct_rus">美国短端利率（%）</label>
+    <input type="range" id="ct_rus" min="2" max="6" step="0.05" value="4.25">
+    <output id="ct_rusO">4.25%</output>
+  </div>
+  <div class="ctrl">
+    <label for="ct_fx">USD/JPY 变动（%）</label>
+    <input type="range" id="ct_fx" min="-15" max="5" step="0.1" value="-5.0">
+    <output id="ct_fxO">-5.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="ct_mo">持有期限（月）</label>
+    <input type="range" id="ct_mo" min="1" max="12" step="1" value="12">
+    <output id="ct_moO">12 月</output>
+  </div>
+  <div class="ctrl">
+    <label for="ct_lev">杠杆倍数</label>
+    <input type="range" id="ct_lev" min="1" max="10" step="1" value="5">
+    <output id="ct_levO">5×</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">利差收益</div><div class="val" id="ct_carry">+18.75%</div><div class="hint" id="ct_carryh">杠杆 × 年化利差 × 月/12</div></div>
+    <div class="ro"><div class="lbl">汇率损益</div><div class="val" id="ct_fxpl">-25.00%</div><div class="hint" id="ct_fxplh">杠杆 × USD/JPY 变动</div></div>
+    <div class="ro"><div class="lbl">总回报</div><div class="val" id="ct_total">-6.25%</div><div class="hint" id="ct_totalh">利差 + 汇率</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="ct_v" style="font-size:15px">套息转亏</div>
+      <div class="hint" id="ct_vh" style="margin-top:0">杠杆放大 FX 损失</div>
+    </div>
+  </div>
+  <canvas id="ctChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h4>尾部崩盘回收器</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 2 · 尾部崩盘回收器</h4></div>
+  <p class="tool-sub">「捡硬币」月均收益 vs 一次崩盘损失 → 线性回本需几个月。演示负偏度。</p>
+  <div class="ctrl">
+    <label for="ct_tc_mon">月均 carry 收益（%）</label>
+    <input type="range" id="ct_tc_mon" min="0.1" max="1.5" step="0.01" value="0.31">
+    <output id="ct_tc_monO">0.31%/月</output>
+  </div>
+  <div class="ctrl">
+    <label for="ct_tc_crash">一次崩盘损失（%）</label>
+    <input type="range" id="ct_tc_crash" min="3" max="25" step="0.1" value="12.0">
+    <output id="ct_tc_crashO">12.0%</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">回本月数</div><div class="val" id="ct_tc_rec">39 个月</div><div class="hint" id="ct_tc_rech">崩盘 ÷ 月均收益</div></div>
+    <div class="ro"><div class="lbl">崩盘/月收益比</div><div class="val" id="ct_tc_ratio">38.7 : 1</div><div class="hint" id="ct_tc_ratioh">蒸汽机 vs nickels</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="ct_tc_v" style="font-size:15px">典型负偏度</div>
+      <div class="hint" id="ct_tc_vh" style="margin-top:0">Bruschi：crash 与 VIX 相关</div>
+    </div>
+  </div>
+  <canvas id="ct_tcChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h4>VIX 联动估算器</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 3 · VIX 联动估算器</h4></div>
+  <p class="tool-sub">日元升值 ≈ beta × ΔVIX；被迫卖压 ≈ 头寸 × 升值% × 0.25。经验代理，非结构模型。</p>
+  <div class="ctrl">
+    <label for="ct_vx_dv">VIX 变动（点）</label>
+    <input type="range" id="ct_vx_dv" min="-5" max="30" step="1" value="12">
+    <output id="ct_vx_dvO">+12</output>
+  </div>
+  <div class="ctrl">
+    <label for="ct_vx_beta">日元/VIX beta（%/点）</label>
+    <input type="range" id="ct_vx_beta" min="0.1" max="0.8" step="0.05" value="0.35">
+    <output id="ct_vx_betaO">0.35%/VIX</output>
+  </div>
+  <div class="ctrl">
+    <label for="ct_vx_pos">套息头寸（万亿日元）</label>
+    <input type="range" id="ct_vx_pos" min="20" max="60" step="1" value="40">
+    <output id="ct_vx_posO">¥40 万亿</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">隐含日元升值</div><div class="val" id="ct_vx_jpy">+4.2%</div><div class="hint" id="ct_vx_jpyh">beta × ΔVIX</div></div>
+    <div class="ro"><div class="lbl">估算卖压</div><div class="val" id="ct_vx_loss">¥0.42 万亿</div><div class="hint" id="ct_vx_lossh">头寸 × 升值 × 0.25</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="ct_vx_v" style="font-size:15px">显著去杠杆</div>
+      <div class="hint" id="ct_vx_vh" style="margin-top:0">VIX 上升期 carry 亏损</div>
+    </div>
+  </div>
+  <canvas id="ct_vxChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h4>对照基准计算器</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 4 · 对照基准计算器</h4></div>
+  <p class="tool-sub">随机做多基准胜率 p<sub>base</sub> = Φ(μ·√T/σ)；证明超额非随机所需样本量 n（α=0.05, power=0.8）。</p>
+  <div class="ctrl">
+    <label for="ct_bm_ps">策略胜率（%）</label>
+    <input type="range" id="ct_bm_ps" min="50" max="80" step="0.1" value="65.1">
+    <output id="ct_bm_psO">65.1%</output>
+  </div>
+  <div class="ctrl">
+    <label for="ct_bm_mu">年化漂移 μ（%）</label>
+    <input type="range" id="ct_bm_mu" min="0" max="25" step="1" value="10">
+    <output id="ct_bm_muO">10%</output>
+  </div>
+  <div class="ctrl">
+    <label for="ct_bm_sig">年化波动 σ（%）</label>
+    <input type="range" id="ct_bm_sig" min="8" max="30" step="1" value="18">
+    <output id="ct_bm_sigO">18%</output>
+  </div>
+  <div class="ctrl">
+    <label for="ct_bm_t">持有交易日 T</label>
+    <input type="range" id="ct_bm_t" min="5" max="60" step="1" value="20">
+    <output id="ct_bm_tO">20 日</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">基准 p<sub>base</sub></div><div class="val" id="ct_bm_pb">56.22%</div><div class="hint" id="ct_bm_pbh">随机做多基准</div></div>
+    <div class="ro"><div class="lbl">超额</div><div class="val" id="ct_bm_ex">+8.9 pp</div><div class="hint" id="ct_bm_exh">策略 − 基准</div></div>
+    <div class="ro"><div class="lbl">所需 n</div><div class="val" id="ct_bm_n">239</div><div class="hint" id="ct_bm_nh">显著性样本量</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="ct_bm_v" style="font-size:15px">有超额但需验证</div>
+      <div class="hint" id="ct_bm_vh" style="margin-top:0">65% 胜率不等于显著 alpha</div>
+    </div>
+  </div>
+  <canvas id="ct_bmChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h3>它在整个系统里的作用</h3>
+<p>十个模型 + 四个工具构成可验证内核。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>杠杆下 carry 数学还成立吗？</summary><div class="dbody"><p>跑工具 1——5× 下 FX −5% 是否已转负？</p></div></details>
+<details><summary>一次崩盘要捡多久硬币？</summary><div class="dbody"><p>工具 2：0.31%/月 vs 12% → 39 个月。</p></div></details>
+<details><summary>VIX 跳升时我该想什么？</summary><div class="dbody"><p>工具 3：ΔVIX 与日元升值、卖压的联动。</p></div></details>
+<details><summary>策略胜率显著吗？</summary><div class="dbody"><p>工具 4：减 p_base，算 n。</p></div></details>
+<details><summary>positioning 是净空还是净多？</summary><div class="dbody"><p>2024 净空 vs 2025 净多 → 相反价格反应。</p></div></details>
+<details><summary>BIS 规模是上限还是中值？</summary><div class="dbody"><p>作<strong>量级</strong>不作账本【事实·BIS】。</p></div></details>
+<details><summary>我的资产有多少 carry beta？</summary><div class="dbody"><p>高 beta、高杠杆、弱日元受益者更敏感。</p></div></details>
+<details><summary>利差仍宽为何还能崩盘？</summary><div class="dbody"><p>margin 与 VIX 是快变量——利差是慢变量。</p></div></details>
+<details><summary>carry 已全部清零了吗？</summary><div class="dbody"><p>BIS：仅部分 unwind，有重建【事实·BIS】。</p></div></details>
+<details><summary>我的结论依赖哪条【假设】？</summary><div class="dbody"><p>逐条标注 μ/σ、beta、杠杆系数。</p></div></details>
+<h3>它在整个系统里的作用</h3>
+<p>问题清单是 §27 之前的自检门。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>构建 carry 监控面板</strong>：USD/JPY、VIX、美日 OIS 利差、CFTC 净持仓、TOPIX 五线同图。</li>
+<li><strong>精读 Bruschi, Menkhoff &amp; Sarno (2008)</strong> — <em>Carry Trades and Currency Crashes</em>。</li>
+<li><strong>精读 BIS Bulletin 90</strong>（2024-08 unwind post-mortem）。</li>
+<li><strong>交叉阅读</strong>《日元加息》《美元指数》《美债》——融资端、投资端、美元三角。</li>
+<li><strong>跟踪</strong> BoJ 东京分行外国银行资产统计——融资端流量代理。</li>
+</ol>
+<h3>它在整个系统里的作用</h3>
+<p>探索清单防止「读完就忘」——手册是起点，不是终点。</p>
+<hr />
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">¥40 万亿 carry 中值</td>
+<td>国际组织</td>
+<td>BIS Bulletin 90 / GLI, Aug 2024</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2024-08 市场动荡</td>
+<td>国际组织</td>
+<td>BIS Bulletin 90 / 日经</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">负偏度与 VIX 关联</td>
+<td>学术论文</td>
+<td>Bruschi, Menkhoff &amp; Sarno (2008) JFE</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">有限套利资本</td>
+<td>学术论文</td>
+<td>Aalto / 套利资本与 carry 回报</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">crowdedness 与崩盘</td>
+<td>学术论文</td>
+<td>Sokolovski, NHH working paper</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">BoJ 加息路径</td>
+<td>央行公告</td>
+<td>BOJ Statements 2024–2025</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">positioning 翻转</td>
+<td>机构研究</td>
+<td>兴业研究 / 中证网</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">演示数值（−6.25% 等）</td>
+<td>本手册工具</td>
+<td>build 时 node 验算</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">p_base / 样本量</td>
+<td>本手册工具</td>
+<td>μ=10%、σ=18%、T=20</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或一手；<span class="tag t-ana">分析</span>机构判断；<span class="tag t-inf">推论</span>本手册推导；<span class="tag t-hyp">假设</span>情景；<span class="tag t-chk">待验证</span>单一或二手链较长。</p>
+<hr />
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供学习与认知框架构建，<strong>不构成任何投资建议</strong>。外汇、债券、股票及衍生品杠杆高、波动大，可能导致本金重大损失。日元套利存在「捡硬币迎蒸汽机」式尾部风险——2024 年 8 月事件表明 unwind 可在数日内造成双位数回撤。文中利率、汇率、BIS 规模、beta 系数均为说明用，可能过时或不适用于你的情况。交互模型采用简化公式（线性 carry、固定杠杆系数 0.35、0.25），省略基差、税收、保证金与微观结构，<strong>不可直接用于交易决策</strong>。如需投资或对冲，请咨询持牌专业人士并阅读产品法律文件。</p>
+<hr />
+</section>
+<footer>  <p>《日元套利 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 6 分 5 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《日元套利》主题脚本
+   四个可调模型：
+     1. 杠杆套息回报器  — 利差 + 汇率 × 杠杆 → 总回报
+     2. 尾部崩盘回收器  — 捡硬币月数 vs 一次崩盘
+     3. VIX 联动估算器   — ΔVIX × beta → 日元升值 → 套息损失
+     4. 对照基准计算器  — p_base 与超额显著性样本量
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', ink3: '#7c848f', ink2: '#454c56'
+  };
+
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function num(v) { return parseFloat(v); }
+
+  function normCdf(x) {
+    var t = 1 / (1 + 0.2316419 * Math.abs(x));
+    var d = 0.3989423 * Math.exp(-x * x / 2);
+    var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+    return x >= 0 ? 1 - p : p;
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+
+  /* ══════════════════════════════════════════════════════════
+     工具 1 · 杠杆套息回报器
+     总回报 ≈ L × [(r_US − r_JP) × 月/12 + USD/JPY 变动%]
+     ══════════════════════════════════════════════════════════ */
+  (function levCarryTool() {
+    var rjEl = $('ct_rj'), rusEl = $('ct_rus'), fxEl = $('ct_fx');
+    var moEl = $('ct_mo'), levEl = $('ct_lev');
+    if (!rjEl || !rusEl || !fxEl || !moEl || !levEl) return;
+    var rjO = $('ct_rjO'), rusO = $('ct_rusO'), fxO = $('ct_fxO');
+    var moO = $('ct_moO'), levO = $('ct_levO');
+    var carryEl = $('ct_carry'), fxEl2 = $('ct_fxpl'), totEl = $('ct_total');
+    var carryhEl = $('ct_carryh'), fxhEl = $('ct_fxplh'), tothEl = $('ct_totalh');
+    var vEl = $('ct_v'), vhEl = $('ct_vh');
+    var cv = $('ctChart');
+
+    function upd() {
+      var rj = num(rjEl.value), rus = num(rusEl.value);
+      var fx = num(fxEl.value), mo = num(moEl.value), lev = num(levEl.value);
+      var carry = lev * (rus - rj) * mo / 12;
+      var fxpl = lev * fx;
+      var total = carry + fxpl;
+
+      txt(rjO, rj.toFixed(2) + '%');
+      txt(rusO, rus.toFixed(2) + '%');
+      txt(fxO, (fx >= 0 ? '+' : '') + fx.toFixed(1) + '%');
+      txt(moO, mo.toFixed(0) + ' 月');
+      txt(levO, lev.toFixed(0) + '×');
+      txt(carryEl, (carry >= 0 ? '+' : '') + carry.toFixed(2) + '%');
+      txt(carryhEl, '杠杆 × 年化利差 × 月/12');
+      txt(fxEl2, (fxpl >= 0 ? '+' : '') + fxpl.toFixed(2) + '%');
+      txt(fxhEl, '杠杆 × USD/JPY 变动（负=日元升值）');
+      txt(totEl, (total >= 0 ? '+' : '') + total.toFixed(2) + '%');
+      txt(tothEl, '利差收益 + 汇率损益（简化，忽略基差与 margin）');
+
+      var label, hint, col;
+      if (total >= 5) {
+        label = '高杠杆仍盈利'; hint = '顺风局——但负偏度尾部一次可抹平数年「捡硬币」';
+        col = 'var(--red)';
+      } else if (total >= 0) {
+        label = '勉强为正'; hint = '收益薄，波动上升时 margin 极易触发平仓';
+        col = 'var(--amber)';
+      } else if (total >= -15) {
+        label = '套息转亏'; hint = '2024-08 典型：加息 + 日元急升 + 高杠杆';
+        col = 'var(--green)';
+      } else {
+        label = '杠杆放大崩盘'; hint = '类似 8× 杠杆 + 日元升值 9% → 总回报深度为负';
+        col = 'var(--green)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(carry, fxpl, total);
+    }
+
+    function draw(carry, fxpl, total) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, h = g.h;
+      clear(g);
+      var pl = 56, pr = 20, y1 = h - 46, bw = W - pl - pr;
+      var mid = (y1 + 24) / 2;
+      var maxB = Math.max(20, Math.abs(carry), Math.abs(fxpl), Math.abs(total)) * 1.15;
+      var bars = [
+        { n: '利差', v: carry, col: C.blue },
+        { n: '汇率', v: fxpl, col: fxpl >= 0 ? C.red : C.green },
+        { n: '合计', v: total, col: total >= 0 ? C.red : C.green }
+      ];
+      ctx.strokeStyle = C.grid;
+      for (var i = 0; i <= 4; i++) {
+        var yy = y1 - (y1 - 20) * i / 4;
+        ctx.beginPath(); ctx.moveTo(pl, yy); ctx.lineTo(pl + bw, yy); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText((maxB * i / 4 - maxB / 2).toFixed(0) + '%', pl - 4, yy + 3);
+      }
+      ctx.beginPath(); ctx.moveTo(pl, mid); ctx.lineTo(pl + bw, mid);
+      ctx.strokeStyle = C.ink2; ctx.lineWidth = 1; ctx.stroke(); ctx.lineWidth = 1;
+      var barW = bw / bars.length * 0.55;
+      bars.forEach(function (b, idx) {
+        var x = pl + idx * (bw / bars.length) + barW * 0.22;
+        var bh = Math.abs(b.v) / maxB * (mid - 24);
+        var y = b.v >= 0 ? mid - bh : mid;
+        ctx.fillStyle = b.col;
+        ctx.fillRect(x, y, barW, bh || 1);
+        ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(b.n, x + barW / 2, y1 + 13);
+      });
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('杠杆套息总回报分解（%）', pl + bw / 2, y1 + 31);
+    }
+
+    [rjEl, rusEl, fxEl, moEl, levEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 2 · 尾部崩盘回收器
+     每月捡硬币 m% vs 一次崩盘 c% → 需几个月回本
+     ══════════════════════════════════════════════════════════ */
+  (function tailTool() {
+    var monEl = $('ct_tc_mon'), crashEl = $('ct_tc_crash');
+    if (!monEl || !crashEl) return;
+    var monO = $('ct_tc_monO'), crashO = $('ct_tc_crashO');
+    var recEl = $('ct_tc_rec'), ratioEl = $('ct_tc_ratio');
+    var rechEl = $('ct_tc_rech'), ratiohEl = $('ct_tc_ratioh');
+    var vEl = $('ct_tc_v'), vhEl = $('ct_tc_vh');
+    var cv = $('ct_tcChart');
+
+    function upd() {
+      var mon = num(monEl.value), crash = num(crashEl.value);
+      var rec = crash > 0 ? Math.ceil(crash / mon) : 0;
+      var ratio = crash > 0 ? (crash / mon).toFixed(1) : '—';
+
+      txt(monO, mon.toFixed(2) + '%/月');
+      txt(crashO, crash.toFixed(1) + '%');
+      txt(recEl, rec + ' 个月');
+      txt(rechEl, '崩盘损失 ÷ 月均 carry 收益（线性近似）');
+      txt(ratioEl, ratio + ' : 1');
+      txt(ratiohEl, '一次崩盘 = ' + ratio + ' 个月「捡硬币」');
+
+      var label, hint, col;
+      if (rec <= 6) {
+        label = '尾部尚可承受'; hint = '但崩盘往往发生在杠杆放大后——实际损失更大';
+        col = 'var(--amber)';
+      } else if (rec <= 24) {
+        label = '典型负偏度'; hint = 'Bruschi et al.：高 carry 货币崩盘与 VIX 上升同步';
+        col = 'var(--green)';
+      } else {
+        label = '蒸汽机碾压'; hint = '数年微利一次抹平——BIS「nickels vs steamroller」';
+        col = 'var(--green)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(mon, crash, rec);
+    }
+
+    function draw(mon, crash, rec) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, h = g.h;
+      clear(g);
+      var pl = 52, pr = 16, y1 = h - 46, bw = W - pl - pr;
+      var T = Math.min(36, Math.max(12, Math.ceil((rec + 3) / 6) * 6));
+      var cum = 0, pts = [];
+      for (var t = 0; t <= T; t++) {
+        if (t === Math.min(6, T)) cum -= crash;
+        else if (t > 0) cum += mon;
+        pts.push({ t: t, v: cum });
+      }
+      var minV = Math.min.apply(null, pts.map(function (p) { return p.v; }));
+      var maxV = Math.max.apply(null, pts.map(function (p) { return p.v; }));
+      var pad = 0.3;
+      minV -= pad; maxV += pad;
+      var rng = maxV - minV || 1;
+      function sx(t) { return pl + (t / T) * bw; }
+      function sy(v) { return y1 - ((v - minV) / rng) * (y1 - 24); }
+      ctx.strokeStyle = C.grid;
+      for (var i = 0; i <= 4; i++) {
+        var yy = y1 - (y1 - 20) * i / 4;
+        ctx.beginPath(); ctx.moveTo(pl, yy); ctx.lineTo(pl + bw, yy); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText((minV + rng * i / 4).toFixed(1) + '%', pl - 4, yy + 3);
+      }
+      ctx.beginPath();
+      pts.forEach(function (p, idx) {
+        if (idx === 0) ctx.moveTo(sx(p.t), sy(p.v));
+        else ctx.lineTo(sx(p.t), sy(p.v));
+      });
+      ctx.strokeStyle = C.blue; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1;
+      var crashT = Math.min(6, T);
+      ctx.fillStyle = C.green;
+      ctx.beginPath(); ctx.arc(sx(crashT), sy(pts[crashT].v), 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+      ctx.fillText('第 6 月崩盘示意', pl + bw, 16);
+      ctx.textAlign = 'center';
+      ctx.fillText('月数 → 累计回报（%）', pl + bw / 2, y1 + 31);
+    }
+
+    [monEl, crashEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 3 · VIX 联动估算器
+     ΔJPY% ≈ −beta × ΔVIX；套息损失 ≈ 头寸 × ΔJPY% × 0.25
+     ══════════════════════════════════════════════════════════ */
+  (function vixTool() {
+    var dvEl = $('ct_vx_dv'), betaEl = $('ct_vx_beta'), posEl = $('ct_vx_pos');
+    if (!dvEl || !betaEl || !posEl) return;
+    var dvO = $('ct_vx_dvO'), betaO = $('ct_vx_betaO'), posO = $('ct_vx_posO');
+    var jpyEl = $('ct_vx_jpy'), lossEl = $('ct_vx_loss');
+    var jpyhEl = $('ct_vx_jpyh'), losshEl = $('ct_vx_lossh');
+    var vEl = $('ct_vx_v'), vhEl = $('ct_vx_vh');
+    var cv = $('ct_vxChart');
+
+    function upd() {
+      var dv = num(dvEl.value), beta = num(betaEl.value), pos = num(posEl.value);
+      var jpy = beta * dv;
+      var loss = pos * jpy / 100 * 0.25;
+
+      txt(dvO, (dv >= 0 ? '+' : '') + dv.toFixed(0));
+      txt(betaO, beta.toFixed(2) + '%/VIX');
+      txt(posO, '¥' + pos.toFixed(0) + ' 万亿');
+      txt(jpyEl, '+' + jpy.toFixed(1) + '%');
+      txt(jpyhEl, '日元升值 ≈ beta × ΔVIX（经验代理）');
+      txt(lossEl, '¥' + loss.toFixed(2) + ' 万亿');
+      txt(losshEl, '头寸 × 升值% × 0.25 杠杆系数');
+
+      var label, hint, col;
+      if (dv >= 15) {
+        label = '系统性 unwind'; hint = '2024-08：VIX 飙升 + 日元急升 + 全球 equity 共振';
+        col = 'var(--green)';
+      } else if (dv >= 8) {
+        label = '显著去杠杆'; hint = 'Bruschi：carry 在 VIX 上升期平均亏损';
+        col = 'var(--amber)';
+      } else {
+        label = '温和波动'; hint = 'carry 顺风——但拥挤度上升会放大下次冲击';
+        col = 'var(--blue)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(dv, beta, jpy, loss);
+    }
+
+    function draw(dv, beta, jpy, loss) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, h = g.h;
+      clear(g);
+      var pl = 56, pr = 20, y1 = h - 46, bw = W - pl - pr;
+      var dvs = [];
+      var j = -5;
+      while (j <= 25) { dvs.push(j); j += 5; }
+      var jpys = dvs.map(function (d) { return beta * d; });
+      var maxJ = Math.max.apply(null, jpys.map(Math.abs).concat([1]));
+      var barW = bw / dvs.length * 0.55;
+      ctx.strokeStyle = C.grid;
+      for (var i = 0; i <= 4; i++) {
+        var yy = y1 - (y1 - 20) * i / 4;
+        ctx.beginPath(); ctx.moveTo(pl, yy); ctx.lineTo(pl + bw, yy); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText((maxJ * i / 4).toFixed(1) + '%', pl - 4, yy + 3);
+      }
+      dvs.forEach(function (d, idx) {
+        var jv = beta * d;
+        var x = pl + idx * (bw / dvs.length) + barW * 0.22;
+        var bh = Math.abs(jv) / maxJ * (y1 - 24);
+        var isCur = Math.abs(d - dv) < 2.6;
+        ctx.fillStyle = jv >= 0 ? C.green : C.red;
+        ctx.globalAlpha = isCur ? 1 : 0.45;
+        ctx.fillRect(x, y1 - bh, barW, bh || 1);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('Δ' + d, x + barW / 2, y1 + 13);
+      });
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('VIX 变动 → 隐含日元升值（%）', pl + bw / 2, y1 + 31);
+    }
+
+    [dvEl, betaEl, posEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 4 · 对照基准计算器
+     p_base = Φ(μ·√T/σ)；n = (1.96√p_b(1−p_b)+0.84√p_s(1−p_s))²/(p_s−p_b)²
+     ══════════════════════════════════════════════════════════ */
+  (function benchTool() {
+    var psEl = $('ct_bm_ps'), muEl = $('ct_bm_mu'), sigEl = $('ct_bm_sig'), tEl = $('ct_bm_t');
+    if (!psEl || !muEl || !sigEl || !tEl) return;
+    var psO = $('ct_bm_psO'), muO = $('ct_bm_muO'), sigO = $('ct_bm_sigO'), tO = $('ct_bm_tO');
+    var pbEl = $('ct_bm_pb'), exEl = $('ct_bm_ex'), nEl = $('ct_bm_n');
+    var pbhEl = $('ct_bm_pbh'), exhEl = $('ct_bm_exh'), nhEl = $('ct_bm_nh');
+    var vEl = $('ct_bm_v'), vhEl = $('ct_bm_vh');
+    var cv = $('ct_bmChart');
+
+    function upd() {
+      var ps = num(psEl.value) / 100, mu = num(muEl.value) / 100;
+      var sig = num(sigEl.value) / 100, T = num(tEl.value);
+      var pb = normCdf(mu * (T / 252) / (sig * Math.sqrt(T / 252)));
+      var excess = (ps - pb) * 100;
+      var diff = ps - pb;
+      var n = diff > 0.001
+        ? Math.pow(1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps)), 2) / Math.pow(diff, 2)
+        : Infinity;
+
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(0) + '%');
+      txt(sigO, (sig * 100).toFixed(0) + '%');
+      txt(tO, T.toFixed(0) + ' 日');
+      txt(pbEl, (pb * 100).toFixed(2) + '%');
+      txt(pbhEl, '随机做多基准胜率（正漂移）');
+      txt(exEl, (excess >= 0 ? '+' : '') + excess.toFixed(1) + ' pp');
+      txt(exhEl, '策略胜率 − 基准');
+      txt(nEl, n === Infinity ? '∞' : Math.ceil(n).toString());
+      txt(nhEl, '证明超额非随机所需样本量（α=0.05, power=0.8）');
+
+      var label, hint, col;
+      if (excess <= 0) {
+        label = '跑输基准'; hint = '表面胜率可能低于「什么都不做」';
+        col = 'var(--green)';
+      } else if (excess < 5) {
+        label = '超额偏薄'; hint = '需 n>' + (n === Infinity ? '∞' : Math.ceil(n)) + ' 才显著';
+        col = 'var(--amber)';
+      } else if (excess < 10) {
+        label = '有超额但需验证'; hint = '40 日基准 58.76%——别被 65% 胜率迷惑';
+        col = 'var(--amber)';
+      } else {
+        label = '超额较厚'; hint = '仍要减基准——μ/σ 假设一变结论就变';
+        col = 'var(--red)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(pb, ps, T);
+    }
+
+    function draw(pb, ps, T) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, h = g.h;
+      clear(g);
+      var pl = 56, pr = 20, y1 = h - 24, bh = y1 - 40;
+      var barW = (W - pl - pr) / 2 * 0.6;
+      var bars = [
+        { n: '基准 p_base', v: pb * 100, col: C.ink3 },
+        { n: '策略 p_s', v: ps * 100, col: C.red }
+      ];
+      bars.forEach(function (b, idx) {
+        var x = pl + idx * (barW + 40) + 20;
+        var hgt = b.v / 100 * bh;
+        ctx.fillStyle = b.col;
+        ctx.fillRect(x, y1 - hgt, barW, hgt);
+        ctx.fillStyle = C.ink2; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(b.n, x + barW / 2, y1 + 14);
+        ctx.fillText(b.v.toFixed(1) + '%', x + barW / 2, y1 - hgt - 6);
+      });
+      ctx.strokeStyle = C.grid;
+      ctx.beginPath(); ctx.moveTo(pl, y1); ctx.lineTo(W - pr, y1); ctx.stroke();
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('持有 ' + T + ' 日 · 胜率对照', pl + (W - pl - pr) / 2, 18);
+    }
+
+    [psEl, muEl, sigEl, tEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
