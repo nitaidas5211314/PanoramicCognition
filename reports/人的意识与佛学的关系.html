@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>人的意识与佛学的关系 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Consciousness × Buddhist Contemplative Science</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天计划</a>
+    <div class="navgroup">模型与探索</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>人的意识与佛学的关系</h1>
+  <p class="sub">意识不是等待被找到的「东西」，而是<strong>可被拆解、可被训练、可被转化</strong>的过程——佛学两千五百年的内观传统，与当代神经科学的预测编码、默认模式网络、非二元觉察研究，正在同一条河上相遇。</p>
+  <div class="meta">
+    <span class="chip b">27 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非宗教劝信</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>意识与佛学的关系，不是「宗教解释大脑」，而是两套独立发展了两千五百年的「意识操作手册」在 21 世纪意外同构。</strong></p>
+<p>佛学（尤其唯识、早期佛教）把意识拆成可观察的过程流：缘起、无我、八识、造作与解作。当代神经科学把意识拆成可测量的网络动态：预测编码、默认模式网络（DMN）、内感受与自我模型的涌现。<span class="tag t-ana">分析</span>两者在<strong>机制描述</strong>上高度共鸣（大脑是预言机、自我是持续维护的模型），在<strong>目的与边界</strong>上根本分歧（科学描述「如何运作」，佛学还要回答「如何止苦」）。本手册的任务，是帮你在同一张地图上同时看见这两条线——既不把脑科学当佛学证明，也不把佛学当不可检验的玄学。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话边界</h3>
+<p>这个领域研究<strong>人类主观体验（意识）与佛学传统中对心的描述之间，有哪些可对话的结构、哪些不可互译的鸿沟</strong>。核心对象不是「佛会不会」，而是：</p>
+<ul>
+<li><strong>意识</strong>：当下能觉知的经验流（感受、意象、自我感、时间感）</li>
+<li><strong>佛学心理学</strong>：缘起（paṭiccasamuppāda）、三法印（无常/苦/无我）、八识、三自性、止观禅修</li>
+<li><strong>当代对接物</strong>：预测编码/主动推理、DMN 与 salience 网络、神经现象学（neurophenomenology）、冥想 EEG/fMRI</li>
+</ul>
+<p><strong>最容易误读的地方</strong>：把「结构相似」当成「教义被科学证实」，或把「科学尚未测量」当成「佛学不可谈」。</p>
+<h3>用 15 个问题划定边界</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">研究什么</td>
+<td>意识如何运作；佛学如何描述与转化意识；两者如何对话</td>
+</tr>
+<tr>
+<td class="k">边界在哪</td>
+<td>谈可观察过程与可检验假设；不替你做信仰选择</td>
+</tr>
+<tr>
+<td class="k">核心对象</td>
+<td>经验流、自我模型、识种子、神经网络、冥想状态</td>
+</tr>
+<tr>
+<td class="k">参与者</td>
+<td>禅修传统/僧团、认知神经科学家、现象哲学家、临床正念机构、世俗冥想 App</td>
+</tr>
+<tr>
+<td class="k">核心变量</td>
+<td>自我参照强度、预测误差、DMN 活跃度、造作/解作程度、非二元指数</td>
+</tr>
+<tr>
+<td class="k">可观察</td>
+<td>行为、EEG/fMRI、自述量表、反应时、呼吸心率</td>
+</tr>
+<tr>
+<td class="k">不可观察但可推断</td>
+<td>纯粹觉知、轮回、阿赖耶识的跨世存储——<span class="tag t-hyp">假设</span>或<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">谁影响谁</td>
+<td>修行→网络可塑性；理论框架→如何设计实验；商业正念→如何被简化</td>
+</tr>
+<tr>
+<td class="k">确定因果</td>
+<td>长期冥想→DMN 活动降低（多项独立研究一致）<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">只是相关</td>
+<td>「禅修者更幸福」与「禅修改变大脑」——中间混杂生活方式</td>
+</tr>
+<tr>
+<td class="k">表层现象</td>
+<td>放空、开悟叙事、脑波「α 增多」的科普标题</td>
+</tr>
+<tr>
+<td class="k">底层机制</td>
+<td>预测模型更新、自我模型松动、注意资源重分配</td>
+</tr>
+<tr>
+<td class="k">反馈</td>
+<td>正：觉察→少造作→更少苦；负：神秘化→逃避临床与伦理</td>
+</tr>
+<tr>
+<td class="k">时间延迟</td>
+<td>网络改变需周–年；「见无我」可能是瞬间事件但需长期铺垫</td>
+</tr>
+<tr>
+<td class="k">正负反馈</td>
+<td>正念产业扩张（正）；把复杂传统压成 8 周 MBSR（负）</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>这一节是地基：它定义我们谈论的「意识」是<strong>过程</strong>而非<strong>实体</strong>，佛学是<strong>操作手册</strong>而非<strong>神经解剖图</strong>。后面所有杠杆点都建立在这个边界上。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>四个理由</h3>
+<div class="grid g2">
+<div class="card"><h4>它同时触及「最难问题」与「最可练技能」</h4><p>David Chalmers 的「困难问题」——为何物理过程会有主观质感（qualia）——哲学上仍未解。<span class="tag t-ana">分析</span>但佛学不提供第三人称答案，它提供<strong>第一人称方法</strong>：直接观察意识如何生起、执取、消散。Sam Harris、Stephen Batchelor 等主张：把佛教当<strong>意识实验室手册</strong>来读，与把意识当<strong>仅属大脑的副现象</strong>来读，是两条完全不同的路。</p></div>
+<div class="card"><h4>预测编码让古老心理学「突然变新」</h4><p>自由能原理与预测编码主张：大脑持续预测感官输入，用误差修正世界模型。<span class="tag t-fact">事实</span>这与唯识「三自性」（依他起/遍计所执/圆成实性）在结构上的对应，已被多篇 2024–2025 综述与哲学论文讨论（illusionism 与世亲传统的比较）。<strong>同构不等于证明</strong>，但它是极强的启发——你不必信佛教，也能借用其分解框架。</p></div>
+<div class="card"><h4>默认模式网络给「无我」提供了第三方刻度</h4><p><span class="tag t-fact">事实</span>Killingsworth &amp; Gilbert（2010）：常人清醒时约 <strong>47%</strong> 时间在走神，且走神伴随不快乐。冥想经验者 DMN（内侧前额叶、后扣带回）在静息与冥想中相对更低（Brewer et al., 2011；Garrison et al., 2015）。佛学两千年前说的「心到处跑」，在 21 世纪有了 fMRI 刻度。</p></div>
+<div class="card"><h4>它训练「不被第一人称叙事绑架」</h4><p>无论你是否信佛，学习意识–佛学对话都能获得一种元技能：<strong>看见经验背后的机制，而不把机制当成自我</strong>。这对决策、情绪调节、创造力与伦理都直接有用——成本接近 0，只需愿意观察。</p></div>
+</div>
+<div class="note amber"><b>一句话定性</b><p>这个领域的价值不在「选边站」，而在<strong>同时拥有第一人称与第三人称地图</strong>——知道自己何时在「编故事」，何时在「看数据」。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>第 01 节划边界，这一节给投入理由。没有它，后面 27 节容易退化成佛学百科或神经科学科普。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>意识–佛学对话是一座九层楼：从哲学难题到日常练习。用「我在第几层」判断一场争论是哲学、机制、临床还是产业。</p>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="wmA" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#454c56"/>
+    </marker>
+  </defs>
+  <rect x="70" y="20" width="540" height="46" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="40" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 哲学层 · 困难问题 / 一元二元 / 幻觉论</text>
+  <text x="86" y="58" font-size="10.5" fill="#454c56" font-family="sans-serif">Chalmers · 佛教「问题问错了」· illusionism 与唯识</text>
+  <rect x="70" y="76" width="540" height="46" rx="9" fill="#e7eef6" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="96" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 古典佛学心理学</text>
+  <text x="86" y="114" font-size="10.5" fill="#454c56" font-family="sans-serif">缘起 · 三法印 · 五蕴 · 八识 · 三自性 · 止观</text>
+  <rect x="70" y="132" width="540" height="46" rx="9" fill="#dfe9f4" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="152" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 当代意识科学</text>
+  <text x="86" y="170" font-size="10.5" fill="#454c56" font-family="sans-serif">预测编码 · IIT · 全局工作空间 · 自我模型理论</text>
+  <rect x="70" y="188" width="540" height="46" rx="9" fill="#d6e3f1" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="208" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 神经现象学 · 冥想神经科学</text>
+  <text x="86" y="226" font-size="10.5" fill="#454c56" font-family="sans-serif">Lutz · Varela · 藏传寺院 EEG · pure presence · 非二元 ACW</text>
+  <rect x="70" y="244" width="540" height="46" rx="9" fill="#cfe0ee" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="264" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 临床与世俗化</text>
+  <text x="86" y="282" font-size="10.5" fill="#454c56" font-family="sans-serif">MBSR/MBCT · 抑郁/焦虑 · 疼痛 · 成瘾</text>
+  <rect x="70" y="300" width="540" height="46" rx="9" fill="#c6dcec" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="320" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 产业与传播</text>
+  <text x="86" y="338" font-size="10.5" fill="#454c56" font-family="sans-serif">Headspace/Calm · 企业正念 · 畅销书简化</text>
+  <rect x="70" y="356" width="540" height="46" rx="9" fill="#bcd6e8" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="376" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 制度与伦理</text>
+  <text x="86" y="394" font-size="10.5" fill="#454c56" font-family="sans-serif">世俗佛教 · 文化挪用争议 · 知情同意 · 修行安全</text>
+  <rect x="70" y="412" width="540" height="46" rx="9" fill="#e9ddc9" stroke="#c9b48a" stroke-width="1.2"/>
+  <text x="86" y="432" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 跨传统对话</text>
+  <text x="86" y="450" font-size="10.5" fill="#454c56" font-family="sans-serif">Advaita · 现象学 · 精神分析 · 致幻剂研究</text>
+  <rect x="70" y="468" width="540" height="46" rx="9" fill="#f0d2cd" stroke="#d8a79c" stroke-width="1.2"/>
+  <text x="86" y="488" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 个人实践与边界</text>
+  <text x="86" y="506" font-size="10.5" fill="#454c56" font-family="sans-serif">30 分钟内观 · 7/30 天计划 · 何时找临床帮助</text>
+  <line x1="340" y1="66" x2="340" y2="76" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="122" x2="340" y2="132" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="178" x2="340" y2="188" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="234" x2="340" y2="244" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="290" x2="340" y2="300" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="346" x2="340" y2="356" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="402" x2="340" y2="412" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="458" x2="340" y2="468" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>世界地图防迷路：争论「无我是否被 fMRI 证实」时，你其实在③–④层；争论「App 冥想是否够」时，你在⑥层。多数无效争论是<strong>跨层吵架</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<svg viewBox="0 0 680 250" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="11" markerHeight="11" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#1d4ed8"/>
+    </marker>
+  </defs>
+  <rect x="20" y="30" width="180" height="190" rx="10" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="34" y="54" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">抽象 · 佛学层</text>
+  <text x="34" y="80" font-size="11" fill="#454c56" font-family="sans-serif">缘起 · 无我</text>
+  <text x="34" y="100" font-size="11" fill="#454c56" font-family="sans-serif">八识 · 三自性</text>
+  <text x="34" y="120" font-size="11" fill="#454c56" font-family="sans-serif">造作 saṅkhāra</text>
+  <text x="34" y="140" font-size="11" fill="#454c56" font-family="sans-serif">止观 · 四念处</text>
+  <text x="34" y="160" font-size="11" fill="#454c56" font-family="sans-serif">解脱论目标</text>
+  <rect x="250" y="30" width="180" height="190" rx="10" fill="#e3edf7" stroke="#1d4ed8" stroke-width="1.2"/>
+  <text x="264" y="54" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">机制 · 科学层</text>
+  <text x="264" y="80" font-size="11" fill="#454c56" font-family="sans-serif">预测编码 / 主动推理</text>
+  <text x="264" y="100" font-size="11" fill="#454c56" font-family="sans-serif">DMN · salience 网络</text>
+  <text x="264" y="120" font-size="11" fill="#454c56" font-family="sans-serif">自我模型 · 元认知</text>
+  <text x="264" y="140" font-size="11" fill="#454c56" font-family="sans-serif">gamma/theta 动态</text>
+  <text x="264" y="160" font-size="11" fill="#454c56" font-family="sans-serif">神经现象学同步</text>
+  <rect x="480" y="30" width="180" height="190" rx="10" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.2"/>
+  <text x="494" y="54" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">操作 · 实践层</text>
+  <text x="494" y="80" font-size="11" fill="#454c56" font-family="sans-serif">数息 / 标记念头</text>
+  <text x="494" y="100" font-size="11" fill="#454c56" font-family="sans-serif">身体扫描 · 慈心</text>
+  <text x="494" y="120" font-size="11" fill="#454c56" font-family="sans-serif">内观笔记 · 伦理约束</text>
+  <text x="494" y="140" font-size="11" fill="#454c56" font-family="sans-serif">临床正念疗程</text>
+  <text x="494" y="160" font-size="11" fill="#454c56" font-family="sans-serif">日常「解作」微练习</text>
+  <line x1="205" y1="120" x2="245" y2="120" stroke="#1d4ed8" stroke-width="2" marker-end="url(#cmA)"/>
+  <line x1="435" y1="120" x2="475" y2="120" stroke="#1d4ed8" stroke-width="2" marker-end="url(#cmA)"/>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>佛学概念</th>
+<th>科学对应（<span class="tag t-ana">分析</span>结构类比，非证明）</th>
+<th>可操作刻度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">依他起性</td>
+<td>自下而上感官数据流</td>
+<td>感官信号权重</td>
+</tr>
+<tr>
+<td class="k">遍计所执性</td>
+<td>自上而下先验 + 贴标签</td>
+<td>先验权重 α（见工具 1）</td>
+</tr>
+<tr>
+<td class="k">圆成实性</td>
+<td>元认知：看见模型在运作</td>
+<td>觉察延迟（秒）</td>
+</tr>
+<tr>
+<td class="k">末那识</td>
+<td>自我模型 / DMN 维护</td>
+<td>自我参照任务反应时</td>
+</tr>
+<tr>
+<td class="k">阿赖耶识</td>
+<td>长期先验库 / 隐式记忆</td>
+<td><span class="tag t-hyp">假设</span>超出单脑寿命部分未证</td>
+</tr>
+<tr>
+<td class="k">无我 anattā</td>
+<td>无单一自我中枢</td>
+<td>DMN 去激活、非二元 ACW</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>概念地图是手册的「翻译器」：它让你在说「我执」时知道自己在谈<strong>第七识/自我模型</strong>，而不是神秘实体。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>角色</th>
+<th>典型产出</th>
+<th>盲区</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">上座部/早期佛教传承</td>
+<td>四念处、缘起、无我</td>
+<td>巴利文经典、森林传统</td>
+<td>与现代科学术语不对接</td>
+</tr>
+<tr>
+<td class="k">唯识/瑜伽行派</td>
+<td>八识、三自性、转识成智</td>
+<td>《摄大乘论》《成唯识论》</td>
+<td>门槛极高，易被简化误读</td>
+</tr>
+<tr>
+<td class="k">藏传格鲁/宁玛等</td>
+<td>止观、分析禅、大圆满</td>
+<td>2024 Sera-Jey 寺院 EEG 合作</td>
+<td>文化语境难平移</td>
+</tr>
+<tr>
+<td class="k">认知神经科学家</td>
+<td>假设–检验–复制</td>
+<td>Brewer DMN；2024 pure presence</td>
+<td>高级状态难客观化</td>
+</tr>
+<tr>
+<td class="k">神经现象学家</td>
+<td>第一人称+第三人称同步</td>
+<td>Lutz 的 gamma 同步研究</td>
+<td>样本小、推广谨慎</td>
+</tr>
+<tr>
+<td class="k">世俗佛教倡导者</td>
+<td>去神话化</td>
+<td>Batchelor《佛教无信仰》</td>
+<td>可能被传统派批评「断传承」</td>
+</tr>
+<tr>
+<td class="k">正念产业</td>
+<td>规模化交付</td>
+<td>MBSR、App</td>
+<td>剥离伦理与解脱论，剩技巧</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><span class="tag t-fact">事实</span>2024 年 Frontiers 发表的藏传寺院研究（Villena-González 等）在色拉杰寺对 23 名僧众做生态化 EEG：专注禅（shamatha）比分析禅引发更多 θ/α/β 功率变化——说明<strong>禅修类型</strong>本身就会改变可测信号，不能把所有「冥想」混为一谈。</p>
+</blockquote>
+<h3>它在整个系统里的作用</h3>
+<p>参与者地图解释「谁在说话」：神经科学家谈的是<strong>相关与机制</strong>；法师谈的是<strong>止苦与解脱</strong>——混用标准就会吵。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+<th>为何关键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">先验权重 α</td>
+<td>自上而下预测在感知中的占比</td>
+<td>对应「造作/遍计」强度（工具 1）</td>
+</tr>
+<tr>
+<td class="k">预测误差 PE</td>
+<td>|先验−感官|×α</td>
+<td>苦往往伴随「现实不符合剧本」</td>
+</tr>
+<tr>
+<td class="k">走神率 MW</td>
+<td>清醒时非当下注意占比</td>
+<td>基线 47%<span class="tag t-fact">事实</span>Killingsworth 2010</td>
+</tr>
+<tr>
+<td class="k">DMN 活跃度</td>
+<td>自我参照、自传体模拟</td>
+<td>冥想降低<span class="tag t-ana">分析</span>多项研究一致</td>
+</tr>
+<tr>
+<td class="k">ACW 内外差 Δ</td>
+<td>内省 vs 外景注意时间尺度差</td>
+<td>非二元研究 2025 预印本</td>
+</tr>
+<tr>
+<td class="k">造作指数</td>
+<td>对经验的名相执取</td>
+<td>主动推理中的 precision 过高</td>
+</tr>
+<tr>
+<td class="k">解作深度</td>
+<td>放松执取后的状态</td>
+<td>jhāna / pure presence 描述</td>
+</tr>
+<tr>
+<td class="k">伦理整合度</td>
+<td>戒定慧是否一体</td>
+<td>脱离伦理的正念可能「更敏锐但更冷」</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>变量表是后面模型的零件清单。<strong>α 与 PE</strong> 是把佛学语言翻译成可拖动数字的枢纽。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cgA" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#454c56"/>
+    </marker>
+    <marker id="cgR" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+  <rect x="30" y="110" width="140" height="56" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="46" y="134" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">感官输入</text>
+  <text x="46" y="154" font-size="10" fill="#7c848f" font-family="sans-serif">五识 / 丘脑皮层</text>
+  <rect x="210" y="110" width="140" height="56" rx="9" fill="#e3edf7" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="226" y="134" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">预测/识变</text>
+  <text x="226" y="154" font-size="10" fill="#7c848f" font-family="sans-serif">先验+误差修正</text>
+  <rect x="390" y="110" width="140" height="56" rx="9" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="406" y="134" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">经验内容</text>
+  <text x="406" y="154" font-size="10" fill="#7c848f" font-family="sans-serif">色受想行识</text>
+  <rect x="540" y="110" width="120" height="56" rx="9" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="556" y="134" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">行为/言语</text>
+  <text x="556" y="154" font-size="10" fill="#7c848f" font-family="sans-serif">业 · habit</text>
+  <rect x="210" y="20" width="140" height="50" rx="9" fill="#fdf2e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="226" y="44" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">末那/自我模型</text>
+  <text x="226" y="62" font-size="10" fill="#7c848f" font-family="sans-serif">DMN 维护</text>
+  <rect x="390" y="210" width="140" height="50" rx="9" fill="#f0d2cd" stroke="#d8a79c" stroke-width="1.3"/>
+  <text x="406" y="234" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">苦/情绪反应</text>
+  <text x="406" y="252" font-size="10" fill="#7c848f" font-family="sans-serif">误差不被接纳</text>
+  <line x1="170" y1="138" x2="205" y2="138" stroke="#454c56" stroke-width="1.8" marker-end="url(#cgA)"/>
+  <line x1="350" y1="138" x2="385" y2="138" stroke="#454c56" stroke-width="1.8" marker-end="url(#cgA)"/>
+  <line x1="530" y1="138" x2="535" y2="138" stroke="#454c56" stroke-width="1.8" marker-end="url(#cgA)"/>
+  <line x1="280" y1="70" x2="280" y2="108" stroke="#454c56" stroke-width="1.4" marker-end="url(#cgA)"/>
+  <line x1="460" y1="166" x2="460" y2="208" stroke="#454c56" stroke-width="1.4" marker-end="url(#cgA)"/>
+  <line x1="560" y1="138" x2="280" y2="70" stroke="#d5342c" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#cgR)"/>
+  <text x="420" y="188" font-size="10" fill="#d5342c" font-family="sans-serif">反馈：业种子→先验库</text>
+</svg>
+<p><strong>主链</strong>：感官→预测加工→经验→行为。<strong>红虚线反馈</strong>：行为与情绪反应写入「种子/突触权重」，改变下一轮先验——佛学称业力，科学称学习与可塑性。</p>
+<h3>它在整个系统里的作用</h3>
+<p>因果图把「轮回」与「可塑性」放在同一结构里看：不必等同，但<strong>闭环形状相同</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>困难问题可能是范畴错误</strong>：佛教主张问题预设了「内在观察者」<span class="tag t-ana">分析</span>Musacchio 2025；与 illusionism 合流。</li>
+<li><strong>正念 ≠ 佛教</strong>：剥离戒律与解脱论后，只剩注意训练<span class="tag t-fact">事实</span>Frontiers 2025 综述强调 Samatha/Vipassana/Metta 路径不同。</li>
+<li><strong>脑安静 ≠ 无意识</strong>：2024 pure presence 研究显示 γ 广泛下降但意识清醒<span class="tag t-chk">待验证</span>预印本，与「安静=睡着」直觉相反。</li>
+<li><strong>结构同构 ≠ 教义证实</strong>：预测编码不能证明阿赖耶识跨世<span class="tag t-inf">推论</span>——科学有天花板，唯识从那里起飞<span class="tag t-ana">分析</span>。</li>
+<li><strong>非二元可测但不等于神秘体验</strong>：ACW 差缩小是可操作指标，不等于「成佛」<span class="tag t-chk">待验证</span>。</li>
+</ul>
+<h3>它在整个系统里的作用</h3>
+<p>隐藏关系是陷阱预警：它提前拆掉「科学证明了佛教」和「佛教反科学」两种懒惰叙事。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>注意力与意义如何在系统里被「抽水」与「回流」？</p>
+<svg viewBox="0 0 680 290" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rfA" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#454c56"/>
+    </marker>
+    <marker id="rfL" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+  <rect x="20" y="60" width="150" height="170" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="34" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">注意输入</text>
+  <text x="34" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 感官 · 社会信号</text>
+  <text x="34" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· 记忆线索 · 身体感</text>
+  <rect x="265" y="60" width="170" height="170" rx="9" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.6"/>
+  <text x="279" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">识变 / 网络层</text>
+  <text x="279" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 预测编码引擎</text>
+  <text x="279" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· DMN / SN / FPN</text>
+  <text x="279" y="144" font-size="10.5" fill="#454c56" font-family="sans-serif">· 八识分工（模型）</text>
+  <rect x="510" y="60" width="150" height="170" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="524" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">净输出</text>
+  <text x="524" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 世界感 · 自我感</text>
+  <text x="524" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· 决策 · 叙事</text>
+  <line x1="170" y1="120" x2="260" y2="120" stroke="#454c56" stroke-width="2" marker-end="url(#rfA)"/>
+  <line x1="435" y1="120" x2="505" y2="120" stroke="#454c56" stroke-width="2" marker-end="url(#rfA)"/>
+  <line x1="350" y1="230" x2="350" y2="262" stroke="#d5342c" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#rfL)"/>
+  <text x="260" y="250" font-size="10.5" fill="#d5342c" font-family="sans-serif">漏损：走神 · 反刍 · 造作 · 算法投喂</text>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>运行机制图说明：意识系统默认大量能量耗在<strong>自我维护与预测误差抗拒</strong>上——修行与冥想是改分配，不是神秘通电。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 210" width="100%" style="max-width:680px">
+  <line x1="50" y1="120" x2="650" y2="120" stroke="#454c56" stroke-width="2"/>
+  <g font-family="sans-serif" font-size="10.5" fill="#15181d">
+    <circle cx="80" cy="120" r="5" fill="#1d4ed8"/>
+    <text x="80" y="100" text-anchor="middle" font-weight="700">前5C</text>
+    <text x="80" y="142" text-anchor="middle">佛陀</text>
+    <text x="80" y="156" text-anchor="middle">四念处</text>
+    <circle cx="170" cy="120" r="5" fill="#1d4ed8"/>
+    <text x="170" y="100" text-anchor="middle" font-weight="700">4C</text>
+    <text x="170" y="142" text-anchor="middle">世亲</text>
+    <text x="170" y="156" text-anchor="middle">唯识</text>
+    <circle cx="260" cy="120" r="5" fill="#1d4ed8"/>
+    <text x="260" y="100" text-anchor="middle" font-weight="700">7C</text>
+    <text x="260" y="142" text-anchor="middle">玄奘</text>
+    <text x="260" y="156" text-anchor="middle">译经</text>
+    <circle cx="360" cy="120" r="5" fill="#0f8a4d"/>
+    <text x="360" y="100" text-anchor="middle" font-weight="700">1995</text>
+    <text x="360" y="142" text-anchor="middle">Chalmers</text>
+    <text x="360" y="156" text-anchor="middle">困难问题</text>
+    <circle cx="450" cy="120" r="5" fill="#0f8a4d"/>
+    <text x="450" y="100" text-anchor="middle" font-weight="700">2001</text>
+    <text x="450" y="142" text-anchor="middle">Raichle</text>
+    <text x="450" y="156" text-anchor="middle">DMN</text>
+    <circle cx="540" cy="120" r="5" fill="#b8730a"/>
+    <text x="540" y="100" text-anchor="middle" font-weight="700">2010</text>
+    <text x="540" y="142" text-anchor="middle">走神47%</text>
+    <text x="540" y="156" text-anchor="middle">幸福研究</text>
+    <circle cx="620" cy="120" r="5" fill="#d5342c"/>
+    <text x="620" y="100" text-anchor="middle" font-weight="700">2024–25</text>
+    <text x="620" y="142" text-anchor="middle">寺院EEG</text>
+    <text x="620" y="156" text-anchor="middle">非二元ACW</text>
+  </g>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>时间轴显示：佛学内观传统<strong>领先科学测量两千四百年</strong>；科学测量<strong>领先大众正念 App 约二十年</strong>——你现在站在交叉点。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<ul>
+<li><strong>学术</strong>：发论文需可测指标 → 高级禅定被简化成「正念减压」。</li>
+<li><strong>产业</strong>：App 订阅要留存 → 把解脱论换成「睡眠/专注」KPI。</li>
+<li><strong>传统僧团</strong>：正宗性 vs 开放合作（如寺院 EEG）的张力。</li>
+<li><strong>患者/修行者</strong>：快速缓解痛苦 vs 深层结构转化的时间成本。</li>
+</ul>
+<blockquote>
+<p><span class="tag t-ana">分析</span>激励错位时，你会得到「脑波好看但伦理空心」的正念，或「理论华丽但从未坐下」的意识哲学。</p>
+</blockquote>
+<h3>它在整个系统里的作用</h3>
+<p>利益图解释为何公共讨论里满是简化版正念和夸大版「科学证明佛教」。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>资源</th>
+<th>富方</th>
+<th>贫方</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">合格导师</td>
+<td>寺院/长期闭关者</td>
+<td>仅 App 用户</td>
+<td>修行安全风险</td>
+</tr>
+<tr>
+<td class="k">神经影像</td>
+<td>顶尖实验室</td>
+<td>个人实践者</td>
+<td>体验难第三方验证</td>
+</tr>
+<tr>
+<td class="k">古典语文</td>
+<td>佛学院</td>
+<td>世俗读者</td>
+<td>概念被英译简化扭曲</td>
+</tr>
+<tr>
+<td class="k">时间</td>
+<td>全职修行者</td>
+<td>上班族</td>
+<td>30 天计划 vs 十年磨一剑</td>
+</tr>
+<tr>
+<td class="k">伦理场</td>
+<td>有戒规的共修</td>
+<td>孤独内观</td>
+<td>精神障碍可能被激发</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>资源图把「觉悟」从个人英雄叙事拉回<strong>条件集合</strong>：同样技巧，资源不同，轨迹不同。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>为何是杠杆</th>
+<th>今天可做</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>先验觉察</strong></td>
+<td>看见「我在编」比争论本体重要</td>
+<td>冲突时问：预期值是多少？</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>四念处</strong></td>
+<td>身受心念分解，佛教最稳入口</td>
+<td>5 分钟标记呼吸+身体感</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>DMN 打断</strong></td>
+<td>走神=苦，可训练降低</td>
+<td>走神时温和标「想」回呼吸</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>解作 vs 造作</strong></td>
+<td>主动推理语言对齐佛学</td>
+<td>高误差时先降 α 再行动</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>伦理共修</strong></td>
+<td>戒定慧一体，防技巧空心化</td>
+<td>练习前设「不伤害」意图</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>第一人称日志</strong></td>
+<td>神经现象学最小单元</td>
+<td>记录 1 次清晰觉察片段</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>区分三路径</strong></td>
+<td>Samatha/Vipassana/Metta 不同</td>
+<td>本周只练一种，不混</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>非神秘化</strong></td>
+<td>防把脑电当开悟证书</td>
+<td>指标≠解脱</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>困难问题降级</strong></td>
+<td>问「谁在经历」而非「物质如何产生质」</td>
+<td>找自我感边界</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>临床边界</strong></td>
+<td>创伤/精神病史需专业支持</td>
+<td>剧烈不适即停并求助</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>杠杆点把 27 节收成 10 个把手，对接 §16 与 §22。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>把结构同构当成教义证实</summary><div class="dbody"><p>预测编码像三自性，不等于佛陀被 Fris-ton 证明。<span class="tag t-inf">推论</span>同构是启发，不是证据。</p></div></details>
+<details><summary>把正念 App 当成完整佛教</summary><div class="dbody"><p>MBSR 有效，但它是临床提取物，不是八正道。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>把 DMN 降低等同于开悟</summary><div class="dbody"><p>DMN 降是相关指标，可因药物、疲劳、催眠出现。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>把困难问题当成科学待解清单</summary><div class="dbody"><p>佛教传统说问题预设了观察者——Chalmers 本人长期不练冥想<span class="tag t-ana">分析</span>Horgan 2017 访谈。</p></div></details>
+<details><summary>把空当成虚无</summary><div class="dbody"><p>空性是否定<strong>固定自性</strong>，不是否定经验。<span class="tag t-ana">分析</span>中观/唯识核心。</p></div></details>
+<details><summary>把内观当逃避</summary><div class="dbody"><p>只观不想解决，可能变成冷漠 dissociation。<span class="tag t-ana">分析</span>需伦理与行动平衡。</p></div></details>
+<details><summary>把神秘体验当终点</summary><div class="dbody"><p>一次非二元峰值不等于习气尽除。<span class="tag t-inf">推论</span>修行是分布，不是单点事件。</p></div></details>
+<details><summary>把二手开悟叙事当事实</summary><div class="dbody"><p>社交媒体「觉醒」故事无第三方验证。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>把脑当容器灵魂当内容</summary><div class="dbody"><p>现代自我模型理论反对这种二元。<span class="tag t-ana">分析</span>Graziano、Metzinger。</p></div></details>
+<details><summary>把佛学当反物质主义武器</summary><div class="dbody"><p>许多当代佛教倡导者支持世俗与科学对话。<span class="tag t-ana">分析</span>Batchelor、Harris。</p></div></details>
+<details><summary>忽视文化语境</summary><div class="dbody"><p>把藏传技巧剥离语境可能造成适应不良。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>用逻辑辩论替代观察</summary><div class="dbody"><p>无我无法仅靠论证成立，需经验验证。<span class="tag t-ana">分析</span>佛教认识论。</p></div></details>
+<p>拖动工具 1，看「遍计所执」如何用数字说话：</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 1 · 预测编码 / 造作指数</h4></div>
+  <p class="tool-sub">感知 = α·P + (1−α)·S；加权预测误差 = |P−S|×α。默认 P=80、S=35、α=0.85 → 感知 73.3、PE 38.3、造作 85%。把 α 降到 0.40 → 感知 53.0、PE 18.0。</p>
+  <div class="ctrl">
+    <label for="pc_prior">先验 P（大脑预期）</label>
+    <input type="range" id="pc_prior" min="0" max="100" step="1" value="80">
+    <output id="pc_priorO">80</output>
+  </div>
+  <div class="ctrl">
+    <label for="pc_sens">感官 S（实际输入）</label>
+    <input type="range" id="pc_sens" min="0" max="100" step="1" value="35">
+    <output id="pc_sensO">35</output>
+  </div>
+  <div class="ctrl">
+    <label for="pc_alpha">先验权重 α（遍计所执）</label>
+    <input type="range" id="pc_alpha" min="0.05" max="0.95" step="0.05" value="0.85">
+    <output id="pc_alphaO">85%</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">感知刻度</div><div class="val" id="pc_perc">73.3</div><div class="hint" id="pc_perch">α·P+(1−α)·S</div></div>
+    <div class="ro"><div class="lbl">加权预测误差</div><div class="val" id="pc_pe">38.3</div><div class="hint" id="pc_peh">|P−S|×α</div></div>
+    <div class="ro"><div class="lbl">造作指数</div><div class="val" id="pc_fab">85%</div><div class="hint" id="pc_fabh">自上而下权重</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="pc_v" style="font-size:15px">高度造作</div>
+      <div class="hint" id="pc_vh" style="margin-top:0">先验压过感官</div>
+    </div>
+  </div>
+  <canvas id="pcChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h3>它在整个系统里的作用</h3>
+<p>陷阱清单+工具 1 让你把「我执」翻译成可验证数字，而不是口号。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实刻度</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">缘起</td>
+<td>条件链日志</td>
+<td>「因为失眠→焦躁→骂人」</td>
+</tr>
+<tr>
+<td class="k">无我</td>
+<td>自我感强度 1–10</td>
+<td>争吵高峰时打分</td>
+</tr>
+<tr>
+<td class="k">造作 α</td>
+<td>工具 1 读数</td>
+<td>固执时 α&gt;0.7</td>
+</tr>
+<tr>
+<td class="k">走神</td>
+<td>MW% / 「想」标记次数</td>
+<td>10 分钟静坐统计</td>
+</tr>
+<tr>
+<td class="k">非二元</td>
+<td>ACW 差（研究用）</td>
+<td>长期禅修者 Δ 更小<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">转识成智</td>
+<td>末那占比下降</td>
+<td>工具 4 末那 &lt;18%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>翻译表是桥梁：没有它，佛学术语无法进入日常决策。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>情绪升起</strong> → 标「受」+ 问预测误差来自哪条先验</li>
+<li><strong>读意识科学新闻</strong> → 问样本、禅修类型、是否预印本</li>
+<li><strong>开始冥想</strong> → 先 5 分钟数息，不追求空</li>
+<li><strong>遇神秘叙事</strong> → 要可重复协议，不信单次峰值</li>
+<li><strong>不适加剧</strong> → 停练，找临床心理支持</li>
+</ol>
+<div class="note blue"><b>行动准则</b><p><strong>任何意识主张，先问：它在第一人称可观察吗？在第三人称可测量吗？若两者皆无，标<span class="tag t-hyp">假设</span>再谈。</strong></p></div>
+<h3>它在整个系统里的作用</h3>
+<p>§16 把杠杆变成肌肉记忆。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<ul>
+<li><strong>根</strong>：四念处、缘起直观、伦理意图</li>
+<li><strong>干</strong>：唯识八识地图、预测编码、DMN/SN 基础</li>
+<li><strong>枝</strong>（择一）：</li>
+<li>上座部内观（标记法）</li>
+<li>唯识哲学（三自性）</li>
+<li>神经现象学（日记+读文献）</li>
+<li>临床正念（MBCT 协议）</li>
+<li>藏传止观（需导师）</li>
+</ul>
+<h3>它在整个系统里的作用</h3>
+<p>技能树防「样样学、样样浅」。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<ul>
+<li><strong>副本 1 · 造作实验室</strong>：工具 1 把 α 从 0.85 降到 0.40，看 PE 减半</li>
+<li><strong>副本 2 · 走神猎人</strong>：10 分钟静坐，数「想」次数，目标比上次少 1 次</li>
+<li><strong>副本 3 · 八识调音</strong>：工具 4 把末那从 30% 调到 15%</li>
+<li><strong>副本 4 · 非二元仪表</strong>：工具 3 练到指数 &gt;80</li>
+<li><strong>成就 · 跨层翻译</strong>：用一句话同时说清佛学概念与神经对应</li>
+</ul>
+<h3>它在整个系统里的作用</h3>
+<p>游戏化降低入门摩擦，支撑 §22 坚持。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>产出</th>
+<th>难度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 写 3 条个人「先验剧本」</td>
+<td>先验清单</td>
+<td>★</td>
+</tr>
+<tr>
+<td class="k">T2 完成 10 分钟四念处</td>
+<td>走神计数</td>
+<td>★★</td>
+</tr>
+<tr>
+<td class="k">T3 用工具 1 复现 73.3→53.0</td>
+<td>截图读数</td>
+<td>★★</td>
+</tr>
+<tr>
+<td class="k">T4 读 1 篇寺院 EEG 论文摘要</td>
+<td>三句话笔记</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td class="k">T5 找 1 个「结构同构≠证实」例子</td>
+<td>纠错帖</td>
+<td>★★★</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>任务系统把学习变成可勾选进度。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若从未发现 DMN</button><button class="tab" data-pane="tb1-1">若佛教从未传入中国</button><button class="tab" data-pane="tb1-2">若所有人都练 5 分钟数息</button></div>
+<div class="pane on" id="tb1-0"><p>「走神」仍被佛学描述，但缺少 fMRI 锚点；正念产业可能晚十年；「无我」更难与主流神经科学对话。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-1"><p>唯识与汉传哲学缺席；东亚冥想文化不同；但印度传统仍会与西方相遇。<span class="tag t-hyp">假设</span></p></div><div class="pane" id="tb1-2"><p>走神率或从 47% 下降；公共讨论攻击性可能降；但若无伦理，或出现「冷静但冷漠」。<span class="tag t-inf">推论</span></p></div>
+<h3>它在整个系统里的作用</h3>
+<p>反事实训练结构感：哪些是承重墙，哪些是历史偶然。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>标志</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识别</td>
+<td>能说出八识/DMN/预测编码各管什么</td>
+<td>读完 §04–§06</td>
+</tr>
+<tr>
+<td class="k">L2 观察</td>
+<td>能 10 分钟稳定标记念头</td>
+<td>完成 §22</td>
+</tr>
+<tr>
+<td class="k">L3 对话</td>
+<td>能批评性阅读意识科学论文</td>
+<td>完成 T4</td>
+</tr>
+<tr>
+<td class="k">L4 整合</td>
+<td>第一人称+第三人称不打架</td>
+<td>长期日志</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>能力路线让进度可观测。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>目标</strong>：今天就能做、成本≈0、产出可验证。</p>
+<p><strong>① 四念处 10 分钟（10 分钟）</strong>
+坐直，数呼吸 1–10 循环。念头出现标「想」，回呼吸。记录「想」出现 <strong>N 次</strong>。明天比今天少 1 次即进步。</p>
+<p><strong>② 造作指数 10 分钟（10 分钟）</strong>
+想一件今天的不快。打开工具 1：设 P=你对「应然」的打分，S=「实然」打分，α=你有多固执（默认 0.85）。读 PE。再把 α 降到 0.40，读 PE 是否约减半（38.3→18.0）。写下：<strong>苦 ≈ 执着×落差</strong>。</p>
+<p><strong>③ 八识速写 10 分钟（10 分钟）</strong>
+用工具 4 调四层权重，写下此刻：眼耳身何者最强？末那是否偏高？一句话总结。</p>
+<div class="note amber"><b>验收</b><p>三项各产出一个数字：<strong>N 次走神、PE 从 38.3 到 18.0、末那 %</strong>。可写在手机备忘录。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>§22 是交付验证点：只做这一节也已获得可操作意识地图。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>身念处</td>
+<td>10 分钟数息 + 记录 N</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>受念处</td>
+<td>标愉快/不愉快/中性</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>心念处</td>
+<td>标「想」与「规划」</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>法念处</td>
+<td>标「造作」：我在编故事吗</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>工具 1</td>
+<td>复现 α 降低实验</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>工具 2</td>
+<td>假设练习 5 年，走神 34.8%</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>整合</td>
+<td>写 200 字「我学到的意识地图」</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>7 天把一次性阅读变习惯。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">第 1 周</td>
+<td>L1→L2：每日 10 分钟四念处</td>
+</tr>
+<tr>
+<td class="k">第 2 周</td>
+<td>读 2 篇论文摘要（DMN + 寺院 EEG）</td>
+</tr>
+<tr>
+<td class="k">第 3 周</td>
+<td>工具 1–4 各玩透一次</td>
+</tr>
+<tr>
+<td class="k">第 4 周</td>
+<td>写「意识–佛学」个人立场文，标清【事实/假设】</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>30 天通向 L3 对话能力。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>跨域同构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>缘起</td>
+<td>此有故彼有</td>
+<td>↔ 动力系统 ↔ 贝叶斯网</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>三法印</td>
+<td>无常苦无我</td>
+<td>↔ 可塑性 ↔ 预测误差</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>八识</td>
+<td>分层识变</td>
+<td>↔ 预测层次 ↔ LLM 模块<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>三自性</td>
+<td>数据/标签/如实</td>
+<td>↔ 预测编码三态</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>末那识</td>
+<td>我执维护</td>
+<td>↔ 自我模型 ↔ DMN</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>阿赖耶识</td>
+<td>种子库</td>
+<td>↔ 隐式先验 ↔ 权重记忆</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>止观</td>
+<td>安住+洞察</td>
+<td>↔ 网络稳定+元认知</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>非二元</td>
+<td>内外趋同</td>
+<td>↔ ACW 差缩小<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>解作</td>
+<td>降 precision</td>
+<td>↔ 主动推理去执着</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>神经现象学</td>
+<td>双轨证据</td>
+<td>↔ 第一人称日志+EEG</td>
+</tr>
+</tbody>
+</table></div>
+<h4>工具 2 · 练习年数 vs 走神率</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 2 · 正念练习 vs 走神率</h4></div>
+  <p class="tool-sub">MW = 47×e^(−0.06·年)。0 年 47.0%；5 年 34.8%；10 年 25.8%；20 年 14.2%。基线 47% 来自 Killingsworth & Gilbert (2010)。</p>
+  <div class="ctrl">
+    <label for="mw_years">系统练习年数</label>
+    <input type="range" id="mw_years" min="0" max="30" step="1" value="5">
+    <output id="mw_yearsO">5 年</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">走神率</div><div class="val" id="mw_rate">34.8%</div><div class="hint" id="mw_rateh">47×e^(−0.06y)</div></div>
+    <div class="ro"><div class="lbl">DMN 指数</div><div class="val" id="mw_dmn">63%</div><div class="hint" id="mw_dmnh">归一化相对活跃度</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="mw_v" style="font-size:15px">持续改善</div>
+      <div class="hint" id="mw_vh" style="margin-top:0">经验冥想者 DMN 更低</div>
+    </div>
+  </div>
+  <canvas id="mwChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h4>工具 3 · 非二元觉察指数</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 3 · 内外注意 ACW 差 → 非二元指数</h4></div>
+  <p class="tool-sub">Δ = 100×e^(−0.10·年) ms；指数 = 100−Δ。10 年练习：Δ 36.8 ms，指数 63.2。【待验证】结构来自 2025 非二元预印本。</p>
+  <div class="ctrl">
+    <label for="nd_years">高阶练习年数</label>
+    <input type="range" id="nd_years" min="0" max="25" step="1" value="10">
+    <output id="nd_yearsO">10 年</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">ACW 内外差 Δ</div><div class="val" id="nd_diff">36.8 ms</div><div class="hint" id="nd_diffh">越小越趋非二元</div></div>
+    <div class="ro"><div class="lbl">非二元指数</div><div class="val" id="nd_score">63.2</div><div class="hint" id="nd_scoreh">100−Δ</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="nd_v" style="font-size:15px">边界软化</div>
+      <div class="hint" id="nd_vh" style="margin-top:0">二元框架开始松动</div>
+    </div>
+  </div>
+  <canvas id="ndChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h4>工具 4 · 八识信息流</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 4 · 八识相对权重（归一化）</h4></div>
+  <p class="tool-sub">调节前五识/第六识/第七识/第八识相对活跃度，总和 100%。常人清醒默认末那偏高；「转识」方向是末那下降、前五识相对上升。</p>
+  <div class="ctrl">
+    <label for="ec5">前五识权重</label>
+    <input type="range" id="ec5" min="5" max="50" step="1" value="35">
+    <output id="ec5O">35.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="ec6">第六识权重</label>
+    <input type="range" id="ec6" min="5" max="50" step="1" value="30">
+    <output id="ec6O">30.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="ec7">第七识（末那）权重</label>
+    <input type="range" id="ec7" min="5" max="50" step="1" value="22">
+    <output id="ec7O">22.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="ec8">第八识（阿赖耶）权重</label>
+    <input type="range" id="ec8" min="5" max="50" step="1" value="13">
+    <output id="ec8O">13.0%</output>
+  </div>
+  <div class="readout">
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="ec_v" style="font-size:15px">常人格态</div>
+      <div class="hint" id="ec_vh" style="margin-top:0">末那活跃但未极端</div>
+    </div>
+  </div>
+  <canvas id="ecChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h3>它在整个系统里的作用</h3>
+<p>10 模型+4 工具是手册的「发动机室」。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>意识是大脑产物，还是条件显现？</summary><div class="dbody"><p>佛学多取后者；主流神经科学多取前者。你的立场决定如何读数据。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>无我能被第三人称证明吗？</summary><div class="dbody"><p>目前只能测相关指标（DMN 等），不能替第一人称「见」。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>阿赖耶识等价于长期记忆吗？</summary><div class="dbody"><p>部分对应隐式先验；跨世部分无科学共识。<span class="tag t-hyp">假设</span></p></div></details>
+<details><summary>正念商业化是否背叛传统？</summary><div class="dbody"><p>取决于是否保留伦理与解脱论。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>困难问题是否伪问题？</summary><div class="dbody"><p>佛教/illusionism 说是；许多哲学家仍说否。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>高级禅定状态如何复现？</summary><div class="dbody"><p>需神经现象学+长期修行者；样本稀缺。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>致幻剂体验等于禅修峰值吗？</summary><div class="dbody"><p>部分重叠，机制与风险不同。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>没有导师可以自学内观吗？</summary><div class="dbody"><p>可以入门；创伤/精神病史需谨慎。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>人工智能有「识」吗？</summary><div class="dbody"><p>唯识与 AI 结构类比有趣，意识主张仍无共识。<span class="tag t-hyp">假设</span></p></div></details>
+<details><summary>这套地图如何每日更新？</summary><div class="dbody"><p>日志 + 每周复看工具读数 + 季度读一篇新论文。<span class="tag t-inf">推论</span></p></div></details>
+<h3>它在整个系统里的作用</h3>
+<p>问题清单防止「读完以为懂了」——真正毕业是带着问题练。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>读</strong>：Villena-González et al. (2024) 色拉杰寺 EEG；Frontiers 2025「Beyond mindfulness」；Laukkonen 主动推理解作论文</li>
+<li><strong>练</strong>：找当地正念/禅修团体，确认伦理与师资</li>
+<li><strong>写</strong>：维护「意识观察日志」30 天</li>
+<li><strong>桥接</strong>：选 1 个佛学概念 + 1 篇神经论文，写 800 字对照（标【事实/假设】）</li>
+<li><strong>边界</strong>：若练习引发持续解离/恐慌，转临床支持</li>
+</ol>
+<div class="note purple"><b>下一步最小步</b><p>今晚 10 分钟数息 + 工具 1 做一次 α 降低实验——<strong>先观察，再站队</strong>。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>§27 把手册变成开放系统，而非终点。</p>
+<hr />
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">清醒走神约 47%</td>
+<td>同行评审</td>
+<td>Killingsworth &amp; Gilbert, Science 2010</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">冥想者 DMN 降低</td>
+<td>同行评审</td>
+<td>Brewer et al. 2011; Garrison et al. 2015</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">色拉杰寺 EEG</td>
+<td>同行评审</td>
+<td>Villena-González et al., Frontiers in Psychology 2024</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">pure presence γ 下降</td>
+<td>预印本</td>
+<td>bioRxiv 2024.04.18.590081</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">非二元 ACW</td>
+<td>预印本</td>
+<td>bioRxiv 2025.04.21.649758</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">三路径综述</td>
+<td>同行评审</td>
+<td>Frontiers in Psychology 2025.1649564</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">预测编码↔唯识</td>
+<td>评论/博客</td>
+<td>Lingming 2026; MacroAlpha wiki【二手】</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">困难问题与佛教</td>
+<td>评论</td>
+<td>Musacchio 2025; Chalmers 1995</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">主动推理解作</td>
+<td>同行评审</td>
+<td>Laukkonen et al., Neuroscience of Consciousness</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记说明：<strong><span class="tag t-fact">事实</span></strong> 多源一致或一手数据；<strong><span class="tag t-ana">分析</span></strong> 权威综述或机构判断；<strong><span class="tag t-inf">推论</span></strong> 本文推导；<strong><span class="tag t-hyp">假设</span></strong> 未验证猜想；<strong><span class="tag t-chk">待验证</span></strong> 单一来源或预印本。</p>
+<hr />
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供认知结构与自我观察参考，<strong>不构成医疗、心理或宗教指导</strong>。冥想与内观可能触发不适经历；有创伤、抑郁、精神病史或正在用药者，请在专业人员指导下练习。文中对佛学教义的简述不能替代正统传承与师承。对神经科学结果的引用随研究更新可能失效，请以原始论文为准。作者不对依据本手册做出的修行、医疗或信仰决定承担责任。</p>
+</section>
+<footer>  <p>《人的意识与佛学的关系 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 8 分 44 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做信仰选择，而是帮你建立一套可以自己观察、检验、迭代的意识地图。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《人的意识与佛学的关系》主题脚本
+   四个可调模型（全部真实参与计算）：
+
+     1. 预测编码 / 造作指数   先验权重 α、先验 P、感官 S → 感知与预测误差
+     2. 正念练习 vs 走神率   练习年数 → 走神率（Killingsworth 基线 47% 衰减）
+     3. 非二元觉察指数       练习年数 → 内外注意 ACW 差（2025 预印本结构）
+     4. 八识信息流           各层权重滑块 → 堆叠条（总和恒为 100%）
+
+   自包含 IIFE，与页面通用脚本互不干扰。
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    purple: '#6d28d9', teal: '#0d9488', grid: '#eef1f5', axis: '#e2e6ec',
+    ink3: '#7c848f', ink2: '#454c56'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function num(v) { return parseFloat(v); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function bindRange(el, fn) {
+    if (!el) return;
+    el.addEventListener('input', fn);
+    el.addEventListener('change', fn);
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     工具 1 · 预测编码 / 造作（fabrication）指数
+     感知 = α·P + (1−α)·S；加权预测误差 = |P−S|·α
+     ══════════════════════════════════════════════════════════ */
+  (function predCoding() {
+    var pEl = $('pc_prior'), sEl = $('pc_sens'), aEl = $('pc_alpha');
+    if (!pEl || !sEl || !aEl) return;
+    var pO = $('pc_priorO'), sO = $('pc_sensO'), aO = $('pc_alphaO');
+    var percEl = $('pc_perc'), perchEl = $('pc_perch');
+    var peEl = $('pc_pe'), pehEl = $('pc_peh');
+    var fabEl = $('pc_fab'), fabhEl = $('pc_fabh');
+    var vEl = $('pc_v'), vhEl = $('pc_vh');
+    var cv = $('pcChart');
+
+    function upd() {
+      var P = num(pEl.value), S = num(sEl.value), a = num(aEl.value);
+      var perc = a * P + (1 - a) * S;
+      var pe = Math.abs(P - S) * a;
+      var fab = a * 100;
+
+      txt(pO, P.toFixed(0));
+      txt(sO, S.toFixed(0));
+      txt(aO, (a * 100).toFixed(0) + '%');
+      txt(percEl, perc.toFixed(1));
+      txt(perchEl, '大脑最终「看见」的刻度（先验与感官的加权）');
+      txt(peEl, pe.toFixed(1));
+      txt(pehEl, '|P−S|×α：执着越强，冲突越痛');
+      txt(fabEl, fab.toFixed(0) + '%');
+      txt(fabhEl, '自上而下权重 α，对应「遍计所执」强度');
+
+      var label, hint, col;
+      if (a >= 0.75) {
+        label = '高度造作'; hint = '先验压过感官，世界被「编」进已有剧本'; col = 'var(--red)';
+      } else if (a >= 0.50) {
+        label = '中度混染'; hint = '感官与先验各半，仍有明显投射'; col = 'var(--amber)';
+      } else {
+        label = '相对如实'; hint = '感官权重上升，预测误差与造作同步下降'; col = 'var(--green)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(P, S, a, perc);
+    }
+
+    function draw(P, S, a, perc) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, H = g.h;
+      clear(g);
+      var pl = 56, pr = 16, y1 = H - 46, bh = y1 - 28;
+      var maxV = 100;
+      function sx(v) { return pl + (W - pl - pr) * v / maxV; }
+      function by(v) { return y1 - bh * v / maxV; }
+
+      ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+      for (var t = 0; t <= 100; t += 25) {
+        var x = sx(t);
+        ctx.beginPath(); ctx.moveTo(x, 18); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(String(t), x, y1 + 13);
+      }
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('刻度 0–100', pl + (W - pl - pr) / 2, y1 + 31);
+
+      var bars = [
+        { v: P, c: C.blue, lab: '先验 P' },
+        { v: S, c: C.teal, lab: '感官 S' },
+        { v: perc, c: C.purple, lab: '感知' }
+      ];
+      var bw = (W - pl - pr - 40) / 3;
+      bars.forEach(function (b, i) {
+        var x = pl + 20 + i * (bw + 10);
+        var y = by(b.v);
+        ctx.fillStyle = b.c;
+        ctx.fillRect(x, y, bw, y1 - y);
+        ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(b.lab, x + bw / 2, 14);
+        var lab = b.v.toFixed(0);
+        ctx.textAlign = 'center';
+        var tx = x + bw / 2;
+        var ty = y - 4;
+        if (ty < 20) ty = y + 14;
+        ctx.fillText(lab, tx, ty);
+      });
+
+      ctx.strokeStyle = C.amber; ctx.setLineDash([4, 3]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(pl, by(perc)); ctx.lineTo(W - pr, by(perc)); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    bindRange(pEl, upd); bindRange(sEl, upd); bindRange(aEl, upd);
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 2 · 正念练习年数 vs 走神率
+     MW = 47 × e^(−0.06·years)  【基线 47% 来自 Killingsworth & Gilbert 2010】
+     ══════════════════════════════════════════════════════════ */
+  (function mindWander() {
+    var yEl = $('mw_years');
+    if (!yEl) return;
+    var yO = $('mw_yearsO'), rateEl = $('mw_rate'), ratehEl = $('mw_rateh');
+    var dmnEl = $('mw_dmn'), dmnhEl = $('mw_dmnh');
+    var vEl = $('mw_v'), vhEl = $('mw_vh');
+    var cv = $('mwChart');
+
+    function upd() {
+      var y = num(yEl.value);
+      var mw = 47 * Math.exp(-0.06 * y);
+      var dmn = Math.max(8, 85 * Math.exp(-0.055 * y));
+
+      txt(yO, y.toFixed(0) + ' 年');
+      txt(rateEl, mw.toFixed(1) + '%');
+      txt(ratehEl, '基线 47% × e^(−0.06×年数)');
+      txt(dmnEl, dmn.toFixed(0) + '%');
+      txt(dmnhEl, '默认模式网络（DMN）相对活跃度指数（归一化）');
+
+      var label, hint, col;
+      if (mw <= 20) { label = '显著安定'; hint = '走神率已低于常人一半，接近长期禅修者区间'; col = 'var(--green)'; }
+      else if (mw <= 35) { label = '持续改善'; hint = 'Brewer 等：经验冥想者 DMN 在任务中仍更低'; col = 'var(--amber)'; }
+      else { label = '常人区间'; hint = '未系统练习时，近半清醒时间在走神'; col = 'var(--red)'; }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(y, mw, dmn);
+    }
+
+    function draw(y, mw, dmn) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, H = g.h;
+      clear(g);
+      var pl = 50, pr = 16, y1 = H - 46, bh = y1 - 30;
+      var T = Math.min(36, Math.max(12, Math.ceil((y + 3) / 6) * 6));
+      if (T < y + 2) T = Math.min(36, Math.ceil((y + 3) / 6) * 6 + 6);
+
+      var pts1 = [], pts2 = [];
+      for (var t = 0; t <= T; t++) {
+        pts1.push({ x: t, y: 47 * Math.exp(-0.06 * t) });
+        pts2.push({ x: t, y: Math.max(8, 85 * Math.exp(-0.055 * t)) });
+      }
+      var ymax = 100;
+      function sx(t) { return pl + (W - pl - pr) * t / T; }
+      function sy(v) { return y1 - bh * v / ymax; }
+
+      ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+      for (var gv = 0; gv <= 100; gv += 25) {
+        var yy = sy(gv);
+        ctx.beginPath(); ctx.moveTo(pl, yy); ctx.lineTo(W - pr, yy); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText(String(gv), pl - 4, yy + 3);
+      }
+      ctx.fillStyle = C.ink2; ctx.textAlign = 'center';
+      ctx.fillText('练习年数', pl + (W - pl - pr) / 2, y1 + 31);
+
+      function line(pts, color) {
+        ctx.strokeStyle = color; ctx.lineWidth = 2;
+        ctx.beginPath();
+        pts.forEach(function (p, i) {
+          var x = sx(p.x), y = sy(p.y);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+      line(pts1, C.blue);
+      line(pts2, C.amber);
+
+      if (y <= T) {
+        ctx.fillStyle = C.red;
+        ctx.beginPath(); ctx.arc(sx(y), sy(mw), 5, 0, Math.PI * 2); ctx.fill();
+        ctx.font = '10px sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText('当前', sx(y) + 6, sy(mw) - 6);
+      }
+
+      ctx.font = '10px sans-serif'; ctx.textAlign = 'left';
+      ctx.fillStyle = C.blue; ctx.fillText('— 走神率 %', pl + 8, 18);
+      ctx.fillStyle = C.amber; ctx.fillText('— DMN 指数', pl + 88, 18);
+    }
+
+    bindRange(yEl, upd);
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 3 · 非二元：内外注意 ACW 差
+     Δ = 100 × e^(−0.10·years) ms；非二元指数 = 100 − Δ
+     ══════════════════════════════════════════════════════════ */
+  (function nondual() {
+    var yEl = $('nd_years');
+    if (!yEl) return;
+    var yO = $('nd_yearsO'), diffEl = $('nd_diff'), diffhEl = $('nd_diffh');
+    var scoreEl = $('nd_score'), scorehEl = $('nd_scoreh');
+    var vEl = $('nd_v'), vhEl = $('nd_vh');
+    var cv = $('ndChart');
+
+    function upd() {
+      var y = num(yEl.value);
+      var diff = 100 * Math.exp(-0.10 * y);
+      var score = 100 - diff;
+
+      txt(yO, y.toFixed(0) + ' 年');
+      txt(diffEl, diff.toFixed(1) + ' ms');
+      txt(diffhEl, '内/外注意 ACW 差（2025 预印本：高阶禅修者差值更小）');
+      txt(scoreEl, score.toFixed(1));
+      txt(scorehEl, '100 − Δ：内外注意时间尺度趋同');
+
+      var label, hint, col;
+      if (score >= 80) { label = '内外趋同'; hint = '非二元体验：内观与外景的时间结构差缩小'; col = 'var(--green)'; }
+      else if (score >= 55) { label = '边界软化'; hint = '仍有二元框架，但已开始松动'; col = 'var(--amber)'; }
+      else { label = '强二元'; hint = '常人：内省与外景被清晰切割'; col = 'var(--red)'; }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(y, diff, score);
+    }
+
+    function draw(y, diff, score) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, H = g.h;
+      clear(g);
+      var cx = W / 2, cy = H / 2 - 8, r = Math.min(80, W / 5);
+
+      ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(cx, cy, r + 28, 0, Math.PI * 2); ctx.stroke();
+
+      var angIn = -Math.PI / 2;
+      var angOut = angIn + (diff / 100) * Math.PI * 0.9;
+      ctx.strokeStyle = C.blue; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(cx, cy, r, angIn, angIn + Math.PI * 0.45); ctx.stroke();
+      ctx.strokeStyle = C.teal; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(cx, cy, r, angIn + Math.PI * 0.45 + (diff / 100) * 0.3, angIn + Math.PI * 0.9); ctx.stroke();
+
+      ctx.fillStyle = C.purple; ctx.globalAlpha = 0.15 + 0.65 * (score / 100);
+      ctx.beginPath(); ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = C.ink2; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('非二元 ' + score.toFixed(0), cx, cy + 4);
+      ctx.font = '10px sans-serif'; ctx.fillStyle = C.ink3;
+      ctx.fillText('Δ=' + diff.toFixed(0) + 'ms · ' + y + '年', cx, cy + r + 36);
+    }
+
+    bindRange(yEl, upd);
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 4 · 八识信息流（权重滑块，归一化到 100%）
+     ══════════════════════════════════════════════════════════ */
+  (function eightCons() {
+    var ids = ['ec5', 'ec6', 'ec7', 'ec8'];
+    var labels = ['前五识', '第六识', '第七识', '第八识'];
+    var els = ids.map(function (id) { return $(id); }).filter(Boolean);
+    if (els.length < 4) return;
+    var cv = $('ecChart');
+    var outEls = ids.map(function (id) { return $(id + 'O'); });
+    var vEl = $('ec_v'), vhEl = $('ec_vh');
+
+    function raw() {
+      return els.map(function (el) { return Math.max(1, num(el.value)); });
+    }
+
+    function upd() {
+      var r = raw();
+      var sum = r.reduce(function (a, b) { return a + b; }, 0);
+      var pct = r.map(function (v) { return v / sum * 100; });
+      els.forEach(function (el, i) { txt(outEls[i], pct[i].toFixed(1) + '%'); });
+
+      var manas = pct[2], alaya = pct[3];
+      var label, hint, col;
+      if (manas >= 30) {
+        label = '我执偏重'; hint = '末那识占比高：经验被「我」滤镜持续染色'; col = 'var(--red)';
+      } else if (manas >= 18) {
+        label = '常人格态'; hint = '第七识活跃但未极端——多数清醒日的默认配置'; col = 'var(--amber)';
+      } else {
+        label = '识流较平'; hint = '末那/阿赖耶权重下降，接近「转识」方向'; col = 'var(--green)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(pct);
+    }
+
+    function draw(pct) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, H = g.h;
+      clear(g);
+      var pl = 50, pr = 16, y1 = H - 46, bh = y1 - 28;
+      var cols = [C.teal, C.blue, C.amber, C.purple];
+      var names = ['前五识', '意', '末那', '阿赖耶'];
+      var bw = (W - pl - pr - 30) / 4;
+
+      for (var i = 0; i < 4; i++) {
+        var x = pl + 10 + i * (bw + 5);
+        var h = bh * pct[i] / 100;
+        ctx.fillStyle = cols[i];
+        ctx.fillRect(x, y1 - h, bw, h);
+        ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(names[i], x + bw / 2, y1 + 13);
+        ctx.fillText(pct[i].toFixed(0) + '%', x + bw / 2, y1 - h - 4);
+      }
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('当前经验中各识层相对权重（归一化）', pl + (W - pl - pr) / 2, y1 + 31);
+    }
+
+    els.forEach(function (el) { bindRange(el, upd); });
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>

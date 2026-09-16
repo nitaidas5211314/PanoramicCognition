@@ -139,11 +139,15 @@
     {
       "slug": "人的意识与佛学的关系",
       "title": "人的意识与佛学的关系",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "outputs": [],
-      "error": null
+      "status": "done",
+      "started": "2026-09-16 21:40:36",
+      "finished": "2026-09-16 21:49:20",
+      "outputs": [
+        "reports/人的意识与佛学的关系.html",
+        "reports/人的意识与佛学的关系.md"
+      ],
+      "error": null,
+      "duration_sec": 524
     },
     {
       "slug": "人的意识",
@@ -195,7 +199,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 21:26",
+  "updated": "2026-09-16 21:49",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
