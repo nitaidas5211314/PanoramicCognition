@@ -12,9 +12,29 @@
       "error": null
     },
     {
+      "slug": "AI量化交易",
+      "title": "AI量化交易",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "威科夫交易法",
+      "title": "威科夫交易法",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
       "slug": "量化交易与博弈论的关系",
       "title": "量化交易与博弈论的关系",
-      "status": "done",
+      "status": "removed",
       "started": "2026-09-16 13:12",
       "finished": "2026-09-16 13:19",
       "outputs": [
@@ -26,7 +46,7 @@
     {
       "slug": "投资与概率论的关系",
       "title": "投资与概率论的关系",
-      "status": "done",
+      "status": "removed",
       "started": "2026-09-16 15:06",
       "finished": "2026-09-16 15:42",
       "outputs": [
@@ -38,7 +58,7 @@
     {
       "slug": "威科夫操盘法",
       "title": "威科夫操盘法",
-      "status": "done",
+      "status": "removed",
       "started": "2026-09-16 17:24:04",
       "finished": "2026-09-16 17:36:05",
       "outputs": [
@@ -51,7 +71,7 @@
     {
       "slug": "安妮·杜克將撲克賽局與心理學結合，專門研究人們如何在不確定與壓力下做出精準決策",
       "title": "安妮·杜克將撲克賽局與心理學結合，專門研究人們如何在不確定與壓力下做出精準決策",
-      "status": "done",
+      "status": "removed",
       "started": "2026-09-16 17:58:18",
       "finished": "2026-09-16 18:07:44",
       "duration_sec": 566,
@@ -64,7 +84,7 @@
     {
       "slug": "《停損的勝算》",
       "title": "《停損的勝算》",
-      "status": "done",
+      "status": "removed",
       "started": "2026-09-16 19:05:47",
       "finished": "2026-09-16 19:17:47",
       "duration_sec": 633,
@@ -77,7 +97,7 @@
     {
       "slug": "《高勝算決策》",
       "title": "《高勝算決策》",
-      "status": "done",
+      "status": "removed",
       "started": "2026-09-16 19:22:35",
       "finished": "2026-09-16 19:40:28",
       "duration_sec": 1073,
@@ -90,7 +110,7 @@
     {
       "slug": "凯尔模型",
       "title": "凯尔模型",
-      "status": "running",
+      "status": "removed",
       "started": "2026-09-16 19:58:11",
       "finished": null,
       "duration_sec": null,
@@ -100,7 +120,7 @@
     {
       "slug": "安同良团队拆解坟包收割",
       "title": "安同良团队拆解坟包收割",
-      "status": "done",
+      "status": "removed",
       "started": "2026-09-16 20:54:14",
       "finished": "2026-09-16 20:58:16",
       "duration_sec": 242,
@@ -113,7 +133,7 @@
     {
       "slug": "安同良团队拆解逐浪抱团",
       "title": "安同良团队拆解逐浪抱团",
-      "status": "done",
+      "status": "removed",
       "started": "2026-09-16 21:00:18",
       "finished": "2026-09-16 21:03:21",
       "duration_sec": 183,
@@ -126,7 +146,7 @@
     {
       "slug": "安同良团队拆解精准狙击",
       "title": "安同良团队拆解精准狙击",
-      "status": "done",
+      "status": "removed",
       "started": "2026-09-16 21:20:28",
       "finished": "2026-09-16 21:26:17",
       "duration_sec": 349,
@@ -139,7 +159,7 @@
     {
       "slug": "人的意识与佛学的关系",
       "title": "人的意识与佛学的关系",
-      "status": "done",
+      "status": "removed",
       "started": "2026-09-16 21:40:36",
       "finished": "2026-09-16 21:49:20",
       "outputs": [
@@ -152,7 +172,7 @@
     {
       "slug": "人的意识",
       "title": "人的意识",
-      "status": "pending",
+      "status": "removed",
       "started": null,
       "finished": null,
       "outputs": [],
@@ -161,7 +181,7 @@
     {
       "slug": "白帽挖洞平台",
       "title": "白帽挖洞平台",
-      "status": "pending",
+      "status": "removed",
       "started": null,
       "finished": null,
       "duration_sec": null,
@@ -171,7 +191,7 @@
     {
       "slug": "BTC-ZEC-BCH类挖矿软件",
       "title": "BTC/ZEC/BCH类挖矿软件",
-      "status": "pending",
+      "status": "removed",
       "started": null,
       "finished": null,
       "duration_sec": null,
@@ -199,7 +219,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 21:49",
+  "updated": "2026-09-16 22:02",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
