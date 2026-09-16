@@ -35,6 +35,326 @@
       "error": null
     },
     {
+      "slug": "宏观经济",
+      "title": "宏观经济",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "美债",
+      "title": "美债",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "美元指数",
+      "title": "美元指数",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "日元加息",
+      "title": "日元加息",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "日元套利",
+      "title": "日元套利",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "K线分析",
+      "title": "K线分析",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-长期估值与演化模型",
+      "title": "BTC-长期估值与演化模型",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-S2F（Stock-to-Flow）存流量比模型",
+      "title": "BTC-S2F（Stock-to-Flow）存流量比模型",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-时间幂律模型（Power Law Theory, PLT）",
+      "title": "BTC-时间幂律模型（Power Law Theory, PLT）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-MVRV 指标（Market Value to Realized Value）",
+      "title": "BTC-MVRV 指标（Market Value to Realized Value）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-NVT（Network Value to Transactions）指标",
+      "title": "BTC-NVT（Network Value to Transactions）指标",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-市时模型（Cointime Framework）",
+      "title": "BTC-市时模型（Cointime Framework）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-价值捕获与安全“微笑曲线”（Smile Curve）",
+      "title": "BTC-价值捕获与安全“微笑曲线”（Smile Curve）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-反幂律增长与 S-曲线爆发猜想",
+      "title": "BTC-反幂律增长与 S-曲线爆发猜想",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-Logit 曲线与分阶段假说",
+      "title": "BTC-Logit 曲线与分阶段假说",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-减半预期折现与牛市延时模型",
+      "title": "BTC-减半预期折现与牛市延时模型",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-价格影响的“平方根定律”（Square Root Law）",
+      "title": "BTC-价格影响的“平方根定律”（Square Root Law）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-饼金比（BTC-to-Gold Ratio）与中枢位移",
+      "title": "BTC-饼金比（BTC-to-Gold Ratio）与中枢位移",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-终极对决：四年周期理论 vs. 幂律通道下轨",
+      "title": "BTC-终极对决：四年周期理论 vs. 幂律通道下轨",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-链上与周期技术指标",
+      "title": "BTC-链上与周期技术指标",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-ahr999 定投指标",
+      "title": "BTC-ahr999 定投指标",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-1-yr+ HODL Wave（钻石手占比）",
+      "title": "BTC-1-yr+ HODL Wave（钻石手占比）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-URPD 已实现价格分布",
+      "title": "BTC-URPD 已实现价格分布",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-LTH - STH 持仓与成本框架",
+      "title": "BTC-LTH / STH 持仓与成本框架",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-矿工成本线 - 矿工底",
+      "title": "BTC-矿工成本线 / 矿工底",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-均线体系：200周 - 200日 - 两年均线乘数",
+      "title": "BTC-均线体系：200周 / 200日 / 两年均线乘数",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-SSR RSI（稳定币供给比率 RSI）",
+      "title": "BTC-SSR RSI（稳定币供给比率 RSI）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-ETF 资金流（反向指标）",
+      "title": "BTC-ETF 资金流（反向指标）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-恐惧贪婪指数与资金费率",
+      "title": "BTC-恐惧贪婪指数与资金费率",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-彩虹图（Rainbow Chart）",
+      "title": "BTC-彩虹图（Rainbow Chart）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-威科夫积累-派发与相对强弱 RSI",
+      "title": "BTC-威科夫积累/派发与相对强弱 RSI",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-逃顶指标批判：5 大卖出信号与幸存者偏差",
+      "title": "BTC-逃顶指标批判：5 大卖出信号与幸存者偏差",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
       "slug": "量化交易与博弈论的关系",
       "title": "量化交易与博弈论的关系",
       "status": "removed",
