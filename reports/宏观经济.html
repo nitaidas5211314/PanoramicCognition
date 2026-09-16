@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>宏观经济 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Macroeconomics × Aggregate Dynamics</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天计划</a>
+    <div class="navgroup">模型与探索</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>宏观经济</h1>
+  <p class="sub">它不是「新闻里的数字」，而是<strong>总供给与总需求</strong>在政策、预期与全球冲击下不断自我修正的循环系统——看懂它，你才能区分「周期波动」与「结构转型」。</p>
+  <div class="meta">
+    <span class="chip b">27 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p>宏观经济只做一件事：<strong>把无数微观决策（消费、投资、出口、雇佣）加总成可观测的总量，再追问「谁在推动、谁在刹车、谁在滞后反应」。</strong></p>
+<p>GDP 不是「国家赚了多少钱」，而是<strong>一段时间内生产的最终产品与服务的总价值</strong>；通胀不是「东西变贵了」这么简单，而是<strong>货币购买力与名义价格之间的赛跑</strong>；政策不是「放水/收紧」两个按钮，而是<strong>财政与货币在不同传导链条上的协调与冲突</strong>。</p>
+<blockquote>
+<p>凯恩斯（1936）：「长期我们都死了。」【引用】——宏观学的紧迫性在于：失业、通胀、债务危机不会等你把理论想明白。</p>
+</blockquote>
+<p>它的稀缺性不在背指标，而在<strong>识别反馈</strong>：利率上升既可能抑制通胀，也可能在高债务环境下触发衰退；财政刺激既可能托底就业，也可能挤出私人投资。<strong>宏观思维 = 在延迟、非线性与预期博弈中做权衡。</strong></p>
+<hr />
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话边界</h3>
+<p>宏观经济学研究<strong>经济整体的运行规律</strong>：总产出、总就业、总体物价水平、国际收支，以及政府与央行如何用政策工具影响这些总量。核心问题是：<strong>经济为什么会波动？政策能否、以及应该如何稳定波动？</strong></p>
+<p><strong>它最容易被误读的地方</strong>：把宏观当成「预测股市」或「猜下一个政策」——宏观提供的是<strong>结构、机制与约束</strong>，不是交易信号。</p>
+<h3>用 15 个问题划定边界</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">研究什么</td>
+<td>总供给/总需求、通胀、失业、增长、汇率、债务、政策传导</td>
+</tr>
+<tr>
+<td class="k">边界在哪</td>
+<td>看「整体」与「跨期」，不替代微观定价与企业战略</td>
+</tr>
+<tr>
+<td class="k">核心对象</td>
+<td>GDP、CPI/PPI、失业率、利率、汇率、财政赤字、债务/GDP</td>
+</tr>
+<tr>
+<td class="k">参与者</td>
+<td>家庭、企业、政府、央行、银行、外贸伙伴、国际组织（IMF/世行）</td>
+</tr>
+<tr>
+<td class="k">核心变量</td>
+<td>产出缺口、通胀预期、政策利率、M2、财政乘数、经常账户</td>
+</tr>
+<tr>
+<td class="k">可观察</td>
+<td>统计局的 GDP/CPI/就业、央行政策公告、国债收益率曲线</td>
+</tr>
+<tr>
+<td class="k">不可观察但可推断</td>
+<td>潜在产出、自然失业率 u*、通胀预期、结构性赤字</td>
+</tr>
+<tr>
+<td class="k">谁影响谁</td>
+<td>政策→利率/信贷→投资消费→GDP；GDP→就业→工资→通胀</td>
+</tr>
+<tr>
+<td class="k">确定因果</td>
+<td>名义利率≈实际利率+通胀预期（费雪效应）；债务动态 Δd≈(r−g)d+赤字</td>
+</tr>
+<tr>
+<td class="k">只是相关</td>
+<td>「GDP 高」与「股市涨」常同向但机制复杂，不能互推</td>
+</tr>
+<tr>
+<td class="k">表层现象</td>
+<td>月度 CPI 跳升、央行「降息」头条、某国 GDP「超预期」</td>
+</tr>
+<tr>
+<td class="k">底层机制</td>
+<td>总需求冲击 vs 供给冲击、预期锚定、金融加速器、开放经济传导</td>
+</tr>
+<tr>
+<td class="k">反馈</td>
+<td>正：通胀↑→加息预期↑→本币升值→进口降价→通胀↓；负：衰退→财政扩张→债务↑→利差走阔</td>
+</tr>
+<tr>
+<td class="k">时间延迟</td>
+<td>货币政策 6–18 个月、财政政策 1–2 季度、结构性改革数年</td>
+</tr>
+<tr>
+<td class="k">正负反馈</td>
+<td>债务螺旋（负）、工资-物价螺旋（正）、自动稳定器（负反馈缓冲）</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>这一节是地基：后面所有杠杆点、陷阱与模型，都建立在「总量如何联动」这张地图上。搞错边界（比如用微观供需解释全球通胀），后面全偏。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>四个理由</h3>
+<div class="grid g2">
+<div class="card"><h4>它决定你的「购买力时钟」</h4><p>通胀 4.7% 时，物价翻一番约需 72÷4.7≈<strong>15.3 年</strong>（规则 72）——现金若不增值，购买力同期约减半。IMF 预计 2026 年全球 headline 通胀 <strong>4.7%</strong><span class="tag t-fact">事实</span>，「去通胀停滞」不是空话。</p></div>
+<div class="card"><h4>它是政策与市场的「共同语言」</h4><p>央行看通胀与就业，财政部看赤字与乘数，企业看利率与需求——宏观指标是各方博弈的裁判尺。不懂宏观，读政策就像听外语。</p></div>
+<div class="card"><h4>它训练「延迟与预期」思维</h4><p>政策今天出台，效果明年才显；市场今天定价的是「未来 12 个月的预期」。宏观思维逼你<strong>从快照跳到路径</strong>。</p></div>
+<div class="card"><h4>它连接个人与全球</h4><p>中东能源冲击、美联储利率、中国出口——通过贸易与金融链条传到你的电价、房贷与工资谈判。宏观是「个人无法逃避的外部性」的地图。</p></div>
+</div>
+<div class="note amber"><b>一句话定性</b><p>宏观经济学不是「预测下一个季度 GDP」，而是<strong>关于总量如何相互牵制、政策如何在约束下取舍、预期如何自我实现的学问</strong>。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>第 01 节划边界，这一节回答「为什么要学」。没有它，后面 27 节会退化成指标词典。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>宏观不是平铺的指标表，而是九层嵌套结构——从哲学范式到个人可操作的读数。</p>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="wmA" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#454c56"/>
+    </marker>
+  </defs>
+  <rect x="70" y="20" width="540" height="46" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="40" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 范式之争 · 凯恩斯 vs 古典 vs 新凯恩斯</text>
+  <text x="86" y="58" font-size="10.5" fill="#454c56" font-family="sans-serif">短期需求管理 vs 长期供给 vs 微观基础+价格粘性</text>
+  <rect x="70" y="76" width="540" height="46" rx="9" fill="#e7eef6" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="96" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 核心恒等式 · Y=C+I+G+NX</text>
+  <text x="86" y="114" font-size="10.5" fill="#454c56" font-family="sans-serif">国民收入核算：消费、投资、政府、净出口</text>
+  <rect x="70" y="132" width="540" height="46" rx="9" fill="#dfe9f4" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="152" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 劳动力市场 · 失业、u*、菲利普斯曲线</text>
+  <text x="86" y="170" font-size="10.5" fill="#454c56" font-family="sans-serif">通胀-失业权衡（短期）与预期锚定（长期）</text>
+  <rect x="70" y="188" width="540" height="46" rx="9" fill="#d6e3f1" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="208" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 货币与银行 · 利率、信贷、流动性</text>
+  <text x="86" y="226" font-size="10.5" fill="#454c56" font-family="sans-serif">央行资产负债表 · 传导机制 · 金融加速器</text>
+  <rect x="70" y="244" width="540" height="46" rx="9" fill="#cfe0ee" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="264" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 财政政策 · 乘数、赤字、自动稳定器</text>
+  <text x="86" y="282" font-size="10.5" fill="#454c56" font-family="sans-serif">政府支出撬动总需求 · 债务可持续性</text>
+  <rect x="70" y="300" width="540" height="46" rx="9" fill="#c6dcec" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="320" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 开放经济 · 汇率、资本流动、贸易</text>
+  <text x="86" y="338" font-size="10.5" fill="#454c56" font-family="sans-serif">蒙代尔-弗莱明 · 三元悖论 · 全球价值链</text>
+  <rect x="70" y="356" width="540" height="46" rx="9" fill="#bcd6e8" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="376" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 数据与机构 · 统计局、央行、IMF</text>
+  <text x="86" y="394" font-size="10.5" fill="#454c56" font-family="sans-serif">WEO/GEP · 政策沟通 · 预测修正</text>
+  <rect x="70" y="412" width="540" height="46" rx="9" fill="#e9ddc9" stroke="#c9b48a" stroke-width="1.2"/>
+  <text x="86" y="432" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 制度与规则 · 通胀目标、财政纪律、监管</text>
+  <text x="86" y="450" font-size="10.5" fill="#454c56" font-family="sans-serif">央行独立性 · 欧盟财政协定 · 宏观审慎</text>
+  <rect x="70" y="468" width="540" height="46" rx="9" fill="#f0d2cd" stroke="#d8a79c" stroke-width="1.2"/>
+  <text x="86" y="488" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 风险与边界 · 滞胀、债务危机、政策失效</text>
+  <text x="86" y="506" font-size="10.5" fill="#454c56" font-family="sans-serif">模型误设 · 预期脱锚 · 地缘政治冲击</text>
+  <line x1="340" y1="66" x2="340" y2="76" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="122" x2="340" y2="132" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="178" x2="340" y2="188" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="234" x2="340" y2="244" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="290" x2="340" y2="300" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="346" x2="340" y2="356" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="402" x2="340" y2="412" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+  <line x1="340" y1="458" x2="340" y2="468" stroke="#454c56" stroke-width="1.5" marker-end="url(#wmA)"/>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>九层地图是导航仪：读新闻时先定位「我在第几层」——是供给冲击（③④）还是需求政策（⑤）？避免把汇率波动（⑥）误读成国内通胀（③）。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>宏观的核心概念不是孤立定义，而是一张关系网：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>一句话</th>
+<th>连到谁</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>GDP</strong></td>
+<td>一定时期内生产的最终价值</td>
+<td>就业、税收、企业盈利</td>
+</tr>
+<tr>
+<td class="k"><strong>潜在产出</strong></td>
+<td>不引发加速通胀的最大可持续产出</td>
+<td>产出缺口、政策空间</td>
+</tr>
+<tr>
+<td class="k"><strong>CPI/核心CPI</strong></td>
+<td>消费品价格变动</td>
+<td>央行目标、实际利率</td>
+</tr>
+<tr>
+<td class="k"><strong>自然失业率 u</strong>*</td>
+<td>与稳定通胀相容的失业率</td>
+<td>菲利普斯曲线</td>
+</tr>
+<tr>
+<td class="k"><strong>政策利率</strong></td>
+<td>央行短期基准利率</td>
+<td>信贷成本、汇率</td>
+</tr>
+<tr>
+<td class="k"><strong>财政乘数</strong></td>
+<td>ΔG 对 ΔY 的放大倍数</td>
+<td>刺激力度评估</td>
+</tr>
+<tr>
+<td class="k"><strong>r−g</strong></td>
+<td>利率与增长的差</td>
+<td>债务可持续性</td>
+</tr>
+<tr>
+<td class="k"><strong>经常账户</strong></td>
+<td>进出口+初级收入差额</td>
+<td>汇率压力、外部平衡</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note blue"><b>跨域同构</b><p><strong>菲利普斯曲线 ↔ 供需瓶颈</strong>：劳动力市场紧张就像产能利用率触顶——短期价格上行，长期取决于预期是否锚定。<strong>债务动态 ↔ 复利</strong>：r&gt;g 时债务率自发上升，如同「负储蓄率」在滚雪球。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>概念地图把「背指标」变成「认关系」——后面因果图与工具都建立在这张网上。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>目标函数（简化）</th>
+<th>工具</th>
+<th>约束</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>家庭</strong></td>
+<td>消费平滑、就业与储蓄</td>
+<td>劳动供给、消费决策</td>
+<td>收入、利率、预期</td>
+</tr>
+<tr>
+<td class="k"><strong>企业</strong></td>
+<td>利润最大化</td>
+<td>投资、定价、雇佣</td>
+<td>需求、融资成本、监管</td>
+</tr>
+<tr>
+<td class="k"><strong>政府（财政）</strong></td>
+<td>增长、就业、连任/合法性</td>
+<td>税收、支出、转移支付</td>
+<td>债务上限、通胀、民意</td>
+</tr>
+<tr>
+<td class="k"><strong>央行</strong></td>
+<td>物价稳定（+就业/金融稳定）</td>
+<td>政策利率、QE、前瞻指引</td>
+<td>独立性、传导阻滞、汇率</td>
+</tr>
+<tr>
+<td class="k"><strong>商业银行</strong></td>
+<td>利差与风险调整收益</td>
+<td>信贷投放、期限转换</td>
+<td>资本充足率、流动性</td>
+</tr>
+<tr>
+<td class="k"><strong>外贸伙伴</strong></td>
+<td>本国利益</td>
+<td>关税、汇率、产业链</td>
+<td>WTO/区域协定、地缘</td>
+</tr>
+<tr>
+<td class="k"><strong>IMF/世行</strong></td>
+<td>全球稳定</td>
+<td>贷款、监督、WEO 预测</td>
+<td>主权意愿、数据质量</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><span class="tag t-fact">事实</span>IMF 2026 年 7 月 WEO 将全球增长下调至 2026 年 <strong>3.0%</strong>、2027 年 <strong>3.4%</strong>，全球通胀预计从 2025 年 4.1% 升至 2026 年 <strong>4.7%</strong> 后再回落至 2027 年 3.9%——「去通胀停滞」成为主旋律。</p>
+</blockquote>
+<h3>它在整个系统里的作用</h3>
+<p>参与者表回答「谁在动盘子」——政策分析必须同时看<strong>激励</strong>与<strong>约束</strong>，不能只盯央行一句话。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<p>读宏观新闻时，优先盯住这六个「仪表盘」：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>当前锚点（<span class="tag t-chk">待验证</span>/<span class="tag t-fact">事实</span>混合）</th>
+<th>读法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>实际 GDP 增速</strong></td>
+<td>全球 2026E ~3.0%【事实·IMF】；中国 2025 年 <strong>5.0%</strong>、2026 目标 <strong>4.5%–5%</strong><span class="tag t-fact">事实</span></td>
+<td>看环比折年率与结构（消费/投资/出口）</td>
+</tr>
+<tr>
+<td class="k"><strong>通胀（CPI）</strong></td>
+<td>全球 headline 2026E <strong>4.7%</strong>【事实·IMF】；中国 2025 年均约 <strong>0%</strong>【事实·IMF 国别报告】</td>
+<td>区分能源/食品与核心通胀</td>
+</tr>
+<tr>
+<td class="k"><strong>政策利率</strong></td>
+<td>美欧「大体持稳」假设【分析·IMF】；中国「适度宽松」【事实·央行报告】</td>
+<td>看实际利率（名义−通胀预期）</td>
+</tr>
+<tr>
+<td class="k"><strong>失业率</strong></td>
+<td>中国城镇调查失业率目标 5.5% 左右<span class="tag t-fact">事实</span></td>
+<td>对比 u* 判断劳动力松紧</td>
+</tr>
+<tr>
+<td class="k"><strong>财政赤字/GDP</strong></td>
+<td>中国 2026 赤字率约 <strong>4%</strong>【事实·政府工作报告】</td>
+<td>区分周期性 vs 结构性</td>
+</tr>
+<tr>
+<td class="k"><strong>债务/GDP</strong></td>
+<td>全球政府债务持续高位<span class="tag t-ana">分析</span></td>
+<td>配合 r−g 与初级赤字</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>变量表是「每日扫描清单」——先盯这六个，再深入细分指标，避免被碎片化新闻牵着走。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<p>宏观因果链的主干是 <strong>总需求 → 产出 → 就业 → 工资/通胀 → 政策反应</strong>。实线是主传导，红色虚线是反馈（政策与预期反过来塑造今天的需求）。</p>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cgA" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#454c56"/>
+    </marker>
+    <marker id="cgR" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+  <rect x="20" y="120" width="120" height="50" rx="8" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="36" y="142" font-size="11.5" font-weight="700" fill="#15181d" font-family="sans-serif">政策冲击</text>
+  <text x="36" y="158" font-size="9.5" fill="#7c848f" font-family="sans-serif">财政/货币</text>
+  <rect x="170" y="120" width="120" height="50" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="186" y="142" font-size="11.5" font-weight="700" fill="#15181d" font-family="sans-serif">总需求 AD</text>
+  <text x="186" y="158" font-size="9.5" fill="#7c848f" font-family="sans-serif">C+I+G+NX</text>
+  <rect x="320" y="120" width="120" height="50" rx="8" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="336" y="142" font-size="11.5" font-weight="700" fill="#15181d" font-family="sans-serif">产出/就业</text>
+  <text x="336" y="158" font-size="9.5" fill="#7c848f" font-family="sans-serif">GDP、u</text>
+  <rect x="470" y="120" width="120" height="50" rx="8" fill="#fdf2e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="486" y="142" font-size="11.5" font-weight="700" fill="#15181d" font-family="sans-serif">通胀 π</text>
+  <text x="486" y="158" font-size="9.5" fill="#7c848f" font-family="sans-serif">工资/价格</text>
+  <rect x="590" y="30" width="80" height="44" rx="8" fill="#e3edf7" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="602" y="50" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">预期</text>
+  <text x="602" y="66" font-size="9" fill="#7c848f" font-family="sans-serif">π_e、信心</text>
+  <rect x="170" y="220" width="140" height="44" rx="8" fill="#f0d2cd" stroke="#d8a79c" stroke-width="1.3"/>
+  <text x="186" y="240" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">供给冲击</text>
+  <text x="186" y="256" font-size="9" fill="#7c848f" font-family="sans-serif">能源/疫情/关税</text>
+  <line x1="140" y1="145" x2="165" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#cgA)"/>
+  <line x1="290" y1="145" x2="315" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#cgA)"/>
+  <line x1="440" y1="145" x2="465" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#cgA)"/>
+  <line x1="530" y1="120" x2="600" y2="74" stroke="#d5342c" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#cgR)"/>
+  <line x1="630" y1="74" x2="80" y2="120" stroke="#d5342c" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#cgR)"/>
+  <line x1="240" y1="220" x2="380" y2="172" stroke="#d5342c" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#cgR)"/>
+  <text x="560" y="100" font-size="9.5" fill="#d5342c" font-family="sans-serif">预期反馈</text>
+  <text x="280" y="200" font-size="9.5" fill="#d5342c" font-family="sans-serif">供给推高通胀</text>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>因果图是手册枢纽：<strong>供给冲击与需求冲击的政策应对相反</strong>——混淆二者是 2021–2023 全球通胀辩论的核心错误（见 §14）。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>名义 vs 实际</strong>：名义 GDP 增长 5%、通胀 3%，实际增长约 2%——「高增长」可能是价格幻觉。</li>
+<li><strong>累积 vs 流量</strong>：赤字是流量，债务是存量；一年 4% 赤字不会把债务率永远定在 4%。</li>
+<li><strong>贸易顺差 ↔ 储蓄过剩</strong>：开放经济恒等式里，顺差对应净储蓄外流——「出口强」另一面是内需相对弱。</li>
+<li><strong>利率↑ 的双重面孔</strong>：抗通胀 vs 加重债务人负担——高债务社会里，加息的「分配效应」可能压倒「需求冷却」。</li>
+<li><strong>菲利普斯曲线平坦化</strong>：低通胀时代，失业变动对物价影响变小——央行更难「精确着陆」。</li>
+</ul>
+<blockquote>
+<p><span class="tag t-inf">推论</span>隐藏关系的共同形状：<strong>流量与存量、名义与实际、国内与全球</strong>三层常被混为一谈。</p>
+</blockquote>
+<h3>它在整个系统里的作用</h3>
+<p>这一节是陷阱预警的机理层——§14 里每条谬误几乎都能在这里找到根源。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>宏观「机器」本质是：<strong>家庭与企业的决策汇成总需求，金融系统做期限转换与风险定价，政府与央行在摩擦与延迟中调节</strong>。下图画出资金流经过中介层时的「抽水」——利差、通胀税、金融摩擦与信息不对称都在损耗。</p>
+<svg viewBox="0 0 680 290" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rfA" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#454c56"/>
+    </marker>
+    <marker id="rfL" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+  <rect x="20" y="60" width="150" height="170" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="34" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">实体经济</text>
+  <text x="34" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 工资与利润</text>
+  <text x="34" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· 消费与投资</text>
+  <text x="34" y="144" font-size="10.5" fill="#454c56" font-family="sans-serif">· 进出口</text>
+  <text x="34" y="170" font-size="10" fill="#7c848f" font-family="sans-serif">（总供给/总需求）</text>
+  <rect x="265" y="60" width="170" height="170" rx="9" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.6"/>
+  <text x="279" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">金融中介层</text>
+  <text x="279" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 银行信贷</text>
+  <text x="279" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· 债券市场</text>
+  <text x="279" y="144" font-size="10.5" fill="#454c56" font-family="sans-serif">· 央行流动性</text>
+  <text x="279" y="164" font-size="10.5" fill="#454c56" font-family="sans-serif">· 汇率定价</text>
+  <text x="279" y="190" font-size="10" fill="#0f8a4d" font-family="sans-serif">政策传导发生于此</text>
+  <rect x="510" y="60" width="150" height="170" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="524" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">政策与存量</text>
+  <text x="524" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 政府债务</text>
+  <text x="524" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· 外汇储备</text>
+  <text x="524" y="144" font-size="10.5" fill="#454c56" font-family="sans-serif">· 通胀税/铸币税</text>
+  <text x="524" y="164" font-size="10.5" fill="#454c56" font-family="sans-serif">· 社保与转移</text>
+  <line x1="170" y1="120" x2="260" y2="120" stroke="#454c56" stroke-width="2" marker-end="url(#rfA)"/>
+  <line x1="435" y1="120" x2="505" y2="120" stroke="#454c56" stroke-width="2" marker-end="url(#rfA)"/>
+  <line x1="350" y1="230" x2="350" y2="262" stroke="#d5342c" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#rfL)"/>
+  <text x="260" y="250" font-size="10.5" fill="#d5342c" font-family="sans-serif">抽水：利差 · 通胀税 · 摩擦 · 违约风险</text>
+  <text x="260" y="278" font-size="11" font-weight="700" fill="#d5342c" font-family="sans-serif">金融加速器可在衰退时放大损耗</text>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>运行机制图把「政策如何到实体经济」具象化——传导堵塞时，降息也可能「宽货币、紧信用」。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<p>宏观思想与冲击形态都在演化——不是线性进步，而是危机驱动范式修订：</p>
+<svg viewBox="0 0 680 210" width="100%" style="max-width:680px">
+  <line x1="50" y1="120" x2="650" y2="120" stroke="#454c56" stroke-width="2"/>
+  <g font-family="sans-serif" font-size="10.5" fill="#15181d">
+    <circle cx="70" cy="120" r="5" fill="#1d4ed8"/>
+    <text x="70" y="100" text-anchor="middle" font-weight="700">1936</text>
+    <text x="70" y="142" text-anchor="middle">《通论》</text>
+    <text x="70" y="156" text-anchor="middle">总需求</text>
+    <circle cx="140" cy="120" r="5" fill="#1d4ed8"/>
+    <text x="140" y="100" text-anchor="middle" font-weight="700">1958</text>
+    <text x="140" y="142" text-anchor="middle">菲利普斯</text>
+    <text x="140" y="156" text-anchor="middle">失业-通胀</text>
+    <circle cx="220" cy="120" r="5" fill="#1d4ed8"/>
+    <text x="220" y="100" text-anchor="middle" font-weight="700">1970s</text>
+    <text x="220" y="142" text-anchor="middle">滞胀</text>
+    <text x="220" y="156" text-anchor="middle">曲线失效?</text>
+    <circle cx="300" cy="120" r="5" fill="#0f8a4d"/>
+    <text x="300" y="100" text-anchor="middle" font-weight="700">1993</text>
+    <text x="300" y="142" text-anchor="middle">通胀目标制</text>
+    <text x="300" y="156" text-anchor="middle">央行独立</text>
+    <circle cx="390" cy="120" r="5" fill="#b8730a"/>
+    <text x="390" y="100" text-anchor="middle" font-weight="700">2008</text>
+    <text x="390" y="142" text-anchor="middle">金融危机</text>
+    <text x="390" y="156" text-anchor="middle">QE 时代</text>
+    <circle cx="470" cy="120" r="5" fill="#b8730a"/>
+    <text x="470" y="100" text-anchor="middle" font-weight="700">2020</text>
+    <text x="470" y="142" text-anchor="middle">疫情+刺激</text>
+    <text x="470" y="156" text-anchor="middle">供给冲击</text>
+    <circle cx="550" cy="120" r="5" fill="#d5342c"/>
+    <text x="550" y="100" text-anchor="middle" font-weight="700">2022–26</text>
+    <text x="550" y="142" text-anchor="middle">地缘+AI</text>
+    <text x="550" y="156" text-anchor="middle">去通胀停滞</text>
+    <circle cx="630" cy="120" r="5" fill="#d5342c"/>
+    <text x="630" y="100" text-anchor="middle" font-weight="700">?</text>
+    <text x="630" y="142" text-anchor="middle">财政主导?</text>
+    <text x="630" y="156" text-anchor="middle">绿色转型</text>
+  </g>
+  <text x="350" y="190" font-size="10.5" fill="#7c848f" font-family="sans-serif" text-anchor="middle">每一次危机都修订「菲利普斯曲线还能不能用、财政空间还有多少」的信念</text>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>时间轴说明：<strong>今天的「常识」是某次危机的产物</strong>——用 2010 年代低通胀经验读 2026，极易误判。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>激励</th>
+<th>对宏观叙事的扭曲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>执政党/政府</strong></td>
+<td>稳增长、控通胀、就业</td>
+<td>报喜不报忧、选择性发布「亮点」</td>
+</tr>
+<tr>
+<td class="k"><strong>央行</strong></td>
+<td>信誉、通胀目标</td>
+<td>沟通模糊以保留选项；「暂时性通胀」叙事</td>
+</tr>
+<tr>
+<td class="k"><strong>金融机构</strong></td>
+<td>交易量、利差</td>
+<td>放大波动叙事以促交易</td>
+</tr>
+<tr>
+<td class="k"><strong>智库/卖方宏观</strong></td>
+<td>关注度、客户</td>
+<td>极端预测更易传播（幸存者偏差）</td>
+</tr>
+<tr>
+<td class="k"><strong>国际组织</strong></td>
+<td>稳定、贷款条件</td>
+<td>有时倾向「温和措辞」以保对话</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><span class="tag t-ana">分析</span>IMF 与国别报告常在「敦促结构性改革」与「尊重主权」之间平衡——读报告要看 <strong>Staff Report vs 执董会声明</strong> 的张力。</p>
+</blockquote>
+<h3>它在整个系统里的作用</h3>
+<p>利益结构解释「为何同样数据有不同故事」——把激励放进模型，才不至于把宏观当成纯科学。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>资源</th>
+<th>富方</th>
+<th>贫方</th>
+<th>宏观后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>数据</strong></td>
+<td>发达经济体高频数据</td>
+<td>低收入国统计滞后</td>
+<td>全球预测偏差系统性偏向「可观测者」</td>
+</tr>
+<tr>
+<td class="k"><strong>政策空间</strong></td>
+<td>储备货币发行国</td>
+<td>高外债新兴市场</td>
+<td>加息周期中资本外流与债务危机</td>
+</tr>
+<tr>
+<td class="k"><strong>研究能力</strong></td>
+<td>央行内部模型团队</td>
+<td>个人投资者</td>
+<td>信息解读权不对称</td>
+</tr>
+<tr>
+<td class="k"><strong>产业链位置</strong></td>
+<td>AI/能源出口国</td>
+<td>纯商品进口国</td>
+<td>2026 增长预测「冰火两重天」【事实·IMF】</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><span class="tag t-fact">事实</span>IMF 2026 年 7 月指出：战争冲击拖累能源进口国，而融入全球科技价值链的经济体获上调——<strong>同一次全球冲击，分配极不均匀</strong>。</p>
+</blockquote>
+<h3>它在整个系统里的作用</h3>
+<p>资源地图把宏观拉回政治经济学：<strong>不是所有人都在同一张曲线上</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>为什么是杠杆</th>
+<th>今天就能做</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>区分供给/需求冲击</strong></td>
+<td>决定政策方向对错</td>
+<td>读新闻先问「这是油价还是工资？」</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>实际利率</strong></td>
+<td>比名义利率更贴近决策</td>
+<td>政策利率 − 通胀预期</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>财政乘数意识</strong></td>
+<td>评估刺激是否「值」</td>
+<td>用工具 1 手算 ΔY/ΔG</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>债务动态 r−g</strong></td>
+<td>判断财政可持续性</td>
+<td>用工具 3 看 10 年路径</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>通胀预期锚定</strong></td>
+<td>解释央行为何「嘴炮」也重要</td>
+<td>盯调查通胀 vs 市场隐含通胀</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>产出缺口</strong></td>
+<td>连接增长与通胀</td>
+<td>GDP 实际 − 潜在（或代理指标）</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>经常账户与汇率</strong></td>
+<td>开放经济约束</td>
+<td>顺差国与逆差国政策空间不对称</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>政策时滞</strong></td>
+<td>防「急药误判无效」</td>
+<td>货币政策至少看 6–12 个月</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>结构性 vs 周期性</strong></td>
+<td>避免用降息治供给瓶颈</td>
+<td>房地产下行 vs 库存周期分开看</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>跨国传导</strong></td>
+<td>本地数据是全球拼图一块</td>
+<td>同时扫美欧中三大 PMl/通胀</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>杠杆点是行动索引——对接 §16 与 §22。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>把 GDP 当「国家利润」</summary><div class="dbody"><p>GDP 是产值不是利润；高 GDP 增长可能伴随企业利润率下降、居民体感变差（分配问题）。中国 2025 年 GDP 增 <strong>5.0%</strong>，但 CPI 约 <strong>0%</strong>【事实·IMF】——「增长」与「物价体感」可脱节。</p></div></details>
+<details><summary>把通胀回落当「东西变便宜了」</summary><div class="dbody"><p>通胀下降是「涨得慢了」，不是价格回到三年前。生活成本「粘性」是 2024–2026 全球政治痛点【分析·UN WESP】。</p></div></details>
+<details><summary>认为「央行降息 = 经济一定变好」</summary><div class="dbody"><p>降息可能反映经济走弱；且传导受阻时会出现流动性陷阱或「宽货币、紧信用」。2025 年中国降准降息与「适度宽松」并存，但房地产与私人消费仍偏弱<span class="tag t-fact">事实</span>。</p></div></details>
+<details><summary>用菲利普斯曲线做简单外推</summary><div class="dbody"><p>NBER 2025 工作论文指出：非线性菲利普斯曲线的证据<strong>很脆弱</strong>，未控制预期时会误判<span class="tag t-ana">分析</span>。COVID 后通胀很大程度来自供给与预期跳升，而非单纯「过热」。</p></div></details>
+<details><summary>「财政刺激越大越好」</summary><div class="dbody"><p>乘数随经济状态、开放度、挤出效应变化；高债务时利差上升抵消刺激。IMF 多次敦促中国「扩张性财政直至通缩压力消退」，但亦强调支出结构从投资转向消费<span class="tag t-ana">分析</span>。</p></div></details>
+<details><summary>「MMT = 可以无限印钞」</summary><div class="dbody"><p>学术检验显示：完整 DSGE 框架下 MMT 政策规则在统计上被拒绝，而标准新凯恩斯模型更能拟合后危机美国数据【分析·IJFE】。MMT 的价值在重提「财政不应被动」，而非废除约束。</p></div></details>
+<details><summary>把相关性当预测力</summary><div class="dbody"><p>「衰退前收益率曲线倒挂」有统计规律，但单次预测力有限；需结合信用利差、就业领先指标。<strong>对照基准</strong>：随机时点猜衰退的基准率本身很低，「命中」未必超额显著。</p></div></details>
+<details><summary>忽视开放经济</summary><div class="dbody"><p>本国加息在资本自由流动下推高本币、压制出口；MMT 在开放经济中仍可能存在通胀-失业权衡【分析·Levy Institute】。三元悖论不可同时兼得固定汇率、独立货币政策、资本自由流动。</p></div></details>
+<details><summary>单指标崇拜</summary><div class="dbody"><p>只看 CPI 忽略资产价格；只看失业率忽略劳动参与率与 u<em> 上移（COVID 后美联储研究显示 u</em> 可能跳升<span class="tag t-ana">分析</span>）。</p></div></details>
+<details><summary>新闻标题驱动交易</summary><div class="dbody"><p>「GDP 超预期」默认市场涨——但超预期程度、结构、政策反应函数才决定资产价格。宏观交易是 <strong>预期差 × 定位 × 流动性</strong>，不是读数本身。</p></div></details>
+<details><summary>用短期数据否定长期结构</summary><div class="dbody"><p>一个季度 PMI 反弹不等于房地产周期结束；结构转型（人口、债务、产业升级）以年计，宏观周期以季计——<strong>时间尺度错配</strong>是散户读宏观最常犯的错。</p></div></details>
+<details><summary>把 IMF 预测当事实</summary><div class="dbody"><p>WEO 是条件预测（假设战争有限、AI 周期温和等）【事实·IMF】。世行 2026 年 6 月基准全球增长 <strong>2.5%</strong>，远低于 IMF 3.0%——<strong>机构间分歧</strong>本身就是风险信号。</p></div></details>
+<h3>它在整个系统里的作用</h3>
+<p>陷阱清单是疫苗——配合 §25 工具当场验算。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<p>三层映射：教科书抽象 → 传导机制 → 你可以观察的操作面。</p>
+<svg viewBox="0 0 680 240" width="100%" style="max-width:680px">
+  <rect x="40" y="40" width="180" height="160" rx="10" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.4"/>
+  <text x="56" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">抽象层</text>
+  <text x="56" y="92" font-size="10.5" fill="#454c56" font-family="sans-serif">IS-LM · AD-AS</text>
+  <text x="56" y="112" font-size="10.5" fill="#454c56" font-family="sans-serif">泰勒规则 · 菲利普斯</text>
+  <text x="56" y="132" font-size="10.5" fill="#454c56" font-family="sans-serif">债务动态 · r−g</text>
+  <text x="56" y="158" font-size="10" fill="#7c848f" font-family="sans-serif">（公式与曲线）</text>
+  <rect x="250" y="40" width="180" height="160" rx="10" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="266" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">机制层</text>
+  <text x="266" y="92" font-size="10.5" fill="#454c56" font-family="sans-serif">信贷渠道 · 汇率渠道</text>
+  <text x="266" y="112" font-size="10.5" fill="#454c56" font-family="sans-serif">财富效应 · 预期渠道</text>
+  <text x="266" y="132" font-size="10.5" fill="#454c56" font-family="sans-serif">财政自动稳定器</text>
+  <text x="266" y="158" font-size="10" fill="#0f8a4d" font-family="sans-serif">（政策如何传导）</text>
+  <rect x="460" y="40" width="180" height="160" rx="10" fill="#fdf2e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="476" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">操作层</text>
+  <text x="476" y="92" font-size="10.5" fill="#454c56" font-family="sans-serif">国债收益率曲线</text>
+  <text x="476" y="112" font-size="10.5" fill="#454c56" font-family="sans-serif">央行公开市场操作</text>
+  <text x="476" y="132" font-size="10.5" fill="#454c56" font-family="sans-serif">财政赤字发布 · PMI</text>
+  <text x="476" y="158" font-size="10" fill="#7c848f" font-family="sans-serif">（你可读的数据）</text>
+  <text x="230" y="128" font-size="18" fill="#454c56" font-family="sans-serif">→</text>
+  <text x="440" y="128" font-size="18" fill="#454c56" font-family="sans-serif">→</text>
+</svg>
+<p><strong>现实锚点（2025–2026）</strong>：</p>
+<ul>
+<li>中国：GDP <strong>5.0%</strong>（2025）、目标 <strong>4.5%–5%</strong>（2026）；CPI 目标 <strong>2%</strong> 左右；赤字率约 <strong>4%</strong><span class="tag t-fact">事实</span></li>
+<li>全球：IMF 2026 增长 <strong>3.0%</strong>、通胀 <strong>4.7%</strong>；贸易增速从 2025 年 5.0% 降至 2026 年 <strong>3.5%</strong><span class="tag t-fact">事实</span></li>
+<li>政策基调：中国「更加积极有为的宏观政策」+「适度宽松货币政策」【事实·政府工作报告/央行报告】</li>
+</ul>
+<h3>它在整个系统里的作用</h3>
+<p>三层映射防止「背公式不知看哪」——每个抽象式子都应对应一个可观测操作面。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>理论概念</th>
+<th>行动化问题</th>
+<th>观察指标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">产出缺口</td>
+<td>经济过热还是过冷？</td>
+<td>PMI、产能利用率、失业 vs u*</td>
+</tr>
+<tr>
+<td class="k">泰勒规则</td>
+<td>央行「应该」加息还是降息？</td>
+<td>实际通胀、产出缺口、点阵图</td>
+</tr>
+<tr>
+<td class="k">财政乘数</td>
+<td>这轮刺激够吗？</td>
+<td>专项债发行、财政支出增速</td>
+</tr>
+<tr>
+<td class="k">债务动态</td>
+<td>赤字能持续吗？</td>
+<td>债务/GDP、r−g、初级赤字</td>
+</tr>
+<tr>
+<td class="k">开放经济</td>
+<td>外部冲击多大？</td>
+<td>油价、汇率、出口订单</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>决策框架（非投资建议）</strong>：</p>
+<ol>
+<li><strong>定性冲击</strong>：供给还是需求？国内还是外部？</li>
+<li><strong>定量校准</strong>：用 §25 四个工具算乘数、利率、债务、通胀</li>
+<li><strong>政策反应</strong>：财政/货币/结构性各做什么？时滞多久？</li>
+<li><strong>预期差</strong>：市场已定价多少？与你的判断差在哪？</li>
+</ol>
+<h3>它在整个系统里的作用</h3>
+<p>理论到行动是手册的「执行接口」。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 指标识字</summary><div class="dbody"><p>能读懂 GDP/CPI/PMI/失业率/社融，知道发布日程与修订规则。</p></div></details>
+<details><summary>L2 · 恒等式与缺口</summary><div class="dbody"><p>能手写 Y=C+I+G+NX；理解实际 vs 名义；估算简单产出缺口。</p></div></details>
+<details><summary>L3 · 政策传导</summary><div class="dbody"><p>能画利率→汇率→通胀链条；理解降准与降息区别、财政与货币协调。</p></div></details>
+<details><summary>L4 · 模型化思维</summary><div class="dbody"><p>能用泰勒规则、债务动态、菲利普斯曲线做情景分析；读 IMF WEO 附表。</p></div></details>
+<details><summary>L5 · 跨国比较</summary><div class="dbody"><p>能对比中美欧政策空间；理解储备货币国与非储备货币国约束差异。</p></div></details>
+<details><summary>L6 · 宏观-资产映射</summary><div class="dbody"><p>理解增长/通胀/利率三维对债券、汇率、商品的不同含义——<strong>仍非交易建议</strong>。</p></div></details>
+<h3>它在整个系统里的作用</h3>
+<p>技能树给学习路径——配合 §21 四级能力路线。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>把宏观当成一款 <strong>「政策模拟器」</strong> RTS：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>游戏元素</th>
+<th>宏观对应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">资源条</td>
+<td>政策空间（利率下限、债务上限、外汇储备）</td>
+</tr>
+<tr>
+<td class="k">建筑</td>
+<td>基础设施、产业链、金融中介</td>
+</tr>
+<tr>
+<td class="k">Buff/Debuff</td>
+<td>财政刺激 / 滞胀 / 制裁 / 科技周期</td>
+</tr>
+<tr>
+<td class="k">迷雾</td>
+<td>数据修订、预期突变、地缘黑天鹅</td>
+</tr>
+<tr>
+<td class="k">任务</td>
+<td>「通胀回到 2%」「失业率 &lt;5.5%」「债务率不升」——常不可同时完成</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Boss 战</strong>：滞胀（通胀↑增长↓）、债务危机（r&gt;g 螺旋）、通缩陷阱（名义利率触底仍不足）。</p>
+<h3>它在整个系统里的作用</h3>
+<p>游戏化降低畏难情绪——宏观的本质是<strong>多目标约束下的权衡</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务类型</th>
+<th>示例</th>
+<th>奖励（认知）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">日常</td>
+<td>读一条央行公告，标出「供给/需求」</td>
+<td>政策语感 +1</td>
+</tr>
+<tr>
+<td class="k">周常</td>
+<td>用工具 2 算当前「泰勒隐含利率」</td>
+<td>理解政策偏离</td>
+</tr>
+<tr>
+<td class="k">主线</td>
+<td>跟踪一个经济体整整一季度</td>
+<td>建立数据叙事</td>
+</tr>
+<tr>
+<td class="k">支线</td>
+<td>对比 IMF vs 世行增长预测</td>
+<td>学会读假设</td>
+</tr>
+<tr>
+<td class="k">成就</td>
+<td>第一次提前识别「供给型通胀」</td>
+<td>解锁反事实思维</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>任务系统把 §23/§24 计划游戏化。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若 2020 年未大规模财政货币刺激</button><button class="tab" data-pane="tb1-1">若 菲利普斯曲线永久平坦</button><button class="tab" data-pane="tb1-2">若 中国消费转型提前五年成功</button></div>
+<div class="pane on" id="tb1-0"><p>据<span class="tag t-inf">推论</span>全球衰退可能更深、失业更高，但通胀后续压力或更小——代价是政治容忍度与长期疤痕效应。疫情期政策是「急性休克下的非常措施」，非常措施的正常化本身构成 2022–2024 的挑战。</p></div><div class="pane" id="tb1-1"><p>央行失去「用失业换通胀」的短期工具，必须更依赖预期管理与供给侧政策。日本化风险上升：名义利率长期贴近零，财政承担更多稳定职能。</p></div><div class="pane" id="tb1-2"><p><span class="tag t-hyp">假设</span>内需占比显著上升，出口依赖下降，CPI 从 0% 区间回到 1–2%「温和通胀」。财政支出结构从基建转向社保与服务业，房地产拖累减弱——但这需要收入分配与预期机制配套，非单一政策可成。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>反事实训练结构感——知道哪些是承重墙。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>标志</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识别</td>
+<td>能区分宏观新闻与个股新闻</td>
+<td>读完 §14 并举 3 个陷阱</td>
+</tr>
+<tr>
+<td class="k">L2 计算</td>
+<td>能手算乘数、泰勒利率、债务一年变化</td>
+<td>完成 §22</td>
+</tr>
+<tr>
+<td class="k">L3 建模</td>
+<td>能写一份「四季度宏观情景」</td>
+<td>用四个工具 + 三张图</td>
+</tr>
+<tr>
+<td class="k">L4 直觉</td>
+<td>政策发布时自动触发「冲击类型→传导→时滞」</td>
+<td>持续跟踪一个经济体</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>能力路线是进度条。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>目标</strong>：今天就能做、成本≈0、产出可验证。</p>
+<p><strong>① 财政乘数（8 分钟）</strong>
+打开工具 1，MPC 设 <strong>80%</strong>，政府支出增加 <strong>¥1000 亿</strong>，读乘数 <strong>5.00</strong>、GDP 拉动 <strong>¥5000 亿</strong>。写下：若 MPC 只有 60%，乘数降至 <strong>2.50</strong>，同样 1000 亿只拉动 2500 亿——<strong>消费倾向决定政策效率</strong>。</p>
+<p><strong>② 泰勒规则（7 分钟）</strong>
+通胀设 <strong>3.5%</strong>、产出缺口 <strong>+0.5pp</strong>，读政策利率 <strong>6.50%</strong>、实际利率 <strong>3.00%</strong>。对比：若通胀仅 2.0%、缺口 −1.0pp，利率降至 <strong>4.00%</strong>——<strong>同一央行，不同场景完全不同</strong>。</p>
+<p><strong>③ 债务动态（8 分钟）</strong>
+债务率 <strong>60%</strong>、r=<strong>3%</strong>、g=<strong>2%</strong>、初级赤字 <strong>+2pp</strong>，读 10 年后债务率约 <strong>87.1%</strong>、明年上升约 <strong>+2.59pp</strong>。把 r 调到 5% 再看路径——<strong>r−g 从 +1pp 到 +3pp，债务轨迹陡然恶化</strong>。</p>
+<p><strong>④ 新闻拆解（7 分钟）</strong>
+找一条当日宏观头条，用四问标注：供给还是需求？国内还是外部？市场已定价多少？政策时滞多久？</p>
+<div class="note amber"><b>验收标准</b><p>你能向别人解释「为什么 2025 年中国 GDP 增 5% 但 CPI 接近 0」而不只说「通缩」——就算入门。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>§22 是交付验证点。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>恒等式</td>
+<td>手写 Y=C+I+G+NX 并找中国 2025 各项占比<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>通胀</td>
+<td>读 CPI 分项，区分核心与食品能源</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>货币</td>
+<td>读央行季度报告摘要，标传导动词</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>财政</td>
+<td>算一次工具 1 乘数</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>国际</td>
+<td>读 IMF WEO 一页图表</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>债务</td>
+<td>完成工具 3 三种 r−g 情景</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>整合</td>
+<td>写 300 字「四季度宏观三件事」</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>7 天计划养成数据节奏。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>周次</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">打底</td>
+<td>1–2 周</td>
+<td>L1→L2：指标 + 四工具</td>
+</tr>
+<tr>
+<td class="k">深耕</td>
+<td>第 3 周</td>
+<td>跟踪中美欧其一，做政策日历</td>
+</tr>
+<tr>
+<td class="k">输出</td>
+<td>第 4 周</td>
+<td>写「宏观情景备忘录」一页纸</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>30 天计划通 L2→L3。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>跨域同构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>国民收入恒等式</strong></td>
+<td>支出=产出=收入</td>
+<td>↔ 会计恒等式 ↔ 流量守恒</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>IS-LM</strong></td>
+<td>产品市场与货币市场联立</td>
+<td>↔ 供需交叉 ↔ 均衡思想</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>菲利普斯曲线</strong></td>
+<td>失业-通胀短期权衡</td>
+<td>↔ 产能瓶颈 ↔ 排队论</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>泰勒规则</strong></td>
+<td>央行利率反应函数</td>
+<td>↔ 负反馈控制 ↔ 恒温器</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>财政乘数</strong></td>
+<td>政府支出撬动 GDP</td>
+<td>↔ 网络效应放大 ↔ 病毒传播 R0</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>债务动态</strong></td>
+<td>Δd≈(r−g)d+赤字</td>
+<td>↔ 复利增长 ↔ 种群动力学</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>蒙代尔-弗莱明</strong></td>
+<td>开放经济政策效力</td>
+<td>↔ 三元悖论 ↔ 不可能三角</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>索洛增长</strong></td>
+<td>长期靠 TFP 与人口</td>
+<td>↔ 复利 + 折旧 ↔ 投资组合长期回报</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>金融加速器</strong></td>
+<td>信贷周期放大波动</td>
+<td>↔ 正反馈 ↔ 杠杆周期</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>理性预期/新凯恩斯</strong></td>
+<td>预期进入方程</td>
+<td>↔ 贝叶斯更新 ↔ 前馈控制</td>
+</tr>
+</tbody>
+</table></div>
+<p>下面四个工具把 #3–#6 变成可拖动验证。</p>
+<h4>财政乘数</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 1 · 财政乘数：MPC 决定撬动倍数</h4></div>
+  <p class="tool-sub">简单凯恩斯乘数 m = 1/(1−MPC)。政府支出增加 ΔG，均衡产出增加 ΔY = m·ΔG（封闭经济、无税收与进口的极简情形）。</p>
+  <div class="ctrl">
+    <label for="fm_mpc">边际消费倾向 MPC（%）</label>
+    <input type="range" id="fm_mpc" min="40" max="95" step="1" value="80">
+    <output id="fm_mpcO">80%</output>
+  </div>
+  <div class="ctrl">
+    <label for="fm_dG">政府支出增量 ΔG</label>
+    <input type="range" id="fm_dG" min="100" max="5000" step="100" value="1000">
+    <output id="fm_dGO">¥1000 亿</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">财政乘数 m</div><div class="val" id="fm_mult">5.00</div><div class="hint" id="fm_multh">1 ÷ (1 − MPC)</div></div>
+    <div class="ro"><div class="lbl">GDP 增量 ΔY</div><div class="val" id="fm_dY">¥5000 亿</div><div class="hint" id="fm_dYh">ΔY = m × ΔG</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="fm_v" style="font-size:15px">典型区间</div>
+      <div class="hint" id="fm_vh" style="margin-top:0">MPC 越高，撬动越大</div>
+    </div>
+  </div>
+  <canvas id="fmChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h4>泰勒规则</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 2 · 泰勒规则：央行利率反应函数</h4></div>
+  <p class="tool-sub">i = r* + π + 0.5(π−π*) + 0.5·gap。默认 r*=2%、π*=2%（发达经济体常见校准，简化演示）。</p>
+  <div class="ctrl">
+    <label for="tr_pi">通胀率 π（%）</label>
+    <input type="range" id="tr_pi" min="0" max="8" step="0.1" value="3.5">
+    <output id="tr_piO">3.5%</output>
+  </div>
+  <div class="ctrl">
+    <label for="tr_gap">产出缺口（pp）</label>
+    <input type="range" id="tr_gap" min="-3" max="3" step="0.1" value="0.5">
+    <output id="tr_gapO">+0.5pp</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">政策利率 i</div><div class="val" id="tr_i">6.50%</div><div class="hint" id="tr_ih">泰勒规则隐含利率</div></div>
+    <div class="ro"><div class="lbl">实际利率 i−π</div><div class="val" id="tr_real">3.00%</div><div class="hint" id="tr_realh">名义利率减通胀</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="tr_v" style="font-size:15px">权衡两难</div>
+      <div class="hint" id="tr_vh" style="margin-top:0">通胀与产出信号综合</div>
+    </div>
+  </div>
+</div>
+<h4>债务动态</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 3 · 债务动态：r−g 与初级赤字</h4></div>
+  <p class="tool-sub">d_{t+1} = d_t·(1+r)/(1+g) + 初级赤字率。观察 15 年债务/GDP 路径。</p>
+  <div class="ctrl">
+    <label for="dd_d">初始债务/GDP d（%）</label>
+    <input type="range" id="dd_d" min="20" max="120" step="1" value="60">
+    <output id="dd_dO">60%</output>
+  </div>
+  <div class="ctrl">
+    <label for="dd_r">名义利率 r（%）</label>
+    <input type="range" id="dd_r" min="0" max="8" step="0.1" value="3.0">
+    <output id="dd_rO">3.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="dd_g">名义增长 g（%）</label>
+    <input type="range" id="dd_g" min="0" max="8" step="0.1" value="2.0">
+    <output id="dd_gO">2.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="dd_pd">初级赤字/GDP（pp）</label>
+    <input type="range" id="dd_pd" min="-2" max="5" step="0.1" value="2.0">
+    <output id="dd_pdO">+2.0pp</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">10 年后债务率</div><div class="val" id="dd_d10">87.1%</div><div class="hint" id="dd_d10h">路径终点（T+10）</div></div>
+    <div class="ro"><div class="lbl">明年 Δd</div><div class="val" id="dd_delta">+2.59pp</div><div class="hint" id="dd_deltah">≈ (r−g)×d + 初级赤字</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="dd_v" style="font-size:15px">债务螺旋风险</div>
+      <div class="hint" id="dd_vh" style="margin-top:0">r>g 且赤字为正</div>
+    </div>
+  </div>
+  <canvas id="ddChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h4>菲利普斯曲线</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 4 · 菲利普斯曲线：失业缺口与通胀</h4></div>
+  <p class="tool-sub">π = π_e + α(u* − u)。默认 π_e=2%、u*=5%（简化校准）。</p>
+  <div class="ctrl">
+    <label for="pc_u">失业率 u（%）</label>
+    <input type="range" id="pc_u" min="2" max="10" step="0.1" value="4.0">
+    <output id="pc_uO">4.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="pc_alpha">斜率 α</label>
+    <input type="range" id="pc_alpha" min="0.1" max="1.0" step="0.05" value="0.50">
+    <output id="pc_alphaO">0.50</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">通胀率 π</div><div class="val" id="pc_pi">2.50%</div><div class="hint" id="pc_pih">预期 + 失业缺口项</div></div>
+    <div class="ro"><div class="lbl">失业缺口 u*−u</div><div class="val" id="pc_gap">+1.0pp</div><div class="hint" id="pc_gaph">正=劳动力偏紧</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="pc_v" style="font-size:15px">通胀上行压力</div>
+      <div class="hint" id="pc_vh" style="margin-top:0">u 低于自然率</div>
+    </div>
+  </div>
+  <canvas id="pcChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<blockquote>
+<p>默认刻度：MPC=80% → m=5.00；π=3.5%、gap=+0.5pp → i=6.50%；d=60%、r=3%、g=2%、赤字 2pp → 10 年后 d≈87.1%；u=4%、α=0.5 → π=2.50%。</p>
+</blockquote>
+<h3>它在整个系统里的作用</h3>
+<p>§25 是发动机舱——四个模型可手拨验证。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<ol>
+<li>这条新闻是<strong>供给冲击</strong>还是<strong>需求冲击</strong>？</li>
+<li>通胀上升时，工资-物价螺旋启动了吗？</li>
+<li>政策利率减通胀预期 = <strong>实际利率</strong>多少？约束有多大？</li>
+<li>财政刺激的<strong>乘数</strong>在当前经济状态下大概多少？</li>
+<li><strong>r−g</strong> 是正还是负？初级赤字多少？</li>
+<li>通胀预期<strong>锚定</strong>了吗？调查 vs 市场是否分歧？</li>
+<li>出口强是因为竞争力，还是因为<strong>内需弱</strong>（镜像）？</li>
+<li>数据是<strong>初值</strong>还是已修订？修订方向？</li>
+<li>IMF/世行预测的关键<strong>假设</strong>是什么？</li>
+<li>市场定价与我的判断<strong>差</strong>在哪？差的是水平还是路径？</li>
+<li>政策<strong>时滞</strong>多久？现在看到的效果可能是几个季度前的药？</li>
+<li>这是<strong>周期</strong>问题还是<strong>结构</strong>问题？</li>
+</ol>
+<h3>它在整个系统里的作用</h3>
+<p>问题清单可带回现实——每次政策夜用。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>方向</th>
+<th>为什么值得</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>宏观计量</strong></td>
+<td>VAR、DSGE、局部投影——把叙事变成可检验脉冲响应</td>
+</tr>
+<tr>
+<td class="k"><strong>国际金融</strong></td>
+<td>资本流动、主权债务、货币危机史</td>
+</tr>
+<tr>
+<td class="k"><strong>中国经济结构</strong></td>
+<td>房地产、地方债、消费占比、人口</td>
+</tr>
+<tr>
+<td class="k"><strong>气候宏观</strong></td>
+<td>绿色转型、碳价、供给侧冲击新来源</td>
+</tr>
+<tr>
+<td class="k"><strong>AI 与生产率</strong></td>
+<td>IMF 2026 将 AI 周期单独建模——是新一轮供给革命还是资本开支泡沫？</td>
+</tr>
+<tr>
+<td class="k"><strong>经济史</strong></td>
+<td>大萧条、1970s 滞胀、日本失去的三十年——极端情景的素材库</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note blue"><b>推荐一手资料</b><ul>
+<li>IMF <a href="https://www.imf.org/en/Publications/WEO">World Economic Outlook</a>（2026 年 7 月更新）</li>
+<li>中国人民银行《货币政策执行报告》</li>
+<li>NBER 工作论文 w33522（菲利普斯曲线稳健性）</li>
+</ul></div>
+<h3>它在整个系统里的作用</h3>
+<p>探索页是出口——防止手册变成封闭百科全书。</p>
+<hr />
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">全球增长 2026E 3.0%、通胀 4.7%</td>
+<td>国际组织</td>
+<td>IMF WEO Update, July 2026</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">全球增长 2026E 2.5%</td>
+<td>国际组织</td>
+<td>World Bank GEP, June 2026</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">中国 GDP 2025 5.0%、2026 目标 4.5%–5%</td>
+<td>官方统计/政府工作报告</td>
+<td>全国人大、财新 2026-03-05</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">中国 CPI 2025 约 0%、经常账户 3.3% GDP</td>
+<td>国际组织</td>
+<td>IMF Article IV, Jan 2026</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">赤字率约 4%、特别国债 1.3 万亿</td>
+<td>官方政策</td>
+<td>2026 计划报告、经济日报</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">菲利普斯曲线非线性证据脆弱</td>
+<td>学术论文</td>
+<td>NBER w33522</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">MMT DSGE 检验被拒绝</td>
+<td>学术论文</td>
+<td>IJFE 2025</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">开放经济 MMT 仍有通胀-失业权衡</td>
+<td>智库论文</td>
+<td>Levy Institute WP 973</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">财政乘数默认 MPC=80%</td>
+<td>模型校准</td>
+<td>教科书简化假设</td>
+<td><span class="tag t-hyp">假设</span></td>
+</tr>
+<tr>
+<td class="k">泰勒规则 r<em>=2%、π</em>=2%</td>
+<td>模型校准</td>
+<td>Taylor (1993) 类设定</td>
+<td><span class="tag t-hyp">假设</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>标记约定</strong>：<span class="tag t-fact">事实</span>一手或多源一致；<span class="tag t-ana">分析</span>机构/学者判断；<span class="tag t-inf">推论</span>本文推导；<span class="tag t-hyp">假设</span>模型简化；<span class="tag t-chk">待验证</span>二手或口径分歧。</p>
+<hr />
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供学习与研究，<strong>不构成任何投资建议、政策建议或法律意见</strong>。宏观经济涉及高度不确定性与模型误设风险；文中数值来自公开资料与简化模型，可能与实际经济情况存在显著偏差。金融市场存在损失风险，请独立判断并咨询合格专业人士。作者与生成系统不对因使用本手册内容而产生的任何直接或间接损失承担责任。</p>
+</section>
+<footer>  <p>《宏观经济 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 5 分 36 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《宏观经济》主题脚本
+   四个可调模型（全部真实参与计算）：
+
+     1. 财政乘数        MPC → 乘数 → ΔY = m·ΔG
+     2. 泰勒规则        通胀缺口 + 产出缺口 → 政策利率
+     3. 债务动态        r、g、初级赤字 → 债务/GDP 路径
+     4. 菲利普斯曲线    失业缺口 → 通胀（预期增强型）
+
+   自包含 IIFE，与页面通用脚本互不干扰。
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function num(v) { return parseFloat(v); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  /* ══════════════════════════════════════════════════════════
+     工具 1 · 财政乘数
+     ══════════════════════════════════════════════════════════ */
+  (function fiscal() {
+    var mpcEl = $('fm_mpc'), dGEl = $('fm_dG');
+    if (!mpcEl || !dGEl) return;
+    var mpcO = $('fm_mpcO'), dGO = $('fm_dGO');
+    var multEl = $('fm_mult'), dYEl = $('fm_dY');
+    var multhEl = $('fm_multh'), dYhEl = $('fm_dYh');
+    var vEl = $('fm_v'), vhEl = $('fm_vh');
+    var cv = $('fmChart');
+
+    function upd() {
+      var mpc = num(mpcEl.value) / 100;
+      var dG = num(dGEl.value);
+      var mult = 1 / (1 - mpc);
+      var dY = mult * dG;
+
+      txt(mpcO, (mpc * 100).toFixed(0) + '%');
+      txt(dGO, '¥' + dG.toFixed(0) + ' 亿');
+      txt(multEl, mult.toFixed(2));
+      txt(multhEl, '1 ÷ (1 − MPC)，凯恩斯简单乘数');
+      txt(dYEl, '¥' + dY.toFixed(0) + ' 亿');
+      txt(dYhEl, 'ΔY = 乘数 × ΔG（封闭经济、无挤出假设）');
+
+      var label, hint, col;
+      if (mpc >= 0.9) {
+        label = '乘数极大'; hint = 'MPC 接近 1 时，小财政支出撬动大 GDP——但也意味着挤出与通胀风险同步放大';
+        col = 'var(--red)';
+      } else if (mpc >= 0.7) {
+        label = '典型区间'; hint = '多数发达经济体短期 MPC 在 0.6–0.8；中国消费偏弱时有效乘数可能更低【分析】';
+        col = 'var(--amber)';
+      } else if (mpc >= 0.4) {
+        label = '偏保守'; hint = '高储蓄社会或流动性陷阱下，财政刺激效率下降';
+        col = 'var(--blue)';
+      } else {
+        label = '刺激乏力'; hint = '乘数 < 2：每 ¥1 财政支出难撬动 ¥2 GDP，需配合货币政策疏通传导';
+        col = 'var(--green)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(mpc, mult);
+    }
+
+    function draw(mpc, mult) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, h = g.h;
+      clear(g);
+      var pl = 52, pr = 16, y1 = h - 46, bw = W - pl - pr;
+      var maxM = 10;
+      var bars = [];
+      for (var m = 0.1; m <= 0.95; m += 0.05) {
+        bars.push({ m: m, v: 1 / (1 - m) });
+      }
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth = 1;
+      for (var i = 0; i <= 5; i++) {
+        var yy = y1 - (y1 - 18) * i / 5;
+        ctx.beginPath(); ctx.moveTo(pl, yy); ctx.lineTo(pl + bw, yy); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText((maxM * i / 5).toFixed(0), pl - 4, yy + 3);
+      }
+      var barW = bw / bars.length * 0.7;
+      bars.forEach(function (b, idx) {
+        var x = pl + idx * (bw / bars.length) + barW * 0.15;
+        var bh = (b.v / maxM) * (y1 - 22);
+        var isCur = Math.abs(b.m - mpc) < 0.03;
+        ctx.fillStyle = isCur ? C.red : C.blue;
+        ctx.globalAlpha = isCur ? 1 : 0.45;
+        ctx.fillRect(x, y1 - bh, barW, bh);
+        ctx.globalAlpha = 1;
+      });
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('边际消费倾向 MPC', pl + bw / 2, y1 + 13);
+      ctx.fillText('财政乘数 1/(1−MPC)', pl + bw / 2, y1 + 31);
+    }
+
+    [mpcEl, dGEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 2 · 泰勒规则
+     i = r* + π + 0.5(π−π*) + 0.5·gap
+     ══════════════════════════════════════════════════════════ */
+  (function taylor() {
+    var piEl = $('tr_pi'), gapEl = $('tr_gap');
+    if (!piEl || !gapEl) return;
+    var piO = $('tr_piO'), gapO = $('tr_gapO');
+    var iEl = $('tr_i'), realEl = $('tr_real');
+    var ihEl = $('tr_ih'), realhEl = $('tr_realh');
+    var vEl = $('tr_v'), vhEl = $('tr_vh');
+
+    var RSTAR = 2, PISTAR = 2;
+
+    function upd() {
+      var pi = num(piEl.value);
+      var gap = num(gapEl.value);
+      var i = RSTAR + pi + 0.5 * (pi - PISTAR) + 0.5 * gap;
+      var real = i - pi;
+
+      txt(piO, pi.toFixed(1) + '%');
+      txt(gapO, (gap >= 0 ? '+' : '') + gap.toFixed(1) + 'pp');
+      txt(iEl, i.toFixed(2) + '%');
+      txt(ihEl, 'r*(' + RSTAR + '%) + π + 0.5(π−π*) + 0.5·缺口');
+      txt(realEl, real.toFixed(2) + '%');
+      txt(realhEl, '政策利率 − 通胀 = 实际利率');
+
+      var label, hint, col;
+      if (pi > PISTAR + 1.5 && gap > 0) {
+        label = '明显紧缩'; hint = '通胀与产出双热：央行需加息压制需求';
+        col = 'var(--red)';
+      } else if (pi < PISTAR - 0.5 && gap < 0) {
+        label = '宽松取向'; hint = '通胀低于目标且产出缺口为负：降息窗口打开';
+        col = 'var(--green)';
+      } else if (Math.abs(pi - PISTAR) < 0.5 && Math.abs(gap) < 0.5) {
+        label = '中性区间'; hint = '通胀与产出接近目标：政策可维持观望';
+        col = 'var(--blue)';
+      } else {
+        label = '权衡两难'; hint = '通胀与产出信号冲突——这正是 2021–2023 全球央行的困境';
+        col = 'var(--amber)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+    }
+
+    [piEl, gapEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 3 · 债务动态
+     d_{t+1} = d_t·(1+r)/(1+g) + pd
+     ══════════════════════════════════════════════════════════ */
+  (function debt() {
+    var dEl = $('dd_d'), rEl = $('dd_r'), gEl = $('dd_g'), pdEl = $('dd_pd');
+    if (!dEl || !rEl || !gEl || !pdEl) return;
+    var dO = $('dd_dO'), rO = $('dd_rO'), gO = $('dd_gO'), pdO = $('dd_pdO');
+    var d10El = $('dd_d10'), deltaEl = $('dd_delta');
+    var d10hEl = $('dd_d10h');
+    var vEl = $('dd_v'), vhEl = $('dd_vh');
+    var cv = $('ddChart');
+    var YEARS = 15;
+
+    function path(d0, r, g, pd) {
+      var arr = [d0], d = d0;
+      for (var y = 1; y <= YEARS; y++) {
+        d = d * (1 + r / 100) / (1 + g / 100) + pd;
+        arr.push(d);
+      }
+      return arr;
+    }
+
+    function upd() {
+      var d0 = num(dEl.value);
+      var r = num(rEl.value);
+      var g = num(gEl.value);
+      var pd = num(pdEl.value);
+      var arr = path(d0, r, g, pd);
+      var spread = r - g;
+      var delta1 = arr[1] - arr[0];
+
+      txt(dO, d0.toFixed(0) + '%');
+      txt(rO, r.toFixed(1) + '%');
+      txt(gO, g.toFixed(1) + '%');
+      txt(pdO, (pd >= 0 ? '+' : '') + pd.toFixed(1) + 'pp');
+      txt(d10El, arr[10].toFixed(1) + '%');
+      txt(d10hEl, '10 年后债务/GDP（初级赤字每年 ' + pd.toFixed(1) + 'pp）');
+      txt(deltaEl, (delta1 >= 0 ? '+' : '') + delta1.toFixed(2) + 'pp');
+      txt($('dd_deltah'), '明年债务率变化 ≈ (r−g)×d + 初级赤字');
+
+      var label, hint, col;
+      if (spread > 1 && pd > 1) {
+        label = '债务螺旋风险'; hint = 'r>g 且初级赤字为正：债务率趋向加速上升';
+        col = 'var(--red)';
+      } else if (spread < 0 && pd <= 0) {
+        label = '可持续'; hint = 'r<g 且财政盈余：债务率可自然下降（日本曾长期例外）';
+        col = 'var(--green)';
+      } else if (spread > 0 && pd <= 0) {
+        label = '勉强平衡'; hint = '初级盈余抵消 r−g 拖累，但政策空间狭窄';
+        col = 'var(--amber)';
+      } else {
+        label = '温和上升'; hint = '增长对冲部分利息负担，但需关注利差突变';
+        col = 'var(--blue)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(arr, r, g);
+    }
+
+    function draw(arr, r, g) {
+      if (!cv) return;
+      var s = fit(cv, 214); if (!s) return;
+      var ctx = s.ctx, W = s.w, h = s.h;
+      clear(s);
+      var pl = 46, pr = 12, y1 = h - 46, bw = W - pl - pr;
+      var maxD = Math.max.apply(null, arr) * 1.08;
+      var minD = Math.min(0, Math.min.apply(null, arr) - 5);
+      var range = maxD - minD;
+
+      ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+      for (var i = 0; i <= 4; i++) {
+        var yy = y1 - (y1 - 18) * i / 4;
+        ctx.beginPath(); ctx.moveTo(pl, yy); ctx.lineTo(pl + bw, yy); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText((minD + range * i / 4).toFixed(0) + '%', pl - 4, yy + 3);
+      }
+
+      ctx.beginPath();
+      ctx.strokeStyle = C.red; ctx.lineWidth = 2;
+      arr.forEach(function (v, t) {
+        var x = pl + (t / YEARS) * bw;
+        var y = y1 - ((v - minD) / range) * (y1 - 22);
+        if (t === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+      for (var t = 0; t <= YEARS; t += 5) {
+        ctx.fillText('T+' + t, pl + (t / YEARS) * bw, y1 + 13);
+      }
+      ctx.fillText('债务/GDP 路径（%）', pl + bw / 2, y1 + 31);
+    }
+
+    [dEl, rEl, gEl, pdEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 4 · 菲利普斯曲线
+     π = π_e + α(u* − u)
+     ══════════════════════════════════════════════════════════ */
+  (function phillips() {
+    var uEl = $('pc_u'), alphaEl = $('pc_alpha');
+    if (!uEl || !alphaEl) return;
+    var uO = $('pc_uO'), alphaO = $('pc_alphaO');
+    var piEl = $('pc_pi'), gapEl = $('pc_gap');
+    var pihEl = $('pc_pih'), gaphEl = $('pc_gaph');
+    var vEl = $('pc_v'), vhEl = $('pc_vh');
+    var cv = $('pcChart');
+
+    var USTAR = 5, PIE = 2;
+
+    function upd() {
+      var u = num(uEl.value);
+      var alpha = num(alphaEl.value);
+      var ugap = USTAR - u;
+      var pi = PIE + alpha * ugap;
+
+      txt(uO, u.toFixed(1) + '%');
+      txt(alphaO, alpha.toFixed(2));
+      txt(piEl, pi.toFixed(2) + '%');
+      txt(pihEl, 'π_e(' + PIE + '%) + α·(u*−u)，u*=' + USTAR + '%');
+      txt(gapEl, (ugap >= 0 ? '+' : '') + ugap.toFixed(1) + 'pp');
+      txt(gaphEl, '失业缺口：正值=劳动力市场偏紧');
+
+      var label, hint, col;
+      if (u < USTAR - 0.5) {
+        label = '通胀上行压力'; hint = '失业率低于自然率：工资-物价螺旋风险上升';
+        col = 'var(--red)';
+      } else if (u > USTAR + 1) {
+        label = '通缩/低通胀'; hint = '劳动力市场偏松：类似中国 2024–2025 的物价疲软【分析】';
+        col = 'var(--green)';
+      } else {
+        label = '接近均衡'; hint = '失业在自然率附近：通胀主要由预期与供给冲击驱动';
+        col = 'var(--blue)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(u, alpha);
+    }
+
+    function draw(u, alpha) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, h = g.h;
+      clear(g);
+      var pl = 46, pr = 16, y1 = h - 46, bw = W - pl - pr;
+      var uMin = 2, uMax = 10;
+      var piMin = -1, piMax = 8;
+
+      ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+      for (var i = 0; i <= 4; i++) {
+        var yy = y1 - (y1 - 18) * i / 4;
+        ctx.beginPath(); ctx.moveTo(pl, yy); ctx.lineTo(pl + bw, yy); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText((piMin + (piMax - piMin) * i / 4).toFixed(0) + '%', pl - 4, yy + 3);
+      }
+
+      function sx(uu) { return pl + (uu - uMin) / (uMax - uMin) * bw; }
+      function sy(pp) { return y1 - (pp - piMin) / (piMax - piMin) * (y1 - 22); }
+
+      ctx.beginPath();
+      ctx.strokeStyle = C.blue; ctx.lineWidth = 2;
+      for (var uu = uMin; uu <= uMax; uu += 0.1) {
+        var pp = PIE + alpha * (USTAR - uu);
+        if (uu === uMin) ctx.moveTo(sx(uu), sy(pp)); else ctx.lineTo(sx(uu), sy(pp));
+      }
+      ctx.stroke();
+
+      var piCur = PIE + alpha * (USTAR - u);
+      ctx.fillStyle = C.red;
+      ctx.beginPath(); ctx.arc(sx(u), sy(piCur), 5, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('失业率 u (%)', pl + bw / 2, y1 + 13);
+      ctx.fillText('通胀率 π (%)', pl + bw / 2, y1 + 31);
+    }
+
+    [uEl, alphaEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
