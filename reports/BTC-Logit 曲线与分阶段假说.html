@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-Logit 曲线与分阶段假说 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × Logit × Phased Adoption</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路径</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-Logit 曲线与分阶段假说</h1>
+  <p class="sub">把累积采用率做 <strong>logit 线性化</strong> 后，Rogers 五阶段不再是口号——2026 年机构子曲线渗透 <strong>48.8%</strong>、合成 <strong>27.7%</strong>，单条 Logistic 在 <strong>17.7</strong> 年处已近饱和</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>Logit 曲线 = 对累积采用率做 <code>logit(p)=ln(p/(1−p))</code> 后，S 形扩散在图上变成近似直线——这是 Rudd-Porter 供需框架、Bass 扩散模型和 Rogers 分阶段假说的共同数学底座<span class="tag t-ana">分析</span>。</strong> 2026-09-16：网络年龄 <strong>17.71 年</strong>；若用单条 Logistic（L_min=0.04、T<em>=18）读数，区间渗透已达 </em><em>95.4%</em><em>——</em><em>明显过高</em><em><span class="tag t-inf">推论</span>。分阶段假说更合理：零售相 </em><em>13.2%</em><em> 近饱和，</em><em>2020 起机构相</em><em>渗透 </em><em>48.8%</em><em>（Rogers </em><em>晚期大众</em><em>中段），加权合成 </em><em>27.7%</em><em><span class="tag t-inf">推论</span>——ETF 不是「新 S 曲线起点」，而是</em><em>第二条 logistic 的拐点邻域</em>*。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>本主题研究：<strong>如何用 logit 变换把 BTC 采用率拆成可估计、可分段、可对照的阶段假说</strong>——而不是再画一条好看的 S 曲线。核心工具链：Logistic 累积函数 → logit 线性化 → Rogers 百分位分界 → 多相 logistic 堆叠（零售 / 机构 / 主权）→ Rudd <code>A′(t)</code> 需求乘数。</p>
+<div class="note red"><b>先划清边界</b><p>「分阶段」≠ 保证下一段必涨。「logit 直线」≠ 价格直线——<strong>价格还叠了供给稀缺、流动性和投机残差</strong>。本手册<strong>不提供</strong>买卖点，只帮你回答：<strong>当前落在哪一段 logistic、参数是否过饱和、阶段叙事有没有统计超额。</strong></p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>logit 线性化、Rogers 阶段映射、多相 logistic、Rudd A′(t)</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>不含短线技术指标；不预测监管黑天鹅；不替代仓位管理</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>p(t)、logit(p)、阶段边界、L_min/T*、Bass p/q</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>Rudd &amp; Porter、Rogers、Bass、ETF 发行人、顾问渠道、主权买家</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>L_min、T*、b（logit 斜率）、τ（拐点）、D、ρ</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察的</td>
+<td>ETF AUM、顾问配置比例、链上活跃地址、现货 flow</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察但可推断</td>
+<td>真实持有人（含托管）、各阶段边际买家弹性</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>监管清晰→机构相 b 增大；涨价→FOMO→零售相尾部</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>logit 线性段→可预测采用增速=<span class="tag t-ana">分析</span>；阶段→价格=<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>地址增长与价格、ETF flow 与波动均强相关</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>「ETF=机构元年」、四年周期钝化、波动压缩</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>扩散方程 + 网络效应 + 供给无弹性</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>机构入场→合法性→零售跟进（正）；高渗透→logit 平台（负）</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>时间延迟</td>
+<td>ETF 批准到 flow 峰值 <strong>6–12 月</strong><span class="tag t-chk">待验证</span>；顾问配置滞后 <strong>1–2 年</strong><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>正：监管→ETF→顾问；负：logit 近饱和→dA/dt→0</td>
+</tr>
+</tbody>
+</table></div>
+<h3>核心公式对照</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>模型</th>
+<th>表达式</th>
+<th>2026 年读数【待验证/推论】</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Logistic 累积</strong></td>
+<td>A(t)=L_min+(L_max−L_min)/(1+e^{−b(t−τ)})</td>
+<td>L_min=0.04,T<em>=18 → A=</em><em>91.6%</em>*（过高）</td>
+</tr>
+<tr>
+<td class="k"><strong>Logit 变换</strong></td>
+<td>ℓ=logit(A)=ln(A/(1−A))</td>
+<td>机构相 A=0.355 → ℓ=<strong>−0.60</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>10%→90% 窗</strong></td>
+<td>t_{k}=τ−ln(1/k−1)/b</td>
+<td><strong>2.7–15.3 年</strong>（T*=18）</td>
+</tr>
+<tr>
+<td class="k"><strong>Bass 扩散</strong></td>
+<td>f/(1−F)=p+qF</td>
+<td>p=0.03,q=0.38 → t<em>=</em><em>6.19 年</em>*</td>
+</tr>
+<tr>
+<td class="k"><strong>Rudd A′</strong></td>
+<td>A′(t)=D·A(t)</td>
+<td>D=20,A=0.277 → A′=<strong>5.54</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>双相合成</strong></td>
+<td>0.35·零售+0.65·机构</td>
+<td>合成 <strong>27.7%</strong><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Rogers 映射</strong></td>
+<td>百分位阶段分界</td>
+<td>机构相 <strong>48.8%</strong>→<strong>晚期大众</strong></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：单条 Logistic 在 2026 年已「数学饱和」</h3>
+<p>Rudd-Porter 默认 L_min=0.05、T<em>=14<span class="tag t-ana">分析</span>：到 </em><em>17.71 年</em><em>区间渗透 </em><em>98.8%</em><em>——与「ETF 才刚开始」的叙事矛盾。</em><em>不是模型错了，是用法错了</em><em>：BTC 至少有两条独立 logistic（零售 / 机构）<span class="tag t-inf">推论</span>。logit 变换的第一功用，就是</em><em>一眼识别「是否该换相」</em>*。</p>
+<h3>理由二：阶段边界是百分位约定，不是自然定律</h3>
+<p>Findings (2025) 指出：Rogers 的「涌现→快速增长→成熟」边界，本质是 <strong>logistic 百分位窗口的人为约定</strong>——10%–90%、15%–85%、拐点切线对应 <strong>11.92%–88.08%</strong> 不等<span class="tag t-ana">分析</span>。把 ETF 上市当「t=0 新曲线」，必须<strong>显式声明</strong>你用的是哪条百分位规则——否则无法与他人对表。</p>
+<h3>理由三：对照基准剥离「阶段择时」幻觉</h3>
+<p>μ=<strong>50%/年</strong>、σ=<strong>65%/年</strong> 时，随机持币基准胜率：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>基准胜率</th>
+<th>「阶段策略 71% 胜率」真实超额</th>
+<th>证明超额所需 n</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">30 日</td>
+<td><strong>60.5%</strong></td>
+<td>+10.5 pp</td>
+<td>~<strong>320</strong></td>
+</tr>
+<tr>
+<td class="k">90 日</td>
+<td><strong>67.7%</strong></td>
+<td>+3.3 pp</td>
+<td>~<strong>1559</strong></td>
+</tr>
+<tr>
+<td class="k">180 日</td>
+<td><strong>74.2%</strong></td>
+<td>−3.2 pp（跑输）</td>
+<td>—</td>
+</tr>
+<tr>
+<td class="k">365 日</td>
+<td><strong>82.3%</strong></td>
+<td>−11.3 pp（跑输）</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>短窗「阶段超额」常被正漂移吞噬<span class="tag t-ana">分析</span>。</strong></p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从 logit 变换，到分阶段假说</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">Logit × 分阶段 · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">上层=数学骨架 · 下层=BTC 制度演化与决策</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 数学层</text>
+  <text x="108" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">logit ↔ logistic 互逆 · b=斜率 · τ=拐点【事实】</text>
+  <text x="108" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">失效：p→0/1 时 logit 发散，须 clamp</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② Rogers 阶段层</text>
+  <text x="148" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">2.5/13.5/34/68% 百分位分界【分析】</text>
+  <text x="148" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">失效：跨国别渗透不同步</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 零售相 Logistic</text>
+  <text x="148" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">2009–2020 · A→13.2% 近饱和【推论】</text>
+  <text x="148" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">失效：早期地址≠用户</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 机构相 Logistic</text>
+  <text x="148" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">2020– · ETF/顾问 · 区间渗透 48.8%【推论】</text>
+  <text x="148" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">失效：flow 可逆（净流出）</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ Bass 创新/模仿层</text>
+  <text x="148" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">p=创新系数 · q=口碑 · t*=6.19 年【分析】</text>
+  <text x="148" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">失效：q 随监管突变</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ Rudd 供需层</text>
+  <text x="148" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">A′(t)=D·A(t) · L_min/T* 定形【分析】</text>
+  <text x="148" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">失效：D 无客观校准</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 价格残差层</text>
+  <text x="148" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">采用≠价格 · 流动性/杠杆/情绪【分析】</text>
+  <text x="148" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">短端 Metcalfe 弱成立【待验证】</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 制度摩擦层</text>
+  <text x="148" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">SEC ETF 2024-01 · 顾问配置 2%【事实/待验证】</text>
+  <text x="148" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">摩擦改变 b 但不改变 logit 形状</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="148" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">先判单/多相 · 再读 logit 斜率 · 最后扣 drift</text>
+  <text x="148" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">禁止把 95% 单曲线渗透当「还早」</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">Logit × 分阶段 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• logit 直线化</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 百分位阶段</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 多相 logistic</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• A′ 需求放大</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• ETF 渠道扩容</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 顾问口碑 q</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 托管降低摩擦</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 流动性溢价</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#c6dcc9" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 画 logit–t 图</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 标 Rogers 阶段</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 拆零售/机构相</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 扣 drift 胜率</text>
+  <defs><marker id="bltA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#454c56"/></marker></defs>
+  <line x1="214" y1="120" x2="238" y2="120" stroke="#454c56" stroke-width="1.2" marker-end="url(#bltA)"/>
+  <line x1="440" y1="120" x2="464" y2="120" stroke="#454c56" stroke-width="1.2" marker-end="url(#bltA)"/>
+</svg>
+<h3>跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>本主题结构</th>
+<th>其他领域</th>
+<th>共同数学</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">logit 线性化</td>
+<td>流行病学感染率、Hubbert 油气</td>
+<td>累积 S 曲线 → 直线拟合</td>
+</tr>
+<tr>
+<td class="k">Rogers 百分位阶段</td>
+<td>5G 基站部署、疫苗接种</td>
+<td>人为分界 ≠ 物理拐点</td>
+</tr>
+<tr>
+<td class="k">Bass p/q</td>
+<td>消费品扩散、App 下载</td>
+<td>创新者 vs 模仿者</td>
+</tr>
+<tr>
+<td class="k">多相 logistic</td>
+<td>多波疫情、技术换代</td>
+<td>相位叠加/切换</td>
+</tr>
+<tr>
+<td class="k">Rudd A′(t)</td>
+<td>新兴市场渗透率乘数</td>
+<td>需求曲线平移</td>
+</tr>
+<tr>
+<td class="k">logit 平台</td>
+<td>债券收益率饱和</td>
+<td>边际增速→0</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>立场</th>
+<th>激励扭曲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Rudd &amp; Porter</strong></td>
+<td>单 logistic A(t) 嵌入供需<span class="tag t-ana">分析</span></td>
+<td>学术模型简洁</td>
+</tr>
+<tr>
+<td class="k"><strong>Rogers (1962)</strong></td>
+<td>五阶段扩散理论<span class="tag t-fact">事实</span></td>
+<td>边界是约定</td>
+</tr>
+<tr>
+<td class="k"><strong>Frank Bass</strong></td>
+<td>p/q 分解创新模仿<span class="tag t-ana">分析</span></td>
+<td>参数时变</td>
+</tr>
+<tr>
+<td class="k"><strong>BlackRock/ETF 发行人</strong></td>
+<td>「机构元年」叙事</td>
+<td>AUM 费用</td>
+</tr>
+<tr>
+<td class="k"><strong>财务顾问</strong></td>
+<td>2% 配置建议<span class="tag t-chk">待验证</span></td>
+<td>合规&gt;收益</td>
+</tr>
+<tr>
+<td class="k"><strong>Chainalysis</strong></td>
+<td>全球采用指数 + 机构子指数<span class="tag t-ana">分析</span></td>
+<td>数据付费</td>
+</tr>
+<tr>
+<td class="k"><strong>Blockware</strong></td>
+<td>四年周期结束论<span class="tag t-ana">分析</span></td>
+<td>研究品牌</td>
+</tr>
+<tr>
+<td class="k"><strong>批评者</strong></td>
+<td>地址≠采用、单曲线过饱和<span class="tag t-ana">分析</span></td>
+<td>差异化</td>
+</tr>
+<tr>
+<td class="k"><strong>你</strong></td>
+<td>读者/投资者</td>
+<td>阶段确认偏误</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>2026-09 量级【待验证/推论】</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>t</strong></td>
+<td>创世以来年数</td>
+<td><strong>17.71</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>L_min</strong></td>
+<td>logistic 下限（起步渗透）</td>
+<td>Rudd 默认 <strong>0.04–0.05</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>T</strong>*</td>
+<td>至饱和年数</td>
+<td><strong>14–18 年</strong>（模型参数）</td>
+</tr>
+<tr>
+<td class="k"><strong>b</strong></td>
+<td>logit 斜率</td>
+<td>T<em>=18,L_min=0.04 → </em><em>0.366</em>*</td>
+</tr>
+<tr>
+<td class="k"><strong>τ</strong></td>
+<td>拐点 T*/2</td>
+<td><strong>9.0 年</strong>（约 2018）</td>
+</tr>
+<tr>
+<td class="k"><strong>p_inst</strong></td>
+<td>机构相区间渗透</td>
+<td><strong>48.8%</strong><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k"><strong>A_synth</strong></td>
+<td>双相合成采用</td>
+<td><strong>27.7%</strong><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k"><strong>D</strong></td>
+<td>Rudd 需求乘数</td>
+<td><strong>10–100</strong>（情景）</td>
+</tr>
+<tr>
+<td class="k"><strong>ETF AUM</strong></td>
+<td>美国现货 ETF 规模</td>
+<td><strong>~$120–180B</strong><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · Logit 线性化器</h3>
+<p>调节 L_min 与 T*，观察 logit(A) 是否仍在中窗保持直线——单曲线近饱和时应切换分阶段模型。</p>
+<div class="ctrl"><label>L_min<input type="range" id="blt_lmin" min="0.01" max="0.08" step="0.01" value="0.04"><output id="blt_lminO">0.04</output></label></div>
+<div class="ctrl"><label>T*（饱和年数）<input type="range" id="blt_tstar" min="10" max="22" step="1" value="18"><output id="blt_tstarO">18 年</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">logit 斜率 b</span><strong id="blt_slope">0.366</strong><span id="blt_slopeh">拐点 τ=9.0 年</span></div>
+<div class="ro"><span class="k">当前 logit(A)</span><strong id="blt_logitNow">2.35</strong><span id="blt_logitNowh">—</span></div>
+<div class="ro"><span class="k">中窗 R²</span><strong id="blt_r2">0.992</strong><span id="blt_r2h">10%→90% 时间窗</span></div>
+<canvas id="bltLogitChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="blt_v1">单曲线近饱和</strong><span id="blt_v1h">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>实线因果与虚线反馈</h3>
+<svg viewBox="0 0 680 340" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">因果图（实线=主张 · 红虚线=反馈/争议）</text>
+  <rect x="30" y="50" width="100" height="40" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="80" y="74" text-anchor="middle" font-size="10" fill="#15181d" font-family="sans-serif">制度事件</text>
+  <rect x="160" y="50" width="100" height="40" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="210" y="74" text-anchor="middle" font-size="10" fill="#15181d" font-family="sans-serif">相切换</text>
+  <rect x="290" y="50" width="100" height="40" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="340" y="74" text-anchor="middle" font-size="10" fill="#15181d" font-family="sans-serif">logit 斜率 b</text>
+  <rect x="420" y="50" width="100" height="40" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="470" y="74" text-anchor="middle" font-size="10" fill="#15181d" font-family="sans-serif">A′(t)</text>
+  <rect x="550" y="50" width="100" height="40" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="600" y="74" text-anchor="middle" font-size="10" fill="#15181d" font-family="sans-serif">价格 P</text>
+  <defs><marker id="bltC1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#454c56"/></marker></defs>
+  <line x1="130" y1="70" x2="158" y2="70" stroke="#454c56" stroke-width="1.2" marker-end="url(#bltC1)"/>
+  <line x1="260" y1="70" x2="288" y2="70" stroke="#454c56" stroke-width="1.2" marker-end="url(#bltC1)"/>
+  <line x1="390" y1="70" x2="418" y2="70" stroke="#454c56" stroke-width="1.2" marker-end="url(#bltC1)"/>
+  <line x1="520" y1="70" x2="548" y2="70" stroke="#454c56" stroke-width="1.2" marker-end="url(#bltC1)"/>
+  <line x1="470" y1="90" x2="340" y2="130" stroke="#d5342c" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#bltC1)"/>
+  <text x="400" y="125" font-size="9" fill="#d5342c" font-family="sans-serif">涨价→FOMO</text>
+  <line x1="600" y1="90" x2="210" y2="130" stroke="#d5342c" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#bltC1)"/>
+  <text x="400" y="145" font-size="9" fill="#d5342c" font-family="sans-serif">财富效应→顾问推荐</text>
+  <rect x="30" y="180" width="130" height="40" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="95" y="204" text-anchor="middle" font-size="10" fill="#15181d" font-family="sans-serif">监管/ETF</text>
+  <rect x="190" y="180" width="130" height="40" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="255" y="204" text-anchor="middle" font-size="10" fill="#15181d" font-family="sans-serif">托管基础设施</text>
+  <rect x="350" y="180" width="130" height="40" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="415" y="204" text-anchor="middle" font-size="10" fill="#15181d" font-family="sans-serif">杠杆投机</text>
+  <line x1="95" y1="180" x2="210" y2="90" stroke="#0f8a4d" stroke-width="1.1" marker-end="url(#bltC1)"/>
+  <text x="120" y="175" font-size="9" fill="#0f8a4d" font-family="sans-serif">抬升机构相 b</text>
+  <line x1="415" y1="180" x2="470" y2="90" stroke="#7c848f" stroke-width="1.1" marker-end="url(#bltC1)"/>
+  <text x="14" y="260" font-size="10.5" fill="#7c848f" font-family="sans-serif">核心争议：A′(t) 因果驱动价格，还是价格反向塑造 A(t)？【待验证】</text>
+  <text x="14" y="280" font-size="10.5" fill="#7c848f" font-family="sans-serif">ETF 研究：政府因素 β=0.409、机构中介 β=0.298 显著【分析】</text>
+</svg>
+<p><strong>三条因果链：</strong></p>
+<ol>
+<li><strong>制度→相切换→b 增大</strong>（分阶段派）：ETF 批准打开机构相，logit 进入新线性段<span class="tag t-ana">分析</span>。</li>
+<li><strong>A′(t)→P</strong>（Rudd 派）：需求乘数 × 流动性比率^1/ρ 定均衡价<span class="tag t-ana">分析</span>。</li>
+<li><strong>P→A</strong>（反馈派）：涨价驱动 FOMO 与顾问配置——<strong>双向 Granger 未完全确立</strong><span class="tag t-chk">待验证</span>。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>隐藏关系</th>
+<th>表面看</th>
+<th>实际机制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">「ETF=第 5 阶段起点」</td>
+<td>2024 新叙事</td>
+<td>机构相 2020 已启动，ETF 是 <strong>b 放大器</strong><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">「logit 还陡」</td>
+<td>价格应暴涨</td>
+<td>机构相 dA/dt 年化仅 <strong>~5%</strong><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">「单曲线 95%」</td>
+<td>快饱和</td>
+<td>参数 L_min/T* 设定问题，非链上事实<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">「顾问 2%」</td>
+<td>渗透很低</td>
+<td>2%×可投资资产池 &gt;&gt; 当前 ETF 规模<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">「波动压缩」</td>
+<td>风险消失</td>
+<td>相对自身历史压缩，相对股票仍高<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">Bass t*=6.2 年</td>
+<td>与 17 年矛盾</td>
+<td>Bass 是<strong>单产品周期</strong>，不是全史<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · Rogers 分阶段映射器</h3>
+<p>拖动累计渗透率，对照 Rogers 1962 五阶段百分位边界，并读出对应 logit(p)。</p>
+<div class="ctrl"><label>累计渗透（%）<input type="range" id="blt_pen" min="1" max="80" step="0.5" value="48.8"><output id="blt_penO">48.8%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">Rogers 阶段</span><strong id="blt_stage">晚期大众</strong><span id="blt_stageh">—</span></div>
+<div class="ro"><span class="k">下一阶段</span><strong id="blt_next">落后者</strong><span id="blt_nexth">距下一阶段 19.2 pp</span></div>
+<div class="ro"><span class="k">logit(p)</span><strong id="blt_logitPen">-0.05</strong><span id="blt_logitPenh">—</span></div>
+<canvas id="bltRogersChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="blt_v2">晚期大众加速区</strong><span id="blt_v2h">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>分阶段假说如何运转</h3>
+<pre><code class="language-text">每日/每周 → 更新 ETF flow、顾问调研、地址代理
+         → 步骤1：单曲线 logit–t 图 → 是否近饱和？
+         → 步骤2：若饱和 → 拆零售相/机构相，各自标定 L0,L1,T
+         → 步骤3：读机构相 Rogers 阶段 + logit 斜率 b
+         → 步骤4：A′=D·A_synth → 对照 Rudd 价格带（非精确预测）
+         → 步骤5：任何「阶段胜率」扣 drift → 样本量门槛
+</code></pre>
+<p><strong>关键节奏：</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>节奏</th>
+<th>周期</th>
+<th>驱动</th>
+<th>2026 状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">零售相</td>
+<td>2009–2020</td>
+<td>口碑/挖矿/交易所</td>
+<td><strong>近饱和 ~13%</strong><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">机构相</td>
+<td>2020–</td>
+<td>ETF/顾问/国库</td>
+<td><strong>区间 48.8%</strong><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">logit 斜率</td>
+<td>年</td>
+<td>b·A(1−A)</td>
+<td>机构相仍正但递减</td>
+</tr>
+<tr>
+<td class="k">价格残差</td>
+<td>日–月</td>
+<td>杠杆/情绪</td>
+<td>与 A′ 经常背离<span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<h3>单相 vs 多相：决策分叉</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>单条 Logistic</th>
+<th>分阶段 Logistic</th>
+<th>2026 读数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">17.7 年渗透</td>
+<td><strong>95%+</strong></td>
+<td>合成 <strong>27.7%</strong></td>
+<td>多相更贴近叙事</td>
+</tr>
+<tr>
+<td class="k">logit 可用性</td>
+<td>平台区，b 失真</td>
+<td>机构相仍在线性窗</td>
+<td>宜用多相</td>
+</tr>
+<tr>
+<td class="k">数据需求</td>
+<td>低</td>
+<td>高（需分渠道）</td>
+<td>ETF 数据可部分代理</td>
+</tr>
+<tr>
+<td class="k">犯错模式</td>
+<td>「还早」误判</td>
+<td>参数过多过拟合</td>
+<td>humility</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>演化时间轴</h3>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">Logit × 分阶段 · 演化时间轴</text>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="70" cy="110" r="5" fill="#b8730a"/><text x="70" y="92" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">2009</text><text x="70" y="130" text-anchor="middle" font-size="8" fill="#7c848f" font-family="sans-serif">零售相 t₀</text>
+  <circle cx="180" cy="110" r="5" fill="#b8730a"/><text x="180" y="92" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">2013</text><text x="180" y="130" text-anchor="middle" font-size="8" fill="#7c848f" font-family="sans-serif">logit 陡升</text>
+  <circle cx="280" cy="110" r="5" fill="#b8730a"/><text x="280" y="92" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">2017</text><text x="280" y="130" text-anchor="middle" font-size="8" fill="#7c848f" font-family="sans-serif">零售拐点</text>
+  <circle cx="380" cy="110" r="6" fill="#1d4ed8"/><text x="380" y="92" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">2020</text><text x="380" y="130" text-anchor="middle" font-size="8" fill="#7c848f" font-family="sans-serif">机构相启动</text>
+  <circle cx="460" cy="110" r="6" fill="#1d4ed8"/><text x="460" y="92" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">2024</text><text x="460" y="130" text-anchor="middle" font-size="8" fill="#7c848f" font-family="sans-serif">ETF·b 跳升</text>
+  <circle cx="540" cy="110" r="6" fill="#d5342c"/><text x="540" y="92" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">2026</text><text x="540" y="130" text-anchor="middle" font-size="8" fill="#7c848f" font-family="sans-serif">机构 48.8%</text>
+  <circle cx="610" cy="110" r="5" fill="#0f8a4d"/><text x="610" y="92" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">2032</text><text x="610" y="130" text-anchor="middle" font-size="8" fill="#7c848f" font-family="sans-serif">机构相 τ?</text>
+  <path d="M 70 110 Q 180 60 280 110" fill="none" stroke="#b8730a" stroke-width="1.5"/>
+  <path d="M 380 110 Q 470 65 540 110" fill="none" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="14" y="165" font-size="10" fill="#7c848f" font-family="sans-serif">橙=零售相 logistic · 蓝=机构相 logistic · 2024 ETF 抬升 b 而非重置 t₀【推论】</text>
+  <text x="14" y="185" font-size="10" fill="#7c848f" font-family="sans-serif">10%→90% 主窗（T*=18）：2.7–15.3 年 · 零售相已走完</text>
+  <text x="14" y="205" font-size="10" fill="#7c848f" font-family="sans-serif">Bass t*=6.19 年 ≈ 单次产品扩散，不可外推全史</text>
+</svg>
+<h3>四阶段假说（操作版）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>年代</th>
+<th>Rogers</th>
+<th>logit 特征</th>
+<th>边际买家</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>P0 密码朋克</strong></td>
+<td>2009–2012</td>
+<td>创新者</td>
+<td>logit 极低</td>
+<td>矿工/极客</td>
+</tr>
+<tr>
+<td class="k"><strong>P1 零售扩散</strong></td>
+<td>2013–2019</td>
+<td>早期采用→大众</td>
+<td>b 最大</td>
+<td>交易所散户</td>
+</tr>
+<tr>
+<td class="k"><strong>P2 机构管道</strong></td>
+<td>2020–2023</td>
+<td>早期大众</td>
+<td>新相 b 重建</td>
+<td>对冲基金/家族办</td>
+</tr>
+<tr>
+<td class="k"><strong>P3 ETF 大众化</strong></td>
+<td>2024–</td>
+<td>晚期大众</td>
+<td>b 仍正但递减</td>
+<td>顾问/退休账户<span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>利益方</th>
+<th>从「分阶段」得到什么</th>
+<th>扭曲方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">ETF 发行人</td>
+<td>「P3 才刚开始」</td>
+<td>忽视 P2 已走 4 年</td>
+</tr>
+<tr>
+<td class="k">顾问渠道</td>
+<td>2% 配置故事</td>
+<td>合规慢于叙事</td>
+</tr>
+<tr>
+<td class="k">长期持有者</td>
+<td>「合成才 27%」</td>
+<td>忽视参数主观</td>
+</tr>
+<tr>
+<td class="k">学术 Rudd 派</td>
+<td>可发表供需模型</td>
+<td>D 无客观锚</td>
+</tr>
+<tr>
+<td class="k">批评者</td>
+<td>「全不可证」</td>
+<td>忽视 logit 诊断价值</td>
+</tr>
+<tr>
+<td class="k">媒体</td>
+<td>「机构元年」标题</td>
+<td>单相/多相混用</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>资金流与注意力抽水</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">分阶段叙事 · 资金流抽水图</text>
+  <rect x="40" y="50" width="110" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="95" y="78" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">散户 FOMO</text>
+  <rect x="190" y="50" width="120" height="48" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="250" y="78" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">「ETF 元年」</text>
+  <rect x="350" y="50" width="110" height="48" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="405" y="78" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">阶段择时课</text>
+  <rect x="490" y="50" width="110" height="48" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="545" y="78" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">ETF 做市商</text>
+  <rect x="190" y="140" width="120" height="48" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="250" y="168" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">研究订阅</text>
+  <rect x="350" y="140" width="110" height="48" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="405" y="168" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">交易所</text>
+  <defs><marker id="bltP1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/></marker></defs>
+  <line x1="150" y1="74" x2="188" y2="74" stroke="#d5342c" stroke-width="1.5" marker-end="url(#bltP1)"/>
+  <line x1="310" y1="74" x2="348" y2="74" stroke="#d5342c" stroke-width="1.5" marker-end="url(#bltP1)"/>
+  <line x1="460" y1="74" x2="488" y2="74" stroke="#7c848f" stroke-width="1.2" marker-end="url(#bltP1)"/>
+  <line x1="250" y1="98" x2="250" y2="138" stroke="#7c848f" stroke-width="1.2" marker-end="url(#bltP1)"/>
+  <text x="14" y="230" font-size="10.5" fill="#7c848f" font-family="sans-serif">抽水点：把「单曲线 95%」与「合成 27%」选择性混用，制造「永远还早」或「永远太晚」</text>
+</svg>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>为何关键</th>
+<th>今日可做</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>logit–t 诊断</strong></td>
+<td>单/多相分叉</td>
+<td>§06 线性化器</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>Rogers 百分位</strong></td>
+<td>阶段对表</td>
+<td>§08 映射器</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>零售/机构拆相</strong></td>
+<td>修正饱和幻觉</td>
+<td>§12 双相合成</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>10%–90% 时间窗</strong></td>
+<td>参数可解释</td>
+<td>读 t10/t90</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>A′=D·A</strong></td>
+<td>连接供需</td>
+<td>§12 D 滑块</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>drift 剥离</strong></td>
+<td>阶段胜率验真</td>
+<td>§20 测算器</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>ETF flow 代理</strong></td>
+<td>机构相观测</td>
+<td>周度记录</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>b 衰减监控</strong></td>
+<td>预判平台</td>
+<td>dA/dt 日记</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>Bass p/q 对照</strong></td>
+<td>防混淆周期</td>
+<td>区分产品/全史</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>书面 falsify</strong></td>
+<td>2032 机构 τ</td>
+<td>预测日志</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱 1 · 「一条 S 曲线读到底」</summary><div class="dbody"><p>L_min=0.04,T<em>=18 → 17.7 年处 </em><em>95.4%</em><em><span class="tag t-inf">推论</span>。这不是 BTC「快满了」，是</em><em>模型设定错了相</em>*<span class="tag t-ana">分析</span>。</p></div></details>
+<details><summary>陷阱 2 · 「logit 直线 = 价格直线」</summary><div class="dbody"><p>logit 只线性化<strong>采用率</strong>，价格还叠流动性稀缺与投机<span class="tag t-ana">分析</span>。Rudd 框架里 P∝A′^(1/ρ)<span class="tag t-ana">分析</span>。</p></div></details>
+<details><summary>陷阱 3 · 「ETF=全新 Rogers 创新者阶段」</summary><div class="dbody"><p>ETF 是机构相（2020 起）的 <strong>b 跳升</strong>，不是从零开始<span class="tag t-inf">推论</span>。P2 已走 ~6 年。</p></div></details>
+<details><summary>陷阱 4 · 「Rogers 边界是自然规律」</summary><div class="dbody"><p>10%–90%、15%–85% 都是<strong>百分位约定</strong><span class="tag t-ana">分析</span>。对表时必须声明规则。</p></div></details>
+<details><summary>陷阱 5 · 「阶段策略 71% 胜率」</summary><div class="dbody"><p>90 日基准 <strong>67.7%</strong> → 超额仅 <strong>+3.3 pp</strong>，n≈<strong>1559</strong><span class="tag t-ana">分析</span>。</p></div></details>
+<details><summary>陷阱 6 · 「Bass t*=6 年证明还早」</summary><div class="dbody"><p>Bass t<em> 是</em><em>单次产品扩散峰值时间</em>*，不是创世至饱和<span class="tag t-ana">分析</span>。不可外推。</p></div></details>
+<details><summary>陷阱 7 · 「机构 48.8% = 全局 48.8%」</summary><div class="dbody"><p>48.8% 是<strong>机构子曲线区间渗透</strong>，合成仅 <strong>27.7%</strong><span class="tag t-inf">推论</span>。</p></div></details>
+<details><summary>陷阱 8 · 「logit 越大越好」</summary><div class="dbody"><p>logit 高意味着 p 接近 1——<strong>增速反而放缓</strong><span class="tag t-fact">事实</span>。看 b·p(1−p)。</p></div></details>
+<details><summary>陷阱 9 · 「A′=20 就能算精确价格」</summary><div class="dbody"><p>D 是情景参数<span class="tag t-ana">分析</span>；流动性、ρ 同样敏感。Rudd 是<strong>框架</strong>不是水晶球。</p></div></details>
+<details><summary>陷阱 10 · 「波动压缩 = 阶段失效」</summary><div class="dbody"><p>Blockware：相对自身历史压缩，非相对股票<span class="tag t-ana">分析</span>。机构相可「低波动上涨」。</p></div></details>
+<details><summary>陷阱 11 · 「地址增长 = 采用」</summary><div class="dbody"><p>托管重复计数、ETF 不增地址<span class="tag t-fact">事实</span>。机构相需用 <strong>AUM/顾问配置</strong> 代理。</p></div></details>
+<details><summary>陷阱 12 · 「分阶段 = 万事通」</summary><div class="dbody"><p>参数翻倍 → 过拟合风险。<strong>单相 logit 诊断 + 多相 humility</strong> 更稳<span class="tag t-inf">推论</span>。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象主张</th>
+<th>现实映射</th>
+<th>可观测指标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">logit 线性段</td>
+<td>ETF 净流入稳定期</td>
+<td>周度 net flow</td>
+</tr>
+<tr>
+<td class="k">机构相 48.8%</td>
+<td>顾问推荐 20%×2%</td>
+<td>PlanAdviser 调研<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">零售相饱和</td>
+<td>交易所散户占比降</td>
+<td>CEX 零售 flow</td>
+</tr>
+<tr>
+<td class="k">b 衰减</td>
+<td>采用增速放缓</td>
+<td>dA/dt 季度估算</td>
+</tr>
+<tr>
+<td class="k">A′ 跳升</td>
+<td>主权/企业储备新闻</td>
+<td>公开持仓公告</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<h3>决策框架（非信号）</h3>
+<ol>
+<li><strong>诊断</strong>：画单曲线 logit–t → 近饱和则拆相。</li>
+<li><strong>映射</strong>：机构子曲线读 Rogers 阶段（默认 <strong>48.8%</strong>）。</li>
+<li><strong>合成</strong>：0.35·零售 + 0.65·机构 → <strong>27.7%</strong> 基准<span class="tag t-inf">推论</span>。</li>
+<li><strong>对照</strong>：任何阶段择时胜率扣 drift（§20）。</li>
+<li><strong>falsify</strong>：若 2032 机构相渗透 &lt;60% 且 ETF flow 连续 3 季净流出 → 下调 b 估计。</li>
+</ol>
+<div class="tool">
+<h3>工具 · 双阶段 Logistic 合成器</h3>
+<p>零售相（2009–2020）与机构相（2020–）分别标定，合成采用率并乘以 Rudd 需求因子 D。</p>
+<div class="ctrl"><label>机构相 T*（年）<input type="range" id="blt_instT" min="8" max="18" step="1" value="14"><output id="blt_instTO">14 年</output></label></div>
+<div class="ctrl"><label>需求乘数 D<input type="range" id="blt_dMult" min="5" max="40" step="1" value="20"><output id="blt_dMultO">×20</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">零售相 A</span><strong id="blt_retailA">13.2%</strong><span id="blt_retailAh">近饱和</span></div>
+<div class="ro"><span class="k">机构相 A</span><strong id="blt_instA">35.5%</strong><span id="blt_instAh">区间渗透 48.8%</span></div>
+<div class="ro"><span class="k">合成 A</span><strong id="blt_synthA">27.7%</strong><span id="blt_synthAh">A′≈5.54（×D）</span></div>
+<canvas id="bltDualChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="blt_v3">机构相中段</strong><span id="blt_v3h">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 观察者</summary><div class="dbody"><ul>
+<li>[ ] 写出 logit(p) 公式</li>
+<li>[ ] 说出 Rogers 五个阶段名</li>
+<li>[ ] 辨认单曲线过饱和症状</li>
+</ul></div></details>
+<details><summary>L2 · 分析师</summary><div class="dbody"><ul>
+<li>[ ] 手算 10%–90% 时间窗</li>
+<li>[ ] 解释零售/机构拆相理由</li>
+<li>[ ] 用 drift 剥离器读超额</li>
+</ul></div></details>
+<details><summary>L3 · 建模者</summary><div class="dbody"><ul>
+<li>[ ] 跑通四个交互工具</li>
+<li>[ ] 读 Rudd MDPI 2025 摘要</li>
+<li>[ ] 标定机构相 L0,L1,T</li>
+</ul></div></details>
+<details><summary>L4 · 系统设计者</summary><div class="dbody"><ul>
+<li>[ ] 建 logit–t + Rogers 仪表盘</li>
+<li>[ ] 2032 falsify 清单</li>
+<li>[ ] 禁止混用单/合成渗透</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：相位判读师（Phase Reader）。在 logit 直线与 Rogers 百分位之间导航。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>等级</th>
+<th>任务</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Lv.1</td>
+<td>画 logit–t 识别平台</td>
+<td>解锁「线性化器」</td>
+</tr>
+<tr>
+<td class="k">Lv.2</td>
+<td>标 Rogers 阶段</td>
+<td>解锁「映射器」</td>
+</tr>
+<tr>
+<td class="k">Lv.3</td>
+<td>拆零售/机构双相</td>
+<td>解锁「合成器」</td>
+</tr>
+<tr>
+<td class="k">Lv.4</td>
+<td>连续 4 周记录 b 与 flow</td>
+<td>通关</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>任务</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日</td>
+<td>记录 ETF net flow</td>
+<td>5 日表</td>
+</tr>
+<tr>
+<td class="k">每周</td>
+<td>更新机构相渗透估计</td>
+<td>与上周比</td>
+</tr>
+<tr>
+<td class="k">每月</td>
+<td>重画 logit–t</td>
+<td>是否需拆相</td>
+</tr>
+<tr>
+<td class="k">每季</td>
+<td>读 Rudd/Chainalysis 各 1 份</td>
+<td>3 行摘要</td>
+</tr>
+<tr>
+<td class="k">每年</td>
+<td>对照 Rogers 阶段迁移</td>
+<td>阶段是否跳档</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A · 若坚持单曲线 L_min=0.04,T*=18</button><button class="tab" data-pane="tb1-1">情景 B · 若分阶段成立、机构相 T*=14</button><button class="tab" data-pane="tb1-2">情景 C · 若 ETF flow 2026–2027 持续净流出</button><button class="tab" data-pane="tb1-3">情景 D · 若顾问配置从 2%→5%</button></div>
+<div class="pane on" id="tb1-0"><p>17.7 年处渗透 <strong>95.4%</strong> → logit 进入平台，结论「快饱和」——与 ETF 叙事冲突，<strong>迫使你放弃单相</strong><span class="tag t-inf">推论</span>。</p></div><div class="pane" id="tb1-1"><p>当前机构区间 <strong>48.8%</strong>（晚期大众），合成 <strong>27.7%</strong>——「还早」但<strong>增速已递减</strong>（dA/dt≈5%/年）<span class="tag t-inf">推论</span>。价格路径温和上行，非爆发<span class="tag t-hyp">假设</span>。</p></div><div class="pane" id="tb1-2"><p>机构相 b 转负，logit 曲线弯折——<strong>P3 假说 falsified</strong><span class="tag t-hyp">假设</span>。价格更多回归流动性/情绪驱动。</p></div><div class="pane" id="tb1-3"><p>机构相 L1 上调，合成渗透跳升 <strong>~8 pp</strong>——logit 斜率短期再陡，A′ 跳升<span class="tag t-inf">推论</span>。制度变量&gt;D 叙事。</p></div>
+<div class="tool">
+<h3>工具 · 阶段择时胜率漂移剥离器</h3>
+<p>「按 Rogers 阶段择时」的胜率必须减去随机持币基准（μ=50%/年，σ=65%/年）。</p>
+<div class="ctrl"><label>策略胜率（%）<input type="range" id="blt_win" min="50" max="95" step="0.5" value="71"><output id="blt_winO">71.0%</output></label></div>
+<div class="ctrl"><label>持有期（日）<input type="range" id="blt_hold" min="30" max="365" step="5" value="90"><output id="blt_holdO">90 日</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="blt_base">67.7%</strong><span id="blt_baseh">μ=50%/年 · σ=65%/年</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="blt_excess">+3.3 pp</strong><span id="blt_excessh">—</span></div>
+<div class="ro"><span class="k">所需样本量</span><strong id="blt_n">1559</strong><span id="blt_nh">证明超额非随机（双侧）</span></div>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="blt_v4">超额有限</strong><span id="blt_v4h">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>目标</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 会 logit</strong></td>
+<td>3 天</td>
+<td>画 logit–t、识平台</td>
+<td>口算 logit(0.35)</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 会分相</strong></td>
+<td>1 周</td>
+<td>零售/机构拆相</td>
+<td>合成 27.7%</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 会映射</strong></td>
+<td>2 周</td>
+<td>Rogers + Rudd A′</td>
+<td>机构 48.8% 阶段</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 会建系统</strong></td>
+<td>1 月+</td>
+<td>仪表盘 + falsify</td>
+<td>2032 检验</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>任务</strong>：「logit 三联检」——线性、映射、剥离。</p>
+<ol>
+<li><strong>10 分钟 · logit 诊断</strong>：§06 设 L_min=0.04、T<em>=18 → 读区间渗透 </em><em>95.4%</em>* → 判定「单曲线近饱和，需拆相」。</li>
+<li><strong>8 分钟 · Rogers 映射</strong>：§08 渗透 <strong>48.8%</strong> → 阶段「晚期大众」，距落后者 <strong>19.2 pp</strong>。</li>
+<li><strong>7 分钟 · 双相合成</strong>：§16 默认 → 合成 <strong>27.7%</strong>，A′≈<strong>5.54</strong>（D=20）。</li>
+<li><strong>5 分钟 · drift 剥离</strong>：§20 胜率 71%、90 日 → 超额 <strong>+3.3 pp</strong>，n≈<strong>1559</strong>。</li>
+</ol>
+<p><strong>验证</strong>：合成渗透与 §16 默认读数误差 <strong>&lt;0.5 pp</strong>；超额与 §20 一致。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>logit 数学</td>
+<td>推导 logit↔logistic</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>Rogers</td>
+<td>五阶段百分位表</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>Rudd</td>
+<td>读 MDPI 2025 摘要</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>工具</td>
+<td>§06–§20 四个模型</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>历史</td>
+<td>标 2009/2020/2024 三相</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>数据</td>
+<td>ETF AUM + 顾问调研</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>合成</td>
+<td>一页「单相 vs 多相」结论</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<p><strong>Week 1</strong>：logit 公式 + Rogers 映射 + 单曲线诊断（L1）
+<strong>Week 2</strong>：零售/机构拆相 + Rudd A′ + 10%–90% 窗（L2）
+<strong>Week 3</strong>：ETF flow 代理 + b 衰减 + Bass 对照（L3）
+<strong>Week 4</strong>：个人仪表盘 + 2032 falsify 日志（L4）</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>最大坑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>logit 变换</strong></td>
+<td>S 曲线变直线</td>
+<td>p→0/1 发散</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>Logistic 累积</strong></td>
+<td>A(t) 饱和</td>
+<td>单相过饱和</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>Rogers 五阶段</strong></td>
+<td>百分位分界</td>
+<td>非自然律</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>Bass p/q</strong></td>
+<td>创新/模仿</td>
+<td>不可外推全史</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>双相 logistic</strong></td>
+<td>零售+机构</td>
+<td>参数主观</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>Rudd A′(t)</strong></td>
+<td>D·A 需求</td>
+<td>D 无锚</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>10%–90% 窗</strong></td>
+<td>可解释时长</td>
+<td>约定选择</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>dA/dt 衰减</strong></td>
+<td>边际增速</td>
+<td>与价格脱钩</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>对照基准</strong></td>
+<td>drift 剥离</td>
+<td>μ,σ 敏感</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>阶段 falsify</strong></td>
+<td>2032 检验</td>
+<td>需提前书写</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>模型</summary><div class="dbody"><ul>
+<li>你用的是单曲线还是多相 logistic？</li>
+<li>logit–t 是否已进入平台？</li>
+<li>L_min、T* 依据是什么？</li>
+</ul></div></details>
+<details><summary>阶段</summary><div class="dbody"><ul>
+<li>机构子曲线落在哪个 Rogers 阶段？</li>
+<li>ETF 是 b 跳升还是新 t₀？</li>
+<li>合成渗透与全局渗透是否混用？</li>
+</ul></div></details>
+<details><summary>风险</summary><div class="dbody"><ul>
+<li>阶段胜率扣过 drift 吗？</li>
+<li>dA/dt 是否已接近 0？</li>
+<li>2032 falsify 条件写了吗？</li>
+</ul></div></details>
+<details><summary>决策</summary><div class="dbody"><ul>
+<li>仓位是否与「27% 还早」解耦？</li>
+<li>A′ 情景 D 是否声明？</li>
+<li>顾问配置上行是否纳入？</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>Rudd &amp; Porter MDPI 2025</strong>：L_min/T*/D 完整供需校准</li>
+<li><strong>Findings 2025 logit 阶段分界</strong>：百分位约定比较</li>
+<li><strong>Chainalysis 2025 机构子指数</strong>：机构相实证代理</li>
+<li><strong>Bass/DIMORA 包</strong>：p/q 时变估计</li>
+<li><strong>2032 机构相 τ 检验</strong>：提前写渗透/flow 可接受区间</li>
+</ol>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">logit↔logistic 数学</td>
+<td>教科书</td>
+<td>标准统计变换</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Rudd L_min/T*/D 框架</td>
+<td>论文</td>
+<td>MDPI JRFM 2025</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">Rogers 五阶段百分位</td>
+<td>学术</td>
+<td>Rogers 1962; Findings 2025</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">Bass p/q 模型</td>
+<td>学术</td>
+<td>Bass 1969</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">ETF 2024-01 批准</td>
+<td>监管</td>
+<td>SEC</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">顾问 20% 推荐/2% 配置</td>
+<td>调研</td>
+<td>PlanAdviser Q4 2024</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">北美 ETF AUM ~$179B</td>
+<td>行业</td>
+<td>Chainalysis 2025</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">机构相参数 48.8%/27.7%</td>
+<td>模型推论</td>
+<td>本手册双相标定</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">μ=50%/σ=65% 基准</td>
+<td>模型假设</td>
+<td>2026 高波动加密环境</td>
+<td><span class="tag t-hyp">假设</span></td>
+</tr>
+<tr>
+<td class="k">ETF 政府/机构 β 系数</td>
+<td>论文</td>
+<td>MDPI JRFM 2025 ETP 研究</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供学习与认知框架构建，<strong>不构成任何投资建议</strong>。比特币与相关衍生品具有极高波动性和监管不确定性；文中模型参数（L_min、T*、D、合成权重等）多为<span class="tag t-inf">推论</span>或<span class="tag t-hyp">假设</span>，历史拟合不保证未来有效。任何交易决策应基于您自身的风险承受能力，并咨询持牌专业人士。作者不对依据本手册做出的投资行为承担任何责任。</p>
+</section>
+<footer>  <p>《BTC-Logit 曲线与分阶段假说 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 5 分 53 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC-Logit 曲线与分阶段假说》主题脚本
+   四个可调模型：
+     1. Logit 线性化器（累积采用 → logit 直线）
+     2. Rogers 分阶段映射器
+     3. 双阶段 Logistic 合成器（零售 / 机构）
+     4. Rudd 需求乘数与相位测算器
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  var YEARS_NOW = 6465 / 365;
+  var P0 = 64858;
+
+  function logit(p) {
+    var x = Math.max(1e-6, Math.min(1 - 1e-6, p));
+    return Math.log(x / (1 - x));
+  }
+
+  function logisticScaled(t, Lmin, Lmax, Tstar, tOffset) {
+    var tau = Tstar / 2;
+    var b = Math.log((Lmax - Lmin) / Math.max(Lmin, 1e-6)) / tau;
+    var rel = t - (tOffset || 0);
+    return Lmin + (Lmax - Lmin) / (1 + Math.exp(-b * (rel - tau)));
+  }
+
+  function phaseCurve(t, t0, L0, L1, T) {
+    var tau = T / 2;
+    var b = Math.log((L1 - L0) / Math.max(L0, 1e-4)) / tau;
+    var rel = t - t0;
+    if (rel < 0) return L0;
+    return L0 + (L1 - L0) / (1 + Math.exp(-b * (rel - tau)));
+  }
+
+  function rogersStage(pct) {
+    if (pct < 2.5) return '创新者';
+    if (pct < 13.5) return '早期采用';
+    if (pct < 34) return '早期大众';
+    if (pct < 68) return '晚期大众';
+    return '落后者';
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  /* ══ 工具 1 · Logit 线性化器 ══ */
+  (function logitLinearizer() {
+    var lminEl = $('blt_lmin'), tstarEl = $('blt_tstar');
+    if (!lminEl || !tstarEl) return;
+    var lminO = $('blt_lminO'), tstarO = $('blt_tstarO');
+    var slopeEl = $('blt_slope'), slopehEl = $('blt_slopeh');
+    var logitNowEl = $('blt_logitNow'), logitNowhEl = $('blt_logitNowh');
+    var r2El = $('blt_r2'), r2hEl = $('blt_r2h');
+    var vEl = $('blt_v1'), vhEl = $('blt_v1h');
+    var cv = $('bltLogitChart');
+
+    function draw(Lmin, Tstar) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxT = 22;
+      var pts = [];
+      for (var i = 0; i <= 50; i++) {
+        var t = maxT * i / 50;
+        var a = logisticScaled(t, Lmin, 0.96, Tstar, 0);
+        pts.push({ t: t, y: logit(a) });
+      }
+      var ymin = -4, ymax = 4;
+      var sx = function (t) { return pad.l + (t / maxT) * iw; };
+      var sy = function (v) { return pad.t + (1 - (v - ymin) / (ymax - ymin)) * ih; };
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      pts.forEach(function (p, idx) {
+        var x = sx(p.t), y = sy(p.y);
+        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      var tau = Tstar / 2;
+      var b = Math.log((0.96 - Lmin) / Lmin) / tau;
+      var tLo = Math.max(2, tau - 2), tHi = Math.min(maxT - 1, tau + 6);
+      ctx.strokeStyle = '#d5342c';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(sx(tLo), sy(b * (logisticScaled(tLo, Lmin, 0.96, Tstar, 0) - 0.5)));
+      ctx.lineTo(sx(tHi), sy(b * (logisticScaled(tHi, Lmin, 0.96, Tstar, 0) - 0.5) + b * (tau - 0.5)));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      var aNow = logisticScaled(YEARS_NOW, Lmin, 0.96, Tstar, 0);
+      ctx.fillStyle = '#d5342c';
+      ctx.beginPath(); ctx.arc(sx(YEARS_NOW), sy(logit(aNow)), 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('创世后年数 t', pad.l + iw / 2, y1 + 31);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillText('— logit(A)', pad.l + 4, pad.t + 12);
+      ctx.fillStyle = '#d5342c';
+      ctx.fillText('— 中窗线性拟合', pad.l + 90, pad.t + 12);
+    }
+
+    function upd() {
+      var Lmin = parseFloat(lminEl.value);
+      var Tstar = parseFloat(tstarEl.value);
+      var tau = Tstar / 2;
+      var b = Math.log((0.96 - Lmin) / Lmin) / tau;
+      var aNow = logisticScaled(YEARS_NOW, Lmin, 0.96, Tstar, 0);
+      var norm = (aNow - Lmin) / (0.96 - Lmin) * 100;
+      var t10 = tau - Math.log(9) / b;
+      var t90 = tau + Math.log(9) / b;
+      var ssRes = 0, ssTot = 0, mean = 0, n = 0;
+      for (var t = 2; t <= 18; t += 0.5) {
+        var obs = logit(logisticScaled(t, Lmin, 0.96, Tstar, 0));
+        var pred = b * (t - tau);
+        mean += obs; n++;
+        ssRes += (obs - pred) * (obs - pred);
+        ssTot += obs * obs;
+      }
+      mean /= n;
+      for (var t2 = 2; t2 <= 18; t2 += 0.5) {
+        var obs2 = logit(logisticScaled(t2, Lmin, 0.96, Tstar, 0));
+        ssTot += (obs2 - mean) * (obs2 - mean);
+      }
+      var r2 = Math.max(0, 1 - ssRes / ssTot);
+      txt(lminO, Lmin.toFixed(2));
+      txt(tstarO, Tstar + ' 年');
+      txt(slopeEl, b.toFixed(3));
+      txt(slopehEl, 'logit 斜率 b（拐点 τ=' + tau.toFixed(1) + ' 年）');
+      txt(logitNowEl, logit(aNow).toFixed(2));
+      txt(logitNowhEl, 'A=' + (aNow * 100).toFixed(1) + '% · 区间渗透 ' + norm.toFixed(1) + '%');
+      txt(r2El, r2.toFixed(3));
+      txt(r2hEl, '10%→90% 窗：' + t10.toFixed(1) + '–' + t90.toFixed(1) + ' 年');
+      var label, hint, col;
+      if (norm > 85) {
+        label = '单曲线近饱和'; hint = 'logit 进入平台——宜切换分阶段模型';
+        col = 'var(--amber)';
+      } else if (norm > 34 && norm < 68) {
+        label = 'logit 中段线性'; hint = 'Rogers 晚期大众区 · 增速仍可观';
+        col = 'var(--red)';
+      } else if (norm >= 13.5 && norm <= 34) {
+        label = '拐点邻域'; hint = 'logit 最陡 · 机构叙事主战场';
+        col = 'var(--red)';
+      } else {
+        label = 'logit 尾段'; hint = '线性化窗口收窄 · 参数不稳';
+        col = 'var(--green)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(Lmin, Tstar);
+    }
+    [lminEl, tstarEl].forEach(function (el) { el.addEventListener('input', upd); });
+    window.addEventListener('resize', upd);
+    upd();
+  })();
+
+  /* ══ 工具 2 · Rogers 分阶段映射器 ══ */
+  (function rogersMapper() {
+    var penEl = $('blt_pen');
+    if (!penEl) return;
+    var penO = $('blt_penO');
+    var stageEl = $('blt_stage'), stagehEl = $('blt_stageh');
+    var nextEl = $('blt_next'), nexthEl = $('blt_nexth');
+    var logitEl = $('blt_logitPen'), logitPenhEl = $('blt_logitPenh');
+    var vEl = $('blt_v2'), vhEl = $('blt_v2h');
+    var cv = $('bltRogersChart');
+
+    function nextBoundary(pct) {
+      if (pct < 2.5) return { b: 2.5, name: '早期采用' };
+      if (pct < 13.5) return { b: 13.5, name: '早期大众' };
+      if (pct < 34) return { b: 34, name: '晚期大众' };
+      if (pct < 68) return { b: 68, name: '落后者' };
+      return { b: 100, name: '饱和' };
+    }
+
+    function draw(pct) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var zones = [
+        { lo: 0, hi: 2.5, col: '#eaf0ff', label: '创新者' },
+        { lo: 2.5, hi: 13.5, col: '#fff7e6', label: '早期采用' },
+        { lo: 13.5, hi: 34, col: '#fdf3f2', label: '早期大众' },
+        { lo: 34, hi: 68, col: '#f2f7f4', label: '晚期大众' },
+        { lo: 68, hi: 100, col: '#f4f6f9', label: '落后者' }
+      ];
+      zones.forEach(function (z) {
+        var x0 = pad.l + (z.lo / 100) * iw;
+        var xw = ((z.hi - z.lo) / 100) * iw;
+        ctx.fillStyle = z.col;
+        ctx.fillRect(x0, pad.t, xw, ih);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '9px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        if (z.hi - z.lo > 8) ctx.fillText(z.label, x0 + xw / 2, pad.t + ih + 13);
+      });
+      var x = pad.l + (pct / 100) * iw;
+      ctx.strokeStyle = '#d5342c';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + ih); ctx.stroke();
+      ctx.fillStyle = '#d5342c';
+      ctx.beginPath(); ctx.arc(x, pad.t + ih / 2, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('累计渗透（%）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function upd() {
+      var pct = parseFloat(penEl.value);
+      var nb = nextBoundary(pct);
+      var gap = nb.b - pct;
+      txt(penO, pct.toFixed(1) + '%');
+      txt(stageEl, rogersStage(pct));
+      txt(stagehEl, 'Rogers 1962 五阶段 · 机构子曲线读数');
+      txt(nextEl, nb.name);
+      txt(nexthEl, '距下一阶段 ' + gap.toFixed(1) + ' pp');
+      txt(logitEl, logit(pct / 100).toFixed(2));
+      txt(logitPenhEl, 'logit(p) · p=' + pct.toFixed(1) + '%');
+      var label, hint, col;
+      if (pct >= 13.5 && pct < 34) {
+        label = '早期大众主战场'; hint = 'ETF/顾问渠道典型区间【推论】';
+        col = 'var(--red)';
+      } else if (pct >= 34 && pct < 68) {
+        label = '晚期大众加速区'; hint = '2026 机构子曲线默认落点 ~48.8%【推论】';
+        col = 'var(--amber)';
+      } else if (pct < 13.5) {
+        label = '创新/早期采用'; hint = '2009–2017 零售主导期【分析】';
+        col = 'var(--green)';
+      } else {
+        label = '渗透尾部'; hint = '边际买家枯竭风险上升【假设】';
+        col = 'var(--amber)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(pct);
+    }
+    penEl.addEventListener('input', upd);
+    window.addEventListener('resize', upd);
+    upd();
+  })();
+
+  /* ══ 工具 3 · 双阶段 Logistic 合成器 ══ */
+  (function dualPhase() {
+    var instTEl = $('blt_instT'), dMultEl = $('blt_dMult');
+    if (!instTEl || !dMultEl) return;
+    var instTO = $('blt_instTO'), dMultO = $('blt_dMultO');
+    var retailEl = $('blt_retailA'), retailhEl = $('blt_retailAh');
+    var instEl = $('blt_instA'), insthEl = $('blt_instAh');
+    var synthEl = $('blt_synthA'), synthhEl = $('blt_synthAh');
+    var vEl = $('blt_v3'), vhEl = $('blt_v3h');
+    var cv = $('bltDualChart');
+
+    function draw(retail, inst, synth) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxT = 22;
+      var sx = function (t) { return pad.l + (t / maxT) * iw; };
+      var sy = function (v) { return pad.t + (1 - v / 0.65) * ih; };
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      ctx.strokeStyle = '#b8730a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (var i = 0; i <= 60; i++) {
+        var t = maxT * i / 60;
+        var v = phaseCurve(t, 0, 0.008, 0.14, 11);
+        var x = sx(t), y = sy(v);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.beginPath();
+      for (var j = 0; j <= 60; j++) {
+        var t2 = maxT * j / 60;
+        var v2 = phaseCurve(t2, 11, 0.14, 0.58, parseFloat(instTEl.value));
+        var x2 = sx(t2), y2 = sy(v2);
+        if (j === 0) ctx.moveTo(x2, y2); else ctx.lineTo(x2, y2);
+      }
+      ctx.stroke();
+      ctx.strokeStyle = '#0f8a4d';
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      for (var k = 0; k <= 60; k++) {
+        var t3 = maxT * k / 60;
+        var r3 = phaseCurve(t3, 0, 0.008, 0.14, 11);
+        var i3 = phaseCurve(t3, 11, 0.14, 0.58, parseFloat(instTEl.value));
+        var syn = 0.35 * r3 + 0.65 * i3;
+        var x3 = sx(t3), y3 = sy(syn);
+        if (k === 0) ctx.moveTo(x3, y3); else ctx.lineTo(x3, y3);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('创世后年数', pad.l + iw / 2, y1 + 31);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#b8730a';
+      ctx.fillText('— 零售相', pad.l + 4, pad.t + 12);
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillText('— 机构相', pad.l + 72, pad.t + 12);
+      ctx.fillStyle = '#0f8a4d';
+      ctx.fillText('— 合成', pad.l + 140, pad.t + 12);
+      var nx = sx(YEARS_NOW);
+      ctx.fillStyle = '#d5342c';
+      ctx.beginPath(); ctx.arc(nx, sy(synth), 6, 0, Math.PI * 2); ctx.fill();
+    }
+
+    function upd() {
+      var instT = parseFloat(instTEl.value);
+      var dMult = parseFloat(dMultEl.value);
+      var retail = phaseCurve(YEARS_NOW, 0, 0.008, 0.14, 11);
+      var inst = phaseCurve(YEARS_NOW, 11, 0.14, 0.58, instT);
+      var synth = 0.35 * retail + 0.65 * inst;
+      var instNorm = (inst - 0.14) / (0.58 - 0.14) * 100;
+      txt(instTO, instT + ' 年');
+      txt(dMultO, '×' + dMult);
+      txt(retailEl, (retail * 100).toFixed(1) + '%');
+      txt(retailhEl, '2009–2020 零售相 · 近饱和');
+      txt(instEl, (inst * 100).toFixed(1) + '%');
+      txt(insthEl, '机构相区间渗透 ' + instNorm.toFixed(1) + '%');
+      txt(synthEl, (synth * 100).toFixed(1) + '%');
+      txt(synthhEl, 'A′≈' + (synth * dMult).toFixed(2) + '（×D）');
+      var label, hint, col;
+      if (instNorm >= 40 && instNorm < 60) {
+        label = '机构相中段'; hint = 'logit 仍陡 · ETF 时代主叙事【推论】';
+        col = 'var(--red)';
+      } else if (instNorm < 25) {
+        label = '机构相早期'; hint = '2024 ETF 刚开启新 logistic【分析】';
+        col = 'var(--green)';
+      } else {
+        label = '机构相后段'; hint = '关注 dA/dt 衰减与 flow 放缓【假设】';
+        col = 'var(--amber)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(retail, inst, synth);
+    }
+    [instTEl, dMultEl].forEach(function (el) { el.addEventListener('input', upd); });
+    window.addEventListener('resize', upd);
+    upd();
+  })();
+
+  /* ══ 工具 4 · Rudd 需求乘数与相位测算器 ══ */
+  (function ruddPhase() {
+    var winEl = $('blt_win'), holdEl = $('blt_hold');
+    if (!winEl || !holdEl) return;
+    var winO = $('blt_winO'), holdO = $('blt_holdO');
+    var baseEl = $('blt_base'), basehEl = $('blt_baseh');
+    var excessEl = $('blt_excess'), excesshEl = $('blt_excessh');
+    var nEl = $('blt_n'), nhEl = $('blt_nh');
+    var vEl = $('blt_v4'), vhEl = $('blt_v4h');
+
+    function upd() {
+      var win = parseFloat(winEl.value);
+      var hold = parseFloat(holdEl.value);
+      var mu = 0.50, sig = 0.65;
+      var z = mu * (hold / 252) / (sig * Math.sqrt(hold / 252));
+      var base = ncdf(z) * 100;
+      var excess = win - base;
+      var pb = base / 100, ps = win / 100, diff = ps - pb;
+      var n = diff > 0.001 ? Math.ceil(Math.pow(1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps)), 2) / (diff * diff)) : 9999;
+      txt(winO, win.toFixed(1) + '%');
+      txt(holdO, hold + ' 日');
+      txt(baseEl, base.toFixed(1) + '%');
+      txt(basehEl, 'μ=50%/年 · σ=65%/年 · 随机持币');
+      txt(excessEl, (excess >= 0 ? '+' : '') + excess.toFixed(1) + ' pp');
+      tint(excessEl, excess >= 8 ? 'var(--red)' : excess >= 3 ? 'var(--amber)' : 'var(--green)');
+      txt(excesshEl, '「阶段择时」胜率须扣 drift');
+      txt(nEl, n > 5000 ? '>5000' : String(n));
+      txt(nhEl, '证明超额非随机（双侧）');
+      var label, hint, col;
+      if (excess < 3) {
+        label = '超额微弱'; hint = '分阶段叙事可能只是正漂移换皮';
+        col = 'var(--green)';
+      } else if (excess < 10) {
+        label = '超额有限'; hint = '需 n≈' + (n > 5000 ? '5000+' : n) + ' 才证显著';
+        col = 'var(--amber)';
+      } else {
+        label = '表面显著'; hint = '仍要查是否 in-sample（仅 2 个 ETF 年）';
+        col = 'var(--red)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+    }
+    [winEl, holdEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
