@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-URPD 已实现价格分布 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × On-Chain × Cost Basis</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路径</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-URPD 已实现价格分布</h1>
+  <p class="sub">把全网持仓画成<strong>成本基线直方图</strong>——厚区是反应带、薄区是加速带，但<strong>不预测</strong>顶底</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>URPD（UTXO Realized Price Distribution）= 按「每枚币上次链上转移时的价格」把当前供应画成直方图。</strong> 横轴是价格桶下界，纵轴是该桶内的 BTC 数量（或占比）<span class="tag t-fact">事实</span>。<strong>高柱 = 大量筹码在该价位换手 = 成本簇</strong>；价格回到该簇时，持有者盈亏结构相似，市场更可能出现<strong>吸收或抛压</strong>——但这是<strong>反应概率</strong>，不是预言<span class="tag t-inf">推论</span>。</p>
+<p>Glassnode 2020 年由 Renato Shirakashi 引入<span class="tag t-fact">事实</span>；有 <strong>ATH 分桶</strong>（0→历史高点均分 100 桶）与 <strong>±2% 百分比分桶</strong>（以收盘价为中心各 50 桶）两种透镜<span class="tag t-fact">事实</span>。2026 年 9 月现货约 <strong>$77.4K</strong>、已实现价格约 <strong>$53.2K</strong><span class="tag t-chk">待验证</span>——URPD 回答的不是「贵不贵」，而是<strong>「下一档厚/薄区在哪」</strong>。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>「BTC-URPD」研究的是：<strong>用链上 UTXO 成本基线的空间分布，识别支撑/阻力反应带、薄区加速通道，及其与 MVRV、HODL Waves、CBD 的关系与边界</strong>。它是 MVRV（标量）的「展开版」——从全网平均成本到<strong>每一档价位的筹码堆叠</strong>。</p>
+<div class="note red"><b>先划清边界</b><p>URPD <strong>不提供</strong>「到 X 美元必反弹/必见顶」的信号。它刻画<strong>存量筹码的成本地图</strong>；是否变现取决于流动性、宏观与行为，须配 SOPR、aSOPR、实现盈亏等行为指标确认<span class="tag t-ana">分析</span>。</p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>URPD 定义、两种分桶、实体调整、厚/薄区读法</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>不含订单簿深度；不预测监管；不替代 K 线结构</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>UTXO、价格桶、供应柱、现货价、ATH</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>Glassnode、链上 KOL、ETF 做市商、批评者、数据索引商</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>桶宽、供应占比、现货位置、IC 加权、实体调整</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察的</td>
+<td>链上 UTXO 集、Glassnode Studio/API、现货价</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察但可推断</td>
+<td>交易所内部划转、丢失币、OTC 真实成本</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>换手→桶迁移；价格→触及桶→行为反应</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>UTXO 按转移价分桶 = <span class="tag t-fact">事实</span>；厚区=支撑 = <span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>柱高与历史高低点常重合——后验叙事风险</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>「$82K 无阻力」「$30K 铁底」社交媒体图</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>成本锚定 + 盈亏同质→集体行为趋同</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>薄区快速穿越→波动放大→更多换手→重画 URPD</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>时间延迟</td>
+<td>URPD 无时间轴——静态快照，需 CBD 补演化</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>正：厚区吸收→企稳；负：薄区穿透→止损连锁</td>
+</tr>
+</tbody>
+</table></div>
+<h3>URPD 与邻近指标</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>维度</th>
+<th>与 URPD 关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Realized Price</strong></td>
+<td>标量（全网均值）</td>
+<td>URPD 的加权平均 ≈ Realized Price</td>
+</tr>
+<tr>
+<td class="k"><strong>MVRV</strong></td>
+<td>标量（偏离倍数）</td>
+<td>MVRV 告诉你偏离多少；URPD 告诉你<strong>偏离发生在哪些价位</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>HODL Waves</strong></td>
+<td>年龄分布</td>
+<td>年龄×价格：实体调整 URPD × LTH/STH 分层</td>
+</tr>
+<tr>
+<td class="k"><strong>CBD</strong></td>
+<td>价格×时间热力图</td>
+<td>URPD 的时序升级版<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>URPD IC</strong></td>
+<td>资本加权</td>
+<td>币数峰值 ≠ 美元投入峰值<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：把「成本基线」从一条线展开成一张地图</h3>
+<p>MVRV 只说全网平均盈利 <strong>+45%</strong>（2026-09 现货/已实现 ≈ 1.45）<span class="tag t-chk">待验证</span>——URPD 进一步显示：<strong>$53K 附近供应柱最厚（~11%）</strong>，而 <strong>$70–78K 区间柱极薄（&lt;2%）</strong>【推论·示意模型】。这是「下一档结构障碍」的链上语言。</p>
+<h3>理由二：2024–2026 ETF 时代重画筹码分布</h3>
+<p>机构 ETF 持续换手，把供应从低价桶<strong>抬升</strong>到 $50–70K 新区<span class="tag t-inf">推论</span>。Glassnode Finance Bridge #3 指出：$15–25K 为长期坚守区、$28–31K 为风险带、上方 $30K+ 为 2021–22 周期筹码<span class="tag t-ana">分析</span>——<strong>地图随周期迁移，不能死记旧价位</strong>。</p>
+<h3>理由三：学会「水平 ≠ 预测」+ 对照基准</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>BTC μ=50%/年 σ=65%</th>
+<th><strong>随机持币基准</strong></th>
+<th>「厚区反弹 62% 胜率」真实超额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">20 日</td>
+<td>—</td>
+<td><strong>58.6%</strong></td>
+<td>表面 +3.4 pp → 真实 <strong>+3.4 pp</strong></td>
+</tr>
+<tr>
+<td class="k">40 日</td>
+<td>—</td>
+<td><strong>62.0%</strong></td>
+<td>表面 +5.0 pp → 真实 <strong>+5.0 pp</strong></td>
+</tr>
+<tr>
+<td class="k">90 日</td>
+<td>—</td>
+<td><strong>67.7%</strong></td>
+<td>表面 +2.0 pp → 真实 <strong>~-0.7 pp</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>任何「URPD 支撑有效」叙事都要和对照基准比</strong>——BTC 有正漂移，基准不是 50%。</p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从 UTXO 账本，到 URPD 直方图</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC-URPD · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">越靠上越「链上硬数据」，越靠下越「读图/行为可选择」</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① UTXO 账本层</text>
+  <text x="148" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">每枚币记录上次转移价 · 供应 ~19.8M</text>
+  <text x="148" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">失效：丢失币、交易所池化地址</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 分桶聚合层</text>
+  <text x="148" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">URPD(price bucket) = Σ 桶内 UTXO 价值</text>
+  <text x="148" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">横轴标签 = 桶下界【事实】</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 分桶透镜层</text>
+  <text x="148" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">ATH 100 桶 vs ±2%×100 桶</text>
+  <text x="148" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">全史结构 vs 近端放大</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 实体调整层</text>
+  <text x="148" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">剔除交易所内部划转 · 同实体归并</text>
+  <text x="148" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">失效：实体聚类启发式误差</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 厚/薄结构层</text>
+  <text x="148" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">高柱=成本簇 · 低柱=薄区/加速带</text>
+  <text x="148" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">非因果预测——反应概率</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 行为确认层</text>
+  <text x="148" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">SOPR、aSOPR、实现盈亏、CDD</text>
+  <text x="148" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">吸收 vs 派发须行为证伪</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 加权变体层</text>
+  <text x="148" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">币数 URPD vs URPD IC（投入资本）</text>
+  <text x="148" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">低价大量 ≠ 高价少量（美元）</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 传播层</text>
+  <text x="148" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">「无阻力至 $82K」链上 KOL 图</text>
+  <text x="148" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">失效：静态图忽略时间维</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="148" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">URPD 当地图，不当触发器</text>
+  <text x="148" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">厚/薄 + 行为 + 漂移对照</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">URPD 概念 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 成本基线分布</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 支撑/阻力概率</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 筹码堆积</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 路径依赖</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• UTXO 按转移价分桶</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 同质盈亏→集体行为</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 薄区供给冲击大</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 换手迁移柱位</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#b8dfc8" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 标厚/薄区清单</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 配 SOPR 确认</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 选 ATH/% 透镜</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• §12 漂移剥离</text>
+  <path d="M214 140 L240 140" stroke="#454c56" stroke-width="1.5" marker-end="url(#urA)"/>
+  <path d="M440 140 L466 140" stroke="#454c56" stroke-width="1.5" marker-end="url(#urA)"/>
+  <defs><marker id="urA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker></defs>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>做什么</th>
+<th>与 URPD 的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Glassnode</strong></td>
+<td>指标定义、实体调整、CBD 演进</td>
+<td>URPD 原创平台<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>CryptoQuant / BGeometrics</strong></td>
+<td>第三方 URPD 图</td>
+<td>分桶细节可能不同<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k"><strong>链上 KOL</strong></td>
+<td>解读厚/薄区路径</td>
+<td>放大「无阻力」叙事</td>
+</tr>
+<tr>
+<td class="k"><strong>ETF 授权参与者</strong></td>
+<td>机械再平衡买盘</td>
+<td>持续把供应迁入新桶<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k"><strong>批评者（BIS 等）</strong></td>
+<td>链上精度方法论</td>
+<td>转账≠经济行为，误差可达数倍<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号/口径</th>
+<th>2026-09 参考<span class="tag t-chk">待验证</span></th>
+<th>读法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">现货价</td>
+<td>Spot</td>
+<td>~$77,400</td>
+<td>蓝线在 URPD 上的位置</td>
+</tr>
+<tr>
+<td class="k">已实现价格</td>
+<td>RP</td>
+<td>~$53,200</td>
+<td>直方图加权重心</td>
+</tr>
+<tr>
+<td class="k">ATH</td>
+<td>历史高点</td>
+<td>~$126,000</td>
+<td>ATH 分桶上界</td>
+</tr>
+<tr>
+<td class="k">ATH 桶宽</td>
+<td>ATH÷100</td>
+<td><strong>$1,260</strong>/桶</td>
+<td>远端分辨率粗</td>
+</tr>
+<tr>
+<td class="k">% 桶宽</td>
+<td>Spot×2%</td>
+<td><strong>~$1,548</strong>/桶</td>
+<td>近端放大</td>
+</tr>
+<tr>
+<td class="k">厚区阈值</td>
+<td>供应占比</td>
+<td>≥6–8%</td>
+<td>反应带候选</td>
+</tr>
+<tr>
+<td class="k">薄区阈值</td>
+<td>供应占比</td>
+<td>&lt;2%</td>
+<td>加速带候选</td>
+</tr>
+<tr>
+<td class="k">LTH 已实现价</td>
+<td>—</td>
+<td>~$49,400</td>
+<td>厚区常在其上方</td>
+</tr>
+<tr>
+<td class="k">STH 已实现价</td>
+<td>—</td>
+<td>~$71,000</td>
+<td>现货上方抛压区</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · URPD 成本基线地图</h3>
+<p>示意直方图：拖动<strong>现货价</strong>，读最近厚支撑、薄阻力与下方供应占比。默认现货 <strong>$77,400</strong>、ATH <strong>$126,000</strong>。</p>
+<div class="ctrl"><label>现货价 ($K)<input type="range" id="urpd_spot" min="40000" max="120000" step="100" value="77400"><output id="urpd_spotO">$77.4K</output></label></div>
+<div class="ctrl"><label>ATH ($K)<input type="range" id="urpd_ath" min="100000" max="150000" step="500" value="126000"><output id="urpd_athO">$126.0K</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">下方厚支撑</span><strong id="urpd_sup">—</strong><span id="urpd_suph">—</span></div>
+<div class="ro"><span class="k">上方厚阻力</span><strong id="urpd_res">—</strong><span id="urpd_resh">—</span></div>
+<div class="ro"><span class="k">最近薄区</span><strong id="urpd_thin">—</strong><span id="urpd_thinh">—</span></div>
+<div class="ro"><span class="k">下方供应占比</span><strong id="urpd_below">—</strong><span id="urpd_belowh">—</span></div>
+<canvas id="urpdChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="urpd_v">—</strong><span id="urpd_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>因果链与反馈</h3>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">URPD 因果图 · 实线=因果 · 红虚线=反馈</text>
+  <rect x="30" y="50" width="120" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="90" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">链上换手</text>
+  <rect x="200" y="50" width="130" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="265" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">UTXO 重定价</text>
+  <rect x="380" y="50" width="120" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="440" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">URPD 柱迁移</text>
+  <rect x="530" y="50" width="120" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="590" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">厚/薄结构</text>
+  <rect x="120" y="150" width="140" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="190" y="178" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">现货触及桶区</text>
+  <rect x="320" y="150" width="140" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="390" y="178" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">盈亏同质反应</text>
+  <rect x="500" y="150" width="140" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="570" y="178" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">吸收/抛压</text>
+  <path d="M150 72 L200 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#urB)"/>
+  <path d="M330 72 L380 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#urB)"/>
+  <path d="M500 72 L530 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#urB)"/>
+  <path d="M590 94 L590 150 L460 150" stroke="#454c56" stroke-width="1.5" marker-end="url(#urB)"/>
+  <path d="M190 150 L265 94" stroke="#454c56" stroke-width="1.5" marker-end="url(#urB)"/>
+  <path d="M260 172 L320 172" stroke="#454c56" stroke-width="1.5" marker-end="url(#urB)"/>
+  <path d="M460 172 L500 172" stroke="#454c56" stroke-width="1.5" marker-end="url(#urB)"/>
+  <path d="M390 194 L265 94" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#urC)"/>
+  <path d="M570 194 L440 72" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#urC)"/>
+  <defs>
+    <marker id="urB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker>
+    <marker id="urC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+  </defs>
+</svg>
+<p><strong>读图要点</strong>：换手改变柱位（慢）；价格触及柱区触发行为（快）。红色反馈：薄区穿透→波动→更多换手→URPD 重画。</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>隐藏关系一：URPD 与 MVRV 是同一数据的两张脸</h3>
+<p>MVRV = 现货 ÷ Realized Price = <strong>直方图的一阶矩比值</strong><span class="tag t-fact">事实</span>。MVRV 1.45 只告诉你「平均盈利 45%」；URPD 告诉你<strong>盈利集中在哪些价位</strong>——$53K 厚柱 vs $95K 残余柱，含义完全不同<span class="tag t-ana">分析</span>。</p>
+<h3>隐藏关系二：币数峰值 ≠ 资本峰值</h3>
+<p>1 BTC @ $10K 与 0.1 BTC @ $100K 币数差 10×，但<strong>投入资本相等</strong><span class="tag t-fact">事实</span>。TBL 框架的 <strong>URPD IC</strong> 按美元加权——结构意义判断应优先读 IC 版<span class="tag t-ana">分析</span>。</p>
+<div class="tool">
+<h3>工具 · 币数 vs 投入资本加权</h3>
+<p>灰柱=币数加权 URPD，红柱=资本加权（示意）。峰值位移揭示「大量低价老币」与「美元风险集中」的差异。</p>
+<div class="ctrl"><label>现货价 ($)<input type="range" id="urpd_ic_spot" min="50000" max="100000" step="500" value="77400"><output id="urpd_ic_spotO">$77,400</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">币数峰值桶</span><strong id="urpd_ic_cnt">—</strong><span id="urpd_ic_cnth">—</span></div>
+<div class="ro"><span class="k">资本峰值桶</span><strong id="urpd_ic_ic">—</strong><span id="urpd_ic_ich">—</span></div>
+<div class="ro"><span class="k">峰值位移</span><strong id="urpd_ic_shift">—</strong><span id="urpd_ic_shifth">—</span></div>
+<canvas id="urpdICChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="urpd_ic_v">—</strong><span id="urpd_ic_vh">—</span></div>
+</div>
+</div>
+<h3>隐藏关系三：跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>URPD 领域</th>
+<th>其他领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>分布 vs 均值</strong></td>
+<td>URPD vs Realized Price</td>
+<td>收入分布 vs 人均收入</td>
+</tr>
+<tr>
+<td class="k"><strong>直方图峰值</strong></td>
+<td>成本簇</td>
+<td>期权 Gamma 墙、成交量分布</td>
+</tr>
+<tr>
+<td class="k"><strong>薄区穿透</strong></td>
+<td>低供应柱</td>
+<td>流动性真空、订单簿缺口</td>
+</tr>
+<tr>
+<td class="k"><strong>静态快照缺陷</strong></td>
+<td>URPD 无时间轴</td>
+<td>CBD / 热力图补演化</td>
+</tr>
+<tr>
+<td class="k"><strong>实体归并</strong></td>
+<td>Entity-adjusted URPD</td>
+<td>基金合并报表 vs 账户流水</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>四阶段：筹码地图如何随周期变形</h3>
+<ol>
+<li><strong>熊市吸筹</strong>：低价桶柱增高（$15–25K），现货在柱群下方或边缘</li>
+<li><strong>复苏换手</strong>：供应从低价桶<strong>迁移</strong>至 $40–55K，Realized Price 抬升</li>
+<li><strong>牛市扩散</strong>：新柱在现货附近形成；旧高价柱（$90K+）变「远期阻力」</li>
+<li><strong>派发重定价</strong>：高位换手增加 → 现货附近柱变厚 → 或跌破厚区进入薄区下跌</li>
+</ol>
+<div class="note amber"><b>URPD 是快照</b><p>每日收盘更新，但<strong>不记录柱位如何移动过来</strong>。要看演化，用 Glassnode <strong>CBD（Cost Basis Distribution）</strong> 热力图<span class="tag t-fact">事实</span>。</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>从 URPD 到 CBD：补上时间维</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>工具</th>
+<th>能力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2020</td>
+<td>URPD 引入</td>
+<td>空间分布快照</td>
+</tr>
+<tr>
+<td class="k">2023–24</td>
+<td>Entity-adjusted URPD</td>
+<td>剔除交易所噪声</td>
+</tr>
+<tr>
+<td class="k">2024+</td>
+<td>CBD 热力图 + Quantiles</td>
+<td>价格×时间演化<span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">URPD 工具演化时间轴</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="100" cy="100" r="6" fill="#1d4ed8"/><text x="100" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2020</text><text x="100" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">URPD 发布</text>
+  <circle cx="220" cy="100" r="6" fill="#b8730a"/><text x="220" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2021</text><text x="220" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">$60K 厚柱</text>
+  <circle cx="340" cy="100" r="6" fill="#d5342c"/><text x="340" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2022</text><text x="340" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">低价吸筹峰</text>
+  <circle cx="460" cy="100" r="6" fill="#0f8a4d"/><text x="460" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024</text><text x="460" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">ETF 重定价</text>
+  <circle cx="580" cy="100" r="6" fill="#1d4ed8"/><text x="580" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2025+</text><text x="580" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">CBD 普及</text>
+  <text x="340" y="170" font-size="11" text-anchor="middle" fill="#7c848f" font-family="sans-serif">地图随换手迁移 · 旧价位不可死记</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>利益方</th>
+<th>激励</th>
+<th>对 URPD 的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>数据商</strong></td>
+<td>高级图表→订阅</td>
+<td>推 Entity-adjusted / CBD 升级</td>
+</tr>
+<tr>
+<td class="k"><strong>多头 KOL</strong></td>
+<td>流量、带货</td>
+<td>强调「上方薄区=无阻力」</td>
+</tr>
+<tr>
+<td class="k"><strong>空头 KOL</strong></td>
+<td>流量</td>
+<td>强调「下方厚区=铁底」</td>
+</tr>
+<tr>
+<td class="k"><strong>ETF 发行商</strong></td>
+<td>规模</td>
+<td>持续买盘迁入 $50–70K 桶</td>
+</tr>
+<tr>
+<td class="k"><strong>交易者</strong></td>
+<td>Alpha</td>
+<td>公开厚区→被 front-run</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>成本基线「抽水」：从厚区到薄区</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">URPD 厚/薄区 · 资金流抽水图</text>
+  <rect x="40" y="50" width="180" height="50" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="130" y="80" font-size="11" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">厚区 $53K · 11% 供应</text>
+  <rect x="250" y="50" width="120" height="50" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="310" y="80" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">现货 $77K</text>
+  <rect x="400" y="50" width="180" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="490" y="72" font-size="11" text-anchor="middle" fill="#1d4ed8" font-family="sans-serif">薄区 $70–78K</text>
+  <text x="490" y="88" font-size="10" text-anchor="middle" fill="#7c848f" font-family="sans-serif">&lt;2% 供应 · 低吸收</text>
+  <path d="M130 100 L130 140 L310 140 L310 100" stroke="#0f8a4d" stroke-width="1.5" fill="none" marker-end="url(#urD)"/>
+  <path d="M310 100 L310 180 L490 180 L490 100" stroke="#1d4ed8" stroke-width="1.5" fill="none" marker-end="url(#urE)"/>
+  <rect x="200" y="200" width="280" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="340" y="228" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">薄区穿透 → 波动放大 → 换手重画 URPD</text>
+  <text x="180" y="165" font-size="10" fill="#0f8a4d" font-family="sans-serif">吸收/托底</text>
+  <text x="420" y="165" font-size="10" fill="#1d4ed8" font-family="sans-serif">加速/低阻力</text>
+  <defs>
+    <marker id="urD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#0f8a4d"/></marker>
+    <marker id="urE" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1d4ed8"/></marker>
+  </defs>
+</svg>
+<p><strong>信息流</strong>：全节点 → 索引（Glassnode）→ URPD API → KOL 截图 → 交易者预期 → 现货订单。<strong>瓶颈</strong>：实体聚类与交易所池化规则不公开，不同平台柱形可差 <strong>10–30%</strong><span class="tag t-hyp">假设</span>。</p>
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>「厚区触及反弹胜率 62%」？先和<strong>随机持币基准</strong>比——默认持有 <strong>20 日</strong>、μ=50%、σ=65%。</p>
+<div class="ctrl"><label>持有期（日）<input type="range" id="urpd_T" min="5" max="180" step="5" value="20"><output id="urpd_TO">20 日</output></label></div>
+<div class="ctrl"><label>信号胜率 (%)<input type="range" id="urpd_ps" min="50" max="80" step="0.1" value="62.0"><output id="urpd_psO">62.0%</output></label></div>
+<div class="ctrl"><label>年化漂移 μ (%)<input type="range" id="urpd_mu" min="0" max="100" step="1" value="50"><output id="urpd_muO">50%</output></label></div>
+<div class="ctrl"><label>年化波动 σ (%)<input type="range" id="urpd_sg" min="30" max="100" step="1" value="65"><output id="urpd_sgO">65%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="urpd_base">58.6%</strong><span id="urpd_baseh">—</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="urpd_dp">+3.4 pp</strong><span id="urpd_dph">—</span></div>
+<div class="ro"><span class="k">所需样本 n</span><strong id="urpd_n">1632</strong><span id="urpd_nh">—</span></div>
+<canvas id="urpdDriftChart" height="176" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="urpd_dv">超额有限</strong><span id="urpd_dvh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>分清地图与预测</strong></td>
+<td>URPD 标厚/薄，不标顶底</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>选对透镜</strong></td>
+<td>全史用 ATH 桶；近端用 ±2% 桶</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>读 IC 加权版</strong></td>
+<td>结构意义看美元，不看币数</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>行为确认</strong></td>
+<td>SOPR≈1 + 实现盈亏判吸收/派发</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>配 MVRV/RP</strong></td>
+<td>标量 + 分布 = 完整成本视图</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>漂移剥离胜率</strong></td>
+<td>任何「支撑有效」先减基准</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>实体调整</strong></td>
+<td>交易所池化会伪造柱位</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>CBD 补时间</strong></td>
+<td>看柱位迁移，不看单日快照</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>写厚/薄清单</strong></td>
+<td>每周更新 3 厚 + 2 薄</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>30 分钟三联检</strong></td>
+<td>标、证、比——§22</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「URPD 预测支撑阻力」</summary><div class="dbody"><p><strong>错因</strong>：柱高只说明成本集中，不保证反应。<span class="tag t-fact">事实</span>Glassnode 与 The Markets Unplugged 均强调须行为确认。<strong>对策</strong>：配 aSOPR。</p></div></details>
+<details><summary>2. 「上方薄 = 必涨到下一厚区」</summary><div class="dbody"><p><strong>错因</strong>：薄区低吸收≠单向上涨；亦可快速下跌<span class="tag t-ana">分析</span>。<strong>对策</strong>：看趋势与宏观流动性。</p></div></details>
+<details><summary>3. 「$82K 无阻力」断章取义</summary><div class="dbody"><p><strong>错因</strong>：2025 年 Ali Martinez 基于<strong>当时</strong> URPD 快照<span class="tag t-chk">待验证</span>——地图每日变。<strong>对策</strong>：标注数据日期。</p></div></details>
+<details><summary>4. 把 URPD 当领先指标</summary><div class="dbody"><p><strong>错因</strong>：柱位由历史换手决定，是 lagging 结构。<strong>对策</strong>：配 ETF 流、价格结构。</p></div></details>
+<details><summary>5. 忽视实体调整</summary><div class="dbody"><p><strong>错因</strong>：交易所冷钱包内部划转制造假柱<span class="tag t-ana">分析</span>。<strong>对策</strong>：读 Entity-adjusted URPD。</p></div></details>
+<details><summary>6. 只用币数版忽略 IC</summary><div class="dbody"><p><strong>错因</strong>：低价 Satoshi 币抬高远端柱<span class="tag t-inf">推论</span>。<strong>对策</strong>：§07 IC 工具对照。</p></div></details>
+<details><summary>7. 死守旧周期价位</summary><div class="dbody"><p><strong>错因</strong>：2022 厚区在 $15–25K，2026 重心移至 $50K+<span class="tag t-inf">推论</span>。<strong>对策</strong>：每季重标清单。</p></div></details>
+<details><summary>8. 混淆 URPD 与成交量分布</summary><div class="dbody"><p><strong>错因</strong>：URPD 是<strong>存量</strong>成本，不是成交量<span class="tag t-fact">事实</span>。<strong>对策</strong>：理解 UTXO 语义。</p></div></details>
+<details><summary>9. 单指标 All-in</summary><div class="dbody"><p><strong>错因</strong>：公开厚区被 trade against。<strong>对策</strong>：≥3 独立信号。</p></div></details>
+<details><summary>10. 胜率不算漂移</summary><div class="dbody"><p><strong>错因</strong>：20 日随机做多基准 <strong>58.6%</strong>。<strong>对策</strong>：§12 漂移剥离器。</p></div></details>
+<details><summary>11. 忽视 CBD 时间维</summary><div class="dbody"><p><strong>错因</strong>：URPD 无法看柱位演化<span class="tag t-fact">事实</span>。<strong>对策</strong>：热力图跟踪迁移。</p></div></details>
+<details><summary>12. ATH 桶近端分辨率不足</summary><div class="dbody"><p><strong>错因</strong>：ATH=$126K 时桶宽仅 <strong>$1,260</strong><span class="tag t-inf">推论</span>——现货附近细节模糊。<strong>对策</strong>：切换 % 分桶。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实映射</th>
+<th>可观察代理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">成本簇</td>
+<td>「很多人在 $53K 买过」</td>
+<td>URPD $53K 柱 ~11%【示意】</td>
+</tr>
+<tr>
+<td class="k">薄区通道</td>
+<td>「$74K  rejection 可能虚」</td>
+<td>$70–78K 柱 &lt;2%<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">厚垫</td>
+<td>熊市抄底区</td>
+<td>$45–55K 多柱叠加</td>
+</tr>
+<tr>
+<td class="k">远期阻力</td>
+<td>2021 顶买家</td>
+<td>$90–100K 残余柱</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<p><strong>决策漏斗</strong>（自上而下）：</p>
+<ol>
+<li><strong>宏观</strong>：流动性与风险偏好方向？</li>
+<li><strong>标量</strong>：MVRV、Realized Price、STH/LTH RP 位置？</li>
+<li><strong>分布</strong>：URPD 厚/薄区清单（ATH + % 双透镜）？</li>
+<li><strong>行为</strong>：触及厚/薄区时 aSOPR、实现盈亏方向？</li>
+<li><strong>执行</strong>：仓位匹配结构尺度——非见柱就动</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 观察者</summary><div class="dbody"><ul>
+<li>[ ] 解释 URPD 横纵轴含义</li>
+<li>[ ] 区分 ATH 桶 vs % 桶</li>
+<li>[ ] 说出厚区/薄区定义</li>
+</ul></div></details>
+<details><summary>L2 · 分析师</summary><div class="dbody"><ul>
+<li>[ ] 标 3 个厚区 + 2 个薄区</li>
+<li>[ ] 对照 MVRV 与 URPD 重心</li>
+<li>[ ] 用 §12 剥离 62% 胜率</li>
+</ul></div></details>
+<details><summary>L3 · 建模者</summary><div class="dbody"><ul>
+<li>[ ] 对比 Raw vs Entity-adjusted</li>
+<li>[ ] 读 URPD IC 峰值位移</li>
+<li>[ ] 配 CBD 热力图看迁移</li>
+</ul></div></details>
+<details><summary>L4 · 系统设计者</summary><div class="dbody"><ul>
+<li>[ ] 多信号投票（URPD+SOPR+ETF）</li>
+<li>[ ] 每周自动更新厚/薄清单</li>
+<li>[ ] 季度回测「支撑触及」超额</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：成本地图测绘员（Cost Cartographer）。等级越高，越不信「无阻力」口号，越会追行为确认。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>等级</th>
+<th>任务</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Lv.1</td>
+<td>手画简化 URPD 五柱</td>
+<td>解锁「分桶层」</td>
+</tr>
+<tr>
+<td class="k">Lv.2</td>
+<td>向朋友解释厚≠预测</td>
+<td>解锁「地图工具」</td>
+</tr>
+<tr>
+<td class="k">Lv.3</td>
+<td>算出 20 日真实超额 &lt;4pp</td>
+<td>解锁「漂移剥离器」</td>
+</tr>
+<tr>
+<td class="k">Lv.4</td>
+<td>连续 4 周更新厚/薄清单</td>
+<td>解锁「IC 加权」</td>
+</tr>
+<tr>
+<td class="k">Lv.5</td>
+<td>写一页「URPD 不能回答什么」</td>
+<td>通关</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>任务</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日</td>
+<td>记录 BTC 收盘价</td>
+<td>7 日表</td>
+</tr>
+<tr>
+<td class="k">每周</td>
+<td>更新 URPD 厚/薄清单</td>
+<td>§06 工具截图</td>
+</tr>
+<tr>
+<td class="k">每月</td>
+<td>读一篇 URPD/CBD 研报</td>
+<td>3 行摘要</td>
+</tr>
+<tr>
+<td class="k">每季</td>
+<td>ATH 与 % 双透镜对照</td>
+<td>差异 &lt;2 个厚区</td>
+</tr>
+<tr>
+<td class="k">每年</td>
+<td>记录周期柱位迁移</td>
+<td>与 §10 对照</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A · 若 URPD 真能预测顶底</button><button class="tab" data-pane="tb1-1">情景 B · 若无 ETF 买盘重定价</button><button class="tab" data-pane="tb1-2">情景 C · 若只用 ATH 分桶</button><button class="tab" data-pane="tb1-3">情景 D · 若有 CBD 时间维</button></div>
+<div class="pane on" id="tb1-0"><p>每次触及厚区应 100% 反弹。实际 2022 $20K 厚区仍跌破再磨底数月——<strong>预测失败，反应概率成立</strong>。</p></div><div class="pane" id="tb1-1"><p>$50–70K 柱应更薄，现货上方阻力更近。ETF 持续换手<strong>抬高中间桶</strong><span class="tag t-inf">推论</span>——反事实支持读 Entity-adjusted。</p></div><div class="pane" id="tb1-2"><p>现货 $77K 附近细节被 $1,260 桶宽平滑。切换 <strong>±2% 分桶</strong>后局部薄区才可见<span class="tag t-fact">事实</span>——双透镜必要。</p></div><div class="pane" id="tb1-3"><p>可看到 2024 吸筹如何从 $28K 桶<strong>迁移</strong>至 $55K——URPD 单日快照无法讲述此故事<span class="tag t-fact">事实</span>。</p></div>
+<div class="tool">
+<h3>工具 · 分桶透镜</h3>
+<p>同一现货下，<strong>ATH 分桶</strong>与<strong>±2% 百分比分桶</strong>的分辨率差异。默认现货 <strong>$77,400</strong>、ATH <strong>$126,000</strong>。</p>
+<div class="ctrl"><label>现货价 ($)<input type="range" id="urpd_part_spot" min="50000" max="110000" step="500" value="77400"><output id="urpd_part_spotO">$77,400</output></label></div>
+<div class="ctrl"><label>ATH ($)<input type="range" id="urpd_part_ath" min="100000" max="140000" step="500" value="126000"><output id="urpd_part_athO">$126,000</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">ATH 桶宽</span><strong id="urpd_part_athW">$1,260</strong><span id="urpd_part_athWh">—</span></div>
+<div class="ro"><span class="k">% 桶宽 (±2%)</span><strong id="urpd_part_pctW">$1,548</strong><span id="urpd_part_pctWh">—</span></div>
+<div class="ro"><span class="k">放大倍数</span><strong id="urpd_part_near">1.23×</strong><span id="urpd_part_nearh">—</span></div>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="urpd_part_v">用 % 分区看近端</strong><span id="urpd_part_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>目标</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 会读图</strong></td>
+<td>3 天</td>
+<td>轴、桶、厚/薄</td>
+<td>口答 URPD 定义</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 会标区</strong></td>
+<td>1 周</td>
+<td>双透镜 + 清单</td>
+<td>漂移剥离器实操</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 会证伪</strong></td>
+<td>2 周</td>
+<td>SOPR + IC + Entity</td>
+<td>触及厚区行为记录</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 会迭代</strong></td>
+<td>1 月+</td>
+<td>URPD+CBD 系统</td>
+<td>连续 2 月清单</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>任务</strong>：完成「URPD 三联检」——标、证、比。</p>
+<ol>
+<li><strong>8 分钟 · 标厚/薄</strong>：§06 地图工具，现货 $77,400 → 下方厚支撑 <strong>$45–53K</strong>，上方厚阻力 <strong>$85–95K</strong>，薄区 <strong>$70–78K</strong>。</li>
+<li><strong>7 分钟 · 选透镜</strong>：§20 分桶工具，ATH 桶宽 <strong>$1,260</strong> vs % 桶宽 <strong>$1,548</strong>（1.23× 近端放大）。</li>
+<li><strong>8 分钟 · 比漂移</strong>：§12 工具，20 日 62% 胜率 → 基准 <strong>58.6%</strong>，真实超额 <strong>+3.4 pp</strong>，需 <strong>n≈1632</strong>。</li>
+<li><strong>7 分钟 · 证行为</strong>：写三句话——(a) 下一厚区在哪 (b) 最近薄区含义 (c) 须看什么行为指标。<strong>禁止写「必涨到 $82K」。</strong></li>
+</ol>
+<p><strong>验证</strong>：下方供应占比与 §06 默认读数误差 <strong>&lt;0.5 pp</strong>。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>定义</td>
+<td>读 Glassnode URPD 指南</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>分桶</td>
+<td>ATH vs % 各截一张图</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>批评</td>
+<td>BIS 链上精度 + URPD 局限</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>工具</td>
+<td>§06–§20 四个交互模型</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>对照</td>
+<td>URPD vs MVRV vs HODL Waves</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>行为</td>
+<td>记录 aSOPR 与厚区触及</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>合成</td>
+<td>1 页「URPD 能/不能回答什么」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<p><strong>Week 1</strong>：URPD 定义 + 分桶 + 手标厚/薄（L1）
+<strong>Week 2</strong>：IC 加权 + 漂移剥离 + Entity-adjusted（L2）
+<strong>Week 3</strong>：SOPR 配证 + CBD 热力图入门（L3）
+<strong>Week 4</strong>：个人厚/薄清单 + 季度迁移 habit（L4）</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>最大坑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>URPD 直方图</strong></td>
+<td>按转移价分桶的供应分布</td>
+<td>非预测</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>ATH 分桶</strong></td>
+<td>0→ATH 均分 100 桶</td>
+<td>近端分辨率粗</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>% 分桶</strong></td>
+<td>±2%×100 近端放大</td>
+<td>失全史视野</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>厚/薄区</strong></td>
+<td>高柱=反应带</td>
+<td>后验叙事</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>Entity-adjusted</strong></td>
+<td>剔交易所噪声</td>
+<td>聚类启发式</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>URPD IC</strong></td>
+<td>资本加权峰值</td>
+<td>与币数版混淆</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>CBD 热力图</strong></td>
+<td>价格×时间演化</td>
+<td>学习成本高</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>对照基准</strong></td>
+<td>随机持币胜率</td>
+<td>μ,σ 敏感</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>SOPR 确认</strong></td>
+<td>吸收 vs 派发</td>
+<td>单独也不足</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>MVRV+URPD</strong></td>
+<td>标量+分布</td>
+<td>重复计价格</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>链上结构</summary><div class="dbody"><ul>
+<li>现货在哪几个桶之间？</li>
+<li>最近下方厚区供应占比？</li>
+<li>ATH vs % 透镜厚区是否一致？</li>
+</ul></div></details>
+<details><summary>行为确认</summary><div class="dbody"><ul>
+<li>触及厚区时 aSOPR 是否 ≈1？</li>
+<li>实现盈亏净正还是净负？</li>
+<li>ETF 7 日净流入方向？</li>
+</ul></div></details>
+<details><summary>方法边界</summary><div class="dbody"><ul>
+<li>是否读了 Entity-adjusted 版？</li>
+<li>IC 峰值是否位移？</li>
+<li>CBD 是否显示柱位迁移？</li>
+</ul></div></details>
+<details><summary>决策</summary><div class="dbody"><ul>
+<li>信号胜率是否扣过漂移？</li>
+<li>样本量是否够？</li>
+<li>是否 ≥3 信号一致？</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>CBD Quantiles 自动化</strong>：100 分位线密集区能否替代手工读 URPD？</li>
+<li><strong>URPD + 期权 Gamma</strong>：链上厚区与 Deribit 墙是否共振？<span class="tag t-hyp">假设</span></li>
+<li><strong>STH/LTH 分层 URPD</strong>：Glassnode Entity URPD by holder duration 的领先性检验</li>
+<li><strong>ETH URPD 可比性</strong>：账户链分桶与 UTXO 分桶差异</li>
+<li><strong>机器学习厚区触及</strong>：特征=柱高+斜率+SOPR，标签=5 日收益——超额是否 &gt;3pp？</li>
+</ol>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">URPD 定义与公式</td>
+<td>指标文档</td>
+<td>Glassnode Docs, Apr 2020</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">ATH / % 分桶规则</td>
+<td>指标文档</td>
+<td>Glassnode Studio</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Entity-adjusted URPD</td>
+<td>研报</td>
+<td>Glassnode Finance Bridge #3</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">CBD 演进</td>
+<td>研报</td>
+<td>Glassnode「Investor Cost Basis」2024</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">URPD IC 加权</td>
+<td>行业框架</td>
+<td>The Bitcoin Layer</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">2026-09 现货/RP</td>
+<td>数据站</td>
+<td>MacroMicro / Glassnode</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">$82K 薄阻力叙事</td>
+<td>媒体</td>
+<td>TradingView/NewsBTC 引 Ali Martinez</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">支撑≠预测</td>
+<td>教程</td>
+<td>The Markets Unplugged</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">BIS 链上精度批评</td>
+<td>央行研究</td>
+<td>BIS 工作论文</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">HODL vs Realized Cap Waves</td>
+<td>指标文档</td>
+<td>Glassnode Docs</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供研究与学习，<strong>不构成任何投资建议</strong>。比特币极高波动，可能发生 &gt;50% 的 drawdown；URPD 及任何链上成本分布均<strong>不保证</strong>未来价格路径。厚区/薄区读法描述的是<strong>历史筹码结构</strong>，须与行为指标及宏观流动性交叉验证。历史价位（如 $15K 铁底、$82K 无阻力）随换手<strong>持续迁移</strong>，请勿依据单一快照进行杠杆交易。中国大陆对虚拟货币相关业务有严格监管，请遵守当地法律法规。作者不对使用本手册造成的任何损失负责。</p>
+</section>
+<footer>  <p>《BTC-URPD 已实现价格分布 · 全景认知与实践操作手册》 · 生成于 2026-09-17 · 耗时 4 分 40 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC-URPD 已实现价格分布》主题脚本
+   四个可调模型：
+     1. URPD 成本基线地图   — 厚/薄区识别与支撑阻力读数
+     2. 币数 vs 投入资本加权 — 峰值位移对比
+     3. 漂移剥离器          — 厚区反弹胜率 vs 随机持币基准
+     4. 分桶透镜            — ATH 分桶 vs ±2% 百分比分桶
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function fmtK(v) {
+    if (!isFinite(v)) return '—';
+    if (v >= 1000) return '$' + (v / 1000).toFixed(1) + 'K';
+    return '$' + Math.round(v);
+  }
+
+  /* 简化 URPD：12 个价格桶（下界 K）与供应占比 % */
+  var BUCKETS = [
+    { lo: 15000, pct: 4.2 },
+    { lo: 22000, pct: 8.6 },
+    { lo: 28000, pct: 6.1 },
+    { lo: 35000, pct: 5.4 },
+    { lo: 45000, pct: 7.8 },
+    { lo: 53000, pct: 11.2 },
+    { lo: 62000, pct: 9.5 },
+    { lo: 70000, pct: 2.1 },
+    { lo: 78000, pct: 1.4 },
+    { lo: 85000, pct: 3.8 },
+    { lo: 95000, pct: 5.2 },
+    { lo: 110000, pct: 4.6 }
+  ];
+
+  function bucketHi(i) {
+    return i < BUCKETS.length - 1 ? BUCKETS[i + 1].lo : BUCKETS[i].lo * 1.15;
+  }
+
+  /* ══ 工具 1 · URPD 成本基线地图 ══ */
+  (function urpdMap() {
+    var spotEl = $('urpd_spot'), athEl = $('urpd_ath');
+    if (!spotEl || !athEl) return;
+    var spotO = $('urpd_spotO'), athO = $('urpd_athO');
+    var supEl = $('urpd_sup'), supHEl = $('urpd_suph');
+    var resEl = $('urpd_res'), resHEl = $('urpd_resh');
+    var thinEl = $('urpd_thin'), thinHEl = $('urpd_thinh');
+    var belowEl = $('urpd_below'), belowHEl = $('urpd_belowh');
+    var vEl = $('urpd_v'), vhEl = $('urpd_vh');
+    var cv = $('urpdChart');
+
+    function thickBelow(spot) {
+      var best = null;
+      BUCKETS.forEach(function (b, i) {
+        var hi = bucketHi(i);
+        if (hi <= spot && b.pct >= 6.5) {
+          if (!best || b.pct > best.pct) best = { lo: b.lo, hi: hi, pct: b.pct };
+        }
+      });
+      return best;
+    }
+
+    function thickAbove(spot) {
+      var best = null;
+      BUCKETS.forEach(function (b, i) {
+        var hi = bucketHi(i);
+        if (b.lo >= spot && b.pct >= 4.5) {
+          if (!best || b.lo < best.lo) best = { lo: b.lo, hi: hi, pct: b.pct };
+        }
+      });
+      return best;
+    }
+
+    function thinnestGap(spot) {
+      var gap = null;
+      BUCKETS.forEach(function (b, i) {
+        var hi = bucketHi(i);
+        if (b.lo <= spot && hi >= spot && b.pct < 2.5) {
+          gap = { lo: b.lo, hi: hi, pct: b.pct };
+        }
+      });
+      if (!gap) {
+        BUCKETS.forEach(function (b, i) {
+          var hi = bucketHi(i);
+          if (b.lo > spot && b.pct < 2.0) {
+            if (!gap || b.lo < gap.lo) gap = { lo: b.lo, hi: hi, pct: b.pct };
+          }
+        });
+      }
+      return gap;
+    }
+
+    function supplyBelow(spot) {
+      var s = 0;
+      BUCKETS.forEach(function (b, i) {
+        if (bucketHi(i) <= spot) s += b.pct;
+        else if (b.lo < spot) s += b.pct * (spot - b.lo) / (bucketHi(i) - b.lo);
+      });
+      return s;
+    }
+
+    function draw(spot, ath) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxP = 12;
+      var minX = 10000, maxX = Math.max(ath * 1.05, 120000);
+      var sx = function (p) { return pad.l + ((p - minX) / (maxX - minX)) * iw; };
+      var sy = function (v) { return y1 - (v / maxP) * ih; };
+
+      BUCKETS.forEach(function (b, i) {
+        var hi = bucketHi(i);
+        var x0 = sx(b.lo), x1 = sx(hi);
+        var col = b.pct >= 8 ? '#d5342c' : b.pct >= 5 ? '#b8730a' : '#c9d0d9';
+        ctx.fillStyle = col;
+        ctx.globalAlpha = 0.75;
+        ctx.fillRect(x0, sy(b.pct), x1 - x0 - 1, y1 - sy(b.pct));
+        ctx.globalAlpha = 1;
+      });
+
+      var spx = sx(spot);
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(spx, pad.t); ctx.lineTo(spx, y1); ctx.stroke();
+      ctx.fillStyle = '#1d4ed8';
+      ctx.font = 'bold 10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('现货', spx, pad.t - 4);
+
+      ctx.strokeStyle = '#7c848f';
+      ctx.setLineDash([3, 3]);
+      var apx = sx(ath);
+      ctx.beginPath(); ctx.moveTo(apx, pad.t); ctx.lineTo(apx, y1); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#7c848f';
+      ctx.fillText('ATH', apx, pad.t - 4);
+
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      [30000, 60000, 90000].forEach(function (p) {
+        if (p < minX || p > maxX) return;
+        var x = sx(p);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText((p / 1000) + 'K', x, y1 + 13);
+      });
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('价格桶下界（示意）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var spot = parseFloat(spotEl.value);
+      var ath = parseFloat(athEl.value);
+      txt(spotO, fmtK(spot));
+      txt(athO, fmtK(ath));
+      var sup = thickBelow(spot);
+      var res = thickAbove(spot);
+      var thin = thinnestGap(spot);
+      var below = supplyBelow(spot);
+      if (sup) {
+        txt(supEl, fmtK(sup.lo) + '–' + fmtK(sup.hi));
+        txt(supHEl, '供应 ' + sup.pct.toFixed(1) + '% · 厚区支撑候选');
+        tint(supEl, '#0f8a4d');
+      } else {
+        txt(supEl, '无明显厚区');
+        txt(supHEl, '现货下方无 ≥6.5% 供应簇');
+        tint(supEl, '#7c848f');
+      }
+      if (res) {
+        txt(resEl, fmtK(res.lo) + '–' + fmtK(res.hi));
+        txt(resHEl, '供应 ' + res.pct.toFixed(1) + '% · 阻力候选');
+        tint(resEl, '#d5342c');
+      } else {
+        txt(resEl, '薄阻力区');
+        txt(resHEl, '上方无显著成本簇——路径阻力低');
+        tint(resEl, '#1d4ed8');
+      }
+      if (thin) {
+        txt(thinEl, fmtK(thin.lo) + '–' + fmtK(thin.hi));
+        txt(thinHEl, '仅 ' + thin.pct.toFixed(1) + '% 供应 · 易快速穿越');
+      } else {
+        txt(thinEl, '—');
+        txt(thinHEl, '现货附近无极端薄区');
+      }
+      txt(belowEl, below.toFixed(1) + '%');
+      txt(belowHEl, '成本基线位于现货下方的供应占比');
+      var verdict = thin && thin.lo <= spot ? '低阻力通道' : (sup ? '下方有厚垫' : '均衡分布');
+      txt(vEl, verdict);
+      tint(vEl, verdict.indexOf('低阻力') >= 0 ? '#1d4ed8' : '#454c56');
+      txt(vhEl, 'URPD 读法：厚区=反应带，薄区=加速带，非预测');
+      draw(spot, ath);
+    }
+
+    spotEl.addEventListener('input', update);
+    athEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 2 · 币数 vs 投入资本加权 ══ */
+  (function urpdIC() {
+    var spotEl = $('urpd_ic_spot');
+    if (!spotEl) return;
+    var spotO = $('urpd_ic_spotO');
+    var cntEl = $('urpd_ic_cnt'), cntHEl = $('urpd_ic_cnth');
+    var icEl = $('urpd_ic_ic'), icHEl = $('urpd_ic_ich');
+    var shiftEl = $('urpd_ic_shift'), shiftHEl = $('urpd_ic_shifth');
+    var vEl = $('urpd_ic_v'), vhEl = $('urpd_ic_vh');
+    var cv = $('urpdICChart');
+
+    function icPct(b) {
+      return b.pct * b.lo;
+    }
+
+    function draw() {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxCnt = 12, maxIc = 0;
+      var icVals = BUCKETS.map(icPct);
+      icVals.forEach(function (v) { if (v > maxIc) maxIc = v; });
+      var n = BUCKETS.length;
+      var bw = iw / n - 4;
+      BUCKETS.forEach(function (b, i) {
+        var x = pad.l + i * (iw / n) + 2;
+        var hCnt = (b.pct / maxCnt) * ih;
+        var hIc = (icPct(b) / maxIc) * ih;
+        ctx.fillStyle = '#c9d0d9';
+        ctx.fillRect(x, y1 - hCnt, bw, hCnt);
+        ctx.fillStyle = '#d5342c';
+        ctx.globalAlpha = 0.85;
+        ctx.fillRect(x, y1 - hIc, bw, hIc);
+        ctx.globalAlpha = 1;
+      });
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('灰=币数加权  红=资本加权', pad.l, pad.t - 4);
+      ctx.textAlign = 'center';
+      ctx.fillText('价格桶（示意）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var spot = parseFloat(spotEl.value);
+      txt(spotO, fmtK(spot));
+      var bestCnt = BUCKETS[0], bestIc = BUCKETS[0];
+      var bestCntV = 0, bestIcV = 0;
+      BUCKETS.forEach(function (b) {
+        if (b.pct > bestCntV) { bestCntV = b.pct; bestCnt = b; }
+        var ic = icPct(b);
+        if (ic > bestIcV) { bestIcV = ic; bestIc = b; }
+      });
+      txt(cntEl, fmtK(bestCnt.lo));
+      txt(cntHEl, bestCnt.pct.toFixed(1) + '% 供应 · 币数峰值');
+      txt(icEl, fmtK(bestIc.lo));
+      txt(icHEl, '资本权重峰值 · 高价小量可追上');
+      var shift = bestIc.lo - bestCnt.lo;
+      txt(shiftEl, (shift >= 0 ? '+' : '') + fmtK(shift).replace('$', ''));
+      txt(shiftHEl, 'IC 峰值相对币数峰值位移');
+      tint(shiftEl, shift > 5000 ? '#d5342c' : '#454c56');
+      txt(vEl, shift > 8000 ? '读 IC 版' : '两版接近');
+      txt(vhEl, '结构意义判断优先看投入资本加权 URPD');
+      draw();
+    }
+
+    spotEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 3 · 漂移剥离器 ══ */
+  (function urpdDrift() {
+    var tEl = $('urpd_T'), psEl = $('urpd_ps'), muEl = $('urpd_mu'), sgEl = $('urpd_sg');
+    if (!tEl || !psEl) return;
+    var tO = $('urpd_TO'), psO = $('urpd_psO'), muO = $('urpd_muO'), sgO = $('urpd_sgO');
+    var baseEl = $('urpd_base'), baseHEl = $('urpd_baseh');
+    var dpEl = $('urpd_dp'), dpHEl = $('urpd_dph');
+    var nEl = $('urpd_n'), nHEl = $('urpd_nh');
+    var vEl = $('urpd_dv'), vhEl = $('urpd_dvh');
+    var cv = $('urpdDriftChart');
+
+    function draw(T, pb, ps) {
+      var s = fit(cv, 176);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 44, r: 12, t: 16, b: 32 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 32;
+      var pts = [];
+      for (var t = 5; t <= 180; t += 5) {
+        var mu = parseFloat(muEl.value) / 100;
+        var sig = parseFloat(sgEl.value) / 100;
+        var z = mu * (t / 252) / (sig * Math.sqrt(t / 252));
+        pts.push({ t: t, pb: ncdf(z) });
+      }
+      var sx = function (v) { return pad.l + (v / 180) * iw; };
+      var sy = function (v) { return y1 - v * ih; };
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      ctx.strokeStyle = '#c9d0d9';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      pts.forEach(function (p, i) {
+        var x = sx(p.t), y = sy(p.pb);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.strokeStyle = '#d5342c';
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(pad.l, sy(ps)); ctx.lineTo(w - pad.r, sy(ps));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      var bx = sx(T);
+      ctx.fillStyle = '#1d4ed8';
+      ctx.beginPath(); ctx.arc(bx, sy(pb), 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('持有期 T', pad.l + iw / 2, y1 + 22);
+    }
+
+    function update() {
+      var T = parseFloat(tEl.value);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sig = parseFloat(sgEl.value) / 100;
+      var z = mu * (T / 252) / (sig * Math.sqrt(T / 252));
+      var pb = ncdf(z);
+      var dp = ps - pb;
+      var diff = Math.max(dp, 0.001);
+      var n = Math.pow(1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps)), 2) / Math.pow(diff, 2);
+      txt(tO, T + ' 日');
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(0) + '%');
+      txt(sgO, (sig * 100).toFixed(0) + '%');
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(baseHEl, '随机持币 ' + T + ' 日基准');
+      txt(dpEl, (dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp');
+      tint(dpEl, dp >= 5 ? '#d5342c' : dp >= 2 ? '#b8730a' : '#454c56');
+      txt(dpHEl, '厚区反弹策略表面胜率 − 基准');
+      txt(nEl, isFinite(n) ? String(Math.ceil(n)) : '—');
+      txt(nHEl, '证明 ' + (dp * 100).toFixed(1) + 'pp 超额所需样本（双侧）');
+      var verdict = dp < 3 ? '超额有限' : dp < 6 ? '需大样本' : '表面可观';
+      txt(vEl, verdict);
+      txt(vhEl, dp < 3 ? 'URPD 水平不宜替代漂移对照' : '仍须行为指标确认吸收');
+      draw(T, pb, ps);
+    }
+
+    tEl.addEventListener('input', update);
+    psEl.addEventListener('input', update);
+    muEl.addEventListener('input', update);
+    sgEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 4 · 分桶透镜 ══ */
+  (function urpdPart() {
+    var spotEl = $('urpd_part_spot'), athEl = $('urpd_part_ath');
+    if (!spotEl || !athEl) return;
+    var spotO = $('urpd_part_spotO'), athO = $('urpd_part_athO');
+    var athWEl = $('urpd_part_athW'), athWHEl = $('urpd_part_athWh');
+    var pctWEl = $('urpd_part_pctW'), pctWHEl = $('urpd_part_pctWh');
+    var nearEl = $('urpd_part_near'), nearHEl = $('urpd_part_nearh');
+    var vEl = $('urpd_part_v'), vhEl = $('urpd_part_vh');
+
+    function update() {
+      var spot = parseFloat(spotEl.value);
+      var ath = parseFloat(athEl.value);
+      var athW = ath / 100;
+      var pctW = spot * 0.02;
+      var athIdx = Math.floor(spot / athW);
+      var pctIdx = 50;
+      txt(spotO, fmtK(spot));
+      txt(athO, fmtK(ath));
+      txt(athWEl, '$' + Math.round(athW).toLocaleString('en-US'));
+      txt(athWHEl, '0→ATH 均分 100 桶 · 现货落在第 ' + athIdx + ' 桶');
+      txt(pctWEl, '$' + Math.round(pctW).toLocaleString('en-US'));
+      txt(pctWHEl, '±2% 共 100 桶 · 现货居中第 ' + pctIdx + ' 桶');
+      var ratio = pctW / athW;
+      txt(nearEl, ratio.toFixed(2) + '×');
+      txt(nearHEl, '百分比分桶局部放大倍数');
+      var lens = ratio > 1.2 ? '用 % 分区看近端' : '用 ATH 分区看全史';
+      txt(vEl, lens);
+      txt(vhEl, ratio > 1.2 ? '现货附近细节：% 分区桶宽更窄' : '远端结构：ATH 分区覆盖全周期');
+    }
+
+    spotEl.addEventListener('input', update);
+    athEl.addEventListener('input', update);
+    update();
+  })();
+})();
+</script>
+</body>
+</html>

@@ -323,11 +323,14 @@
     {
       "slug": "BTC-URPD 已实现价格分布",
       "title": "BTC-URPD 已实现价格分布",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-17 00:27:43",
+      "finished": "2026-09-17 00:32:23",
+      "duration_sec": 280,
+      "outputs": [
+        "reports/BTC-URPD 已实现价格分布.html",
+        "reports/BTC-URPD 已实现价格分布.md"
+      ],
       "error": null
     },
     {
@@ -608,7 +611,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 00:27",
+  "updated": "2026-09-17 00:32",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
