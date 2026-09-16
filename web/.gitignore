@@ -1,0 +1,10 @@
+node_modules/
+.next/
+out/
+.vercel/
+next-env.d.ts
+*.tsbuildinfo
+
+# sync-reports.mjs 生成，构建时自动重建
+public/files/
+data/

@@ -1,0 +1,9 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# 构建器派生的中间文件（会自动重新生成）
+tools/assets/shell.html
+
+# macOS
+.DS_Store

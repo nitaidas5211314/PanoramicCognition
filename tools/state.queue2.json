@@ -1,0 +1,67 @@
+{
+  "topics": [
+    {
+      "slug": "quant-math",
+      "title": "量化交易与数学的关系",
+      "status": "done",
+      "started": null,
+      "finished": "2026-09-16 19:16",
+      "duration_sec": null,
+      "outputs": [
+        "reports/quant-math.html"
+      ],
+      "error": null
+    },
+    {
+      "slug": "数学",
+      "title": "数学",
+      "status": "done",
+      "started": "2026-09-16 19:16:21",
+      "finished": "2026-09-16 19:38:21",
+      "duration_sec": 1320,
+      "outputs": [
+        "reports/数学.html",
+        "reports/数学.md"
+      ],
+      "error": null
+    },
+    {
+      "slug": "概率论",
+      "title": "概率论",
+      "status": "done",
+      "started": "2026-09-16 19:16:21",
+      "finished": "2026-09-16 19:38:22",
+      "duration_sec": 1321,
+      "outputs": [
+        "reports/概率论.html",
+        "reports/概率论.md"
+      ],
+      "error": null
+    },
+    {
+      "slug": "几何学",
+      "title": "几何学",
+      "status": "done",
+      "started": "2026-09-16 19:16:21",
+      "finished": "2026-09-16 19:38:23",
+      "duration_sec": 1322,
+      "outputs": [
+        "reports/几何学.html",
+        "reports/几何学.md"
+      ],
+      "error": null
+    }
+  ],
+  "updated": "2026-09-16 19:38",
+  "batch": {
+    "id": "B20260916-191621",
+    "started": "2026-09-16 19:16:21",
+    "limit": null,
+    "size": 3,
+    "slugs": [
+      "数学",
+      "概率论",
+      "几何学"
+    ]
+  }
+}

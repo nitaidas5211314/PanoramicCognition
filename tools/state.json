@@ -1,0 +1,208 @@
+{
+  "topics": [
+    {
+      "slug": "quant-math",
+      "title": "量化交易与数学的关系",
+      "status": "done",
+      "started": null,
+      "finished": "2026-09-16 13:09",
+      "outputs": [
+        "reports/quant-math.html"
+      ],
+      "error": null
+    },
+    {
+      "slug": "量化交易与博弈论的关系",
+      "title": "量化交易与博弈论的关系",
+      "status": "done",
+      "started": "2026-09-16 13:12",
+      "finished": "2026-09-16 13:19",
+      "outputs": [
+        "reports/量化交易与博弈论的关系.html",
+        "reports/量化交易与博弈论的关系.md"
+      ],
+      "error": null
+    },
+    {
+      "slug": "投资与概率论的关系",
+      "title": "投资与概率论的关系",
+      "status": "done",
+      "started": "2026-09-16 15:06",
+      "finished": "2026-09-16 15:42",
+      "outputs": [
+        "reports/投资与概率论的关系.html",
+        "reports/投资与概率论的关系.md"
+      ],
+      "error": null
+    },
+    {
+      "slug": "威科夫操盘法",
+      "title": "威科夫操盘法",
+      "status": "done",
+      "started": "2026-09-16 17:24:04",
+      "finished": "2026-09-16 17:36:05",
+      "outputs": [
+        "reports/威科夫操盘法.html",
+        "reports/威科夫操盘法.md"
+      ],
+      "error": null,
+      "duration_sec": 721
+    },
+    {
+      "slug": "安妮·杜克將撲克賽局與心理學結合，專門研究人們如何在不確定與壓力下做出精準決策",
+      "title": "安妮·杜克將撲克賽局與心理學結合，專門研究人們如何在不確定與壓力下做出精準決策",
+      "status": "done",
+      "started": "2026-09-16 17:58:18",
+      "finished": "2026-09-16 18:07:44",
+      "duration_sec": 566,
+      "outputs": [
+        "reports/安妮·杜克將撲克賽局與心理學結合，專門研究人們如何在不確定與壓力下做出精準決策.html",
+        "reports/安妮·杜克將撲克賽局與心理學結合，專門研究人們如何在不確定與壓力下做出精準決策.md"
+      ],
+      "error": null
+    },
+    {
+      "slug": "《停損的勝算》",
+      "title": "《停損的勝算》",
+      "status": "done",
+      "started": "2026-09-16 19:05:47",
+      "finished": "2026-09-16 19:17:47",
+      "duration_sec": 633,
+      "outputs": [
+        "reports/《停損的勝算》.html",
+        "reports/《停損的勝算》.md"
+      ],
+      "error": null
+    },
+    {
+      "slug": "《高勝算決策》",
+      "title": "《高勝算決策》",
+      "status": "done",
+      "started": "2026-09-16 19:22:35",
+      "finished": "2026-09-16 19:40:28",
+      "duration_sec": 1073,
+      "outputs": [
+        "reports/《高勝算決策》.html",
+        "reports/《高勝算決策》.md"
+      ],
+      "error": null
+    },
+    {
+      "slug": "凯尔模型",
+      "title": "凯尔模型",
+      "status": "running",
+      "started": "2026-09-16 19:58:11",
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "安同良团队拆解坟包收割",
+      "title": "安同良团队拆解坟包收割",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "安同良团队拆解逐浪抱团",
+      "title": "安同良团队拆解逐浪抱团",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "安同良团队拆解精准狙击",
+      "title": "安同良团队拆解精准狙击",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "人的意识与佛学的关系",
+      "title": "人的意识与佛学的关系",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "人的意识",
+      "title": "人的意识",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "白帽挖洞平台",
+      "title": "白帽挖洞平台",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-ZEC-BCH类挖矿软件",
+      "title": "BTC/ZEC/BCH类挖矿软件",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-ZEC-挖矿",
+      "title": "BTC/ZEC/挖矿",
+      "status": "removed",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "BTC-ZEC挖矿",
+      "title": "BTC/ZEC挖矿",
+      "status": "removed",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    }
+  ],
+  "updated": "2026-09-16 20:01",
+  "batch": {
+    "id": "B20260916-190450",
+    "started": "2026-09-16 19:04:50",
+    "limit": null,
+    "size": 10,
+    "slugs": [
+      "《停損的勝算》",
+      "《高勝算決策》",
+      "凯尔模型",
+      "安同良团队拆解坟包收割",
+      "安同良团队拆解逐浪抱团",
+      "安同良团队拆解精准狙击",
+      "人的意识与佛学的关系",
+      "人的意识",
+      "白帽挖洞平台",
+      "BTC-ZEC-BCH类挖矿软件"
+    ]
+  }
+}

@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>量化交易与数学的关系 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Quant × Mathematics</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路径</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天实践计划</a>
+    <a href="#s24"><i>24</i>30天能力构建</a>
+    <a href="#s25"><i>25</i>10个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#appx"><i>A</i>数据来源与标记</a>
+  </nav>
+</aside>
+
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>量化交易与数学的关系</h1>
+  <p class="sub">不是"数学能不能预测股价"这种问法。真正的问题是：在一个<strong>信噪比极低、规则会变、对手会适应、样本只给你一次</strong>的系统里，数学能帮你做什么、不能帮你做什么、以及它在哪里会骗你。</p>
+  <div class="meta">
+    <span class="chip b">27 节 · 交互式</span>
+    <span class="chip">3 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+
+<!-- ══════════════ 0 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p class="lede">数学在量化里的角色，<strong>不是"预测未来"的望远镜，而是"把不确定性转换成可定价、可下注、可被证伪的对象"的翻译机</strong>。它提供三样东西：一套描述随机性的<strong>语言</strong>、一套把直觉变成可检验假设的<strong>纪律</strong>、一套压低破产概率的<strong>护栏</strong>。而它最常失败的地方，不是算错了，是<strong>被自己搜出来的假信号骗了</strong>。</p>
+
+<div class="grid g3">
+  <div class="card accent">
+    <h4>数学回答的问题 1</h4>
+    <p class="big" style="color:var(--accent)">这个赌局有正期望吗？</p>
+    <p>对应：概率论、统计推断、假设检验。<br>核心工具：期望值、IC、t 统计量、多重检验校正。</p>
+  </div>
+  <div class="card accent">
+    <h4>数学回答的问题 2</h4>
+    <p class="big" style="color:var(--purple)">该押多少？</p>
+    <p>对应：最优增长理论、凸优化、随机控制。<br>核心工具：凯利公式、对数效用、风险预算、VaR/CVaR。</p>
+  </div>
+  <div class="card accent">
+    <h4>数学回答的问题 3</h4>
+    <p class="big" style="color:var(--teal)">这个"正期望"是真的吗？</p>
+    <p>对应：模型选择、过拟合理论、信息论。<br>核心工具：样本外检验、DSR、PBO、Purged CV。</p>
+  </div>
+</div>
+
+<div class="note blue">
+  <b>一句话的地理坐标：</b>数学决定了量化能力的<strong>上限</strong>，但对一个具体的人而言，真正决定成败的是<strong>信噪比</strong>与<strong>成本</strong>这两件更"工程"的事。西蒙斯（Jim Simons）不是靠一个更漂亮的公式赢的，是靠一整套让 0.5% 的微弱信号在几百万次交易中不被噪声和成本吃掉的系统赢的。
+</div>
+</section>
+
+<!-- ══════════════ 1 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+
+<h3>1.1 它研究的不是"涨跌"，是"优势"</h3>
+<p>「量化交易与数学的关系」不是"用数学预测股价"——那是一个几乎必败的提法。它的真实研究对象是：</p>
+<div class="flow">
+  <span class="hi">可重复的统计优势 (edge)</span><i>→</i>
+  <span>在扣除成本后仍为正的期望</span><i>→</i>
+  <span>按最优比例下注</span><i>→</i>
+  <span>活到优势兑现的那一天</span>
+</div>
+<p>注意这条链上<strong>没有"预测"两个字</strong>。预测只是这条链最前面的、也是最不重要的一个环节。Medallion 的平均持仓周期是分钟到天级别，它不预测宏观经济，它捕捉的是"价格里反复出现的微小规律"。</p>
+
+<h3>1.2 边界在哪里：数学的四个天花板</h3>
+<div class="grid g2">
+  <div class="card danger">
+    <h4>① 非平稳性（Non-stationarity）</h4>
+    <p>实验室里，硬币的概率不变，你可以重复一万次。市场里，概率本身在变——制度、参与者、技术、监管都在动。<strong>统计推断的全部地基（"同一分布下的重复抽样"）在这里是裂开的。</strong></p>
+  </div>
+  <div class="card danger">
+    <h4>② 反身性（Reflexivity）</h4>
+    <p>物理学的观察者不改变被观察对象。金融里，你的交易本身会改变价格，你的模型被发现后会被别人复制，复制后就会失效。<strong>模型会吃掉自己的收益。</strong></p>
+  </div>
+  <div class="card danger">
+    <h4>③ 样本只有一次</h4>
+    <p>你只有一条 2008、只有一条 2015、只有一条 2020。<strong>没有"无限次重复"的奢侈</strong>，所以教科书里的"无偏估计量"在现实中可能意味着巨大的方差。</p>
+  </div>
+  <div class="card danger">
+    <h4>④ 尾部主导结果</h4>
+    <p>收益分布是肥尾、负偏的。均值贡献来自大量小赢，而<strong>破产来自极少数极端日</strong>。LTCM 的模型 4 年都对，第 5 年一次就归零。</p>
+  </div>
+</div>
+<p class="sub" style="font-size:13.5px">哈佛统计学家刘军的说法值得记住：智能交易需要<strong>金融专业知识、统计数学模型、人工智能技术三者融合</strong>；而"金融数据本身的非稳态性和关联性，使得各种策略模型在预测市场方面难以行之有效"。</p>
+
+<h3>1.3 世界模型：先回答 15 个问题</h3>
+<div class="tw">
+<table>
+<thead><tr><th style="width:34px">#</th><th style="width:150px">问题</th><th>回答</th><th style="width:78px">性质</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td class="k">研究什么</td><td>在随机且非平稳的价格序列中，提取可重复的统计优势，并把它转化为可承受风险下的长期增长。</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="num">2</td><td class="k">边界</td><td>左边界是"信息效率"（完全有效市场里没有优势），右边界是"成本"（优势必须大于手续费+价差+冲击）。上下天花板见 1.2。</td><td><span class="tag t-inf">推论</span></td></tr>
+<tr><td class="num">3</td><td class="k">核心对象</td><td>价格过程、收益率分布、因子暴露、赔率、仓位、风险预算、交易成本。</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="num">4</td><td class="k">参与者</td><td>做市商、高频、统计套利、因子量化、CTA、指数增强、公募量化、主观多头、游资、散户、交易所、监管、券商通道、数据/算力供应商。</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="num">5</td><td class="k">变量</td><td>价格、成交量、换手率、价差、订单流不平衡、波动率、相关性、因子拥挤度、交易成本、资金流、情绪、政策。</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="num">6</td><td class="k">可直接观察</td><td>价格、成交量、已实现波动率、订单簿快照、成交明细、公开财务数据。</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="num">7</td><td class="k">不可观察但可推断</td><td><strong>真实波动率</strong>（用期权隐含波动率反推）、<strong>因子拥挤度</strong>（用换手率/相关性异常反推）、<strong>对手意图</strong>（用订单流形态反推）、<strong>真实的因子风险溢价</strong>（永远只能估计）。</td><td><span class="tag t-inf">推论</span></td></tr>
+<tr><td class="num">8</td><td class="k">谁影响谁</td><td>见第 07 节因果图。核心链条：信号强度 → 扣费后期望 → 仓位 → 长期增长率。</td><td><span class="tag t-inf">推论</span></td></tr>
+<tr><td class="num">9</td><td class="k">因果关系</td><td>交易成本↑ ⇒ 净收益↓（确定因果）；杠杆↑ ⇒ 破产概率非线性↑（确定因果）；拥挤度↑ ⇒ 因子未来收益↓（强因果，机制清晰）。</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="num">10</td><td class="k">只是相关</td><td>"因子 IC 高"与"该期市场上涨"高度相关，但共同原因是市场状态，不是互为因果。绝大多数"我发现了一个规律"都属于这一类。</td><td><span class="tag t-inf">推论</span></td></tr>
+<tr><td class="num">11</td><td class="k">表层现象</td><td>K 线形态、均线金叉、"放量突破"、龙虎榜、技术指标信号。<strong>这些之所以有效，是因为有人信；一旦没人信就失效。</strong></td><td><span class="tag t-inf">推论</span></td></tr>
+<tr><td class="num">12</td><td class="k">底层机制</td><td>风险补偿（承担别人不愿承担的风险）、流动性提供（别人急你需要慢）、信息处理速度差（谁先读懂数据）、行为偏差（别人系统性犯错）。<strong>只有这四类才是"真优势"的源头。</strong></td><td><span class="tag t-hyp">假设</span></td></tr>
+<tr><td class="num">13</td><td class="k">反馈效应</td><td>业绩好 → 资金流入 → 规模变大 → 冲击成本上升 → 收益下降（<strong>负反馈，容量约束</strong>）。因子被广泛使用 → 拥挤 → 收益衰减（<strong>负反馈</strong>）。波动上升 → 去杠杆 → 波动进一步上升（<strong>正反馈，踩踏</strong>）。</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="num">14</td><td class="k">时间延迟</td><td>因子从"被发现"到"失效"有 2–5 年的滞后（发表效应）；止损/风控的触发有延迟；监管从"注意到问题"到"出台规则"通常 1–2 年。</td><td><span class="tag t-inf">推论</span></td></tr>
+<tr><td class="num">15</td><td class="k">正/负反馈</td><td>正反馈：动量、杠杆、被动资金、社交媒体。负反馈：价值、做市、套利、监管。市场的波动性来自这两者交替主导。</td><td><span class="tag t-fact">事实</span></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- ══════════════ 2 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<p class="lede">因为这是<strong>数学在现实世界里最严苛的应用场景</strong>：样本少、分布会变、对手会学习、错误要花钱。你在别处学的统计和优化，出错顶多是论文被拒；在这里出错，账户清零。它是"数学能做什么"最好的试金石——也是"数学不能做什么"最贵的教科书。</p>
+
+<div class="grid g2">
+  <div class="card">
+    <h4>认知层 · 学会区分信号与噪声</h4>
+    <p>真实世界的信噪比低得吓人。A 股量化因子的月度 IC（信息系数）通常在 <strong>0.02–0.04</strong> 这个量级——意思是，你看到的"规律"有 96% 以上是噪声。学会在这个量级上工作，你对所有"数据说话"的论断都会变谨慎。</p>
+  </div>
+  <div class="card">
+    <h4>方法论层 · 一套通用的反脆弱流程</h4>
+    <p>假设 → 样本外验证 → 成本建模 → 小仓试跑 → 归因 → 修正。这套流程可以迁移到任何决策场景：产品定价、简历筛选、医疗诊断、甚至择偶。</p>
+  </div>
+  <div class="card">
+    <h4>实践层 · 唯一能用数学直接换钱的领域</h4>
+    <p>不需要实验室、不需要论文评审、不需要雇主批准。一份免费历史数据 + Python，今天就能跑完整的"提出假设→检验→证伪"闭环。这是普通人能获得的最便宜的实证训练场。</p>
+  </div>
+  <div class="card">
+    <h4>警示层 · 数学卓越 ≠ 结果卓越</h4>
+    <p>1998 年长期资本管理公司（LTCM）的合伙人里<strong>有两位诺贝尔经济学奖得主</strong>（默顿、斯科尔斯）。他们的模型方向没错，25 倍杠杆下，一次俄罗斯债务违约就让 46 亿美元灰飞烟灭。<strong>错误不是看错了，是押得太重了。</strong></p>
+  </div>
+</div>
+
+<div class="note purple">
+  <b>跨域同构（为什么懂存储产业的人应该看这个）：</b>半导体存储是典型的<strong>强周期 + 重资本 + 长滞后</strong>系统：产能决策到产出有 18–24 个月滞后，价格由供需缺口决定，而供需缺口由所有人的集体乐观/悲观决定。这与量化里的三个结构完全同构——<strong>①时间延迟导致的周期性</strong>（DRAM 价格 vs 因子生命周期）、<strong>②反身性</strong>（扩产 → 供给过剩 → 价格崩 → 减产的自我实现循环）、<strong>③容量约束下的收益衰减</strong>（规模越大，边际收益越低）。你在存储产业里看到的"周期"，在因子世界里叫"拥挤度衰减"，在物理里叫"负反馈振荡"。<strong>同一个数学结构，三个不同的名字。</strong>
+</div>
+</section>
+
+<!-- ══════════════ 3 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>把研究对象摊成 9 层。越往下越接近机制，越往上越容易被误认为是全部真相。</p>
+
+<div class="svgwrap">
+<svg viewBox="0 0 680 500" role="img" aria-label="量化的九层世界地图">
+  <defs>
+    <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eaf0ff"/><stop offset="100%" stop-color="#f8faff"/>
+    </linearGradient>
+  </defs>
+  <g font-family="-apple-system,PingFang SC,sans-serif">
+    <!-- levels -->
+    <g>
+      <rect x="40" y="16" width="600" height="42" rx="9" fill="url(#lg)" stroke="#c9d8f5"/>
+      <text x="58" y="35" font-size="11" fill="#1d4ed8" font-weight="700">LEVEL 0 · 现象</text>
+      <text x="58" y="50" font-size="12.5" fill="#15181d">K 线波动 · 龙虎榜 · "突破了" · "被量化割了" · 基金净值曲线</text>
+    </g>
+    <g>
+      <rect x="40" y="66" width="600" height="42" rx="9" fill="#fff" stroke="#e2e6ec"/>
+      <text x="58" y="85" font-size="11" fill="#7c848f" font-weight="700">LEVEL 1 · 组成部分</text>
+      <text x="58" y="100" font-size="12.5" fill="#15181d">数据 · 信号 · 组合 · 执行 · 风控 · 归因 —— 六个模块</text>
+    </g>
+    <g>
+      <rect x="40" y="116" width="600" height="42" rx="9" fill="#fff" stroke="#e2e6ec"/>
+      <text x="58" y="135" font-size="11" fill="#7c848f" font-weight="700">LEVEL 2 · 关系网络</text>
+      <text x="58" y="150" font-size="12.5" fill="#15181d">信号↔成本↔容量↔拥挤度↔波动率↔杠杆 —— 互相咬合的网</text>
+    </g>
+    <g>
+      <rect x="40" y="166" width="600" height="42" rx="9" fill="#f1ecfd" stroke="#e0d5fa"/>
+      <text x="58" y="185" font-size="11" fill="#6b30d9" font-weight="700">LEVEL 3 · 运行机制</text>
+      <text x="58" y="200" font-size="12.5" fill="#15181d">期望值从哪来 · 成本吃掉多少 · 优势为何衰减 · 破产如何发生</text>
+    </g>
+    <g>
+      <rect x="40" y="216" width="600" height="42" rx="9" fill="#f1ecfd" stroke="#e0d5fa"/>
+      <text x="58" y="235" font-size="11" fill="#6b30d9" font-weight="700">LEVEL 4 · 参与者与利益</text>
+      <text x="58" y="250" font-size="12.5" fill="#15181d">谁赚谁的钱 · 谁无论输赢都赚 · 谁和你是零和 · 谁在卖铲子</text>
+    </g>
+    <g>
+      <rect x="40" y="266" width="600" height="42" rx="9" fill="#fdf3e3" stroke="#f0e0c2"/>
+      <text x="58" y="285" font-size="11" fill="#946006" font-weight="700">LEVEL 5 · 环境与约束</text>
+      <text x="58" y="300" font-size="12.5" fill="#15181d">交易成本 · 涨跌停 · T+1 · 印花税 · 监管规则 · 数据可得性 · 算力</text>
+    </g>
+    <g>
+      <rect x="40" y="316" width="600" height="42" rx="9" fill="#fdf3e3" stroke="#f0e0c2"/>
+      <text x="58" y="335" font-size="11" fill="#946006" font-weight="700">LEVEL 6 · 动态变化</text>
+      <text x="58" y="350" font-size="12.5" fill="#15181d">因子生命周期 · 风格轮动 · 波动率聚集 · 流动性潮汐 · 杠杆周期</text>
+    </g>
+    <g>
+      <rect x="40" y="366" width="600" height="42" rx="9" fill="#f7ece9" stroke="#eed7d2"/>
+      <text x="58" y="385" font-size="11" fill="#b03a2e" font-weight="700">LEVEL 7 · 长期演化</text>
+      <text x="58" y="400" font-size="12.5" fill="#15181d">人类主观 → 因子挖掘 → 机器学习 → 端到端大模型 · 频率持续下降</text>
+    </g>
+    <g>
+      <rect x="40" y="416" width="600" height="46" rx="9" fill="#e8f5ee" stroke="#cfe9db"/>
+      <text x="58" y="435" font-size="11" fill="#0b6b3d" font-weight="700">LEVEL 8 · 系统级反馈</text>
+      <text x="58" y="450" font-size="12.5" fill="#15181d">策略同质化 → 共振 → 极端行情 → 监管介入 → 规则重写（系统自我修正）</text>
+    </g>
+    <!-- arrow -->
+    <path d="M662 20 L662 455" stroke="#c9d0da" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/>
+    <path d="M657 448 L662 460 L667 448" fill="#c9d0da"/>
+    <text x="672" y="230" font-size="10.5" fill="#7c848f" transform="rotate(90 672 230)">越往下越接近机制</text>
+  </g>
+</svg>
+<div class="svgcap">图 3-1 · 量化的九层世界地图：从"现象"下沉到"系统级反馈"</div>
+</div>
+
+<h3>四种视角看同一件事</h3>
+<div class="tw">
+<table>
+<thead><tr><th style="width:140px">视角</th><th>它是什么</th><th>关键问题</th></tr></thead>
+<tbody>
+<tr><td class="k">站系统外部看</td><td>一个把"信念"翻译成"下注"的转换器。输入是数据和规则，输出是仓位和时间分布。</td><td>它与市场的关系是寄生、共生还是改造？</td></tr>
+<tr><td class="k">进入系统内部看</td><td>一条流水线：数据清洗 → 特征/因子计算 → 信号合成 → 组合优化 → 下单执行 → 归因反馈。</td><td>哪一环的边际收益最高？哪一环在漏钱？</td></tr>
+<tr><td class="k">站参与者角度看</td><td>每个参与者在解不同的优化问题：做市商最大化价差收入、量化最大化风险调整后收益、监管最大化公平与稳定、散户在最大化"感觉自己是对的"。</td><td>他们为什么这样行动？他们的约束是什么？</td></tr>
+<tr><td class="k">站长期演化角度看</td><td>所有容易赚的钱都会被更快赚完。频率持续下移（微秒 → 秒 → 日 → 周月），信号从"价格数据"转向"另类数据+大模型理解力"。</td><td>下一层尚未被开采的矿在哪？</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- ══════════════ 4 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p class="lede">这一节是全篇的枢纽：<strong>每一件数学工具，在量化里都对应一个具体的"要解决的问题"</strong>。你不是在学数学，你是在用数学解决五个固定类型的问题。</p>
+
+<div class="svgwrap">
+<svg viewBox="0 0 680 400" role="img" aria-label="数学到操作的映射">
+  <g font-family="-apple-system,PingFang SC,sans-serif">
+    <!-- three columns -->
+    <rect x="8" y="30" width="176" height="352" rx="12" fill="#f8faff" stroke="#d5e2ff"/>
+    <rect x="252" y="30" width="176" height="352" rx="12" fill="#fbf9ff" stroke="#e3dafb"/>
+    <rect x="496" y="30" width="176" height="352" rx="12" fill="#f8fdfa" stroke="#cfe9db"/>
+
+    <text x="96" y="20" font-size="11.5" fill="#1d4ed8" font-weight="700" text-anchor="middle">数学 / 概率层</text>
+    <text x="340" y="20" font-size="11.5" fill="#6b30d9" font-weight="700" text-anchor="middle">机制层</text>
+    <text x="584" y="20" font-size="11.5" fill="#0b6b3d" font-weight="700" text-anchor="middle">操作层</text>
+
+    <!-- rows -->
+    <g font-size="11.5" fill="#15181d">
+      <rect x="18" y="46" width="156" height="34" rx="7" fill="#fff" stroke="#d5e2ff"/>
+      <text x="96" y="67" text-anchor="middle">期望值 E[X]</text>
+      <rect x="262" y="46" width="156" height="34" rx="7" fill="#fff" stroke="#e3dafb"/>
+      <text x="340" y="67" text-anchor="middle">这个赌局值不值得玩</text>
+      <rect x="506" y="46" width="156" height="34" rx="7" fill="#fff" stroke="#cfe9db"/>
+      <text x="584" y="67" text-anchor="middle">信号筛选（IC / t 值）</text>
+
+      <rect x="18" y="90" width="156" height="34" rx="7" fill="#fff" stroke="#d5e2ff"/>
+      <text x="96" y="111" text-anchor="middle">方差 / 协方差</text>
+      <rect x="262" y="90" width="156" height="34" rx="7" fill="#fff" stroke="#e3dafb"/>
+      <text x="340" y="111" text-anchor="middle">风险与"一起涨跌"</text>
+      <rect x="506" y="90" width="156" height="34" rx="7" fill="#fff" stroke="#cfe9db"/>
+      <text x="584" y="111" text-anchor="middle">组合权重 / 风险预算</text>
+
+      <rect x="18" y="134" width="156" height="34" rx="7" fill="#fff" stroke="#d5e2ff"/>
+      <text x="96" y="155" text-anchor="middle">大数定律</text>
+      <rect x="262" y="134" width="156" height="34" rx="7" fill="#fff" stroke="#e3dafb"/>
+      <text x="340" y="155" text-anchor="middle">需要多少次交易才见效</text>
+      <rect x="506" y="134" width="156" height="34" rx="7" fill="#fff" stroke="#cfe9db"/>
+      <text x="584" y="155" text-anchor="middle">评估周期（别 3 天就放弃）</text>
+
+      <rect x="18" y="178" width="156" height="34" rx="7" fill="#fff" stroke="#d5e2ff"/>
+      <text x="96" y="199" text-anchor="middle">条件概率 / 贝叶斯</text>
+      <rect x="262" y="178" width="156" height="34" rx="7" fill="#fff" stroke="#e3dafb"/>
+      <text x="340" y="199" text-anchor="middle">新信息如何更新信念</text>
+      <rect x="506" y="178" width="156" height="34" rx="7" fill="#fff" stroke="#cfe9db"/>
+      <text x="584" y="199" text-anchor="middle">动态调仓 / 权重衰减</text>
+
+      <rect x="18" y="222" width="156" height="34" rx="7" fill="#fff" stroke="#d5e2ff"/>
+      <text x="96" y="243" text-anchor="middle">对数增长 / 凯利</text>
+      <rect x="262" y="222" width="156" height="34" rx="7" fill="#fff" stroke="#e3dafb"/>
+      <text x="340" y="243" text-anchor="middle">押多少才不会被淘汰</text>
+      <rect x="506" y="222" width="156" height="34" rx="7" fill="#fff" stroke="#cfe9db"/>
+      <text x="584" y="243" text-anchor="middle">仓位 / 止损 / 杠杆上限</text>
+
+      <rect x="18" y="266" width="156" height="34" rx="7" fill="#fff" stroke="#d5e2ff"/>
+      <text x="96" y="287" text-anchor="middle">随机过程 / SDE</text>
+      <rect x="262" y="266" width="156" height="34" rx="7" fill="#fff" stroke="#e3dafb"/>
+      <text x="340" y="287" text-anchor="middle">价格如何随时间演化</text>
+      <rect x="506" y="266" width="156" height="34" rx="7" fill="#fff" stroke="#cfe9db"/>
+      <text x="584" y="287" text-anchor="middle">期权定价 / 对冲 / 蒙特卡洛</text>
+
+      <rect x="18" y="310" width="156" height="34" rx="7" fill="#fff" stroke="#d5e2ff"/>
+      <text x="96" y="331" text-anchor="middle">极值理论 / 肥尾</text>
+      <rect x="262" y="310" width="156" height="34" rx="7" fill="#fff" stroke="#e3dafb"/>
+      <text x="340" y="331" text-anchor="middle">最坏情况有多坏</text>
+      <rect x="506" y="310" width="156" height="34" rx="7" fill="#fff" stroke="#cfe9db"/>
+      <text x="584" y="331" text-anchor="middle">压力测试 / CVaR / 尾部对冲</text>
+
+      <rect x="18" y="354" width="156" height="34" rx="7" fill="#fff" stroke="#d5e2ff"/>
+      <text x="96" y="375" text-anchor="middle">多重检验 / DSR</text>
+      <rect x="262" y="354" width="156" height="34" rx="7" fill="#fff" stroke="#e3dafb"/>
+      <text x="340" y="375" text-anchor="middle">这个发现是真的还是搜出来的</text>
+      <rect x="506" y="354" width="156" height="34" rx="7" fill="#fff" stroke="#cfe9db"/>
+      <text x="584" y="375" text-anchor="middle">策略否决权（最重要的一票）</text>
+    </g>
+    <!-- connectors -->
+    <g stroke="#d8dee7" stroke-width="1" fill="none">
+      <path d="M174 63 L262 63"/><path d="M418 63 L506 63"/>
+      <path d="M174 107 L262 107"/><path d="M418 107 L506 107"/>
+      <path d="M174 151 L262 151"/><path d="M418 151 L506 151"/>
+      <path d="M174 195 L262 195"/><path d="M418 195 L506 195"/>
+      <path d="M174 239 L262 239"/><path d="M418 239 L506 239"/>
+      <path d="M174 283 L262 283"/><path d="M418 283 L506 283"/>
+      <path d="M174 327 L262 327"/><path d="M418 327 L506 327"/>
+      <path d="M174 371 L262 371"/><path d="M418 371 L506 371"/>
+    </g>
+  </g>
+</svg>
+<div class="svgcap">图 4-1 · 三类对象一一咬合：抽象的数学概念 → 它实际解决的机制问题 → 你能落地的操作</div>
+</div>
+
+<h3>4.1 关键映射速查</h3>
+<div class="tw">
+<table>
+<thead><tr><th style="width:170px">数学概念</th><th style="width:150px">量化里的名字</th><th>为什么它们其实是同一件事</th></tr></thead>
+<tbody>
+<tr><td class="k">鞅（Martingale）</td><td class="k">有效市场</td><td>"未来的最佳预测就是现在" —— 用数学语言，有效市场就是"价格是鞅"。这给了你一个<strong>零收益的基准</strong>：任何策略的超额收益都是"偏离鞅"的部分。</td></tr>
+<tr><td class="k">布朗运动 / SDE</td><td class="k">价格过程</td><td>把"随机而且连续"这件事写成方程：<code>dS = μS dt + σS dW</code>。μ 是趋势，σ 是波动。整个衍生品世界建立在这一个式子上。</td></tr>
+<tr><td class="k">伊藤引理</td><td class="k">对冲与希腊字母</td><td>随机环境下的链式法则。它让你从价格过程推出期权价格方程（Black–Scholes），并算出 Δ、Γ、Vega 这些"敏感性"。</td></tr>
+<tr><td class="k">主成分 / 正交化</td><td class="k">因子去共线</td><td>当两个因子相关性 &gt; 0.5，回归系数会不稳定。Gram–Schmidt 正交化后，相关性可以从 0.82 降到 0.03——模型立刻稳了。</td></tr>
+<tr><td class="k">凸优化</td><td class="k">组合构建</td><td>"在给定风险下最大化收益"本质是一个带约束的优化问题。约束越多（行业中性、换手上限、单票上限），可行解越窄。</td></tr>
+<tr><td class="k">信息论 / 熵</td><td class="k">IC 与信息比率 IR</td><td>IC 是"信号与收益的相关系数"，IR ≈ IC × √宽度。信息论告诉你：<strong>要提升 IR，加宽持仓数量比提升单次准确率更有效。</strong></td></tr>
+<tr><td class="k">最优停时</td><td class="k">止盈止损</td><td>"什么时候该退出"在数学上是一个最优停时问题——存在一个明确的边界，越界就该走。</td></tr>
+<tr><td class="k">极值理论 EVT</td><td class="k">尾部风险</td><td>常规分布假设说"百年一遇"，EVT 说"每十年会来一次"。塔勒布的批评正来自这里：<strong>世界更接近幂律分布，不是高斯分布。</strong></td></tr>
+<tr><td class="k">多重检验校正</td><td class="k">反过拟合</td><td>试 1 次，5% 显著性有意义；试 10000 次，5% 显著性毫无意义。<strong>这是量化里最重要的一个数学事实。</strong></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- ══════════════ 5 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<p>看清楚"谁在跟谁下棋"，比看懂任何公式都重要。下面每一行都是一类玩家：他们的目标、武器、时间尺度，以及<strong>他们和你的关系</strong>。</p>
+<div class="tw">
+<table>
+<thead><tr><th style="width:120px">玩家</th><th style="width:130px">目标函数</th><th style="width:150px">数学武器</th><th style="width:90px">时间尺度</th><th>与你的关系</th></tr></thead>
+<tbody>
+<tr><td class="k">做市商</td><td>最大化价差收入 − 存货风险</td><td>随机控制、库存模型、Avellaneda–Stoikov</td><td>微秒–秒</td><td><strong>你的对手方之一</strong>，但也是流动性的提供者</td></tr>
+<tr><td class="k">高频交易</td><td>捕捉延迟套利与订单流预测</td><td>排队论、信号处理、FPGA</td><td>微秒–毫秒</td><td>速度上是你的绝对碾压者（2026 年物理优势被监管削弱）</td></tr>
+<tr><td class="k">统计套利</td><td>均值回归 / 协整对的稳定收益</td><td>协整、卡尔曼滤波、PCA</td><td>秒–日</td><td><strong>零和</strong>，与你争夺同样的定价错误</td></tr>
+<tr><td class="k">因子量化</td><td>风险调整后的超额收益（Alpha）</td><td>横截面回归、多因子、组合优化</td><td>日–月</td><td>与你竞争同一批"被错误定价"的股票</td></tr>
+<tr><td class="k">CTA / 趋势</td><td>捕捉长周期趋势</td><td>时间序列动量、波动率目标</td><td>周–季</td><td>方向相反时是唯一能"跟危机对赌"的一类</td></tr>
+<tr><td class="k">指数增强</td><td>跟踪误差约束下的超额</td><td>约束优化、风险模型（Barra）</td><td>日–月</td><td>相对温和，主要赚"风格暴露"的钱</td></tr>
+<tr><td class="k">游资</td><td>情绪与资金博弈</td><td>几乎没有数学，靠盘感+资金</td><td>小时–日</td><td><strong>量化在 2020 年代从他们手上抢走了很多地盘</strong></td></tr>
+<tr><td class="k">散户</td><td>（未明说的）想赚钱</td><td>基本没有</td><td>不确定</td><td>负和游戏里的<strong>流动性提供方与最终买单者</strong></td></tr>
+<tr><td class="k">交易所</td><td>成交额与市场稳定</td><td>撮合算法、市场微观结构</td><td>—</td><td><strong>无论谁输谁赢都赚手续费</strong></td></tr>
+<tr><td class="k">监管</td><td>公平性 + 系统性风险</td><td>穿透式监测、异常交易识别</td><td>制度周期</td><td>改变游戏规则的人，是<strong>最高阶的变量</strong></td></tr>
+<tr><td class="k">券商</td><td>佣金、两融、托管</td><td>—</td><td>—</td><td>卖铲子的，收通道费和佣金</td></tr>
+<tr><td class="k">数据/算力商</td><td>卖数据与 GPU 时长</td><td>—</td><td>—</td><td>卖铲子的，<strong>2020 年代最确定的赢家之一</strong></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note amber">
+  <b>一条残酷但重要的结构性事实：</b>A 股的交易是<strong>负和游戏</strong>——每笔交易都要付佣金、印花税、买卖价差。<strong>数学不会改变游戏是负和的，它只决定你在负和游戏里的相对位置。</strong>你不可能靠数学把一个负和游戏变成正和游戏，你只能靠数学让自己站在"抽水者"那一侧，而不是"被抽水"那一侧。
+</div>
+</section>
+
+<!-- ══════════════ 6 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+
+<h3>6.1 变量清单：可观察性 × 影响 × 可操纵性</h3>
+<div class="tw">
+<table>
+<thead><tr><th style="width:130px">变量</th><th style="width:78px">可观察</th><th style="width:150px">怎么测量</th><th>对结果的影响</th><th style="width:86px">能否被操纵</th></tr></thead>
+<tbody>
+<tr><td class="k">价格 / 收益率</td><td><span class="tag t-fact">直接</span></td><td>日线/分钟/Tick</td><td>结果本身</td><td>大资金可短期影响</td></tr>
+<tr><td class="k">成交量 / 换手率</td><td><span class="tag t-fact">直接</span></td><td>成交额、换手率序列</td><td>流动性代理、拥挤度代理</td><td><strong>可以</strong>（对倒、拉抬）</td></tr>
+<tr><td class="k">买卖价差</td><td><span class="tag t-fact">直接</span></td><td>订单簿最优买卖价</td><td>直接成本</td><td>做市商主导</td></tr>
+<tr><td class="k">订单流不平衡</td><td><span class="tag t-fact">直接</span></td><td>主动买 − 主动卖 / 总量</td><td>短期价格方向的最强预测因子之一</td><td>可以被"幌骗"制造</td></tr>
+<tr><td class="k">已实现波动率</td><td><span class="tag t-fact">直接</span></td><td>高频收益率平方和</td><td>仓位、止损、期权定价</td><td>可以（低成本砸单）</td></tr>
+<tr><td class="k">隐含波动率</td><td><span class="tag t-fact">直接</span></td><td>期权价格反解</td><td>市场对未来不确定性的共识</td><td>不能直接操纵</td></tr>
+<tr><td class="k">因子暴露</td><td><span class="tag t-inf">推断</span></td><td>横截面回归的 β</td><td>解释收益来源</td><td>—</td></tr>
+<tr><td class="k">因子拥挤度</td><td><span class="tag t-inf">推断</span></td><td>组合相关性 + 换手异常 + 估值偏离</td><td><strong>决定因子未来衰减速度</strong></td><td>—</td></tr>
+<tr><td class="k">交易成本 / 冲击成本</td><td><span class="tag t-inf">推断</span></td><td>成交价 vs 决策价的滑点</td><td>吃掉 20%–50% 的毛优势</td><td>与你的规模正相关</td></tr>
+<tr><td class="k">真实波动率（隐藏状态）</td><td><span class="tag t-chk">不可见</span></td><td>用 GARCH / 随机波动率模型估计</td><td>风险度量的基础</td><td>—</td></tr>
+<tr><td class="k">对手意图</td><td><span class="tag t-chk">不可见</span></td><td>从订单流形态反推</td><td>决定你的成交质量</td><td>—</td></tr>
+<tr><td class="k">政策 / 规则</td><td><span class="tag t-fact">直接</span></td><td>公告文本 + 时间</td><td><strong>能一夜之间消灭一类策略</strong></td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>6.2 最重要的一个数字：信噪比</h3>
+<div class="note red">
+  <b>记住这个量级：A 股量化因子的月度 IC 通常在 0.02 – 0.04。</b>翻译成人话：你算出来的"规律"，其中 <strong>96% 以上是噪声</strong>。任何声称 IC &gt; 0.2 的回测结果，几乎可以确定是<strong>过拟合或前视偏差</strong>。这是整个领域最重要的"常识校准"——它决定了下面所有工具的设计逻辑。
+  <br><span style="font-size:12px;color:var(--ink3)"><span class="tag t-inf">推论</span>基于公募/私募公开披露的因子 IC 数据与 A 股实证研究文献的普遍区间。不同因子类型与市场状态下会有波动。</span>
+</div>
+
+<div class="tool">
+  <div class="tool-hd"><h4>工具 1 · 信噪比感知器：确认一个信号需要多少数据？</h4></div>
+  <p class="tool-sub">统计显著性 t ≈ IC × √N（N = 观测数）。拖动滑块，感受"低信噪比"有多贵。</p>
+  <div class="ctrl">
+    <label for="ic">信号强度 IC</label>
+    <input type="range" id="ic" min="0.005" max="0.15" step="0.005" value="0.03">
+    <output id="icO">0.030</output>
+  </div>
+  <div class="ctrl">
+    <label for="tgt">目标 t 值</label>
+    <input type="range" id="tgt" min="2" max="5" step="0.5" value="3">
+    <output id="tgtO">3.0</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">需要的独立观测数 N</div><div class="val" id="nOut">10,000</div><div class="hint" id="nHint">按日频计算 ≈ 39.7 年</div></div>
+    <div class="ro"><div class="lbl">若用 300 只股票横截面</div><div class="val" id="crossOut">33 期</div><div class="hint">截面独立观测下的最短样本</div></div>
+    <div class="ro"><div class="lbl">判断</div><div class="val" id="verdict" style="font-size:15px">可达</div><div class="hint" id="verdictHint">但 33 期仍是理想化下限</div></div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ 7 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<p class="lede">区分因果与相关，是量化里最省钱的技能。下面这张图里，<strong>实线是因果，虚线只是相关</strong>——把虚线当成实线，是绝大多数人亏钱的原因。</p>
+
+<div class="svgwrap">
+<svg viewBox="0 0 680 430" role="img" aria-label="核心因果图">
+  <defs>
+    <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+      <path d="M0 0 L7 3.2 L0 6.4 z" fill="#5b6472"/>
+    </marker>
+    <marker id="ahr" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+      <path d="M0 0 L7 3.2 L0 6.4 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+  <g font-family="-apple-system,PingFang SC,sans-serif" font-size="11.5">
+    <!-- nodes -->
+    <rect x="18" y="60" width="118" height="40" rx="9" fill="#f8faff" stroke="#c9d8f5"/>
+    <text x="77" y="84" text-anchor="middle" fill="#1d4ed8" font-weight="700">真实优势 edge</text>
+
+    <rect x="176" y="60" width="106" height="40" rx="9" fill="#fff" stroke="#e2e6ec"/>
+    <text x="229" y="84" text-anchor="middle" fill="#15181d">扣费后期望</text>
+
+    <rect x="322" y="60" width="86" height="40" rx="9" fill="#fff" stroke="#e2e6ec"/>
+    <text x="365" y="84" text-anchor="middle" fill="#15181d">仓位决策</text>
+
+    <rect x="448" y="60" width="112" height="40" rx="9" fill="#f8fdfa" stroke="#cfe9db"/>
+    <text x="504" y="84" text-anchor="middle" fill="#0b6b3d" font-weight="700">长期增长率</text>
+
+    <rect x="322" y="176" width="86" height="40" rx="9" fill="#fdf3e3" stroke="#f0e0c2"/>
+    <text x="365" y="200" text-anchor="middle" fill="#946006">波动率</text>
+
+    <rect x="448" y="176" width="112" height="40" rx="9" fill="#f7ece9" stroke="#eed7d2"/>
+    <text x="504" y="200" text-anchor="middle" fill="#b03a2e" font-weight="700">破产概率</text>
+
+    <rect x="176" y="176" width="106" height="40" rx="9" fill="#fff" stroke="#e2e6ec"/>
+    <text x="229" y="200" text-anchor="middle" fill="#15181d">交易成本</text>
+
+    <rect x="18" y="176" width="118" height="40" rx="9" fill="#fff" stroke="#e2e6ec"/>
+    <text x="77" y="200" text-anchor="middle" fill="#15181d">规模 / 容量</text>
+
+    <rect x="176" y="292" width="106" height="40" rx="9" fill="#f1ecfd" stroke="#e0d5fa"/>
+    <text x="229" y="316" text-anchor="middle" fill="#6b30d9">拥挤度</text>
+
+    <rect x="18" y="292" width="118" height="40" rx="9" fill="#f1ecfd" stroke="#e0d5fa"/>
+    <text x="77" y="316" text-anchor="middle" fill="#6b30d9">策略公开 / 被复制</text>
+
+    <rect x="448" y="292" width="112" height="40" rx="9" fill="#f8faff" stroke="#c9d8f5"/>
+    <text x="504" y="316" text-anchor="middle" fill="#1d4ed8" font-weight="700">监管规则变化</text>
+
+    <!-- causal solid -->
+    <g stroke="#5b6472" stroke-width="1.5" fill="none" marker-end="url(#ah)">
+      <path d="M136 80 L174 80"/>
+      <path d="M282 80 L320 80"/>
+      <path d="M408 80 L446 80"/>
+      <path d="M365 164 L365 100"/>
+      <path d="M438 196 L446 196"/>
+      <path d="M365 216 L365 288"/>
+      <path d="M408 312 L446 312"/>
+      <path d="M229 216 L229 290"/>
+      <path d="M229 164 L229 100"/>
+    </g>
+    <!-- feedback / correlated dashed red -->
+    <g stroke="#d5342c" stroke-width="1.4" fill="none" stroke-dasharray="5 4" marker-end="url(#ahr)">
+      <path d="M504 100 L504 124 L77 124 L77 174"/>
+      <path d="M136 316 L140 316 L140 232 L174 222"/>
+      <path d="M77 332 L40 332 L40 232 L76 218"/>
+      <path d="M504 332 L556 332 L556 220 L562 200"/>
+    </g>
+  </g>
+  <g font-family="-apple-system,PingFang SC,sans-serif" font-size="10">
+    <text x="150" y="128" fill="#d5342c">业绩好 → 资金流入 → 规模↑ → 成本↑（负反馈）</text>
+    <text x="150" y="146" fill="#d5342c">收益 ↓</text>
+    <text x="150" y="248" fill="#d5342c">拥挤度↑ → 因子未来收益↓</text>
+    <text x="150" y="266" fill="#d5342c">策略公开 → 被复制 → 优势消失</text>
+    <text x="150" y="350" fill="#d5342c">极端行情 → 监管介入 → 规则重写</text>
+  </g>
+</svg>
+<div class="svgcap">图 7-1 · 实线 = 因果（机制清晰、可干预）；红色虚线 = 反馈环或相关关系（容易被误读为因果）</div>
+</div>
+
+<h3>7.1 三类"关系"，别搞混</h3>
+<div class="tw">
+<table>
+<thead><tr><th style="width:110px">类型</th><th style="width:220px">例子</th><th>为什么容易搞错</th></tr></thead>
+<tbody>
+<tr><td class="k" style="color:var(--red)">因果</td><td>交易成本上升 ⇒ 净收益下降<br>杠杆上升 ⇒ 破产概率非线性上升</td><td>机制清晰，可以主动干预。这是你唯一能"操作"的部分。</td></tr>
+<tr><td class="k" style="color:var(--amber)">相关非因果</td><td>"因子 IC 高" 与 "当期市场上涨" 同现</td><td>共同原因是市场状态（流动性宽裕期，什么都灵）。<strong>绝大多数"我发现了规律"属于这一类。</strong></td></tr>
+<tr><td class="k" style="color:var(--purple)">反向因果</td><td>业绩好 → 资金流入 → 规模变大 → 收益反而变差</td><td>看到"规模大的基金收益高"，会误推"规模带来收益"。真实方向可能相反（好业绩才吸到规模）。</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- ══════════════ 8 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<p class="lede">这一节找的是"看不见但决定结果"的东西。普通人不注意它们，是因为它们不在教科书里，而在系统结构里。</p>
+
+<h3>8.1 六种隐藏结构</h3>
+<div class="tw">
+<table>
+<thead><tr><th style="width:118px">结构类型</th><th style="width:180px">在量化里的形态</th><th>为什么它重要</th></tr></thead>
+<tbody>
+<tr><td class="k">隐藏变量</td><td><strong>因子拥挤度</strong>（谁都在用同一个因子，但没人公布）</td><td>它决定因子会不会突然失效。你不观察它，你的模型就没有"预警系统"。</td></tr>
+<tr><td class="k">中介变量</td><td>流动性：政策 → <strong>流动性</strong> → 因子表现</td><td>政策和因子表现之间的真实通道是流动性。只看两端会误判因果。</td></tr>
+<tr><td class="k">阈值效应</td><td>高频认定标准：<strong>单账户每秒申报/撤单 ≥ 300 笔</strong>，或单日 ≥ 2 万笔</td><td>规则的阈值会重新定义整个行业的策略结构。量化机构"卡在 299 笔"就是一个典型的阈值博弈。</td></tr>
+<tr><td class="k">非线性</td><td>杠杆 × 波动率 → 破产是<strong>非线性</strong>的</td><td>2 倍杠杆不是"风险 2 倍"，而是"破产概率增加一个量级以上"。</td></tr>
+<tr><td class="k">路径依赖</td><td>先入场者的成本结构（早期 GPU 便宜、数据便宜、监管宽松）</td><td>后入场者不是"同样的游戏晚开始"，而是<strong>在更差的条件下玩同样的游戏</strong>。</td></tr>
+<tr><td class="k">二阶/三阶影响</td><td>你的优化 → 别人成本↑ → 策略同质化 → 极端行情共振 → 监管介入</td><td>一阶影响你算得出来，三阶影响决定你五年后还能不能活。</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>8.2 结构同构：同一个数学，四个不同领域</h3>
+<p>最值得培养的能力，是在完全不同的领域里<strong>认出同一个结构</strong>。下面三组同构关系，是理解量化的三条捷径。</p>
+
+<div class="tw">
+<table>
+<thead><tr><th style="width:150px">结构</th><th style="width:150px">量化里</th><th style="width:150px">其他领域</th><th>共同内核</th></tr></thead>
+<tbody>
+<tr>
+  <td class="k">最优下注比例</td>
+  <td>凯利公式（仓位管理）</td>
+  <td>① 生物学：r/K 选择策略<br>② 信息论：香农的信道容量<br>③ 强化学习：探索/利用权衡<br>④ 个人习惯：每天投入多少精力</td>
+  <td><strong>"押太少增长慢，押太多会归零"</strong>——任何可持续增长的资源分配问题，都受同一个对数增长函数约束。</td>
+</tr>
+<tr>
+  <td class="k">多重检验</td>
+  <td>回测过拟合、DSR、PBO</td>
+  <td>① 医学：临床试验的多中心校正<br>② 物理：粒子发现要求 5σ 而非 2σ<br>③ 互联网：A/B 测试的假阳性<br>④ 招聘：面 50 个人总有 1 个"看起来很完美"</td>
+  <td><strong>"你试的次数越多，你看到的最高分就越不可信"</strong>——这是一个纯数学事实，与领域无关。</td>
+</tr>
+<tr>
+  <td class="k">扩散与传播</td>
+  <td>价格随机游走、波动率扩散</td>
+  <td>① 物理：热传导方程、布朗运动<br>② 生物：物种扩散<br>③ 社会：谣言与情绪的传播<br>④ 半导体：产能扩张的滞后振荡</td>
+  <td><strong>"局部的随机扰动，在时间上累积成可预测的分布"</strong>——同一个偏微分方程描述了分子、价格和产能周期。</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="note purple">
+  <b>给你的一个具体联系（存储产业 ↔ 因子世界的同构）：</b>
+  <br>① <strong>时间延迟</strong>：DRAM 厂从决定扩产到产能落地约 18–24 个月 → 因子从"被发现"到"被广泛使用"再到"衰减"约 2–5 年。两者都是<strong>延迟导致的振荡系统</strong>。
+  <br>② <strong>反身性</strong>：价格高 → 大家扩产 → 供给过剩 → 价格崩 → 减产。因子表现好 → 资金涌入 → 拥挤 → 失效。<strong>同一个自我实现循环。</strong>
+  <br>③ <strong>容量约束</strong>：存储厂的规模效应在某个节点后变成成本负担；策略规模超过容量后，冲击成本吃掉全部 Alpha。数学上都是<strong>凹函数到达拐点后变为减函数</strong>。
+</div>
+</section>
+
+<!-- ══════════════ 9 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+
+<h3>9.1 六段流水线</h3>
+<div class="flow">
+  <span class="hi">① 数据</span><i>→</i><span class="hi">② 信号</span><i>→</i><span class="hi">③ 组合</span><i>→</i><span class="hi">④ 执行</span><i>→</i><span class="hi">⑤ 风控</span><i>→</i><span class="hi">⑥ 归因</span><i>↻</i>
+</div>
+<div class="tw">
+<table>
+<thead><tr><th style="width:80px">环节</th><th style="width:190px">数学任务</th><th>最常见的失败方式</th></tr></thead>
+<tbody>
+<tr><td class="k">① 数据</td><td>清洗、去极值（MAD 法）、标准化（Z-score）、复权、对齐</td><td><strong>前视偏差</strong>：用了当时还不存在的信息（如用财报公告日之前的财报数据）</td></tr>
+<tr><td class="k">② 信号</td><td>因子构建、IC 检验、正交化、衰减分析</td><td><strong>数据窥探</strong>：试了 500 个变体，只报告最好的那个</td></tr>
+<tr><td class="k">③ 组合</td><td>约束优化、风险预算、行业中性、换手惩罚</td><td>忽略<strong>协方差矩阵估计误差</strong>，导致权重集中在少数股票</td></tr>
+<tr><td class="k">④ 执行</td><td>下单算法（VWAP/TWAP）、冲击成本模型、择时</td><td><strong>成本幻觉</strong>：回测用收盘价成交，实盘滑点吃掉全部收益</td></tr>
+<tr><td class="k">⑤ 风控</td><td>VaR/CVaR、压力测试、暴露限制、止损</td><td>用高斯假设算 VaR，<strong>系统性低估尾部风险</strong></td></tr>
+<tr><td class="k">⑥ 归因</td><td>Brinson 归因、因子归因、交易成本归因</td><td>只看总收益，不知道钱是从哪来的、该不该继续</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>9.2 钱从哪里来、到哪里去</h3>
+<div class="svgwrap">
+<svg viewBox="0 0 680 250" role="img" aria-label="资金流抽水示意">
+  <g font-family="-apple-system,PingFang SC,sans-serif" font-size="11.5">
+    <rect x="20" y="90" width="120" height="48" rx="10" fill="#f8faff" stroke="#c9d8f5"/>
+    <text x="80" y="112" text-anchor="middle" fill="#1d4ed8" font-weight="700">所有参与者</text>
+    <text x="80" y="128" text-anchor="middle" fill="#4a5058" font-size="10.5">的投入资金</text>
+
+    <path d="M140 114 L214 114" stroke="#5b6472" stroke-width="2" marker-end="url(#ah)"/>
+
+    <rect x="214" y="72" width="140" height="84" rx="10" fill="#fff" stroke="#e2e6ec"/>
+    <text x="284" y="96" text-anchor="middle" fill="#15181d" font-weight="700">市场抽水口</text>
+    <text x="284" y="114" text-anchor="middle" fill="#b03a2e" font-size="10.5">佣金 · 印花税 · 价差 · 冲击</text>
+    <text x="284" y="132" text-anchor="middle" fill="#4a5058" font-size="10.5">每年从池子里固定抽走一块</text>
+    <text x="284" y="149" text-anchor="middle" fill="#7c848f" font-size="10">（与谁赢谁输无关）</text>
+
+    <path d="M354 114 L428 114" stroke="#5b6472" stroke-width="2" marker-end="url(#ah)"/>
+
+    <rect x="428" y="60" width="112" height="50" rx="10" fill="#f8fdfa" stroke="#cfe9db"/>
+    <text x="484" y="82" text-anchor="middle" fill="#0b6b3d" font-weight="700">剩余的钱</text>
+    <text x="484" y="98" text-anchor="middle" fill="#4a5058" font-size="10.5">按"优势"重新分配</text>
+
+    <path d="M540 85 L622 85" stroke="#5b6472" stroke-width="1.5" marker-end="url(#ah)"/>
+    <text x="584" y="78" text-anchor="middle" fill="#0b6b3d" font-size="11">有优势者</text>
+
+    <path d="M440 110 L622 152" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ahr)"/>
+    <text x="560" y="146" text-anchor="middle" fill="#d5342c" font-size="10.5">无优势者 / 承担抽水</text>
+
+    <rect x="20" y="196" width="640" height="40" rx="9" fill="#fffaf1" stroke="#f0e0c2"/>
+    <text x="340" y="213" text-anchor="middle" fill="#946006" font-size="11.5" font-weight="700">这就是为什么：把市场当成"正和游戏"是一切误判的起点</text>
+    <text x="340" y="229" text-anchor="middle" fill="#7c848f" font-size="10.5">数学不改变抽水的存在，只决定你站在哪一边</text>
+  </g>
+</svg>
+<div class="svgcap">图 9-1 · 资金流结构：抽水是固定的，"优势"决定剩下的怎么分</div>
+</div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+
+<h3>10.1 时间尺度：不同频率玩的是完全不同的游戏</h3>
+<div class="tw">
+<table>
+<thead><tr><th style="width:100px">尺度</th><th style="width:140px">主流玩家</th><th style="width:150px">数学工具</th><th>所需壁垒</th><th style="width:92px">个人可及性</th></tr></thead>
+<tbody>
+<tr><td class="k">微秒</td><td>做市商、延迟套利</td><td>排队论、FPGA 时序</td><td>硬件 + 交易所托管机房</td><td style="color:var(--red)">几乎不可及</td></tr>
+<tr><td class="k">毫秒</td><td>高频量化</td><td>订单流预测、卡尔曼滤波</td><td>低延迟系统 + 专线</td><td style="color:var(--red)">不可及</td></tr>
+<tr><td class="k">秒–分钟</td><td>日内统计套利</td><td>协整、机器学习</td><td>数据 + 执行系统</td><td style="color:var(--amber)">较难</td></tr>
+<tr><td class="k">日</td><td>中频量化、多因子</td><td>横截面回归、组合优化</td><td>数据 + 建模能力</td><td style="color:var(--green)"><strong>可及</strong></td></tr>
+<tr><td class="k">周–月</td><td>因子投资、指数增强</td><td>多因子模型、风险模型</td><td>纪律 + 耐心</td><td style="color:var(--green)"><strong>最可及</strong></td></tr>
+<tr><td class="k">季度–年</td><td>基本面量化、CTA</td><td>时序动量、财务因子</td><td>产业认知</td><td style="color:var(--green)"><strong>最可及</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub" style="font-size:13.5px">注意这个规律：<strong>频率越高，数学门槛不是越高，而是"资金和硬件门槛"越高</strong>；而<strong>频率越低，"认知门槛"越高</strong>。对个人而言，唯一现实的方向是右侧。</p>
+
+<h3>10.2 演化史：一条不断"降频"的路</h3>
+<svg viewBox="0 0 680 300" role="img" aria-label="量化演化时间轴">
+  <g font-family="-apple-system,PingFang SC,sans-serif" font-size="10.5">
+    <line x1="30" y1="150" x2="660" y2="150" stroke="#dfe4ea" stroke-width="2"/>
+    <g fill="#1d4ed8">
+      <circle cx="60" cy="150" r="5"/><circle cx="140" cy="150" r="5"/><circle cx="220" cy="150" r="5"/>
+      <circle cx="300" cy="150" r="5"/><circle cx="380" cy="150" r="5"/><circle cx="460" cy="150" r="5"/>
+      <circle cx="540" cy="150" r="5"/><circle cx="620" cy="150" r="5"/>
+    </g>
+    <g fill="#15181d" text-anchor="middle">
+      <text x="60" y="176" font-weight="700">1952</text><text x="60" y="190">马科维茨</text><text x="60" y="203" fill="#7c848f">均值-方差</text>
+      <text x="140" y="176" font-weight="700">1964</text><text x="140" y="190">CAPM</text><text x="140" y="203" fill="#7c848f">单因子</text>
+      <text x="220" y="176" font-weight="700">1973</text><text x="220" y="190">Black-Scholes</text><text x="220" y="203" fill="#7c848f">期权定价</text>
+      <text x="300" y="176" font-weight="700">1990s</text><text x="300" y="190">统计套利</text><text x="300" y="203" fill="#7c848f">协整 / 配对</text>
+      <text x="380" y="176" font-weight="700">1998</text><text x="380" y="190" fill="#b03a2e">LTCM 覆灭</text><text x="380" y="203" fill="#7c848f">数学傲慢之碑</text>
+      <text x="460" y="176" font-weight="700">2007–10</text><text x="460" y="190">量化地震</text><text x="460" y="203" fill="#7c848f">闪电崩盘</text>
+      <text x="540" y="176" font-weight="700">2015+</text><text x="540" y="190">机器学习</text><text x="540" y="203" fill="#7c848f">非线性 / 另类数据</text>
+      <text x="620" y="176" font-weight="700">2024–26</text><text x="620" y="190">大模型端到端</text><text x="620" y="203" fill="#7c848f">+ 监管降频</text>
+    </g>
+    <g fill="#4a5058" text-anchor="middle" font-size="10">
+      <text x="60" y="132">按"人"定价</text><text x="220" y="132">按"公式"定价</text><text x="460" y="132">按"数据"定价</text><text x="620" y="132">按"模型"定价</text>
+    </g>
+  </g>
+</svg>
+<div class="svgcap">图 10-1 · 每一次范式迁移，都是"上一层的优势来源被耗尽"之后的被迫下沉</div>
+
+<h3>10.3 因子生命周期：最容易被忽略的时间结构</h3>
+<p>一个因子从被发现到失效，通常经历四个阶段。这个曲线的形状，决定了你该在什么时候入场、什么时候退出。</p>
+
+<div class="tw">
+<table>
+<thead><tr><th style="width:110px">阶段</th><th style="width:150px">特征</th><th>数学信号</th><th style="width:130px">策略含义</th></tr></thead>
+<tbody>
+<tr><td class="k">① 发现期</td><td>只有极少数人在用</td><td>IC 高、换手低、容量充足</td><td>收益最丰厚，但你很难知道它存在</td></tr>
+<tr><td class="k">② 公开期</td><td>论文发表 / 被媒体报道</td><td>IC 开始下降</td><td> McLean &amp; Pontiff (2016)：97 个因子<strong>样本外平均下降 26%，发表后平均下降 58%</strong> <span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">③ 拥挤期</td><td>大家都在用，相关性上升</td><td>因子组合间相关性↑、换手↑、估值偏离↑</td><td>收益被摊薄，尾部风险上升</td></tr>
+<tr><td class="k">④ 失效期</td><td>拥挤到出现"挤兑式"反向行情</td><td>IC 转负、相关性趋近 1</td><td>该因子退出，寻找下一个</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note amber">
+  <b>现实印证（2026 年 A 股）：</b>监管的持续降频、通道清理与穿透式监管，正在把一个"高频套利主导"的市场推回"中低频 + 基本面量化"主导的形态。<span class="tag t-fact">事实</span>这个转变对行业是升级，对单纯靠速度的策略是终结。
+</div>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<p class="lede">看懂激励结构，你就知道为什么行业会做出这些看起来"不合理"的选择。</p>
+
+<h3>11.1 一个关键的数据切片</h3>
+<div class="grid g4">
+  <div class="card"><div class="lbl" style="font-size:11px;color:var(--ink3);font-weight:600;letter-spacing:.04em">2026 Q1 量化私募规模</div><div class="big" style="color:var(--accent)">1.8 万亿</div><p>元人民币以上 <span class="tag t-fact">事实</span></p></div>
+  <div class="card"><div class="lbl" style="font-size:11px;color:var(--ink3);font-weight:600;letter-spacing:.04em">占 A 股流通市值</div><div class="big">约 3%</div><p>但贡献了 30%–40% 的成交额 <span class="tag t-fact">事实</span></p></div>
+  <div class="card"><div class="lbl" style="font-size:11px;color:var(--ink3);font-weight:600;letter-spacing:.04em">小微盘股中交易占比</div><div class="big" style="color:var(--amber)">超 50%</div><p>50 亿市值以下公司 <span class="tag t-fact">事实</span></p></div>
+  <div class="card"><div class="lbl" style="font-size:11px;color:var(--ink3);font-weight:600;letter-spacing:.04em">2025 年百亿量化平均收益</div><div class="big" style="color:var(--red)">37.6%</div><p>45 家全部正收益 <span class="tag t-chk">待验证</span></p></div>
+</div>
+<p class="sub" style="font-size:13px">上面这一组数字之所以值得放在一起看，是因为它们描绘了一个<strong>"小资金撬动大成交"的结构</strong>：3% 的持仓，做出了 35%+ 的成交。这意味着大量收益来自<strong>交易本身</strong>（做流动性、做微观结构），而不是来自"长期持有好公司"。<span class="tag t-inf">推论</span></p>
+
+<h3>11.2 激励地图</h3>
+<div class="tw">
+<table>
+<thead><tr><th style="width:130px">角色</th><th style="width:170px">收入来源</th><th>激励错配</th></tr></thead>
+<tbody>
+<tr><td class="k">量化私募管理人</td><td>管理费 + 业绩费</td><td><strong>规模冲动</strong>：管理费与规模正相关，所以倾向在容量见顶后继续扩规模，导致老客户收益被摊薄。</td></tr>
+<tr><td class="k">公募量化</td><td>固定管理费</td><td>相对排名压力 &gt; 绝对收益压力，容易形成"大家都买的我也买"的拥挤。</td></tr>
+<tr><td class="k">券商</td><td>佣金、两融利息、托管</td><td>交易越频繁越赚钱 —— 与"降低换手、长期持有"的目标相冲突。</td></tr>
+<tr><td class="k">交易所</td><td>交易规费</td><td>成交额是核心考核，与"抑制过度投机"存在张力。</td></tr>
+<tr><td class="k">财经内容生产者</td><td>流量、课程、付费社群</td><td><strong>「教你量化」本身是一门比「做量化」更稳的生意</strong>。声称的高收益无法被验证。</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note red">
+  <b>对你最重要的三条推论：</b><br>
+  ① 任何向你展示"回测年化 200%"的人，你都要先问一句：<strong>你试了多少个变体？</strong>（如果答不出，就是过拟合）<br>
+  ② 任何"教你"的人，先看他的收入来自交易还是来自教学。后者的话可以听方法，但不能信业绩。<br>
+  ③ 散户在这个结构里的位置是明确的：<strong>2025 年百亿量化平均 +37.6%，同期某抽样统计显示散户人均浮亏约 2.1 万元</strong>。<span class="tag t-chk">待验证</span> 数字可能不准，但方向性的结论很难反驳：<strong>在同一场零和博弈里，专业方赢了，另一方就输了。</strong>
+</div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+
+<h3>12.1 信息流的三个不对称</h3>
+<div class="tw">
+<table>
+<thead><tr><th style="width:120px">不对称</th><th style="width:230px">具体表现</th><th>2026 年的变化</th></tr></thead>
+<tbody>
+<tr><td class="k">速度不对称</td><td>机构用专用低延迟通道，微秒级优势；散户看公网行情时，机构订单已成交</td><td><strong>正在被抹平</strong>：2026 年 6 月上交所清退量化专属高速交易通道；7 月 31 日交易所机房局域网行情接入统一改为广域网 <span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">深度不对称</td><td>机构能看到更完整的订单簿、逐笔委托、资金流细节</td><td>依然存在，但穿透式监管在缩小差距</td></tr>
+<tr><td class="k">加工能力不对称</td><td>同样一份公开财报，机构能做几十个衍生指标 + 另类数据交叉验证</td><td><strong>还在扩大</strong>：2026 年 AI 大模型在数据处理上的效率优势显著，行业普遍认为 AI 从"可选项"变成"必选项" <span class="tag t-fact">事实</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>12.2 摩擦成本：数学在这里的正面价值最直接</h3>
+<p>回测里的"毛优势"在现实中会被吃掉一大块。这是量化里最"工程"、也最容易忽视的部分。</p>
+<div class="tw">
+<table>
+<thead><tr><th style="width:150px">成本项</th><th style="width:130px">典型量级</th><th>数学上怎么对付它</th></tr></thead>
+<tbody>
+<tr><td class="k">佣金 + 过户费</td><td>万分之一到万分之三</td><td>降低换手：把换手惩罚项写进优化目标函数</td></tr>
+<tr><td class="k">印花税（卖出）</td><td>千分之一</td><td>影响持有期决策：这是"最优停时"问题的参数</td></tr>
+<tr><td class="k">买卖价差</td><td>视流动性，小微盘可达数十个基点</td><td>用限价单替代市价单；建模为成交概率问题</td></tr>
+<tr><td class="k">冲击成本</td><td><strong>通常吃掉毛优势的 20%–50%</strong>，高频/紧止损策略更多 <span class="tag t-inf">推论</span></td><td>冲击模型（平方根定律）：成本 ∝ √(下单量 / 日均成交量)</td></tr>
+<tr><td class="k">机会成本（未成交）</td><td>—</td><td>下单用"成交量概率分布"建模，而不是假设必然成交</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note blue"><b>一个必须记住的比例：</b>如果回测显示年化超额 20%，扣掉现实的执行摩擦后可能只剩 10%–15%。<strong>任何没有做成本敏感度测试的回测，都不算完成。</strong>最简单的一步：把回测里的手续费假设提高 3 倍，看策略是否还为正。</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p class="lede">不要平均分配注意力。<strong>这个领域里，20% 的知识解释了 80% 的结果。</strong>下面按"重要性 × 杠杆率 × 可操作性 ÷ 学习成本"排序。</p>
+
+<div class="tw">
+<table>
+<thead><tr><th style="width:34px">#</th><th style="width:180px">最值得掌握的 10 个东西</th><th style="width:80px">重要性</th><th style="width:80px">杠杆率</th><th style="width:80px">可操作性</th><th style="width:80px">学习成本</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td class="k">期望值与赔率（EV）</td><td><div class="bar"><i style="width:100%"></i></div></td><td><div class="bar"><i style="width:100%"></i></div></td><td><div class="bar"><i style="width:100%"></i></div></td><td><div class="bar"><i class="g" style="width:15%"></i></div>极低</td></tr>
+<tr><td class="num">2</td><td class="k">凯利公式 / 对数增长 → 仓位</td><td><div class="bar"><i style="width:100%"></i></div></td><td><div class="bar"><i style="width:100%"></i></div></td><td><div class="bar"><i style="width:95%"></i></div></td><td><div class="bar"><i class="g" style="width:20%"></i></div>极低</td></tr>
+<tr><td class="num">3</td><td class="k">信噪比的量级感知（IC ≈ 0.03）</td><td><div class="bar"><i style="width:100%"></i></div></td><td><div class="bar"><i style="width:90%"></i></div></td><td><div class="bar"><i style="width:100%"></i></div></td><td><div class="bar"><i class="g" style="width:10%"></i></div>极低</td></tr>
+<tr><td class="num">4</td><td class="k">多重检验 / DSR / PBO</td><td><div class="bar"><i style="width:100%"></i></div></td><td><div class="bar"><i style="width:100%"></i></div></td><td><div class="bar"><i style="width:80%"></i></div></td><td><div class="bar"><i class="a" style="width:45%"></i></div>中</td></tr>
+<tr><td class="num">5</td><td class="k">样本外验证 / Purged CV</td><td><div class="bar"><i style="width:95%"></i></div></td><td><div class="bar"><i style="width:95%"></i></div></td><td><div class="bar"><i style="width:75%"></i></div></td><td><div class="bar"><i class="a" style="width:45%"></i></div>中</td></tr>
+<tr><td class="num">6</td><td class="k">成本与冲击建模</td><td><div class="bar"><i style="width:90%"></i></div></td><td><div class="bar"><i style="width:90%"></i></div></td><td><div class="bar"><i style="width:90%"></i></div></td><td><div class="bar"><i class="g" style="width:25%"></i></div>低</td></tr>
+<tr><td class="num">7</td><td class="k">相关性 / 协方差 / 因子正交</td><td><div class="bar"><i style="width:88%"></i></div></td><td><div class="bar"><i style="width:85%"></i></div></td><td><div class="bar"><i style="width:70%"></i></div></td><td><div class="bar"><i class="a" style="width:50%"></i></div>中</td></tr>
+<tr><td class="num">8</td><td class="k">尾部风险 / EVT / 杠杆非线性</td><td><div class="bar"><i style="width:85%"></i></div></td><td><div class="bar"><i style="width:95%"></i></div></td><td><div class="bar"><i style="width:60%"></i></div></td><td><div class="bar"><i style="width:60%"></i></div>中高</td></tr>
+<tr><td class="num">9</td><td class="k">分布意识（肥尾 / 负偏 / 非正态）</td><td><div class="bar"><i style="width:82%"></i></div></td><td><div class="bar"><i style="width:80%"></i></div></td><td><div class="bar"><i style="width:85%"></i></div></td><td><div class="bar"><i class="g" style="width:25%"></i></div>低</td></tr>
+<tr><td class="num">10</td><td class="k">反身性 / 拥挤度（模型会自我毁灭）</td><td><div class="bar"><i style="width:80%"></i></div></td><td><div class="bar"><i style="width:90%"></i></div></td><td><div class="bar"><i style="width:55%"></i></div></td><td><div class="bar"><i style="width:65%"></i></div>中高</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note green"><b>读这张表的方式：</b>前 3 项是"今天就该会、成本几乎为零、但能立刻改变你的决策"的东西。它们是<strong>认知杠杆</strong>——不需要任何编程，只需要换一种思考方式。第 4、5 项是<strong>防御性杠杆</strong>——它们不帮你赚钱，但帮你避免把噪声当成信号的毁灭性错误。</div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<p>下面每一条，都是"新手以为自己懂了但实际没懂"的地方。点开看具体的识别方法。</p>
+
+<details>
+<summary>陷阱 1 · 回测过拟合 —— 量化里头的头号杀手</summary>
+<div class="dbody">
+<p><b>表现：</b>在历史数据上试了 500 个参数组合，报告最好的那个，得到一条漂亮的上行曲线。</p>
+<p><b>为什么错：</b>Bailey 与 López de Prado 的<b>假策略定理（False Strategy Theorem）</b>给出了数学证明：在真实 Sharpe 为 0 的策略家族里，<b>你试的次数越多，"最高 Sharpe"的期望值就越高</b>。经验公式：</p>
+<p style="font-family:var(--mono);background:var(--line2);padding:10px 14px;border-radius:8px;font-size:12.5px;color:#1f2937">E[max{Sk}] ≈ (1−γ)·Z⁻¹(1−1/K) + γ·Z⁻¹(1−1/(K·e))</p>
+<p>其中 γ ≈ 0.5772（欧拉-马斯刻若尼常数），K 是试验次数，Z⁻¹ 是标准正态分位数函数的反函数。</p>
+<p><b>推论（极其重要，请自己算一遍）：</b>民间流传的"把回测 Sharpe 除以 2"这个经验法则，<b>没有任何科学依据</b>——它既可能太松，也可能太严。真正该做的是把这个门槛算出来。用上面的公式，在 <b>10 年</b>日频数据上，纯粹靠运气能产生的"最高年化 Sharpe"大约是：</p>
+<ul>
+<li>试 <b>3</b> 个变体 → 约 <b>0.27</b></li>
+<li>试 <b>100</b> 个变体 → 约 <b>0.80</b></li>
+<li>试 <b>1,000</b> 个变体 → 约 <b>1.03</b></li>
+<li>试 <b>10,000</b> 个变体 → 约 <b>1.22</b></li>
+</ul>
+<p><b>读法：</b>你回测出一个年化 Sharpe ≈ 1 的策略。如果它是从<b>上千个变体</b>里挑出来的，那么这个数字<b>完全可以用纯运气解释</b>——你没有任何证据说它有真实优势。<span class="tag t-inf">推论</span>（数值可用第 15 节工具 3 自行验证）</p>
+<p><b>注意这个门槛还会随样本变长而下降</b>：同样试 1000 个变体，样本 25 年的门槛只有约 0.65。所以"用更长的历史"确实能帮你分辨真假，但代价是你需要等更久。</p>
+<p><b>自检方法：</b>你能不能说出你一共试了多少个变体？如果说不出来，那你就不可能有诚实的 DSR。</p>
+</div>
+</details>
+
+<details>
+<summary>陷阱 2 · 幸存者偏差 —— 你看到的只有活下来的</summary>
+<div class="dbody">
+<p><b>表现：</b>统计"过去 10 年表现最好的量化基金"，然后总结它们的共同特征。</p>
+<p><b>为什么错：</b>爆掉的基金不在数据里。你会得出"它们都用了多因子模型 + 严格风控"这种结论——但爆掉的那些也用了同样的方法。<b>你采样的是一群已经通过筛选的样本。</b></p>
+<p><b>同类问题：</b>"传奇交易员访谈"、"成功企业共同点"、"这个方法让 100 人赚到钱"。</p>
+<p><b>自检方法：</b>问"分母是多少"。有多少人用了同样的方法但失败了？如果数据里只有分子没有分母，结论无效。</p>
+</div>
+</details>
+
+<details>
+<summary>陷阱 3 · 数据窥探 / 多重检验（P-hacking）</summary>
+<div class="dbody">
+<p><b>表现：</b>把 300 个财务指标都跑一遍，发现"股票代码第三个字母是 S 的公司表现更好"。</p>
+<p><b>为什么错：</b>这不是笑话，是 Arnott、Harvey 和 Markowitz (2018) 的真实实验。学术文献里被称为<b>"因子动物园"</b>（Factor Zoo，Cochrane 2011 首次使用）：harvey、Liu、Zhu (2016) 统计发现研究者已测试过<b>300 多个因子</b>，其中许多很可能是假阳性。他们建议把显著性门槛从 t = 2 提高到 <b>t = 3</b>。</p>
+<p>Hou、Xue、Zhang (2019) 用更严格的方法检验后，<b>大多数此前文献记录的因子变得不再显著</b>。</p>
+<p><b>自检方法：</b>你的发现有没有"经济逻辑"？如果讲不出故事，只有统计结果，大概率是噪声。</p>
+</div>
+</details>
+
+<details>
+<summary>陷阱 4 · 因果倒置</summary>
+<div class="dbody">
+<p><b>表现：</b>"规模大的量化基金业绩更好，所以规模是优势。"</p>
+<p><b>为什么错：</b>真实因果链很可能是反的：<b>业绩好 → 吸引资金流入 → 规模变大</b>。而且再往后还有一条负反馈：<b>规模变大 → 冲击成本上升 → 未来业绩变差</b>。看到"规模与业绩正相关"，你至少有三种解释方向，选错方向就会得出完全相反的操作建议。</p>
+</div>
+</details>
+
+<details>
+<summary>陷阱 5 · 前视偏差（Look-ahead bias）</summary>
+<div class="dbody">
+<p><b>表现：</b>用某年年报数据，在年报公告日之前就做交易决策。</p>
+<p><b>为什么错：</b>这是最容易犯、后果最严重的工程错误。它会让回测收益率高得离谱，而实盘一开就归零。</p>
+<p><b>2026 年的新形态：</b>用大语言模型做交易信号时，<b>LLM 的预训练数据本身包含未来信息</b>。这是 LLM 量化研究的一个系统性缺陷——你的模型"知道"2024 年发生的事，所以它在 2020 年的"预测"不准才怪。<span class="tag t-inf">推论</span></p>
+<p><b>自检方法：</b>对每一个进入模型的数据，问一句"这个数字在决策时刻真的存在吗？"（包括：财报的<b>公告日</b>而不是<b>报告期</b>、指数的<b>成分股调整日</b>、数据的<b>修订版本</b>）。</p>
+</div>
+</details>
+
+<details>
+<summary>陷阱 6 · 交易成本幻觉</summary>
+<div class="dbody">
+<p><b>表现：</b>回测里设 0 手续费、用收盘价成交、忽略滑点。</p>
+<p><b>为什么错：</b>现实中的执行摩擦通常吃掉毛优势的 20%–50%；高频或紧止损策略上更多。价差一项就可能完全消灭某些策略的边际。</p>
+<p><b>自检方法：</b>把手续费假设提高 3 倍重跑。<b>如果策略变得不赚钱，那么它在现实里也不赚钱。</b></p>
+</div>
+</details>
+
+<details>
+<summary>陷阱 7 · 把杠杆当成线性放大器</summary>
+<div class="dbody">
+<p><b>表现：</b>"2 倍杠杆就是收益和风险都翻 2 倍。"</p>
+<p><b>为什么错：</b>破产概率对杠杆是<b>非线性</b>的。押注比例超过最优值（凯利点）的两倍时，长期增长率变为负数——也就是说，<b>数学上必然走向归零，无论你的方向判断对不对。</b></p>
+<p><b>案例：</b>LTCM 的策略方向没错，25 倍杠杆下，一次俄罗斯债务违约就让 46 亿美元灰飞烟灭。两位诺贝尔奖得主在场。</p>
+</div>
+</details>
+
+<details>
+<summary>陷阱 8 · 赌徒谬误 vs 大数定律</summary>
+<div class="dbody">
+<p><b>赌徒谬误：</b>"连亏 5 笔了，该赢了。"—— 错误地认为过去的结果会影响未来独立事件的概率。</p>
+<p><b>大数定律的真实含义：</b>它不讨论"下一笔"。它说的是：<b>在足够多的交易后，结果会接近期望值。</b>连亏不会让下一笔更容易赢；但如果你继续按有优势的策略执行，长期会回归到策略的期望值。</p>
+<p><b>这个区别为什么致命：</b>赌徒谬误会让你在亏损时加码（报复性交易），大数定律会让你在亏损时保持纪律。<b>两者的行为后果完全相反。</b></p>
+</div>
+</details>
+
+<details>
+<summary>陷阱 9 · 局部最优与参数微调（最隐蔽的陷阱）</summary>
+<div class="dbody">
+<p><b>表现：</b>回测 Sharpe 1.2，把窗口参数从 20 改成 22，变成 1.35，再改成 21，变成 1.38……于是你确信"21 天是最优参数"。</p>
+<p><b>为什么错：</b>你不是在<b>发现</b>参数，你是在<b>拟合噪声</b>。每一次微调，都在把样本外的信息偷偷搬进样本内。</p>
+<p><b>正确的问法不是"最优参数是多少"，而是"参数在一个区间内是否都表现稳定"。</b>宽平台才是真信号，尖峰一定是噪声。<span class="tag t-inf">推论</span>（这正是 Qwen 在因子优化实验中发现的现象："230 附近存在宽平台"。）</p>
+</div>
+</details>
+
+<details>
+<summary>陷阱 10 · 利益相关者操纵</summary>
+<div class="dbody">
+<p><b>表现：</b>有人卖你"年化 200% 的策略"，或者"量化稳赚不赔"。</p>
+<p><b>识别框架：</b>先问<b>他的收入来自哪里</b>。如果来自卖策略/卖课/卖软件，那他的真实商业模式是"卖铲子"，业绩数字不需要被验证。<b>"教你量化"往往比"做量化"更稳。</b></p>
+<p><b>更深一层：</b>如果你真的有一个每年赚 200% 的策略，你会把它公开卖 1999 元吗？还是会加满杠杆自己用？这个反证极其有效。</p>
+</div>
+</details>
+
+<details>
+<summary>陷阱 11 · 「数学好 = 能做好量化」（本篇最核心的一个陷阱）</summary>
+<div class="dbody">
+<p><b>表现：</b>认为把随机微积分、随机控制、测度论学透，就能做好量化。</p>
+<p><b>为什么错：</b>数学能力决定的是"你能构造多复杂的模型"，但决定成败的是另外三件事：</p>
+<p>① <b>数据质量与可得性</b>（你能不能拿到干净、无偏、无前视的数据）<br>② <b>执行成本与容量</b>（你的策略在现实规模下还剩多少）<br>③ <b>对系统失效条件的判断力</b>（你知道模型什么时候会坏）</p>
+<p>Emanuel Derman 与 Paul Wilmott 在 2008 年金融危机后写的《金融建模者宣言》里那句反思值得抄下来：<b>"将数学应用到金融市场时必须非常谦卑。人们喜欢简单、完美的模型，而现实世界并不简单，完美的模型也不存在。"</b></p>
+<p><b>反过来也成立：</b>最顶尖的量化机构招的是数学家、物理学家、天文学家、计算语言学家 —— 但他们赢不是因为"数学更强"，而是因为数学让他们<b>能系统性地、不带情绪地、在大样本上执行一个微小的优势</b>。</p>
+</div>
+</details>
+
+<details>
+<summary>陷阱 12 · 忽略非平稳性（用实验室假设做现实推断）</summary>
+<div class="dbody">
+<p><b>表现：</b>用 2010–2020 的数据训练，假设 2021 年之后"同一个世界"。</p>
+<p><b>为什么错：</b>统计学教科书里的所有"无偏性、有效性、相合性"都建立在"同一分布下重复抽样"的前提上。而市场会结构性断裂（structural break）。</p>
+<p><b>实践含义：</b>在真实市场中，<b>鲁棒性比精确度更重要</b>。一个方差极小、略微有偏的估计量，可能比一个理论最优但方差巨大的估计量更适合实战——因为<b>你只有一次机会，没有"无数次的平均"来救你</b>。</p>
+</div>
+</details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<p class="lede">这一节做一件事：把 5 个最重要的抽象概念，一路推到"你今天能观察到的信号"和"你能做的动作"。</p>
+
+<h3>15.1 期望值 · 赔率</h3>
+<div class="flow">
+  <span class="hi">期望值 EV</span><i>→</i><span>把"胜率"和"赔率"合成一个数</span><i>→</i><span>EV &gt; 0 才值得参与</span><i>→</i><span>彩票店 / 保险 / 赌场</span><i>→</i><span>任何"看起来有机会"的决策</span><i>→</i><span>算一下期望，不是感觉</span>
+</div>
+<div class="tw">
+<table>
+<thead><tr><th style="width:96px">层次</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td class="k">一句话</td><td>把每次结果的"价值 × 概率"加起来，而不是只看最好的那种结果。</td></tr>
+<tr><td class="k">现实案例</td><td>量化策略回报的期望 = 胜率 × 平均盈利 − 败率 × 平均亏损。<b>胜率 40%、盈亏比 3:1 的策略，明显优于胜率 70%、盈亏比 0.3:1 的策略。</b></td></tr>
+<tr><td class="k">可观察信号</td><td>你的交易记录里，胜率、平均盈利、平均亏损这三个数字。</td></tr>
+<tr><td class="k">可操作动作</td><td>把你过去 50 笔决策（不限于投资，包括任何有结果的决策）的胜率和盈亏比算出来。</td></tr>
+<tr><td class="k">结果与反馈</td><td>多数人第一次算完会发现：<b>自己的胜率不低，但期望是负的</b>——因为亏损的单笔幅度远大于盈利。</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>15.2 凯利公式 · 最优下注比例</h3>
+<div class="flow">
+  <span class="hi">凯利公式</span><i>→</i><span>押太少增长慢，押太多会归零</span><i>→</i><span>存在一个使长期增长率最大的比例</span><i>→</i><span>1956 年贝尔实验室（原本是通信噪声问题）</span><i>→</i><span>仓位管理、精力分配、项目投入</span><i>→</i><span>先算优势，再算比例，最后才下注</span>
+</div>
+<p>公式：<code>f* = (b·p − q) / b</code>，其中 b 是赔率，p 是胜率，q = 1 − p。</p>
+<div class="tw">
+<table>
+<thead><tr><th style="width:96px">层次</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td class="k">现实案例</td><td>胜率 60%、赢赚 1 倍：<code>f* = (1×0.6 − 0.4)/1 = 20%</code>。每次都押 20%，长期增长最快。<b>押 40%（双倍凯利）时，长期增长率归零——明知有利的游戏，也会因为押太重而彻底输掉。</b></td></tr>
+<tr><td class="k">生活中的同构</td><td>每天投入多少小时到一个新项目？投入太少学不动，投入太多（996 做单一事情）一旦失败全盘归零。生物学的 r/K 选择策略、香农的信道容量、强化学习的探索/利用，都是同一个函数。</td></tr>
+<tr><td class="k">可操作动作</td><td><b>用一半凯利（half-Kelly）而不是全凯利</b>——因为你的胜率估计有误差。这是实务界的通行做法。</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="tool">
+  <div class="tool-hd"><h4>工具 2 · 凯利曲线模拟器：押多少会毁掉你</h4></div>
+  <p class="tool-sub">拖动滑块，看长期增长率 g(f) = p·ln(1+f·b) + (1−p)·ln(1−f) 的形状。<b>灰色区域是"过度下注"区：期望值仍然为正，但长期增长率已经变成负数。</b></p>
+  <div class="ctrl"><label for="k_p">胜率 p</label><input type="range" id="k_p" min="0.05" max="0.95" step="0.01" value="0.55"><output id="k_pO">55%</output></div>
+  <div class="ctrl"><label for="k_b">赔率 b（赢赚几倍）</label><input type="range" id="k_b" min="0.2" max="5" step="0.1" value="1"><output id="k_bO">1.0×</output></div>
+  <div class="ctrl"><label for="k_f">你实际押的比例 f</label><input type="range" id="k_f" min="0" max="0.99" step="0.01" value="0.20"><output id="k_fO">20%</output></div>
+  <canvas id="kChart" height="230" style="height:230px"></canvas>
+  <div class="readout">
+    <div class="ro"><div class="lbl">最优比例 f*</div><div class="val" id="kOpt">10.0%</div><div class="hint">半凯利建议：<span id="kHalf">5.0%</span></div></div>
+    <div class="ro"><div class="lbl">你的长期增长率 g</div><div class="val" id="kG">+0.50%</div><div class="hint">每期（不是每笔）</div></div>
+    <div class="ro"><div class="lbl">状态</div><div class="val" id="kState" style="font-size:15px">安全区</div><div class="hint" id="kStateHint">略高于最优，仍在正增长</div></div>
+  </div>
+</div>
+
+<h3>15.3 信噪比 · IC</h3>
+<div class="flow">
+  <span class="hi">信噪比</span><i>→</i><span>信号与噪声的比值</span><i>→</i><span>IC ≈ 0.03 意味着 96% 是噪声</span><i>→</i><span>医学的检验准确率 / 雷达探测</span><i>→</i><span>任何"从数据里找规律"的场景</span><i>→</i><span>先问信噪比，再问规律</span>
+</div>
+<p><b>可操作动作：</b>任何人给你一个"规律"，先问三句：样本多长？独立试验几次？扣除成本后还剩多少？<b>三个问题答不出来，这个规律就不用看了。</b></p>
+
+<h3>15.4 多重检验 · 反过拟合</h3>
+<div class="flow">
+  <span class="hi">多重检验</span><i>→</i><span>试的次数越多，最高分越不可信</span><i>→</i><span>假策略定理 / DSR</span><i>→</i><span>粒子物理要求 5σ、医学临床试验、A/B 测试</span><i>→</i><span>任何做大量尝试后挑最好的场景</span><i>→</i><span>记录所有失败尝试，别只报告赢的那个</span>
+</div>
+
+<div class="tool">
+  <div class="tool-hd"><h4>工具 3 · 过拟合门槛计算器（假策略定理）</h4></div>
+  <p class="tool-sub">这个工具的结论会让你不舒服：<b>只要你试的次数够多，你一定能找到一个"看起来很棒"的策略——而它完全可能是纯粹的运气。</b></p>
+  <div class="ctrl"><label for="o_n">你试了多少个变体 K</label><input type="range" id="o_n" min="0" max="5" step="0.01" value="3"><output id="o_nO">1,000</output></div>
+  <div class="ctrl"><label for="o_t">回测的历史长度 T（年）</label><input type="range" id="o_t" min="1" max="25" step="1" value="10"><output id="o_tO">10 年</output></div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">期望最大 Z 值（纯运气）</div><div class="val" id="o_z">3.26</div><div class="hint">标准化单位，来自假策略定理</div></div>
+    <div class="ro"><div class="lbl">年化 Sharpe 门槛（近似）</div><div class="val" id="o_sr" style="color:var(--red)">1.03</div><div class="hint">低于这个值的 Sharpe 无法排除运气</div></div>
+    <div class="ro"><div class="lbl">对应年化超额（假设 20% 波动）</div><div class="val" id="o_t2">20.6%</div><div class="hint" id="o_hint">低于这个超额，无法排除运气</div></div>
+  </div>
+  <p class="tool-sub" style="margin-top:14px;margin-bottom:0"><span class="tag t-inf">推论</span>年化 Sharpe 门槛 ≈ 期望最大 Z ÷ √T（小 Sharpe 下年化 Sharpe 的抽样标准差 ≈ 1/√T）。这是抓量级的近似，不是精确公式；精确的 DSR 还需要收益的偏度、峰度与样本长度。</p>
+</div>
+
+<h3>15.5 相关性 · 分散化</h3>
+<div class="flow">
+  <span class="hi">相关性</span><i>→</i><span>不同策略是否同时涨跌</span><i>→</i><span>组合波动 = √((1+(N−1)ρ)/N)</span><i>→</i><span>天气保险不能保洪水与火灾两种风险</span><i>→</i><span>资产配置、因子组合、团队互补</span><i>→</i><span>先看相关性，再看数量</span>
+</div>
+
+<div class="tool">
+  <div class="tool-hd"><h4>工具 4 · 分散化的极限：为什么"多买几个"不等于"更安全"</h4></div>
+  <p class="tool-sub">N 个等权策略，两两相关性 ρ。组合波动 ÷ 单一策略波动 = √((1 + (N−1)ρ) / N)。<b>这解释了"因子拥挤"为什么可怕：当 ρ 趋近 1，无论你分散到多少个策略，风险一点都不降。</b></p>
+  <div class="ctrl"><label for="d_n">策略数量 N</label><input type="range" id="d_n" min="1" max="50" step="1" value="10"><output id="d_nO">10</output></div>
+  <div class="ctrl"><label for="d_r">两两相关性 ρ</label><input type="range" id="d_r" min="0" max="0.99" step="0.01" value="0.30"><output id="d_rO">0.30</output></div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">组合波动 / 单策略波动</div><div class="val" id="d_v">57%</div><div class="hint">越低越好</div></div>
+    <div class="ro"><div class="lbl">有效独立策略数</div><div class="val" id="d_eff">3.3</div><div class="hint">N_eff = 1 / (波动比)²</div></div>
+    <div class="ro"><div class="lbl">判断</div><div class="val" id="d_vd" style="font-size:15px">分散有效</div><div class="hint" id="d_hint">10 个策略实际只有 3.3 个的分散效果</div></div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<p>这个领域的转换链条不是"学知识"，而是把每一层都变成下一层的输入：</p>
+<div class="tw">
+<table>
+<thead><tr><th style="width:120px">转换</th><th style="width:230px">具体内容</th><th>例子</th></tr></thead>
+<tbody>
+<tr><td class="k">知识 → 技能</td><td>从"知道什么是 IC"到"能算出一个因子的 IC 并判断它是否显著"</td><td>拿一份日线数据，算 60 日动量的 IC</td></tr>
+<tr><td class="k">概念 → 工具</td><td>把抽象概念做成可复用的代码/表格/检查清单</td><td>写一个函数：输入因子序列，输出 IC / IR / 换手率</td></tr>
+<tr><td class="k">理论 → 模型</td><td>把多个概念组合成一个可运行的假设</td><td>"小市值 + 低波动 + 盈利质量"三因子组合</td></tr>
+<tr><td class="k">模型 → 决策规则</td><td>把模型输出变成一个明确的动作规则</td><td>"综合分前 20% 买入，每月调仓，单票不超过 2%"</td></tr>
+<tr><td class="k">决策规则 → 行动</td><td>把它变成可执行的操作（哪怕是小仓位的）</td><td>用模拟盘或极小仓位跑 3 个月</td></tr>
+<tr><td class="k">行动 → 实验</td><td>设定明确的验证条件和失败条件</td><td>"如果 3 个月后超额为负且归因显示是成本问题，就停"</td></tr>
+<tr><td class="k">实验 → 数据</td><td>记录每一笔、每一次决策的理由</td><td>交易日志：信号、仓位、成交价、滑点、事后评价</td></tr>
+<tr><td class="k">数据 → 反馈</td><td>从数据里读出不满意的地方，定位到具体环节</td><td>回撤来自成本还是信号衰减？分年归因</td></tr>
+<tr><td class="k">反馈 → 新模型</td><td>根据反馈修改假设，而不是修改参数</td><td>"动量失效了" → 不是把窗口从 20 改成 21，而是问"为什么动量在这类市场状态下失效"</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>16.1 学会之后，你到底能做什么？</h3>
+<div class="tw">
+<table>
+<thead><tr><th style="width:110px">级别</th><th style="width:280px">能做什么</th><th>判断标准（可验证）</th></tr></thead>
+<tbody>
+<tr><td class="k" style="color:var(--green)">Beginner</td><td>看懂一个策略描述，判断它<b>是不是在骗人</b>。能算出期望值、凯利比例、胜率与盈亏比。</td><td>拿到任何一份"高收益策略"介绍，能在 5 分钟内提出 3 个关键质疑问题，且这 3 个问题对方答不上来。</td></tr>
+<tr><td class="k" style="color:var(--accent)">Intermediate</td><td>用免费数据从零构建一个因子，计算 IC / IR / 换手率，做样本外检验，判断它是否显著。</td><td>能独立完成一次完整的研究闭环：提出假设 → 计算 → 样本外检验 → 得出"是/否"的结论，并且<b>敢于否定自己</b>。</td></tr>
+<tr><td class="k" style="color:var(--purple)">Advanced</td><td>构建多因子组合、处理相关性/正交化、做组合优化、建成本模型、做完整的归因分析。能判断一个策略的<b>容量上限</b>。</td><td>能回答"这个策略在多大资金规模下会失效"这个量化问题，并给出估算方法。能识别出策略失效的<b>前兆指标</b>。</td></tr>
+<tr><td class="k" style="color:var(--red)">Expert</td><td>发现别人没注意到的变量关系、建立新模型、发现系统的结构性漏洞、创造新的解决方案。能判断"数学在这里什么时候会失效"。</td><td>能提出一个<b>可证伪</b>的、有经济逻辑的、经过多重检验校正后依然显著的新假设，并知道它在什么条件下会失效。</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<p>点开每一层，看具体要掌握什么、以及"怎么样算掌握"。</p>
+
+<details open>
+<summary>L1 · 基础认知（1–2 周）</summary>
+<div class="dbody">
+<h4>核心概念</h4>
+<ul>
+<li>期望值、方差、相关性、协方差</li>
+<li>胜率 / 盈亏比 / 期望收益三者的关系</li>
+<li>凯利公式与最优仓位</li>
+<li>什么是 IC、IR、换手率、Sharpe</li>
+<li>收益率分布不是正态的（肥尾、负偏）</li>
+</ul>
+<h4>基本工具</h4>
+<ul>
+<li>Excel 或 Python：读数据、算收益率、画净值曲线</li>
+<li>会算：胜率、盈亏比、最大回撤、年化收益、年化波动</li>
+</ul>
+<h4>基本判断</h4>
+<ul>
+<li>看到一个策略，能说出它的收益来源（是不是赚流动性的钱）</li>
+<li>能识别"承诺高收益"的话术</li>
+</ul>
+<div class="note blue"><b>过关标准：</b>给你一份别人的回测报告，你能列出至少 5 个它没交代清楚的关键信息。</div>
+</div>
+</details>
+
+<details>
+<summary>L2 · 中级能力（1–3 个月）</summary>
+<div class="dbody">
+<h4>模型建立</h4>
+<ul>
+<li>会构建一个简单因子（如 60 日动量、PB、ROE 的变化率）</li>
+<li>会做数据清洗：去极值（MAD）、标准化（Z-score）、行业中性化</li>
+<li>会算单因子的 IC 序列、ICIR、分组回测</li>
+</ul>
+<h4>问题分析</h4>
+<ul>
+<li>能区分"这个结果来自信号"还是"来自风格暴露"</li>
+<li>会做样本外切分（时间序列切分，不是随机切分）</li>
+<li>理解为什么随机切分在时间序列上是错的（数据泄漏）</li>
+</ul>
+<h4>决策与实践</h4>
+<ul>
+<li>会写一个最简单的交易规则，并用 3 倍手续费做敏感度测试</li>
+<li>会写交易日志，记录每笔决策的理由</li>
+</ul>
+<div class="note blue"><b>过关标准：</b>你能拿出一个自己构建的因子，并诚实地说出"它在样本外不显著"——而不是硬调参数让它显著。</div>
+</div>
+</details>
+
+<details>
+<summary>L3 · 高级能力（6–18 个月）</summary>
+<div class="dbody">
+<h4>系统分析</h4>
+<ul>
+<li>多因子模型：正交化、相关性矩阵、风险分解、Barra 风格的暴露控制</li>
+<li>组合优化：带约束的权重求解（行业中性、换手上限、单票上限）</li>
+<li>成本模型：冲击成本的平方根模型、成交概率模型</li>
+<li>容量估算：给定资金规模，Alpha 还剩多少</li>
+</ul>
+<h4>预测与反事实推演</h4>
+<ul>
+<li>会做压力测试：把历史最差的 5 天单独拎出来看策略表现</li>
+<li>会做情景模拟：如果波动率翻倍 / 相关性升到 0.8 / 流动性枯竭会怎样</li>
+</ul>
+<h4>复杂决策</h4>
+<ul>
+<li>知道什么时候该<b>停止</b>一个策略（而不是继续调参）</li>
+<li>会做完整的归因：钱是从哪来的、成本吃掉多少、该不该继续</li>
+</ul>
+<div class="note blue"><b>过关标准：</b>给你一个策略的完整交易记录，你能把它的收益分解成"因子暴露 + 个股选择 + 择时 + 运气"四部分，并估算出它的容量上限。</div>
+</div>
+</details>
+
+<details>
+<summary>L4 · 专家能力（多年）</summary>
+<div class="dbody">
+<h4>发现新变量与新关系</h4>
+<ul>
+<li>从另类数据里发现别人没在用的信息源（供应链、卫星、招聘、专利）</li>
+<li>发现两个看似无关的量之间的结构关系</li>
+</ul>
+<h4>建立新模型 / 发现系统漏洞</h4>
+<ul>
+<li>理解模型的<b>失效边界</b>：不是"这个模型对不对"，而是"这个模型在什么条件下会坏"</li>
+<li>能识别整个行业的结构性漏洞（如 2007 年量化地震的"所有人在同一时刻去杠杆"）</li>
+</ul>
+<h4>创造新解决方案</h4>
+<ul>
+<li>提出可证伪的、有经济逻辑的、经多重检验校正后仍显著的新假设</li>
+</ul>
+<div class="note red"><b>专家与高级的分界线：</b>高级能<b>优化</b>已有框架；专家能<b>质疑框架本身</b>。在一次公开的 AI 因子优化实验中，六个模型角逐，最终胜出的那个唯一的共同优势是：它<b>主动质疑了原始变量选择</b>（把换手率换成成交金额），而不是在既有变量上反复调参。这一步带来了单轮最大的提升。</div>
+</div>
+</details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p class="lede">把"学量化"重新定义成一个可探索的游戏。<strong>你不是在做习题，你是在一个资源有限、有对手、有 Boss 的世界里打副本。</strong></p>
+<div class="tw">
+<table>
+<thead><tr><th style="width:110px">游戏要素</th><th style="width:180px">对应内容</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="k">玩家</td><td>你自己</td><td>初始属性：时间、注意力、认知偏误的暴露程度</td></tr>
+<tr><td class="k">世界观</td><td>信噪比极低的负和博弈场</td><td>每笔交易都要交"过路费"，规则会变，对手会适应</td></tr>
+<tr><td class="k">资源</td><td>时间 / 金钱 / 知识 / 数据 / 算力 / 关系 / 注意力</td><td><b>注意力是最稀缺的资源</b>——它决定了你能研究多少假设</td></tr>
+<tr><td class="k">目标</td><td>建立一套<b>可重复、可证伪、可止损</b>的决策系统</td><td>注意：目标不是"赚到多少钱"，而是"建立一个不会因一次失误而崩溃的系统"</td></tr>
+<tr><td class="k">规则</td><td>数学与概率的硬约束</td><td>期望为负的游戏，任何仓位管理都救不了；押注超过 2 倍凯利，长期必归零</td></tr>
+<tr><td class="k">NPC</td><td>做市商 / 量化机构 / 监管 / 券商 / 数据商 / "老师"</td><td>每个 NPC 有自己固定的行为模式，可以被预测</td></tr>
+<tr><td class="k">任务</td><td>见第 19 节</td><td>每个任务都产出一个可验证的结果</td></tr>
+<tr><td class="k">技能树</td><td>见第 17 节</td><td>L1 → L4</td></tr>
+<tr><td class="k">装备</td><td>数据源 / Python / 回测框架 / 统计学知识 / 风控清单</td><td>装备决定你的行动半径，但不决定你走得对不对</td></tr>
+<tr><td class="k">经验值</td><td>真实完成的、有记录的研究闭环</td><td><b>不是"读了多少"，而是"做完了几次完整的假设-检验-结论"</b></td></tr>
+<tr><td class="k" style="color:var(--red)">Boss</td><td>你自己的过拟合冲动</td><td>真正的 Boss 不是市场，是你看到漂亮回测曲线时"再加一个参数试试"的那个念头</td></tr>
+<tr><td class="k">失败</td><td>错误假设 / 错误成本假设 / 过重仓位</td><td>失败的价值在于：它产生的是<b>负面知识</b>——"RANK 变换是陷阱""跨信号组合必死"</td></tr>
+<tr><td class="k">奖励</td><td>判断力提升 / 决策系统变稳 / 少亏钱</td><td>最实在的奖励是<b>知道自己不知道什么</b></td></tr>
+<tr><td class="k">隐藏任务</td><td>只有深入系统之后才能发现的问题</td><td>例："我这个策略的收益，有多少来自我自己的交易对价格的影响？"</td></tr>
+<tr><td class="k">隐藏地图</td><td>普通人不会注意到的结构和机会</td><td>例：拥挤度的可观测代理、监管规则变化的时间窗口、因子失效的前兆信号</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note purple"><b>为什么要游戏化：</b>因为量化的真实反馈周期太长（几个月到几年），而人的学习需要短反馈。游戏的解法是：<b>把大目标拆成可即时验证的小任务</b>，让每一次"假设被证伪"都变成一次经验值，而不是一次资金损失。</div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<p class="lede">不用"第一章 → 第二章"的课程结构。用<strong>问题 → 探索 → 假设 → 实验 → 反馈 → 新问题</strong>。这里的核心设计是：<b>让你通过"犯错"获得理解。</b></p>
+
+<div class="grid g2">
+  <div class="card">
+    <h4>任务 1 · 观察（30 分钟）</h4>
+    <p>找一只你熟悉的股票（最好是存储 / 半导体行业的），下载近 3 年日线数据。画两条线：价格、60 日累计涨幅。</p>
+    <p><b>观察什么：</b>价格上涨时，是持续性的还是跳变式的？有没有明显的时间聚集？</p>
+    <p><b>产出：</b>一句你自己的观察描述。</p>
+  </div>
+  <div class="card">
+    <h4>任务 2 · 预测（20 分钟）</h4>
+    <p>写下你的假设："过去 60 天涨幅靠前的股票，未来 20 天表现会 ____。"（填"更好"或"更差"）</p>
+    <p><b>关键：写下来，不要只在脑子里想。</b>因为后面要验证你是不是错了。</p>
+    <p><b>产出：</b>一个明确的、可证伪的预测。</p>
+  </div>
+  <div class="card">
+    <h4>任务 3 · 做出选择（15 分钟）</h4>
+    <p>在你的预测基础上，算一下：如果按这个逻辑交易，胜率大概多少？盈亏比大概多少？期望值是多少？</p>
+    <p><b>产出：</b>一个数值化的期望值（可以是粗略估计）。</p>
+  </div>
+  <div class="card">
+    <h4>任务 4 · 观察实际结果（30 分钟）</h4>
+    <p>用历史数据回测你的假设，看实际结果。</p>
+    <p><b>产出：</b>实际结果 vs 你的预测的差距。</p>
+  </div>
+  <div class="card">
+    <h4>任务 5 · 解释为什么错了（30 分钟）</h4>
+    <p>如果结果和预测不符，找出原因。候选原因：样本量不够 / 成本没算 / 用了未来信息 / 市场状态不同 / 纯噪声。</p>
+    <p><b>这一步是整个流程里最重要的一步。</b>大部分人跳过它，直接进入"再调个参数试试"。</p>
+  </div>
+  <div class="card">
+    <h4>任务 6 · 修改模型（30 分钟）</h4>
+    <p>基于任务 5 的结论，<b>修改假设</b>（不是修改参数）。比如：把"60 日动量"改成"剔除最近 5 日的 60 日动量"（因为短期反转会吃掉动量）。</p>
+  </div>
+  <div class="card">
+    <h4>任务 7 · 再次实验（30 分钟）</h4>
+    <p>重跑，对比两次结果。<b>记录下你一共试了几次</b>——这个数字将来会用来算你看到的结果有多少是运气。</p>
+  </div>
+  <div class="card accent">
+    <h4>隐藏任务 · 只有做完 7 次以后才会浮现</h4>
+    <p>当你试了 5 个以上的变体，你会发现：<b>总能找到一个"看起来不错"的版本。</b>这时候你会第一次真切地感受到第 14 节讲的"多重检验"不是理论——它正在你身上发生。</p>
+    <p><b>这个时刻，就是你真正理解量化的开始。</b></p>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p class="lede">同一个决策，在不同选择下会走向完全不同的结果。下面用"一个普通人如何对待量化"作为基准情景，推演 9 条路径。</p>
+
+<div class="tabs" data-group="cf">
+  <button class="tab on" data-pane="cfA">选择 A · 系统学习</button>
+  <button class="tab" data-pane="cfB">选择 B · 直接跟单</button>
+  <button class="tab" data-pane="cfC">什么都不做</button>
+  <button class="tab" data-pane="cfD">改变关键变量</button>
+  <button class="tab" data-pane="cfE">提前 / 延迟</button>
+  <button class="tab" data-pane="cfF">资源变化</button>
+  <button class="tab" data-pane="cfG">环境变化</button>
+  <button class="tab" data-pane="cfH">路径类型</button>
+</div>
+
+<div class="pane on" id="cfA">
+  <div class="card">
+    <h4>选择 A · 花 3 个月系统学习统计与回测方法</h4>
+    <p><b>第 1 个月：</b>学到一堆概念，发现自己以前的所有"投资直觉"都无法通过检验。挫败感最强。</p>
+    <p><b>第 2 个月：</b>第一次成功完成一个"假设 → 检验 → 否定"的闭环。开始理解为什么大部分策略是假的。</p>
+    <p><b>第 3 个月：</b>发现自己做出来的东西<b>打不过指数</b>。但同时也发现：能识别出别人的骗局了。</p>
+    <p><b>远期结果：</b>可能永远不做主动交易，但决策质量全面上升；或者找到一个极小的、属于自己的、别人看不上的优势。</p>
+    <p><b>核心代价：</b>3 个月的时间成本，以及"努力之后发现自己不行"的心理成本。</p>
+  </div>
+</div>
+
+<div class="pane" id="cfB">
+  <div class="card">
+    <h4>选择 B · 找一个"看起来靠谱"的量化产品跟单</h4>
+    <p><b>第 1 个月：</b>赚了一点，信心大增，加仓。</p>
+    <p><b>第 3 个月：</b>遇到一次风格切换或因子回撤，回撤 15%。你开始怀疑。</p>
+    <p><b>第 6 个月：</b>回本了，但你在最底部赎回过一次，所以实际收益远低于产品净值。</p>
+    <p><b>远期结果：</b>你的实际收益 ≈ 产品收益 − 你自己的择时损失。<b>择时损失往往大于产品收益的差异。</b></p>
+    <p><b>隐藏陷阱：</b>你无法区分"管理人的能力"和"这段时间的风格红利"。</p>
+  </div>
+</div>
+
+<div class="pane" id="cfC">
+  <div class="card">
+    <h4>什么都不做 · 买入宽基指数长期持有</h4>
+    <p><b>数学上：</b>你获得了市场平均收益（Beta），不用承担选股与择时风险，也不用付主动管理费。</p>
+    <p><b>对照一下：</b>在专业机构拿走 30%–40% 成交额、3% 持仓做出 35%+ 成交的市场里，<b>"不参与短期博弈"本身就是一个有统计优势的选择</b>。</p>
+    <p><b>风险：</b>你承担了全部的市场风险（Beta 风险），在市场整体下跌时一样会亏。</p>
+    <p><b>结论：</b>"什么都不做"不是被动，而是主动选择了唯一长期可被数学证明的收益来源之一。</p>
+  </div>
+</div>
+
+<div class="pane" id="cfD">
+  <div class="card">
+    <h4>改变关键变量</h4>
+    <p><b>如果把手续费率从 0 改成万分之三：</b>高换手策略的收益通常直接腰斩，有些策略直接归零。<span class="tag t-inf">推论</span></p>
+    <p><b>如果把夏普门槛从 1.0 提到 1.5：</b>99% 的个人构建的策略会被淘汰。</p>
+    <p><b>如果把回测期从 3 年拉到 15 年：</b>很多"稳健"策略会露出真面目——它们只在一个特定市场状态下有效。</p>
+    <p><b>如果把你的资金量从 10 万提到 1000 万：</b>小微盘策略的冲击成本会让它们完全失效。<b>同一个策略，不同规模，是两个不同的策略。</b></p>
+  </div>
+</div>
+
+<div class="pane" id="cfE">
+  <div class="card">
+    <h4>提前行动 vs 延迟行动</h4>
+    <p><b>提前行动（先学再投）：</b>成本是时间；收益是你避开了"用真钱交学费"的阶段。数学期望上，早学 3 个月的收益远大于 3 个月的潜在投资收益——因为学习的损失上限是 0，而盲投的损失下限是 −100%。</p>
+    <p><b>延迟行动：</b>不会亏钱，但会持续承受"我现在应该做点什么"的焦虑成本，并且可能在高点被情绪推入场。</p>
+    <p><b>非对称性结论：</b><b>学习这件事的收益和损失是不对称的</b>——最坏情况是浪费了时间，最好情况是避开了毁灭性错误。这种不对称性本身就构成"值得做"的数学理由。</p>
+  </div>
+</div>
+
+<div class="pane" id="cfF">
+  <div class="card">
+    <h4>资源减少 50% / 增加 10 倍</h4>
+    <p><b>资源减半（时间从每天 2 小时变 1 小时）：</b>能研究的假设数量减半，但<b>核心能力不受影响</b>——因为关键杠杆（期望值、凯利、多重检验意识）不消耗时间，只消耗认知。</p>
+    <p><b>资源 ×10（有 10 倍时间 + 10 倍数据 + 算力）：</b>你会发现<b>收益不是 10 倍</b>，反而可能因为研究更多假设而掉进更深的过拟合陷阱。<b>搜得越多，假发现越多。</b></p>
+    <p><b>反直觉结论：</b>在这个领域，<b>资源增加对"发现问题"的帮助，小于它对"制造假问题"的帮助。</b></p>
+  </div>
+</div>
+
+<div class="pane" id="cfG">
+  <div class="card">
+    <h4>环境发生变化</h4>
+    <p><b>情形 1 · 监管进一步降频（正在发生）：</b>高频策略空间收缩，行业向中低频迁移。对个人研究者的相对劣势<b>缩小</b>。<span class="tag t-fact">事实</span>（2025 年 7 月新规、2026 年 6-8 月通道清理）</p>
+    <p><b>情形 2 · AI 能力大幅普及：</b>数据加工能力的差距被拉平，但<b>算力和数据的规模差距被拉大</b>。个人在"发现新信号"上更难，在"验证信号"上更容易。</p>
+    <p><b>情形 3 · 市场进入长期低波动：</b>所有基于波动的策略收益下降，价差收窄，做市收益变薄。</p>
+    <p><b>情形 4 · 出现极端行情（类似 2026 年 7 月的波动）：</b>相关性瞬间趋近 1，分散化失效，杠杆策略被强制平仓。<b>这时候"没加杠杆"比"选对方向"重要得多。</b></p>
+  </div>
+</div>
+
+<div class="pane" id="cfH">
+  <div class="card">
+    <h4>七条典型路径</h4>
+    <table style="min-width:auto">
+      <tbody>
+      <tr><td class="k" style="width:120px;color:var(--green)">最优路径</td><td>先建立概率与统计的直觉 → 再用小资金验证 → 只做能理解、能归因的事 → 长期复利</td></tr>
+      <tr><td class="k" style="width:120px">次优路径</td><td>不做主动交易，但用这套思维框架改善其他领域的决策质量</td></tr>
+      <tr><td class="k" style="width:120px">低成本路径</td><td>只学三个东西：期望值、凯利、多重检验。零成本，收益极高</td></tr>
+      <tr><td class="k" style="width:120px;color:var(--amber)">高风险高收益</td><td>用杠杆执行一个未经严格样本外验证的策略 —— 数学上必然归零，只是时间问题</td></tr>
+      <tr><td class="k" style="width:120px;color:var(--purple)">隐藏捷径</td><td>不研究"怎么赢"，研究"别人会怎么输"。<b>理解对手的失败模式，比发现新信号便宜得多</b></td></tr>
+      <tr><td class="k" style="width:120px;color:var(--red)">容易失败</td><td>在回测上反复调参直到曲线好看，然后上真金</td></tr>
+      <tr><td class="k" style="width:120px;color:var(--red)">看似正确的陷阱</td><td>"我要找一个胜率 70% 的策略" —— 高胜率策略的盈亏比通常极差，两者乘积（期望值）可能为负</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>新手 → 中级 → 高级 → 专家路线</h2>
+<p class="lede">每一级的判定标准必须是<strong>可验证的行为</strong>，不是"感觉自己懂了"。下面每一级都给出"能做什么"和"无法通过这一级的典型表现"。</p>
+<div class="tw">
+<table>
+<thead><tr><th style="width:88px">阶段</th><th style="width:200px">核心转变</th><th style="width:250px">能做什么（可验证）</th><th>卡在这一级的典型表现</th></tr></thead>
+<tbody>
+<tr>
+  <td class="k" style="color:var(--green)">新手<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">0–3 周</span></td>
+  <td>从"找规律"转变为"算期望"</td>
+  <td>能用期望值、胜率、盈亏比三个数字评价任何一个投资决策；能用凯利公式算出一个合理的仓位上限。</td>
+  <td>仍然相信"胜率高 = 好策略"；仍然在寻找"能预测涨跌的指标"。</td>
+</tr>
+<tr>
+  <td class="k" style="color:var(--accent)">中级<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">1–3 月</span></td>
+  <td>从"看结果"转变为"看过程"</td>
+  <td>能独立完成一次完整研究：提出假设 → 构建因子 → 算 IC → 时间序列样本外检验 → <b>诚实地说出"证伪"</b>。知道随机切分是错的。</td>
+  <td>每次结果不好就调参数；无法说出自己试了多少个变体；把样本内表现当成结论。</td>
+</tr>
+<tr>
+  <td class="k" style="color:var(--purple)">高级<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">6–18 月</span></td>
+  <td>从"单点"转变为"系统"</td>
+  <td>能做多因子组合、正交化、风险分解、带约束的优化；能估容量；能算成本敏感度；能说清收益里哪部分来自因子暴露、哪部分来自选股、哪部分来自运气。</td>
+  <td>组合里塞了 15 个因子但说不出它们的相关性；从不做成本敏感度测试；无法解释一次 15% 的回撤来自哪里。</td>
+</tr>
+<tr>
+  <td class="k" style="color:var(--red)">专家<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">多年</span></td>
+  <td>从"优化模型"转变为"质疑框架"</td>
+  <td>能主动质疑变量选择本身；能指出模型的失效边界；能发现行业级的结构性漏洞；提出的假设经多重检验校正后仍显著。</td>
+  <td>永远在既有框架里调参；把"模型稳定"当成理所当然；无法回答"这个模型什么时候会坏"。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="note amber"><b>路线上的一个关键提示：</b>每一级真正的门槛，都不是"学到更多知识"，而是<b>放弃一个旧的信念</b>。新手要放弃"我能预测"；中级要放弃"漂亮的回测"；高级要放弃"因子越多越好"；专家要放弃"我的模型是对的"。</div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p class="lede">不要停留在"理解"。下面这个练习<strong>今天就能做完，成本接近 0，目标只有一个：让你亲手制造一次"假发现"，并且亲眼看见它是假的。</strong></p>
+
+<div class="grid g3">
+  <div class="card"><h4>时间</h4><p class="big" style="font-size:20px">30 分钟</p><p>可以拆成两个 15 分钟</p></div>
+  <div class="card"><h4>成本</h4><p class="big" style="font-size:20px">¥0</p><p>只需要免费行情软件 + 一张纸或一个 Excel</p></div>
+  <div class="card"><h4>目标</h4><p class="big" style="font-size:20px">感受多重检验</p><p>验证一个核心假设："我找到的规律，可能只是我搜出来的"</p></div>
+</div>
+
+<h3>实践流程（观察 → 假设 → 行动 → 记录 → 解释 → 更新）</h3>
+
+<div class="tw">
+<table>
+<thead><tr><th style="width:44px">步</th><th style="width:230px">做什么</th><th>具体要求</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td class="k">观察（3 分钟）</td><td>打开任意免费行情软件，选一个你熟悉的标的（建议用<b>你关注的半导体或存储行业 ETF</b>），调出最近 <b>500 个交易日</b>的日线收盘价，导出或抄到表格里。</td></tr>
+<tr><td class="num">2</td><td class="k">提出假设（4 分钟）</td><td>随便写下 <b>4 条规则</b>，越随意越好。例如：<br>①"周一收盘买入，周三收盘卖出"<br>②"涨幅超过 1% 的次日买入，持有 3 天"<br>③"连续跌 2 天后买入，持有 2 天"<br>④<b>掷骰子</b>：单数日买入，双数日卖出</td></tr>
+<tr><td class="num">3</td><td class="k">采取行动（10 分钟）</td><td>把 500 天平均分成 <b>5 段</b>（每段约 100 天）。在<b>每一段里</b>，把 4 条规则都算一遍累计收益，记下<b>每段表现最好的那条规则和它的收益</b>。</td></tr>
+<tr><td class="num">4</td><td class="k">记录结果（3 分钟）</td><td>做成一张小表：段号 / 最优规则 / 该段收益 / 该段基准收益。<br><b>关键数字：你一共试了多少次？</b>（5 段 × 4 规则 = 20 次试验）</td></tr>
+<tr><td class="num">5</td><td class="k">解释结果（5 分钟）</td><td>把你的 20 次试验代入假策略定理（用第 15 节的工具 3，把 K 调到 20、样本长度调到 2 年）：<br><b>期望最大 Z ≈ 1.90</b>，折算成年化 Sharpe 门槛约为 <b>1.34</b>——也就是说，<b>纯粹靠运气</b>，20 次试验里表现最好的那条，Sharpe 的期望值就已经相当于年化 1.34。<br><b>结论：你看到的那条"赢家"，很可能毫无意义。</b></td></tr>
+<tr><td class="num">6</td><td class="k">更新认知（5 分钟）</td><td>写下三句话：<br>① 我这次一共试了 ____ 个变体。<br>② 如果我只看最好的那个结果，我会得出什么错误结论？<br>③ <b>下次我看到别人的回测结果，我第一个要问的问题是什么？</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note red">
+  <b>这个练习的设计意图：</b>你几乎是必然会在每一段里找到一条"表现很好"的规则。<b>而它之所以表现好，正是因为你找了。</b>这就是量化里最贵的一课——很多"发现"不是发现，是搜索结果的必然产物。做完这个练习，你对所有"数据证明"的说法，都会永久地多问一句。
+</div>
+
+<h4>可选进阶版（有 Python 基础，20 分钟）</h4>
+<p>用 <code>pandas</code> 写一个循环：对同一个价格序列，随机生成 1000 个"随机择时策略"（每天随机决定持仓/空仓），记录每个策略的累计收益，把它们排序，看第 1 名有多高、第 50 名的中位数有多接近 0。</p>
+<div class="note blue"><b>你会看到的：</b>在 1000 个纯随机策略里，表现最好的那个通常能做出相当可观的累计收益——而你有 1000 个里挑 1 个的自由。<b>这正是"因子动物园"和"回测过拟合"的全部真相。</b></div>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天实践计划</h2>
+<p>每天 30–60 分钟。每一天都以"产出一个具体文件/数字"结束，而不是"读完一篇文章"。</p>
+<div class="tw">
+<table>
+<thead><tr><th style="width:64px">天</th><th style="width:150px">主题</th><th style="width:240px">具体任务</th><th>当日产出</th></tr></thead>
+<tbody>
+<tr><td class="k">Day 1</td><td>期望值校准</td><td>把你过去 1 年里 20 个有明确结果的重要决策（不限投资）列出来，标注成功/失败，估算每次的"赚/亏"幅度，算出你自己的胜率与盈亏比。</td><td>一张表 + 一个你自己的期望值数字</td></tr>
+<tr><td class="k">Day 2</td><td>凯利与仓位</td><td>用第 15 节的工具 2，输入你自己的胜率和盈亏比，算出最优仓位。再对比你实际敢押的比例。<b>如果你实际押的比例是 0，写下原因。</b></td><td>你的"凯利仓位"与"实际仓位"的差距，以及原因</td></tr>
+<tr><td class="k">Day 3</td><td>亲手制造假发现</td><td>完成第 22 节的 30 分钟最小实践。</td><td>那张"20 次试验"的小表 + 3 句认知更新</td></tr>
+<tr><td class="k">Day 4</td><td>数据与成本</td><td>找一个公开的策略描述（公募基金定期报告、量化私募的月报都行）。列出它<b>没有交代</b>的信息：手续费假设？滑点假设？样本外长度？换手率？容量？</td><td>一份"策略尽调清单"，至少 8 条</td></tr>
+<tr><td class="k">Day 5</td><td>分布意识</td><td>取任意一个指数的日收益率序列，画出直方图。找出：最小的 5 天占了总波动的多少？有没有单日跌幅超过 3 倍标准差？</td><td>一张直方图 + 一个"尾部占比"数字</td></tr>
+<tr><td class="k">Day 6</td><td>相关性测试</td><td>取 10 只你关注的股票（可以用半导体产业链：设计/制造/封测/设备/材料），算两两收益率相关性矩阵，找出相关性最低和最高的一对。</td><td>一个 10×10 的相关性矩阵 + 两个极值对</td></tr>
+<tr><td class="k">Day 7</td><td>系统回顾</td><td>回答三个问题：①这 7 天里我原来的哪个信念被推翻了？②我现在最想搞清楚的三个问题是什么？③我打算投多少时间在下一阶段？</td><td>一份"我的认知变更记录"</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<p>四周，每周一个主题。每周结束时必须有一个<b>可以被别人检查的产出</b>。</p>
+
+<div class="grid g2">
+  <div class="card accent">
+    <h4>第 1 周 · 概率与期望（地基）</h4>
+    <p><b>目标：</b>把"感觉"换成"数字"。</p>
+    <ul style="font-size:13px">
+      <li>掌握：期望值、方差、相关性、条件概率</li>
+      <li>掌握：凯利公式与对数增长</li>
+      <li>掌握：分布意识（肥尾、负偏）</li>
+      <li><b>周产出：</b>一个自己的"决策期望值计算器"（Excel 或纸笔均可）</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>第 2 周 · 统计推断与反过拟合</h4>
+    <p><b>目标：</b>学会否定自己。</p>
+    <ul style="font-size:13px">
+      <li>掌握：假设检验、t 值、样本量</li>
+      <li>掌握：多重检验、假策略定理、DSR、PBO</li>
+      <li>掌握：时间序列样本外切分（为什么随机切分是错的）</li>
+      <li><b>周产出：</b>一份"我的 20 次试验"报告，诚实写出有多少可能是运气</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>第 3 周 · 数据与因子</h4>
+    <p><b>目标：</b>走完一次完整的研究闭环。</p>
+    <ul style="font-size:13px">
+      <li>掌握：数据清洗（去极值、标准化、中性化）</li>
+      <li>掌握：因子 IC、ICIR、分组回测</li>
+      <li>掌握：前视偏差的排查方法</li>
+      <li><b>周产出：</b>一个自己构建的因子 + 诚实的检验结论（可以是"不显著"）</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>第 4 周 · 组合、成本与风控</h4>
+    <p><b>目标：</b>从"单点"走到"系统"。</p>
+    <ul style="font-size:13px">
+      <li>掌握：相关性矩阵、正交化、风险分解</li>
+      <li>掌握：成本敏感度测试（把手续费 ×3 重跑）</li>
+      <li>掌握：尾部风险、杠杆的非线性、压力测试</li>
+      <li><b>周产出：</b>一份完整的策略评估报告，包含"它在什么条件下会失效"</li>
+    </ul>
+  </div>
+</div>
+<div class="note green"><b>30 天之后你应该达到的水平：</b>不是"能赚钱"，而是<b>能识别出绝大多数策略为什么赚不到钱</b>。这个能力在长期比"找到一个赚钱策略"值钱得多——因为前者可以反复使用，后者只能碰一次运气。</div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw">
+<table>
+<thead><tr><th style="width:34px">#</th><th style="width:180px">模型</th><th style="width:210px">它回答什么问题</th><th>一句话记住它</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td class="k">期望值模型<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">EV = Σ pᵢvᵢ</span></td><td>这个决策值不值得做？</td><td>把结果和概率乘起来加总，而不是只看最好的结果。</td></tr>
+<tr><td class="num">2</td><td class="k">凯利 / 对数增长模型<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">f* = (bp−q)/b</span></td><td>该押多少？</td><td>押得太少增长慢，押得太多会归零；超过两倍凯利，数学上必死。</td></tr>
+<tr><td class="num">3</td><td class="k">鞅 / 随机游走<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">E[Sₜ₊₁ | Fₜ] = Sₜ</span></td><td>什么是"无法预测"？</td><td>有效市场就是"价格是鞅"。它给了你一个零收益的<b>基准线</b>。</td></tr>
+<tr><td class="num">4</td><td class="k">几何布朗运动 / SDE<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">dS = μS dt + σS dW</span></td><td>价格如何随时间演化？</td><td>趋势 + 随机冲击。所有衍生品定价的起点。</td></tr>
+<tr><td class="num">5</td><td class="k">无套利 / 风险中性定价<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">Black–Scholes</span></td><td>一个合约现在值多少钱？</td><td>价格不由"你认为会涨多少"决定，而由<b>复制它的成本</b>决定。</td></tr>
+<tr><td class="num">6</td><td class="k">横截面回归 / 多因子<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">Fama–French 3/5 因子</span></td><td>收益从哪来？</td><td>把一堆股票的收益拆成"共同因子暴露 + 个体残差"，残差才是 Alpha。</td></tr>
+<tr><td class="num">7</td><td class="k">假策略定理<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">Bailey &amp; López de Prado</span></td><td>我看到的最高分有多少是运气？</td><td>试的次数越多，"最高 Sharpe"的期望值就越高——与真实能力无关。</td></tr>
+<tr><td class="num">8</td><td class="k">收缩后的 Sharpe / DSR<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">+ PBO（CSCV）</span></td><td>这个结果能信吗？</td><td>把 Sharpe 按"试验次数 + 样本长度 + 偏度峰度"折价。没有试验次数，就没有可信的 Sharpe。</td></tr>
+<tr><td class="num">9</td><td class="k">冲击成本模型<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">成本 ∝ √(Q / ADV)</span></td><td>规模大了会怎样？</td><td>成本随规模的<b>平方根</b>上升，所以 Alpha 有一个硬性的容量上限。</td></tr>
+<tr><td class="num">10</td><td class="k">尾部风险模型<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">EVT / CVaR</span></td><td>最坏能坏到什么程度？</td><td>高斯分布说"百年一遇"，极值理论说"每十年一次"。<b>世界更接近幂律，不是高斯。</b></td></tr>
+</tbody>
+</table>
+</div>
+<div class="note blue"><b>如果只记三个：</b>选 <b>#1（期望值）</b>、<b>#2（凯利）</b>、<b>#7（假策略定理）</b>。前两个让你会下注，第三个让你不被自己骗。这三个加起来，可以覆盖你 80% 的决策场景，学习成本几乎为零。</div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<p>按层级排列。每一个问题都必须能用数学校验，不能靠"我觉得"回答。</p>
+
+<details open>
+<summary>新手级 · 先回答这 6 个</summary>
+<div class="dbody">
+<ol>
+<li>这个策略的<b>期望值</b>是多少？（胜率 × 平均盈利 − 败率 × 平均亏损）</li>
+<li>它的<b>盈亏比</b>是多少？高胜率是否被低盈亏比抵消了？</li>
+<li>如果按凯利公式算，我应该押多少？<b>我实际押的比例是这个数的几倍？</b></li>
+<li>这个回测<b>试了多少个变体</b>才得到这个结果？</li>
+<li>回测里<b>手续费和滑点</b>假设是多少？如果我把它们提高 3 倍，策略还赚钱吗？</li>
+<li>它的收益中，有多少是<b>市场本身涨</b>带来的（Beta），有多少是策略带来的（Alpha）？</li>
+</ol>
+</div>
+</details>
+
+<details>
+<summary>中级 · 再回答这 6 个</summary>
+<div class="dbody">
+<ol>
+<li>这个因子的 <b>IC 序列</b>长什么样？是稳定的，还是靠几个极端月份堆出来的？</li>
+<li>样本外检验是怎么做的？<b>时间序列切分还是随机切分？</b>有没有数据泄漏？</li>
+<li>因子之间的<b>相关性矩阵</b>是什么？有没有隐性重复计算同一个信息？</li>
+<li>换手率多高？对应的<b>年化成本</b>是多少？</li>
+<li>它的收益在<b>不同市场状态</b>下（高波动 / 低波动、牛 / 熊）分别表现如何？</li>
+<li>如果把这个因子用在这个市场<b>之外</b>的市场，还成立吗？（跨市场复现是强证据）</li>
+</ol>
+</div>
+</details>
+
+<details>
+<summary>高级 · 再回答这 6 个</summary>
+<div class="dbody">
+<ol>
+<li>这个策略的<b>容量上限</b>是多少？到多少资金规模时 Alpha 会被冲击成本吃光？</li>
+<li>收益可以分解成哪几部分？因子暴露 / 个股选择 / 择时 / 运气各占多少？</li>
+<li>如果我把它和现有的 10 个策略放到一起，<b>有效独立策略数</b>变成多少？（见第 15 节工具 4）</li>
+<li>历史最差的 5 天 / 最差的 3 个月里，它发生了什么？现在的组合能扛住同样的情景吗？</li>
+<li>这个策略失效的<b>前兆信号</b>是什么？我能不能在亏钱之前观察到位？</li>
+<li>它的收益来源是四类真优势中的哪一类？<b>这个来源会不会被消耗完？</b></li>
+</ol>
+</div>
+</details>
+
+<details>
+<summary>专家 · 最后回答这 4 个</summary>
+<div class="dbody">
+<ol>
+<li>这个模型的<b>失效边界</b>在哪？在什么条件下它会从"有效"变成"有害"？</li>
+<li>如果我错了，我会<b>怎么知道</b>我错了？（可证伪性设计）</li>
+<li>这个优势的存在，是不是依赖于"别人不知道"？<b>如果所有人都知道了，它还成立吗？</b></li>
+<li>这个系统里，有没有一个我现在看不见的<b>结构性约束</b>，会在关键时刻让所有假设同时失效？</li>
+</ol>
+</div>
+</details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索方向</h2>
+<div class="tw">
+<table>
+<thead><tr><th style="width:170px">方向</th><th style="width:230px">为什么值得做</th><th>具体入口</th></tr></thead>
+<tbody>
+<tr><td class="k">① 从"预测"转向"风控"</td><td>预测极难，但风控是可以确定做好的。在这条路上，投入产出比最高。</td><td>把凯利公式、CVaR、压力测试三个工具做成自己的标准流程</td></tr>
+<tr><td class="k">② 建立"因子失效监测"</td><td>知道自己什么时候该退出，比知道什么时候该进场更值钱。</td><td>跟踪你所用因子的：组合间相关性、换手率异常、估值偏离度</td></tr>
+<tr><td class="k">③ 跨域同构研究</td><td>存储产业周期 ↔ 因子生命周期 ↔ 生物种群振荡，是同一个数学结构。跨域迁移能带来别人没有的洞察。</td><td>把 DRAM 价格周期与因子 IC 衰减曲线画在一起对比</td></tr>
+<tr><td class="k">④ 另类数据的可得性</td><td>信号衰减的时代，新数据源比新算法更稀缺。</td><td>公开数据：招聘信息、专利、供应链公告、卫星公开影像、海关数据</td></tr>
+<tr><td class="k">⑤ 用大模型做"研究加速器"而不是"信号发生器"</td><td>LLM 的直接交易信号有前视偏差问题；但它做文献综述、代码生成、假设生成绩效极高。</td><td>让模型帮你生成 50 个可检验的假设，然后<b>你自己</b>逐个严格检验</td></tr>
+<tr><td class="k">⑥ 微观结构（A 股视角）</td><td>2026 年的监管变化（降频、去通道、穿透监管）正在重塑 A 股的微观结构，这里正在产生新的结构性机会。</td><td>跟踪《程序化交易管理实施细则》后续修订与交易所的异常交易识别口径</td></tr>
+<tr><td class="k">⑦ 复盘你自己的决策系统</td><td>最容易被忽略、回报率最高的一件事。</td><td>建一个决策日志：记录理由、记录当时的信息、3 个月后回看</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note purple"><b>一句话总结这份手册：</b>数学不会告诉你市场会怎么走。它只会告诉你三件事——<b>这个赌局值不值得玩、该押多少、以及你刚才那个"发现"有多少可能是自己骗自己。</b>把这三件事做对，你已经超过了绝大多数参与者。</div>
+</section>
+
+<!-- ══════════════ 附录 ══════════════ -->
+<section id="appx">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+
+<h3>标记约定</h3>
+<div class="grid g2">
+  <div class="card"><span class="tag t-fact">事实</span><p>有公开的一手来源（监管公告、交易所规则、原始学术文献、公司公开披露），或被多方独立来源一致确认。</p></div>
+  <div class="card"><span class="tag t-ana">分析</span><p>来自权威机构或专业媒体的分析判断，逻辑可追溯，但不是原始数据。</p></div>
+  <div class="card"><span class="tag t-inf">推论</span><p>由事实与机制推导得出，本手册作者的理解，可能有偏差。</p></div>
+  <div class="card"><span class="tag t-hyp">假设</span><p>尚未验证的机制性猜想，用来组织思路，不应作为决策依据。</p></div>
+  <div class="card"><span class="tag t-chk">待验证</span><p>来源单一、口径不明、或转载链条过长，数字可能不准。使用时请自行核实。</p></div>
+</div>
+
+<h3>主要来源清单</h3>
+<div class="tw">
+<table>
+<thead><tr><th style="width:220px">内容</th><th style="width:130px">来源类型</th><th>具体来源 / 说明</th><th style="width:88px">标记</th></tr></thead>
+<tbody>
+<tr><td class="k">假策略定理、DSR 定义与公式</td><td>原始学术文献</td><td>Bailey, D. H. &amp; López de Prado, M. —— Deflated Sharpe Ratio / False Strategy Theorem；发表于 Significance (RSS) 等</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">因子动物园与多重检验批评</td><td>原始学术文献</td><td>Cochrane (2011) "factor zoo"；Harvey, Liu &amp; Zhu (2016) 建议 t &gt; 3；Hou, Xue &amp; Zhang (2019) 多数因子不再显著</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">因子衰减：样本外 −26%、发表后 −58%</td><td>原始学术文献</td><td>McLean &amp; Pontiff (2016)，覆盖 97 个因子</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">凯利公式</td><td>原始文献</td><td>J. L. Kelly, 1956，贝尔实验室</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">LTCM 覆灭：25 倍杠杆 / 46 亿美元</td><td>历史广泛记载</td><td>1998 年俄罗斯债务违约事件</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">Medallion：净年化 ~39.9%、费前 ~66.1%、费率 5%+44%</td><td>二手汇编</td><td>多家财经媒体与机构汇编；Renaissance 未公开审计数据</td><td><span class="tag t-chk">待验证</span></td></tr>
+<tr><td class="k">Medallion 2025 年约 +20%</td><td>社区讨论</td><td>投资者社区帖子引用的非官方汇编，来源可靠性低</td><td><span class="tag t-chk">待验证</span></td></tr>
+<tr><td class="k">程序化交易监管：《程序化交易管理实施细则》</td><td>权威一手</td><td>沪深北交易所 2025 年 4 月联合发布，2025 年 7 月 7 日起实施；高频认定标准：单账户每秒申报/撤单 ≥ 300 笔或单日 ≥ 2 万笔</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">期货市场程序化交易管理规定</td><td>权威一手</td><td>证监会 2025 年 6 月 13 日发布</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">上交所清退量化专属高速通道 / 机房局域网转广域网</td><td>媒体报道</td><td>2026 年 6 月上交所要求券商自查；2026 年 7 月 31 日机房局域网行情线路关停，接入方式统一改为广域网</td><td><span class="tag t-ana">分析</span>（细节<a href="#" onclick="return false" style="color:var(--ink3)">待官方文件确认</a>）</td></tr>
+<tr><td class="k">"突出公平性，深化细化高频量化监管"</td><td>公开表态</td><td>证监会主席吴清，2026 年 3 月十四届全国人大四次会议经济主题记者会</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">量化私募规模 1.8 万亿 / 占流通市值约 3% / 贡献 30–40% 成交</td><td>高校研究 + 二手转载</td><td>南京大学安同良教授团队研究成果（2026 年一季度数据）；上交所一季度口径为 35%–42%</td><td><span class="tag t-chk">待验证</span></td></tr>
+<tr><td class="k">2025 年 45 家百亿量化平均收益 37.6% / 散户人均浮亏 2.1 万元</td><td>单一来源</td><td>南京大学安同良教授团队，第三方数据平台口径；散户数据为转载引述</td><td><span class="tag t-chk">待验证</span></td></tr>
+<tr><td class="k">散户亏损比例 79%–82%（2026 年上半年）</td><td>二手转载</td><td>转载称引自中证协联合头部券商抽样统计，未能核实原始报告</td><td><span class="tag t-chk">待验证</span></td></tr>
+<tr><td class="k">2026 年 6 月末量化私募规模 / 百亿量化家数等</td><td>二手分析</td><td>财经媒体〈被量化压制的 A 股〉等报道，引用第三方测算</td><td><span class="tag t-ana">分析</span></td></tr>
+<tr><td class="k">因子 IC 通常处于 0.02–0.04 量级</td><td>二手汇总</td><td>来自公开的 A 股因子实证数据与机构披露区间的汇总</td><td><span class="tag t-inf">推论</span></td></tr>
+<tr><td class="k">执行摩擦通常吃掉毛优势 20%–50%</td><td>二手实践总结</td><td>量化实践类资料的经验总结，非严格统计</td><td><span class="tag t-inf">推论</span></td></tr>
+<tr><td class="k">《金融建模者宣言》引文</td><td>原始著作</td><td>Emanuel Derman &amp; Paul Wilmott, "The Financial Modelers' Manifesto"（2009）</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">"金融数据非稳态性使模型难以有效预测"</td><td>公开讲座</td><td>哈佛大学统计学教授刘军，于"银科控股杯"大学生智能交易大赛学术讲座</td><td><span class="tag t-fact">事实</span></td></tr>
+<tr><td class="k">AI 在量化中的角色：从"可选项"到"必选项"；"三元低相关"策略框架</td><td>行业报道</td><td>证券时报等机构报道，中欧基金等机构公开分享</td><td><span class="tag t-ana">分析</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note red">
+  <b>重要免责声明：</b>本手册是一份<b>认知与方法的整理</b>，不是投资建议，也不构成任何形式的投资决策依据。文中涉及的市场规模、收益率、份额等数字来自公开渠道，其中相当一部分标注为<span class="tag t-chk">待验证</span>，可能存在口径差异、来源偏差或时点滞后。<b>请勿基于本手册中的任何数字做出投资决策。</b>量化投资存在市场风险、流动性风险与技术风险，过往业绩不代表未来表现。
+</div>
+</section>
+
+<footer>
+  <p>《量化交易与数学的关系 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p>
+</footer>
+</main>
+</div>
+
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+
+  /* ---------- 3. 统计工具函数 ---------- */
+  // Acklam 近似：标准正态分位数
+  function normInv(p){
+    var a=[-3.969683028665376e+01,2.209460984245205e+02,-2.759285104469687e+02,
+            1.383577518672690e+02,-3.066479806614716e+01,2.506628277459239e+00];
+    var b=[-5.447609879822406e+01,1.615858368580409e+02,-1.556989798598866e+02,
+            6.680131188771972e+01,-1.328068155288572e+01];
+    var c=[-7.784894002430293e-03,-3.223964580411365e-01,-2.400758277161838e+00,
+           -2.549732539343734e+00,4.374664141464968e+00,2.938163982698783e+00];
+    var d=[7.784695709041462e-03,3.224671290700398e-01,2.445134137142996e+00,
+           3.754408661907416e+00];
+    var pl=0.02425, ph=1-pl, q, r, x;
+    if (p <= 0) return -8;
+    if (p >= 1) return 8;
+    if (p < pl){
+      q = Math.sqrt(-2*Math.log(p));
+      x = (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+          ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+    } else if (p <= ph){
+      q = p - 0.5; r = q*q;
+      x = (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q /
+          (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+    } else {
+      q = Math.sqrt(-2*Math.log(1-p));
+      x = -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+           ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+    }
+    return x;
+  }
+  function fmt(n, dp){
+    dp = (dp === undefined) ? 2 : dp;
+    return Number(n).toLocaleString('en-US', {minimumFractionDigits:dp, maximumFractionDigits:dp});
+  }
+
+  /* ---------- 4. 工具 1：信噪比感知器 ---------- */
+  var icEl = document.getElementById('ic'), icO = document.getElementById('icO');
+  var tgtEl = document.getElementById('tgt'), tgtO = document.getElementById('tgtO');
+
+  function updIC(){
+    var ic = parseFloat(icEl.value);
+    var t  = parseFloat(tgtEl.value);
+    icO.textContent = ic.toFixed(3);
+    tgtO.textContent = t.toFixed(1);
+    var N = Math.ceil(Math.pow(t / ic, 2));
+    document.getElementById('nOut').textContent = N.toLocaleString('en-US');
+    document.getElementById('nHint').textContent = '按日频计算 ≈ ' + fmt(N/252, 1) + ' 年（单标的）';
+    var cross = Math.ceil(N / 300);
+    document.getElementById('crossOut').textContent = cross.toLocaleString('en-US') + ' 期';
+    var vd = document.getElementById('verdict'), vh = document.getElementById('verdictHint');
+    if (N <= 2520){
+      vd.textContent = '可达'; vd.style.color = 'var(--green)';
+      vh.textContent = '在合理样本内可以获得统计信心';
+    } else if (N <= 25000){
+      vd.textContent = '吃力'; vd.style.color = 'var(--amber)';
+      vh.textContent = '需要多年数据或大截面，实际很难满足';
+    } else {
+      vd.textContent = '基本不可达'; vd.style.color = 'var(--red)';
+      vh.textContent = '这个量级的信号在现实中无法被可靠验证';
+    }
+  }
+  if (icEl){ icEl.addEventListener('input', updIC); tgtEl.addEventListener('input', updIC); }
+
+  /* ---------- 5. 工具 2：凯利曲线 ---------- */
+  var kp = document.getElementById('k_p'), kb = document.getElementById('k_b'), kf = document.getElementById('k_f');
+  var kChart = document.getElementById('kChart');
+
+  function growth(f, p, b){
+    if (f <= 0) return 0;
+    if (f >= 1) return -99;
+    return p * Math.log(1 + f*b) + (1-p) * Math.log(1 - f);
+  }
+  function kellyF(p, b){ return (p*b - (1-p)) / b; }
+
+  function drawKelly(){
+    if (!kChart) return;
+    var p = parseFloat(kp.value), b = parseFloat(kb.value), f = parseFloat(kf.value);
+    document.getElementById('k_pO').textContent = Math.round(p*100) + '%';
+    document.getElementById('k_bO').textContent = b.toFixed(1) + '×';
+    document.getElementById('k_fO').textContent = Math.round(f*100) + '%';
+
+    var FMAX = 0.99;
+    var cv = kChart, W = cv.clientWidth || 640, H = 230;
+    var dpr = window.devicePixelRatio || 1;
+    cv.width = W * dpr; cv.height = H * dpr;
+    var g = cv.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, W, H);
+
+    var L = 58, R = 20, T = 16, B = 32;
+    var pts = [], i, x, yv;
+    var gmin = 1e9, gmax = -1e9;
+    for (i = 0; i <= 240; i++){
+      x = i / 240 * FMAX;
+      yv = growth(x, p, b);
+      pts.push([x, yv]);
+      if (yv < gmin) gmin = yv;
+      if (yv > gmax) gmax = yv;
+    }
+    if (gmax < 0.0005) gmax = 0.0005;
+    if (gmin > -0.0005) gmin = -0.0005;
+    var pad = (gmax - gmin) * 0.12;
+    gmin -= pad; gmax += pad;
+
+    function X(v){ return L + (v / FMAX) * (W - L - R); }
+    function Y(v){ return H - B - ((v - gmin) / (gmax - gmin)) * (H - T - B); }
+
+    // 零线
+    g.strokeStyle = '#c9d0da'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(L, Y(0)); g.lineTo(W - R, Y(0)); g.stroke();
+    g.fillStyle = '#7c848f'; g.font = '10px ui-monospace,Menlo,monospace';
+    g.fillText('g = 0', L - 44, Y(0) + 3.5);
+
+    // 过度下注区（g<0 的右侧部分）
+    var f0 = null;
+    for (i = 0; i < pts.length; i++){
+      if (pts[i][1] < 0 && pts[i][0] > 0.001){ f0 = pts[i][0]; break; }
+    }
+    if (f0 !== null){
+      g.fillStyle = 'rgba(213,52,44,.07)';
+      g.fillRect(X(f0), T, W - R - X(f0), H - T - B);
+      g.strokeStyle = 'rgba(213,52,44,.35)'; g.setLineDash([4,3]);
+      g.beginPath(); g.moveTo(X(f0), T); g.lineTo(X(f0), H - B); g.stroke();
+      g.setLineDash([]);
+      g.fillStyle = '#d5342c'; g.font = '600 10.5px -apple-system,PingFang SC,sans-serif';
+      g.fillText('过度下注区：期望仍为正，但长期增长率为负', X(f0) + 8, T + 14);
+    }
+
+    // 曲线
+    g.strokeStyle = '#1d4ed8'; g.lineWidth = 2.2; g.beginPath();
+    pts.forEach(function(pt, idx){
+      var px = X(pt[0]), py = Y(pt[1]);
+      if (idx === 0) g.moveTo(px, py); else g.lineTo(px, py);
+    });
+    g.stroke();
+
+    // 最优点
+    var fo = kellyF(p, b);
+    if (fo > 0 && fo < FMAX){
+      var go = growth(fo, p, b);
+      g.fillStyle = '#0f8a4d';
+      g.beginPath(); g.arc(X(fo), Y(go), 4.5, 0, Math.PI*2); g.fill();
+      g.strokeStyle = '#0f8a4d'; g.setLineDash([3,3]); g.lineWidth = 1;
+      g.beginPath(); g.moveTo(X(fo), Y(go)); g.lineTo(X(fo), H - B); g.stroke();
+      g.setLineDash([]);
+      g.fillStyle = '#0f8a4d'; g.font = '600 10.5px -apple-system,PingFang SC,sans-serif';
+      g.fillText('f* = ' + (fo*100).toFixed(1) + '%', X(fo) + 6, Y(go) - 8);
+    }
+
+    // 当前点
+    var gc = growth(f, p, b);
+    g.fillStyle = gc >= 0 ? '#6b30d9' : '#d5342c';
+    g.beginPath(); g.arc(X(f), Y(gc), 5.5, 0, Math.PI*2); g.fill();
+    g.strokeStyle = '#fff'; g.lineWidth = 1.5; g.stroke();
+    g.fillStyle = gc >= 0 ? '#6b30d9' : '#d5342c';
+    g.font = '600 10.5px -apple-system,PingFang SC,sans-serif';
+    g.fillText('你：' + (f*100).toFixed(0) + '%', X(f) + 6, Y(gc) + 16);
+
+    // 坐标轴
+    g.strokeStyle = '#e2e6ec'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(L, T); g.lineTo(L, H - B); g.lineTo(W - R, H - B); g.stroke();
+    g.fillStyle = '#7c848f'; g.font = '10px ui-monospace,Menlo,monospace';
+    [0, 0.25, 0.5, 0.75].forEach(function(v){
+      var px = X(v);
+      g.fillText((v*100).toFixed(0) + '%', px - 9, H - B + 14);
+    });
+    g.save();
+    g.translate(15, (T + H - B) / 2 + 20); g.rotate(-Math.PI/2);
+    g.fillText('长期增长率 g', 0, 0);
+    g.restore();
+
+    // 读数
+    document.getElementById('kOpt').textContent = fo > 0 ? (fo*100).toFixed(1) + '%' : '0%（无优势）';
+    document.getElementById('kHalf').textContent = fo > 0 ? (fo*50).toFixed(1) + '%' : '不下注';
+    var gEl = document.getElementById('kG');
+    gEl.textContent = (gc >= 0 ? '+' : '') + (gc*100).toFixed(2) + '%';
+    gEl.style.color = gc >= 0 ? 'var(--green)' : 'var(--red)';
+    var st = document.getElementById('kState'), sh = document.getElementById('kStateHint');
+    if (fo <= 0){
+      st.textContent = '负期望'; st.style.color = 'var(--red)';
+      sh.textContent = '这个赌局不该玩，任何仓位都会亏';
+    } else if (f <= 0.0001){
+      st.textContent = '空仓'; st.style.color = 'var(--ink3)';
+      sh.textContent = '不参与，增长率为 0';
+    } else if (f < fo * 0.55){
+      st.textContent = '过于保守'; st.style.color = 'var(--accent)';
+      sh.textContent = '安全，但长期增长被浪费了';
+    } else if (f <= fo * 1.15){
+      st.textContent = '最优区间'; st.style.color = 'var(--green)';
+      sh.textContent = '长期增长率接近最大';
+    } else if (gc > 0.002){
+      st.textContent = '安全区'; st.style.color = 'var(--amber)';
+      sh.textContent = '超过最优，仍在正增长，但波动显著放大（推荐半凯利）';
+    } else if (gc > -0.002){
+      st.textContent = '临界点'; st.style.color = 'var(--amber)';
+      sh.textContent = '约在 2 倍凯利附近 —— 长期增长趋近于 0，再push就转负';
+    } else {
+      st.textContent = '毁灭区'; st.style.color = 'var(--red)';
+      sh.textContent = '长期增长率已为负 —— 方向判断再准也无法避免归零';
+    }
+  }
+  if (kChart){
+    [kp, kb, kf].forEach(function(el){ el.addEventListener('input', drawKelly); });
+    window.addEventListener('resize', drawKelly);
+    drawKelly();
+  }
+
+  /* ---------- 6. 工具 3：过拟合门槛 ---------- */
+  var onEl = document.getElementById('o_n'), otEl = document.getElementById('o_t');
+  var GAMMA = 0.5772156649;
+  function updOverfit(){
+    if (!onEl) return;
+    var K = Math.round(Math.pow(10, parseFloat(onEl.value)));
+    if (K < 2) K = 2;
+    var T = parseInt(otEl.value, 10);
+    document.getElementById('o_nO').textContent = K.toLocaleString('en-US');
+    document.getElementById('o_tO').textContent = T + ' 年';
+    var z = (1 - GAMMA) * normInv(1 - 1/K) + GAMMA * normInv(1 - 1/(K * Math.E));
+    var sr = z / Math.sqrt(T);
+    document.getElementById('o_z').textContent = z.toFixed(2);
+    var srEl = document.getElementById('o_sr');
+    srEl.textContent = sr.toFixed(2);
+    srEl.style.color = sr > 1.5 ? 'var(--red)' : (sr > 0.8 ? 'var(--amber)' : 'var(--green)');
+    document.getElementById('o_t2').textContent = (sr * 0.20 * 100).toFixed(1) + '%';
+    var h = document.getElementById('o_hint');
+    if (K <= 30) h.textContent = '试验次数少，门槛温和；但仍需注意样本长度';
+    else if (K <= 3000) h.textContent = '已达到需要 ≈3σ 才有意义的量级';
+    else h.textContent = '门槛高到常规回测几乎无法自证 —— 这正是"搜出来的策略"的问题';
+  }
+  if (onEl){ onEl.addEventListener('input', updOverfit); otEl.addEventListener('input', updOverfit); }
+
+  /* ---------- 7. 工具 4：分散化极限 ---------- */
+  var dnEl = document.getElementById('d_n'), drEl = document.getElementById('d_r');
+  function updDiv(){
+    if (!dnEl) return;
+    var N = parseInt(dnEl.value, 10);
+    var rho = parseFloat(drEl.value);
+    document.getElementById('d_nO').textContent = N;
+    document.getElementById('d_rO').textContent = rho.toFixed(2);
+    var ratio = Math.sqrt((1 + (N - 1) * rho) / N);
+    var eff = 1 / (ratio * ratio);
+    var vEl = document.getElementById('d_v');
+    vEl.textContent = (ratio * 100).toFixed(0) + '%';
+    vEl.style.color = ratio < 0.4 ? 'var(--green)' : (ratio < 0.7 ? 'var(--amber)' : 'var(--red)');
+    document.getElementById('d_eff').textContent = eff.toFixed(1);
+    var vd = document.getElementById('d_vd'), h = document.getElementById('d_hint');
+    if (rho >= 0.85){
+      vd.textContent = '分散几乎无效'; vd.style.color = 'var(--red)';
+      h.textContent = N + ' 个策略实际只有 ' + eff.toFixed(1) + ' 个的分散效果 —— 这就是因子拥挤';
+    } else if (ratio < 0.45){
+      vd.textContent = '分散有效'; vd.style.color = 'var(--green)';
+      h.textContent = N + ' 个策略相当于 ' + eff.toFixed(1) + ' 个独立策略';
+    } else {
+      vd.textContent = '分散有限'; vd.style.color = 'var(--amber)';
+      h.textContent = N + ' 个策略只相当于 ' + eff.toFixed(1) + ' 个独立策略';
+    }
+  }
+  if (dnEl){ dnEl.addEventListener('input', updDiv); drEl.addEventListener('input', updDiv); }
+
+  /* ---------- 8. 初始化 ---------- */
+  updIC(); updOverfit(); updDiv();
+})();
+</script>
+</body>
+</html>
