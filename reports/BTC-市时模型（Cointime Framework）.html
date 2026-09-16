@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-市时模型（Cointime Framework） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × Cointime Economics × On-Chain</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-市时模型（Cointime Framework）</h1>
+  <p class="sub">用<strong>coinblock 时间权重</strong>重建 BTC 供应经济学——AVIV 比 MVRV 更贴近「活供应」成本基线，但 2.5/0.55 阈仍缺样本外验证</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>Cointime Economics（市时经济学）</strong> 用 <strong>coinblock</strong>（1 BTC × 1 区块高度）替代「每枚 UTXO 等权」，把供应切成 <strong>Active（活跃）</strong> 与 <strong>Vaulted（封存）</strong> 两区<span class="tag t-fact">事实</span>。核心市时指标 <strong>AVIV</strong>（Active-Value-to-Investor-Value）= 活跃市值 ÷ 投资者市值，长期均值约 <strong>1.0</strong>——读法类似 MVRV，但分母是 <strong>Investor Cap</strong>（Realized Cap 减 Thermo Cap），分子只计 <strong>Liveliness × 供应</strong> 的经济活跃部分<span class="tag t-fact">事实</span>。</p>
+<p>2026-09 Glassnode 读数 AVIV <strong>~0.84</strong>、Liveliness <strong>~0.64</strong><span class="tag t-chk">待验证</span>——活跃投资者整体略亏，与 MVRV <strong>~1.50</strong>（全网仍盈利）形成对照：<strong>休眠/丢失币抬高了传统 MVRV 的「虚假繁荣」</strong><span class="tag t-inf">推论</span>。白皮书建议顶区 <strong>&gt;2.5</strong>、底区 <strong>&lt;0.55</strong><span class="tag t-chk">待验证</span>——仅 3–4 个周期样本，须当概率区间而非硬开关。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>「BTC-市时模型」研究的是：<strong>如何用 block-height 时间权重（而非 UTXO 等权）分割 BTC 供应、重建成本基线与估值偏离，并据此做周期定位</strong>。2022–2023 年由 <strong>ARK Invest（David Puell）</strong> 与 <strong>Glassnode（James Check）</strong> 联合发布白皮书<span class="tag t-fact">事实</span>；Tamás Blummer 2018 年的 <strong>Liveliness</strong> 是其数学基石<span class="tag t-fact">事实</span>。</p>
+<div class="note red"><b>先划清边界</b><p>本手册<strong>不提供</strong>「AVIV 到 X 就买卖」的信号。Cointime 框架改善的是<strong>供应分割与成本基线估计</strong>；何时变现仍取决于流动性、宏观与行为，不是一条静态阈值线。</p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>coinblock 框架、Liveliness/Vaultedness、AVIV、True Market Mean Price</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>不含订单簿微观；不预测监管；不替代现货技术分析</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>Coinblocks Created/Destroyed/Stored、Active Supply、Investor Cap</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>Puell/Check、Blummer、Glassnode、ARK、批评者（Ledger School 等）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>Liveliness、AVIV、TMMP、Cointime Price、Cointime NVT/RVT</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察的</td>
+<td>Glassnode Cointime 面板、链上原始序列（blockheight、CBD、CBC）</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察但可推断</td>
+<td>真正丢失 vs 长期囤币、OTC 真实成本</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>老币移动→Liveliness↑→Active Cap 结构变→AVIV 重估</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>链上转移销毁 coinblock = <span class="tag t-fact">事实</span>；AVIV 顶→价跌 = <span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>AVIV 分子含现价，与价格机械共线</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>「AVIV 比 MVRV 更准」营销话术</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>时间权重供应分割 + 投资者成本基线 + 均值回归叙事</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>高 AVIV→获利抛压→价格回落→AVIV 下行</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>时间延迟</td>
+<td>Investor Cap 仅随链上转移慢变；Liveliness 近单调</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>正：盈利扩张→FOMO；负：&lt;1 capitulation→抄底叙事</td>
+</tr>
+</tbody>
+</table></div>
+<h3>核心公式速查</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>公式</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Coinblock</strong></td>
+<td>1 BTC × 1 区块</td>
+<td>最小时间-价值单位<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Liveliness</strong></td>
+<td>Σ销毁 coinblocks ÷ Σ创建 coinblocks</td>
+<td>网络「活跃度」，0–1 渐近<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Vaultedness</strong></td>
+<td>1 − Liveliness</td>
+<td>封存供应占比<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Active Supply</strong></td>
+<td>Liveliness × 流通供应</td>
+<td>经济活跃供应<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Active Cap</strong></td>
+<td>市值 × Liveliness</td>
+<td>活跃部分美元估值<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Investor Cap</strong></td>
+<td>Realized Cap − Thermo Cap</td>
+<td>二级市场投资者成本基线<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>TMMP</strong></td>
+<td>Investor Cap ÷ Active Supply</td>
+<td>True Market Mean Price<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>AVIV</strong></td>
+<td>Active Cap ÷ Investor Cap = 现价 ÷ TMMP</td>
+<td>True Market Deviation<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Cointime Price</strong></td>
+<td>cumsum(Price×CBD) ÷ cumsum(Stored)</td>
+<td>Blummer Price，UTXO Realized 的市时版<span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：MVRV 的「已知缺陷」有了系统化补丁</h3>
+<p>传统 Realized Price 把丢失币、创世块、深度冷存储与昨日换手<strong>等权计入</strong><span class="tag t-ana">分析</span>——Puell/Check 论证这会<strong>低估</strong>活跃投资者真实成本基线，并<strong>掩盖</strong>熊市未实现亏损<span class="tag t-fact">事实</span>。Cointime 用同一套最小输入（blockheight、CBD、流通供应、现价）即可派生整套指标，计算比逐 UTXO 遍历轻量<span class="tag t-fact">事实</span>。</p>
+<h3>理由二：AVIV 的均值回归叙事比「地板模型」更对称</h3>
+<p>批评者指出 Cointime Price（Blummer Price）更像<strong>下限锚</strong>而非双向公允价<span class="tag t-ana">分析</span>；AVIV 围绕 <strong>1.0</strong> 振荡，顶 <strong>&gt;2.5</strong>、底 <strong>&lt;0.55</strong> 双侧区间<span class="tag t-chk">待验证</span>——比「价格不应长期低于 Cointime Price」的单边假设更保守<span class="tag t-ana">分析</span>。</p>
+<h3>理由三：2024–2026 是 live test 窗口</h3>
+<p>2024 年 12 月 AVIV 曾升至历史过热关联区<span class="tag t-chk">待验证</span>；2026-09 回落至 <strong>~0.84</strong><span class="tag t-chk">待验证</span>——与 MVRV <strong>~1.50</strong> 并存说明：<strong>全供应仍盈利，但活跃 cohort 已略亏</strong>。学会同时读两套指标，才能识别「休眠币扭曲」。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>BTC μ=50%/年 σ=65%</th>
+<th><strong>随机持币基准</strong></th>
+<th>「AVIV&lt;0.55 买 75% 胜率」真实超额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">90 日</td>
+<td>—</td>
+<td><strong>67.7%</strong></td>
+<td>表面 +7.3 pp → 真实 <strong>+7.3 pp</strong>（仍需 n≈<strong>309</strong>）</td>
+</tr>
+<tr>
+<td class="k">180 日</td>
+<td>—</td>
+<td><strong>74.2%</strong></td>
+<td>表面 +5 pp → 真实 <strong>~+5 pp</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>任何 AVIV 底买顶卖都要和对照基准比</strong>——BTC 有正漂移，基准不是 50%。</p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从 coinblock 原语，到 AVIV 市时仪表盘</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">Cointime Framework · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">越靠上越「链上硬数据」，越靠下越「阈值/行为可选择」</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 区块时间层</text>
+  <text x="148" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">block-height 替代不规则时间戳 · coinblock 原语</text>
+  <text x="148" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">失效：非真实时钟，是建模选择</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② Coinblock 流层</text>
+  <text x="148" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">Created / Destroyed / Stored · 三态守恒</text>
+  <text x="148" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">老币移动 → 大量 CBD → 经济权重大</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 供应分割层</text>
+  <text x="148" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">Liveliness 0.64 · Vaultedness 0.36【待验证】</text>
+  <text x="148" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">Vaulted 含丢失币+冷存储——非可观测分类</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 投资者成本层</text>
+  <text x="148" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">Investor Cap = Realized Cap − Thermo Cap</text>
+  <text x="148" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">剔除矿工发行收入，隔离二级市场成本</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 公允价层</text>
+  <text x="148" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">TMMP · Cointime Price（Blummer Price）</text>
+  <text x="148" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">Realized Price 的市时加权修正版</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ AVIV 偏离层</text>
+  <text x="148" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">Active Cap ÷ Investor Cap · 均值≈1.0</text>
+  <text x="148" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">顶 2.5 / 底 0.55【待验证】· 样本外未验证</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 吞吐估值层</text>
+  <text x="148" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">Cointime NVT/RVT · 90 日 CBD 平滑</text>
+  <text x="148" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">传统 NVT 的市时修正，波动更稳【分析】</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 传播层</text>
+  <text x="148" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">「比 MVRV 更准」· Glassnode 付费图表</text>
+  <text x="148" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">失效：无正式 head-to-head 回测【分析】</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="148" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">AVIV 当周期仪表盘 + MVRV 交叉验证</text>
+  <text x="148" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">概率读法 · 漂移剥离 · 多信号</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">Cointime 概念 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 时间即经济权重</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 活跃/封存二分</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 均值回归</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 供应经济学</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• coinblock 销毁/存储</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• Liveliness 分割供应</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• Investor Cap 成本基线</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• AVIV 振荡围绕 1</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#b8dcc8" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 读 Glassnode AVIV</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 对照 MVRV 差分</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 盯 Liveliness 趋势</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 漂移剥离胜率</text>
+  <path d="M214 146 L240 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#ctA)"/>
+  <path d="M440 146 L466 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#ctA)"/>
+  <defs><marker id="ctA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c848f"/></marker></defs>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>做什么</th>
+<th>与 Cointime 的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>David Puell (ARK)</strong></td>
+<td>链上分析师、白皮书主笔</td>
+<td>框架共创者；2021 提出 Investor Cap<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>James Check (Glassnode)</strong></td>
+<td>Lead Analyst</td>
+<td>技术实现、Version II 专版白皮书<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Tamás Blummer</strong></td>
+<td>Liveliness 发明者 (2018)</td>
+<td>Cointime Price 以「Blummer Price」纪念<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Glassnode</strong></td>
+<td>数据基础设施</td>
+<td>Cointime 图表套件、API<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>ARK Invest</strong></td>
+<td>发布方、BTC 方向性持仓</td>
+<td>商业利益→读者应保持怀疑<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>批评者 (Ledger School 等)</strong></td>
+<td>方法论审计</td>
+<td>指出样本外未验证、无正式 MVRV 对照<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Dilutionproof 等社区</strong></td>
+<td>深度书评</td>
+<td>AVIV 比 Cointime Price 叙事更对称<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>2026-09 量级<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Liveliness</strong></td>
+<td>CBD 累计 ÷ CBC 累计</td>
+<td><strong>0.639</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Vaultedness</strong></td>
+<td>1 − Liveliness</td>
+<td><strong>0.361</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Active Supply</strong></td>
+<td>Liveliness × ~19.8M</td>
+<td><strong>~12.7M BTC</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Investor Cap</strong></td>
+<td>Realized Cap − Thermo Cap</td>
+<td><strong>~$1.02T</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Active Cap</strong></td>
+<td>市值 × Liveliness</td>
+<td><strong>~$0.86T</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>AVIV</strong></td>
+<td>Active Cap ÷ Investor Cap</td>
+<td><strong>0.84</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>TMMP</strong></td>
+<td>Investor Cap ÷ Active Supply</td>
+<td><strong>~$80,300</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>MVRV（对照）</strong></td>
+<td>市值 ÷ Realized Cap</td>
+<td><strong>~1.50</strong></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · AVIV 比值计算器</h3>
+<p>手算 <strong>AVIV = Active Cap ÷ Investor Cap</strong>，并推导 True Market Mean Price。</p>
+<div class="ctrl"><label>市值 ($T)<input type="range" id="ct_mcap" min="0.8" max="2.5" step="0.001" value="1.340"><output id="ct_mcapO">$1.34T</output></label></div>
+<div class="ctrl"><label>Liveliness<input type="range" id="ct_liv" min="0.50" max="0.75" step="0.001" value="0.639"><output id="ct_livO">63.9%</output></label></div>
+<div class="ctrl"><label>Investor Cap ($T)<input type="range" id="ct_inv" min="0.6" max="1.5" step="0.001" value="1.020"><output id="ct_invO">$1.02T</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">AVIV</span><strong id="ct_aviv">0.84</strong><span id="ct_avivh">—</span></div>
+<div class="ro"><span class="k">TMMP</span><strong id="ct_tmmp">$80,618</strong><span id="ct_tmmph">—</span></div>
+<div class="ro"><span class="k">活跃投资者盈亏</span><strong id="ct_profit">-16.1%</strong><span id="ct_profith">—</span></div>
+<canvas id="ctAvivChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ct_aviv_v">折价区</strong><span id="ct_aviv_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>因果链与反馈</h3>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">Cointime 因果图 · 实线=因果 · 红虚线=反馈</text>
+  <rect x="20" y="50" width="110" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="75" y="78" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">链上转移</text>
+  <rect x="160" y="50" width="110" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="215" y="78" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">Coinblocks Destroyed</text>
+  <rect x="300" y="50" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="355" y="78" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">Liveliness ↑</text>
+  <rect x="440" y="50" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="495" y="78" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">Active Cap 结构</text>
+  <rect x="560" y="50" width="100" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="610" y="78" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">AVIV</text>
+  <rect x="160" y="150" width="130" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="225" y="170" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">Investor Cap</text>
+  <text x="225" y="186" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">(Realized−Thermo)</text>
+  <rect x="340" y="150" width="120" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="400" y="178" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">TMMP</text>
+  <rect x="200" y="250" width="140" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="270" y="270" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">抛压/抄底</text>
+  <text x="270" y="286" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">(AVIV 极端激励)</text>
+  <path d="M130 72 L160 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#ctB)"/>
+  <path d="M270 72 L300 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#ctB)"/>
+  <path d="M410 72 L440 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#ctB)"/>
+  <path d="M550 72 L560 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#ctB)"/>
+  <path d="M215 94 L225 150" stroke="#454c56" stroke-width="1.5" marker-end="url(#ctB)"/>
+  <path d="M290 172 L340 172" stroke="#454c56" stroke-width="1.5" marker-end="url(#ctB)"/>
+  <path d="M400 150 L400 94 L495 94" stroke="#454c56" stroke-width="1.5" marker-end="url(#ctB)"/>
+  <path d="M610 94 L610 250 L340 250" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ctC)"/>
+  <path d="M270 250 L355 94" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ctC)"/>
+  <defs>
+    <marker id="ctB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker>
+    <marker id="ctC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+  </defs>
+</svg>
+<p><strong>读图要点</strong>：链上转移同时推高 Liveliness（老币移动权重更大）与 Investor Cap（重定价成本基线）——两条路径对 AVIV 的拉动<strong>方向不定</strong>。红色反馈：AVIV 极端 → 行为响应 → 价格与转移模式改变。</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>隐藏关系一：AVIV 与 MVRV 的「剪刀差」</h3>
+<p>当 MVRV <strong>&gt;1</strong> 而 AVIV <strong>&lt;1</strong>（如 2026-09 的 1.50 vs 0.84）时，说明<strong>休眠/丢失供应中的未实现盈利</strong>抬高了全网 MVRV，而<strong>活跃投资者已整体亏损</strong><span class="tag t-inf">推论</span>。这是 Cointime 框架最有价值的读法——不是替代 MVRV，而是<strong>解释分歧</strong>。</p>
+<div class="tool">
+<h3>工具 · 活跃度与供应分割器</h3>
+<p><strong>Liveliness</strong> 把流通供应切成 Active 与 Vaulted 两区（和为 100%）。</p>
+<div class="ctrl"><label>Liveliness<input type="range" id="ct_liv2" min="0.50" max="0.75" step="0.001" value="0.639"><output id="ct_liv2O">0.639</output></label></div>
+<div class="ctrl"><label>流通供应 (M BTC)<input type="range" id="ct_supply" min="19.0" max="21.0" step="0.01" value="19.80"><output id="ct_supplyO">19.8M BTC</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">Active Supply</span><strong id="ct_active_s">12.65M</strong><span>经济活跃</span></div>
+<div class="ro"><span class="k">Vaulted Supply</span><strong id="ct_vault_s">7.15M</strong><span id="ct_vault_pct">36.1%</span></div>
+<canvas id="ctLivChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ct_liv_v">中性区间</strong><span id="ct_liv_vh">—</span></div>
+</div>
+</div>
+<h3>隐藏关系二：Vaulted ≠ 丢失</h3>
+<p>白皮书将 Vaulted 定义为封存供应，但<strong>真正丢失的币与「十年未动的巨鲸」被归入同一桶</strong><span class="tag t-ana">分析</span>。Ledger School 批评：这是假设而非观测<span class="tag t-ana">分析</span>。Patient LTH 明天即可卖出——Active/Vaulted 分割是<strong>经济先验</strong>，不是链上标签。</p>
+<h3>隐藏关系三：跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>Cointime 领域</th>
+<th>其他领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>时间加权存量</strong></td>
+<td>coinblock / Liveliness</td>
+<td>存货账龄、应收账款账龄</td>
+</tr>
+<tr>
+<td class="k"><strong>活跃/休眠二分</strong></td>
+<td>Active vs Vaulted</td>
+<td>银行活期/定期、GPU 利用率</td>
+</tr>
+<tr>
+<td class="k"><strong>成本基线偏离</strong></td>
+<td>AVIV 围绕 1</td>
+<td>MVRV、PB、信用利差</td>
+</tr>
+<tr>
+<td class="k"><strong>均值回归振荡器</strong></td>
+<td>AVIV</td>
+<td>VIX 分位、利率 Z-Score</td>
+</tr>
+<tr>
+<td class="k"><strong>吞吐/估值比</strong></td>
+<td>Cointime NVT</td>
+<td>传统 NVT、市盈率</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · AVIV vs MVRV 对照器</h3>
+<p>同一市值下，两套成本基线给出的<strong>偏离度差</strong>揭示休眠币扭曲。</p>
+<div class="ctrl"><label>市值 ($T)<input type="range" id="ct_cmp_mcap" min="0.8" max="2.5" step="0.001" value="1.340"><output id="ct_cmp_mcapO">$1.34T</output></label></div>
+<div class="ctrl"><label>Liveliness<input type="range" id="ct_cmp_liv" min="0.50" max="0.75" step="0.001" value="0.639"><output id="ct_cmp_livO">63.9%</output></label></div>
+<div class="ctrl"><label>Realized Cap ($T)<input type="range" id="ct_cmp_rcap" min="0.5" max="1.5" step="0.001" value="0.893"><output id="ct_cmp_rcapO">$0.893T</output></label></div>
+<div class="ctrl"><label>Investor Cap ($T)<input type="range" id="ct_cmp_inv" min="0.6" max="1.5" step="0.001" value="1.020"><output id="ct_cmp_invO">$1.02T</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">AVIV</span><strong id="ct_cmp_aviv">0.84</strong><span>市时偏离</span></div>
+<div class="ro"><span class="k">MVRV</span><strong id="ct_cmp_mvrv">1.50</strong><span>UTXO 偏离</span></div>
+<div class="ro"><span class="k">差分</span><strong id="ct_cmp_diff">+0.66</strong><span id="ct_cmp_diffh">—</span></div>
+<canvas id="ctCmpChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ct_cmp_v">—</strong><span id="ct_cmp_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>四阶段循环（AVIV 视角）</h3>
+<ol>
+<li><strong>积累期</strong>：Liveliness 缓降或横盘，Vaultedness 高，AVIV 从底部回升向 1.0</li>
+<li><strong>扩张期</strong>：价格升、Active Cap 扩，AVIV 突破 1.0 向 1.5+</li>
+<li><strong>派发期</strong>：老币移动→Liveliness spike，AVIV 冲 <strong>&gt;2.5</strong> 参考区<span class="tag t-chk">待验证</span>，获利了结</li>
+<li><strong>清算期</strong>：AVIV <strong>&lt;1</strong> 甚至 <strong>&lt;0.55</strong>，活跃投资者整体亏损，抄底叙事</li>
+</ol>
+<div class="note amber"><b>Liveliness 的「慢」</b><p>Liveliness 是<strong>累计比率</strong>，近单调上升（2023 约 0.60 → 2026 约 0.64）<span class="tag t-chk">待验证</span>。跨年代直接比较 AVIV 绝对值会被结构性趋势污染——宜用<strong>滚动分位</strong>读法<span class="tag t-ana">分析</span>。</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>历史 AVIV 极端与周期对照</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>年月</th>
+<th>AVIV 区间<span class="tag t-chk">待验证</span></th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2013 顶</td>
+<td>Nov 2013</td>
+<td>&gt;2.5</td>
+<td>白皮书回溯</td>
+</tr>
+<tr>
+<td class="k">2017 顶</td>
+<td>Dec 2017</td>
+<td>&gt;2.5</td>
+<td>与 MVRV 顶共振</td>
+</tr>
+<tr>
+<td class="k">2021 顶</td>
+<td>Nov 2021</td>
+<td>~2.0–2.5</td>
+<td>低于 2017 极端</td>
+</tr>
+<tr>
+<td class="k">2022 底</td>
+<td>Nov 2022</td>
+<td>&lt;0.55</td>
+<td>熊市 capitulation</td>
+</tr>
+<tr>
+<td class="k">2024 顶</td>
+<td>Dec 2024</td>
+<td>逼近过热区</td>
+<td>后回落</td>
+</tr>
+<tr>
+<td class="k">2026-09</td>
+<td>Sep 2026</td>
+<td><strong>~0.84</strong></td>
+<td>活跃 cohort 略亏</td>
+</tr>
+</tbody>
+</table></div>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">AVIV 周期演化时间轴</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="80" cy="100" r="6" fill="#d5342c"/><text x="80" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2013</text><text x="80" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">>2.5</text>
+  <circle cx="180" cy="100" r="6" fill="#d5342c"/><text x="180" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2017</text><text x="180" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">>2.5</text>
+  <circle cx="300" cy="100" r="6" fill="#d5342c"/><text x="300" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2021</text><text x="300" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">~2.3</text>
+  <circle cx="380" cy="100" r="6" fill="#0f8a4d"/><text x="380" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2022</text><text x="380" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif"><0.55</text>
+  <circle cx="480" cy="100" r="6" fill="#b8730a"/><text x="480" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024</text><text x="480" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">过热</text>
+  <circle cx="600" cy="100" r="6" fill="#1d4ed8"/><text x="600" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2026</text><text x="600" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">0.84</text>
+  <text x="340" y="170" font-size="11" text-anchor="middle" fill="#7c848f" font-family="sans-serif">顶区阈值或下移 · Liveliness 结构性上升 · 须分位读法</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>利益方</th>
+<th>激励</th>
+<th>对 Cointime 的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Glassnode</strong></td>
+<td>高级图表订阅</td>
+<td>推 Cointime 套件为 MVRV 升级版</td>
+</tr>
+<tr>
+<td class="k"><strong>ARK Invest</strong></td>
+<td>BTC 敞口 + 研究品牌</td>
+<td>白皮书信心与持仓方向一致<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>链上 KOL</strong></td>
+<td>流量</td>
+<td>简化 AVIV 为买卖开关</td>
+</tr>
+<tr>
+<td class="k"><strong>批评者</strong></td>
+<td>方法论声誉</td>
+<td>强调样本外未验证</td>
+</tr>
+<tr>
+<td class="k"><strong>长期囤币者</strong></td>
+<td>低换手</td>
+<td>抬 Vaultedness、压低 Active Cap</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>活跃估值与投资者成本「抽水」</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">Active Cap vs Investor Cap（资金流抽水图）</text>
+  <rect x="40" y="50" width="280" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="180" y="80" font-size="12" text-anchor="middle" fill="#454c56" font-family="sans-serif">Active Cap ~$0.86T</text>
+  <rect x="360" y="50" width="280" height="50" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="500" y="80" font-size="12" text-anchor="middle" fill="#454c56" font-family="sans-serif">Investor Cap ~$1.02T</text>
+  <text x="340" y="120" font-size="11" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">AVIV = 0.84 → 活跃部分折价 16%</text>
+  <rect x="120" y="140" width="440" height="36" rx="6" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.2"/>
+  <text x="340" y="163" font-size="11" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">Vaulted ~7.15M BTC（36%）不参与 Active Cap 分子</text>
+  <path d="M180 100 L180 140" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#ctD)"/>
+  <path d="M500 100 L500 140" stroke="#b8730a" stroke-width="1.5" marker-end="url(#ctE)"/>
+  <rect x="240" y="200" width="200" height="40" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="340" y="225" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">现货流动性池 · 抛压/承接</text>
+  <text x="100" y="175" font-size="10" fill="#1d4ed8" font-family="sans-serif">可交易估值</text>
+  <text x="520" y="175" font-size="10" fill="#b8730a" font-family="sans-serif">投资者成本</text>
+  <defs>
+    <marker id="ctD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1d4ed8"/></marker>
+    <marker id="ctE" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b8730a"/></marker>
+  </defs>
+</svg>
+<p><strong>信息流路径</strong>：全节点 → 索引商（Glassnode）→ Cointime 面板/API → 研报/KOL → 交易者预期 → 现货/ETF 订单流。<strong>瓶颈</strong>：Thermo Cap、实体调整口径各平台略有差异<span class="tag t-ana">分析</span>。</p>
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>「AVIV&lt;0.55 抄底胜率 75%」？先和<strong>随机持币基准</strong>比。</p>
+<div class="ctrl"><label>持有期（日）<input type="range" id="ct_T" min="5" max="365" step="5" value="90"><output id="ct_TO">90 日</output></label></div>
+<div class="ctrl"><label>信号胜率 (%)<input type="range" id="ct_ps" min="50" max="90" step="0.1" value="75.0"><output id="ct_psO">75.0%</output></label></div>
+<div class="ctrl"><label>年化漂移 μ (%)<input type="range" id="ct_mu" min="0" max="100" step="1" value="50"><output id="ct_muO">50%</output></label></div>
+<div class="ctrl"><label>年化波动 σ (%)<input type="range" id="ct_sg" min="30" max="100" step="1" value="65"><output id="ct_sgO">65%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="ct_base">67.7%</strong><span id="ct_baseh">—</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="ct_dp">+7.3 pp</strong><span id="ct_dph">—</span></div>
+<div class="ro"><span class="k">所需样本 n</span><strong id="ct_n">309</strong><span id="ct_nh">—</span></div>
+<canvas id="ctDriftChart" height="176" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ct_drift_v">超额有限</strong><span id="ct_drift_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>同时读 AVIV 与 MVRV</strong></td>
+<td>剪刀差揭示休眠币扭曲</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>用分位替代 2.5/0.55 绝对阈</strong></td>
+<td>样本仅 3–4 周期</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>理解 Vaulted 假设</strong></td>
+<td>丢失≠冷存储，勿当观测事实</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>盯 Liveliness 趋势</strong></td>
+<td>老币移动预警派发</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>读 TMMP 作成本线</strong></td>
+<td>比 Realized Price 更贴近活跃 cohort</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>配 Cointime NVT</strong></td>
+<td>估值/吞吐背离侧证</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>漂移剥离胜率</strong></td>
+<td>任何底买叙事先减基准</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>样本量意识</strong></td>
+<td>7pp 超额需 n&gt;300</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>读批评文献</strong></td>
+<td>Ledger School / Dilutionproof</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>30 分钟三联检</strong></td>
+<td>算、比、判——§22</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「AVIV 比 MVRV 更准」已证明</summary><div class="dbody"><p><strong>错因</strong>：白皮书用「seems to」而非正式回测；无 head-to-head 误差指标<span class="tag t-ana">分析</span>。<strong>对策</strong>：当互补透镜，非替代。</p></div></details>
+<details><summary>2. 「2.5 必顶 / 0.55 必底」</summary><div class="dbody"><p><strong>错因</strong>：阈值拟合全历史，无样本外检验<span class="tag t-ana">分析</span>。<strong>对策</strong>：滚动分位 + 概率读法。</p></div></details>
+<details><summary>3. 「AVIV&lt;1 = 立刻抄底」</summary><div class="dbody"><p><strong>错因</strong>：2022 年 &lt;0.55 区域持续数月<span class="tag t-chk">待验证</span>。<strong>对策</strong>：区间不是时点。</p></div></details>
+<details><summary>4. 忽视 Liveliness 结构性上升</summary><div class="dbody"><p><strong>错因</strong>：累计指标近单调，污染跨周期比较<span class="tag t-ana">分析</span>。<strong>对策</strong>：3 年滚动分位。</p></div></details>
+<details><summary>5. 把 Vaulted 当「永久丢失」</summary><div class="dbody"><p><strong>错因</strong>：含可卖的长期持有者<span class="tag t-ana">分析</span>。<strong>对策</strong>：配 LTH 流出数据。</p></div></details>
+<details><summary>6. 忽视 ARK 方向性利益</summary><div class="dbody"><p><strong>错因</strong>：发布方持有 BTC 敞口<span class="tag t-ana">分析</span>。<strong>对策</strong>：独立验证，读批评。</p></div></details>
+<details><summary>7. 把 Cointime Price 当 AVIV</summary><div class="dbody"><p><strong>错因</strong>：前者偏地板锚，后者是双向振荡器<span class="tag t-ana">分析</span>。<strong>对策</strong>：分清指标族。</p></div></details>
+<details><summary>8. 单指标 All-in</summary><div class="dbody"><p><strong>错因</strong>：公开指标被 trade against。<strong>对策</strong>：≥3 独立信号。</p></div></details>
+<details><summary>9. 用 AVIV 做日内</summary><div class="dbody"><p><strong>错因</strong>：Investor Cap 日变化极慢。<strong>对策</strong>：周期尺度工具。</p></div></details>
+<details><summary>10. 忽视 ETF 时代结构变迁</summary><div class="dbody"><p><strong>错因</strong>：机构流改变换手与成本基线<span class="tag t-inf">推论</span>。<strong>对策</strong>：配 ETF 净流入。</p></div></details>
+<details><summary>11. 胜率不算漂移</summary><div class="dbody"><p><strong>错因</strong>：90 日随机做多基准 <strong>67.7%</strong>。<strong>对策</strong>：§12 漂移剥离器。</p></div></details>
+<details><summary>12. 把白皮书免责声明当摆设</summary><div class="dbody"><p><strong>错因</strong>：全文 17 处「past performance」提示<span class="tag t-fact">事实</span>。<strong>对策</strong>：当真。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实映射</th>
+<th>可观察代理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">经济活跃供应</td>
+<td>真正参与定价的 BTC</td>
+<td>Active Supply ~12.7M</td>
+</tr>
+<tr>
+<td class="k">投资者成本基线</td>
+<td>二级市场买入均价</td>
+<td>TMMP ~$80.3K</td>
+</tr>
+<tr>
+<td class="k">估值偏离</td>
+<td>贵/便宜讨论</td>
+<td>AVIV 0.84 = 活跃 cohort 折价</td>
+</tr>
+<tr>
+<td class="k">老币移动</td>
+<td>派发预警</td>
+<td>Liveliness spike + CDD</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<p><strong>决策漏斗</strong>（自上而下）：</p>
+<ol>
+<li><strong>宏观</strong>：流动性周期方向？</li>
+<li><strong>链上</strong>：AVIV 处于历史分位？与 MVRV 剪刀差方向？</li>
+<li><strong>结构</strong>：Liveliness 趋势、Vaulted 是否异常？</li>
+<li><strong>确认</strong>：ETF 流、Cointime NVT、价格结构同向？</li>
+<li><strong>执行</strong>：仓位匹配周期尺度——非阈值一碰就动</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 观察者</summary><div class="dbody"><ul>
+<li>[ ] 解释 coinblock 与 Liveliness 定义</li>
+<li>[ ] 手算 AVIV = 0.86÷1.02 ≈ 0.84</li>
+<li>[ ] 说出 AVIV=1 的含义</li>
+</ul></div></details>
+<details><summary>L2 · 分析师</summary><div class="dbody"><ul>
+<li>[ ] 对照 AVIV 与 MVRV 剪刀差</li>
+<li>[ ] 复述 2.5/0.55 样本外批评</li>
+<li>[ ] 用 §12 剥离 75% 胜率</li>
+</ul></div></details>
+<details><summary>L3 · 建模者</summary><div class="dbody"><ul>
+<li>[ ] 建 AVIV 3 年分位仪表盘</li>
+<li>[ ] 读 Cointime NVT 与经典 NVT 差</li>
+<li>[ ] 写 Liveliness+CDD 辅助规则</li>
+</ul></div></details>
+<details><summary>L4 · 系统设计者</summary><div class="dbody"><ul>
+<li>[ ] 多信号投票（AVIV+MVRV+ETF）</li>
+<li>[ ] 每周期记录 AVIV 峰谷</li>
+<li>[ ] 季度回测阈值漂移</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：市时审计员（Cointime Auditor）。等级越高，越不信「更准」营销，越会看剪刀差。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>等级</th>
+<th>任务</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Lv.1</td>
+<td>手算 AVIV 误差 &lt;2%</td>
+<td>解锁「coinblock 层」</td>
+</tr>
+<tr>
+<td class="k">Lv.2</td>
+<td>向朋友解释 Vaulted 假设</td>
+<td>解锁「供应分割器」</td>
+</tr>
+<tr>
+<td class="k">Lv.3</td>
+<td>算出 90 日真实超额</td>
+<td>解锁「漂移剥离器」</td>
+</tr>
+<tr>
+<td class="k">Lv.4</td>
+<td>连续 4 周记录 AVIV+MVRV</td>
+<td>解锁「对照器」</td>
+</tr>
+<tr>
+<td class="k">Lv.5</td>
+<td>写一页「Cointime 不能回答什么」</td>
+<td>通关</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>任务</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日</td>
+<td>记录 BTC 收盘价</td>
+<td>7 日表</td>
+</tr>
+<tr>
+<td class="k">每周</td>
+<td>更新 AVIV &amp; Liveliness</td>
+<td>Glassnode 截图</td>
+</tr>
+<tr>
+<td class="k">每月</td>
+<td>读一篇 Cointime 批评/辩护</td>
+<td>3 行摘要</td>
+</tr>
+<tr>
+<td class="k">每季</td>
+<td>核对 TMMP 与手算</td>
+<td>误差 &lt;3%</td>
+</tr>
+<tr>
+<td class="k">每年</td>
+<td>记录周期 AVIV 峰谷</td>
+<td>与 §10 表对照</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A · 若 AVIV 2.5 顶阈仍有效</button><button class="tab" data-pane="tb1-1">情景 B · 若无 Cointime 框架</button><button class="tab" data-pane="tb1-2">情景 C · 若 Vaulted 全为丢失币</button><button class="tab" data-pane="tb1-3">情景 D · 若只用 Cointime Price 地板</button></div>
+<div class="pane on" id="tb1-0"><p>2024-12 应触 2.5 后暴跌。实际仅「逼近过热」后回落<span class="tag t-chk">待验证</span>——<strong>顶阈可能已下移</strong>。</p></div><div class="pane" id="tb1-1"><p>分析师仍用 MVRV 1.50 判断「温和盈利」，<strong>看不到活跃 cohort 已亏损</strong>——反事实支持保留 AVIV 作第二透镜。</p></div><div class="pane" id="tb1-2"><p>AVIV 分母更小、读数更高——<strong>当前 0.84 可能低估风险</strong><span class="tag t-hyp">假设</span>。</p></div><div class="pane" id="tb1-3"><p>单边「不破 Blummer Price」假设在熊市可能过早乐观<span class="tag t-ana">分析</span>——AVIV 双侧区间更保守。</p></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>目标</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 会算 AVIV</strong></td>
+<td>3 天</td>
+<td>Active/Investor Cap、TMMP</td>
+<td>口算 0.84</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 会读剪刀差</strong></td>
+<td>1 周</td>
+<td>AVIV vs MVRV 叙事</td>
+<td>对照器实操</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 会修偏差</strong></td>
+<td>2 周</td>
+<td>分位阈 + Liveliness 趋势</td>
+<td>3 年窗口</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 会迭代系统</strong></td>
+<td>1 月+</td>
+<td>多信号 + 季度校准</td>
+<td>连续 2 月无口诀交易</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>任务</strong>：完成「Cointime 三联检」——算、比、判。</p>
+<ol>
+<li><strong>8 分钟 · 手算 AVIV</strong>：Active Cap $1.34T×0.639 = <strong>$0.856T</strong> ÷ Investor Cap $1.02T = <strong>0.84</strong>。</li>
+<li><strong>7 分钟 · 剪刀差</strong>：§08 对照器，MVRV <strong>1.50</strong> − AVIV <strong>0.84</strong> = <strong>+0.66</strong>——休眠币抬升 MVRV。</li>
+<li><strong>8 分钟 · 漂移剥离</strong>：§12 工具，90 日 75% 胜率 → 真实超额 <strong>+7.3 pp</strong>，需 <strong>n≈309</strong>。</li>
+<li><strong>7 分钟 · 结论</strong>：写三句话——(a) 当前 AVIV 区间 (b) 与 MVRV 分歧含义 (c) 2.5/0.55 是否仍适用。<strong>禁止写「AVIV 更准所以必涨」。</strong></li>
+</ol>
+<p><strong>验证</strong>：AVIV 与 §06 默认读数误差 <strong>&lt;0.02</strong>。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>定义</td>
+<td>读 ARK 白皮书摘要 + Glassnode 导论</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>手算</td>
+<td>Active/Investor Cap、TMMP、AVIV</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>批评</td>
+<td>Ledger School + Dilutionproof 各 3 条</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>工具</td>
+<td>§06–§12 四个交互模型</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>历史</td>
+<td>对照 2017/2021/2022/2024 AVIV 峰谷</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>交叉</td>
+<td>同屏读 AVIV + MVRV + ETF 流</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>合成</td>
+<td>1 页「Cointime 能/不能回答什么」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<p><strong>Week 1</strong>：coinblock + Liveliness + AVIV 手算（L1）
+<strong>Week 2</strong>：剪刀差 + 样本外批评 + 漂移剥离（L2）
+<strong>Week 3</strong>：分位阈 + Cointime NVT + Liveliness 趋势（L3）
+<strong>Week 4</strong>：个人 AVIV 仪表盘 + 季度校准 habit（L4）</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>最大坑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>Coinblock</strong></td>
+<td>1 BTC × 1 区块</td>
+<td>非真实时钟</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>Liveliness</strong></td>
+<td>销毁/创建累计比</td>
+<td>近单调上升</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>Vaultedness</strong></td>
+<td>1 − Liveliness</td>
+<td>丢失≠冷存储</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>Investor Cap</strong></td>
+<td>Realized − Thermo</td>
+<td>口径平台差异</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>TMMP</strong></td>
+<td>Inv Cap ÷ Active Supply</td>
+<td>慢变量</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>AVIV</strong></td>
+<td>Active Cap ÷ Inv Cap</td>
+<td>样本外未验证</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>Cointime Price</strong></td>
+<td>Blummer Price</td>
+<td>偏地板锚</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>Cointime NVT</strong></td>
+<td>Active Cap ÷ CBD 吞吐</td>
+<td>与经典 NVT 并存</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>AVIV−MVRV 剪刀差</strong></td>
+<td>休眠币扭曲探测器</td>
+<td>需双指标</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>对照基准</strong></td>
+<td>随机持币胜率</td>
+<td>μ,σ 敏感</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>链上</summary><div class="dbody"><ul>
+<li>当前 AVIV？Liveliness？TMMP？</li>
+<li>AVIV 与 MVRV 差多少？</li>
+<li>Cointime NVT 方向？</li>
+</ul></div></details>
+<details><summary>阈值</summary><div class="dbody"><ul>
+<li>本周期 AVIV 峰是多少？</li>
+<li>2.5/0.55 是否仍合理？</li>
+<li>3 年分位处于何位置？</li>
+</ul></div></details>
+<details><summary>宏观</summary><div class="dbody"><ul>
+<li>ETF 7 日净流入？</li>
+<li>全球流动性方向？</li>
+<li>老币移动（CDD）是否 spike？</li>
+</ul></div></details>
+<details><summary>决策</summary><div class="dbody"><ul>
+<li>信号胜率是否扣过漂移？</li>
+<li>样本量是否够？</li>
+<li>是否 ≥3 信号一致？</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>AVIV 分位 + ETF 流</strong>：2026 AVIV&lt;1 与 ETF 净流入能否共振见底？<span class="tag t-hyp">假设</span></li>
+<li><strong>正式 head-to-head</strong>：AVIV vs MVRV vs Adjusted-MVRV 样本外误差——社区尚未完成<span class="tag t-chk">待验证</span></li>
+<li><strong>ETH/LTC 案例</strong>：白皮书已做跨资产，BTC 阈值能否迁移？<span class="tag t-hyp">假设</span></li>
+<li><strong>Liveliness 二阶导</strong>：增速而非绝对值，能否领先 AVIV 转折？<span class="tag t-hyp">假设</span></li>
+<li><strong>Thermo Cap 敏感性</strong>：矿工收入口径变化对 Investor Cap 的冲击</li>
+</ol>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Cointime 框架定义</td>
+<td>白皮书</td>
+<td>ARK×Glassnode 2023</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">AVIV / TMMP 公式</td>
+<td>指标文档</td>
+<td>Glassnode Studio</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Liveliness 原创</td>
+<td>博客/代码</td>
+<td>Tamás Blummer 2018</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2.5/0.55 阈</td>
+<td>白皮书/评论</td>
+<td>ARK 白皮书 / Ledger School</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2026-09 AVIV ~0.84</td>
+<td>数据平台</td>
+<td>Glassnode indicators.Aviv</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2026 Liveliness ~0.639</td>
+<td>数据平台</td>
+<td>Glassnode Liveliness</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">样本外未验证批评</td>
+<td>评论</td>
+<td>Ledger School 2025</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">Dilutionproof 书评</td>
+<td>社区</td>
+<td>Medium 2023</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">2024-12 AVIV 过热</td>
+<td>媒体</td>
+<td>CryptoRank 2024</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Investor Cap 定义</td>
+<td>白皮书</td>
+<td>Puell ARK 2021</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">blocktime vs clocktime</td>
+<td>评论</td>
+<td>Patrick47f Substack</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">17 处免责声明</td>
+<td>白皮书</td>
+<td>ARK PDF 原文</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供研究与学习，<strong>不构成任何投资建议</strong>。比特币极高波动，可能发生 &gt;50% 的 drawdown；AVIV、Liveliness 及任何链上阈值均<strong>不保证</strong>未来价格路径。Cointime Economics 白皮书明确提示该框架在发布时<strong>尚未被广泛采用</strong>，2.5/0.55 等阈值<strong>未经样本外验证</strong>，请勿依据单一指标进行杠杆交易或集中配置。ARK Invest 在发布时持有比特币相关敞口，读者应独立判断。中国大陆对虚拟货币相关业务有严格监管，请遵守当地法律法规。作者不对使用本手册造成的任何损失负责。</p>
+</section>
+<footer>  <p>《BTC-市时模型（Cointime Framework） · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 5 分 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC-市时模型（Cointime Framework）》主题脚本
+   四个可调模型：
+     1. AVIV 比值计算器     — Active Cap ÷ Investor Cap
+     2. 活跃度与供应分割器  — Liveliness → Active/Vaulted Supply
+     3. AVIV vs MVRV 对照器 — 两套成本基线偏离并排读
+     4. 漂移剥离器          — AVIV 信号胜率 vs 随机持币基准
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function fmtT(v) {
+    if (!isFinite(v)) return '—';
+    return '$' + (v >= 1 ? v.toFixed(2) : v.toFixed(3)) + 'T';
+  }
+
+  function avivZone(a) {
+    if (a >= 2.5) return { t: '历史过热区', c: '#d5342c', h: '≥2.5 为白皮书建议顶区，样本极少【待验证】' };
+    if (a >= 1.5) return { t: '偏热', c: '#d5342c', h: '活跃投资者显著盈利，抛压激励上升' };
+    if (a >= 1.0) return { t: '温和溢价', c: '#b8730a', h: '活跃供应整体盈利，接近均衡上方' };
+    if (a >= 0.55) return { t: '折价区', c: '#0f8a4d', h: '活跃投资者整体亏损，历史底区参考 <0.55' };
+    return { t: '深度 capitulation', c: '#0f8a4d', h: '<0.55 为白皮书建议底区，可横盘数月' };
+  }
+
+  /* ══ 工具 1 · AVIV 比值计算器 ══ */
+  (function ctAviv() {
+    var mcapEl = $('ct_mcap'), livEl = $('ct_liv'), invEl = $('ct_inv');
+    if (!mcapEl || !livEl || !invEl) return;
+    var mcapO = $('ct_mcapO'), livO = $('ct_livO'), invO = $('ct_invO');
+    var avivEl = $('ct_aviv'), avivHEl = $('ct_avivh');
+    var tmmpEl = $('ct_tmmp'), tmmpHEl = $('ct_tmmph');
+    var profitEl = $('ct_profit'), profitHEl = $('ct_profith');
+    var vEl = $('ct_aviv_v'), vhEl = $('ct_aviv_vh');
+    var cv = $('ctAvivChart');
+    var SUPPLY = 19.8;
+
+    function draw(aviv) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxA = 3.2;
+      var sx = function (v) { return pad.l + (v / maxA) * iw; };
+      var bands = [
+        { lo: 0, hi: 0.55, col: '#e8f5ee', label: '<0.55' },
+        { lo: 0.55, hi: 1, col: '#f4f6f9', label: '0.55–1' },
+        { lo: 1, hi: 2.5, col: '#fff7e6', label: '1–2.5' },
+        { lo: 2.5, hi: maxA, col: '#fdf3f2', label: '>2.5' }
+      ];
+      bands.forEach(function (b) {
+        ctx.fillStyle = b.col;
+        ctx.fillRect(sx(b.lo), pad.t, sx(b.hi) - sx(b.lo), ih);
+      });
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      [0.55, 1, 2.5].forEach(function (ref) {
+        var x = sx(ref);
+        ctx.strokeStyle = ref >= 2.5 || ref <= 0.55 ? '#d5342c' : '#c9d0d9';
+        ctx.setLineDash(ref === 1 ? [] : [4, 3]);
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(ref), x, y1 + 13);
+      });
+      var mx = sx(Math.min(aviv, maxA));
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(mx, pad.t); ctx.lineTo(mx, y1); ctx.stroke();
+      ctx.fillStyle = '#1d4ed8';
+      ctx.beginPath(); ctx.arc(mx, pad.t + ih * 0.5, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 12px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('AVIV ' + aviv.toFixed(2), mx, pad.t + ih * 0.5 - 14);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillText('AVIV 比值（True Market Deviation）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var mcap = parseFloat(mcapEl.value);
+      var liv = parseFloat(livEl.value);
+      var inv = parseFloat(invEl.value);
+      if (inv <= 0) return;
+      var activeCap = mcap * liv;
+      var aviv = activeCap / inv;
+      var activeSupply = liv * SUPPLY;
+      var tmmp = (inv * 1e12) / (activeSupply * 1e6);
+      var spot = (mcap * 1e12) / (SUPPLY * 1e6);
+      var profit = (aviv - 1) * 100;
+      var z = avivZone(aviv);
+      txt(mcapO, fmtT(mcap));
+      txt(livO, (liv * 100).toFixed(1) + '%');
+      txt(invO, fmtT(inv));
+      txt(avivEl, aviv.toFixed(2));
+      txt(avivHEl, 'Active Cap ÷ Investor Cap');
+      txt(tmmpEl, '$' + Math.round(tmmp).toLocaleString('en-US'));
+      txt(tmmpHEl, 'True Market Mean Price = Inv÷ActiveSupply');
+      txt(profitEl, (profit >= 0 ? '+' : '') + profit.toFixed(1) + '%');
+      tint(profitEl, profit >= 0 ? '#d5342c' : '#0f8a4d');
+      txt(profitHEl, '活跃投资者未实现盈亏 · 现价 $' + Math.round(spot).toLocaleString('en-US'));
+      txt(vEl, z.t);
+      tint(vEl, z.c);
+      txt(vhEl, z.h);
+      draw(aviv);
+    }
+
+    mcapEl.addEventListener('input', update);
+    livEl.addEventListener('input', update);
+    invEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 2 · 活跃度与供应分割器 ══ */
+  (function ctLiv() {
+    var livEl = $('ct_liv2'), supplyEl = $('ct_supply');
+    if (!livEl || !supplyEl) return;
+    var livO = $('ct_liv2O'), supplyO = $('ct_supplyO');
+    var activeEl = $('ct_active_s'), vaultedEl = $('ct_vault_s');
+    var vaultPctEl = $('ct_vault_pct');
+    var vEl = $('ct_liv_v'), vhEl = $('ct_liv_vh');
+    var cv = $('ctLivChart');
+
+    function draw(liv, active, vaulted) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 28, b: 46 };
+      var iw = w - pad.l - pad.r;
+      var y1 = h - 46;
+      var barH = 48;
+      var y = pad.t + 30;
+      var aw = iw * liv;
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillRect(pad.l, y, aw, barH);
+      ctx.fillStyle = '#c9d0d9';
+      ctx.fillRect(pad.l + aw, y, iw - aw, barH);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      if (aw > 60) ctx.fillText('Active ' + active.toFixed(2) + 'M', pad.l + aw / 2, y + 30);
+      if (iw - aw > 60) ctx.fillText('Vaulted ' + vaulted.toFixed(2) + 'M', pad.l + aw + (iw - aw) / 2, y + 30);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('供应分割（Liveliness=' + liv.toFixed(2) + '）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var liv = parseFloat(livEl.value);
+      var supply = parseFloat(supplyEl.value);
+      var active = supply * liv;
+      var vaulted = supply * (1 - liv);
+      txt(livO, liv.toFixed(3));
+      txt(supplyO, supply.toFixed(1) + 'M BTC');
+      txt(activeEl, active.toFixed(2) + 'M');
+      txt(vaultedEl, vaulted.toFixed(2) + 'M');
+      txt(vaultPctEl, ((1 - liv) * 100).toFixed(1) + '%');
+      var msg = liv >= 0.65 ? '偏高：老币换手活跃，典型牛市/派发' :
+        liv <= 0.58 ? '偏低：囤积主导，典型积累期' : '中性区间';
+      txt(vEl, msg);
+      tint(vEl, liv >= 0.65 ? '#d5342c' : liv <= 0.58 ? '#0f8a4d' : '#454c56');
+      txt(vhEl, 'Liveliness 近单调上升，跨年代比较需分位读法');
+      draw(liv, active, vaulted);
+    }
+
+    livEl.addEventListener('input', update);
+    supplyEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 3 · AVIV vs MVRV 对照器 ══ */
+  (function ctCmp() {
+    var mcapEl = $('ct_cmp_mcap'), livEl = $('ct_cmp_liv'), rcapEl = $('ct_cmp_rcap'), invEl = $('ct_cmp_inv');
+    if (!mcapEl || !livEl || !rcapEl || !invEl) return;
+    var mcapO = $('ct_cmp_mcapO'), livO = $('ct_cmp_livO'), rcapO = $('ct_cmp_rcapO'), invO = $('ct_cmp_invO');
+    var avivEl = $('ct_cmp_aviv'), mvrvEl = $('ct_cmp_mvrv');
+    var diffEl = $('ct_cmp_diff'), diffHEl = $('ct_cmp_diffh');
+    var vEl = $('ct_cmp_v'), vhEl = $('ct_cmp_vh');
+    var cv = $('ctCmpChart');
+
+    function draw(aviv, mvrv) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxV = 3.0;
+      var sx = function (v) { return pad.l + (v / maxV) * iw; };
+      var cy = pad.t + ih * 0.55;
+      ctx.strokeStyle = '#c9d0d9';
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(sx(1), pad.t); ctx.lineTo(sx(1), y1); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('1.0', sx(1), y1 + 13);
+      var ax = sx(Math.min(aviv, maxV));
+      var mx = sx(Math.min(mvrv, maxV));
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillRect(pad.l, cy - 28, ax - pad.l, 22);
+      ctx.fillStyle = '#b8730a';
+      ctx.fillRect(pad.l, cy + 8, mx - pad.l, 22);
+      ctx.fillStyle = '#15181d';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('AVIV ' + aviv.toFixed(2), pad.l + 4, cy - 12);
+      ctx.fillText('MVRV ' + mvrv.toFixed(2), pad.l + 4, cy + 24);
+      ctx.fillStyle = '#7c848f';
+      ctx.textAlign = 'center';
+      ctx.fillText('两套估值偏离并排', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var mcap = parseFloat(mcapEl.value);
+      var liv = parseFloat(livEl.value);
+      var rcap = parseFloat(rcapEl.value);
+      var inv = parseFloat(invEl.value);
+      if (rcap <= 0 || inv <= 0) return;
+      var aviv = (mcap * liv) / inv;
+      var mvrv = mcap / rcap;
+      var diff = mvrv - aviv;
+      txt(mcapO, fmtT(mcap));
+      txt(livO, (liv * 100).toFixed(1) + '%');
+      txt(rcapO, fmtT(rcap));
+      txt(invO, fmtT(inv));
+      txt(avivEl, aviv.toFixed(2));
+      txt(mvrvEl, mvrv.toFixed(2));
+      txt(diffEl, (diff >= 0 ? '+' : '') + diff.toFixed(2));
+      tint(diffEl, diff > 0.15 ? '#d5342c' : diff < -0.15 ? '#0f8a4d' : '#454c56');
+      txt(diffHEl, 'MVRV−AVIV：正值说明 UTXO 分母更低（含休眠币）');
+      var msg = diff > 0.2 ? 'MVRV 显著高于 AVIV：休眠/丢失币压低 Realized Cap' :
+        diff < -0.1 ? 'AVIV 高于 MVRV：活跃供应估值偏热' : '两者接近：活跃与全供应结构均衡';
+      txt(vEl, msg);
+      tint(vEl, '#454c56');
+      txt(vhEl, 'Cointime 框架核心卖点：剥离非经济供应');
+      draw(aviv, mvrv);
+    }
+
+    mcapEl.addEventListener('input', update);
+    livEl.addEventListener('input', update);
+    rcapEl.addEventListener('input', update);
+    invEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 4 · 漂移剥离器 ══ */
+  (function ctDrift() {
+    var TEl = $('ct_T'), psEl = $('ct_ps'), muEl = $('ct_mu'), sgEl = $('ct_sg');
+    if (!TEl || !psEl || !muEl || !sgEl) return;
+    var TO = $('ct_TO'), psO = $('ct_psO'), muO = $('ct_muO'), sgO = $('ct_sgO');
+    var baseEl = $('ct_base'), baseHEl = $('ct_baseh');
+    var dpEl = $('ct_dp'), dpHEl = $('ct_dph');
+    var nEl = $('ct_n'), nHEl = $('ct_nh');
+    var vEl = $('ct_drift_v'), vhEl = $('ct_drift_vh');
+    var cv = $('ctDriftChart');
+
+    function pBase(mu, sg, T) {
+      return ncdf(mu * (T / 252) / (sg * Math.sqrt(T / 252)));
+    }
+
+    function draw(T, pb, ps) {
+      var s = fit(cv, 176);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 44, r: 12, t: 18, b: 36 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var pts = [];
+      for (var t = 5; t <= 365; t += 5) {
+        pts.push({ t: t, b: pBase(parseFloat(muEl.value) / 100, parseFloat(sgEl.value) / 100, t) });
+      }
+      var maxT = 365;
+      var sx = function (t) { return pad.l + (t / maxT) * iw; };
+      var sy = function (p) { return pad.t + ih * (1 - p); };
+      ctx.strokeStyle = '#c9d0d9';
+      ctx.beginPath();
+      pts.forEach(function (p, i) {
+        if (i === 0) ctx.moveTo(sx(p.t), sy(p.b));
+        else ctx.lineTo(sx(p.t), sy(p.b));
+      });
+      ctx.stroke();
+      ctx.fillStyle = '#1d4ed8';
+      ctx.beginPath(); ctx.arc(sx(T), sy(pb), 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#d5342c';
+      ctx.beginPath(); ctx.arc(sx(T), sy(ps / 100), 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('持有期（日）', pad.l + iw / 2, h - 8);
+    }
+
+    function update() {
+      var T = parseInt(TEl.value, 10);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sg = parseFloat(sgEl.value) / 100;
+      var pb = pBase(mu, sg, T);
+      var dp = ps - pb;
+      var n = Math.pow(1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps)), 2) / Math.pow(dp, 2);
+      txt(TO, T + ' 日');
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(0) + '%');
+      txt(sgO, (sg * 100).toFixed(0) + '%');
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(baseHEl, '随机持币 ' + T + ' 日基准');
+      txt(dpEl, (dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp');
+      tint(dpEl, dp >= 0.05 ? '#d5342c' : '#454c56');
+      txt(dpHEl, '信号胜率 − 基准');
+      txt(nEl, isFinite(n) && n > 0 ? String(Math.ceil(n)) : '—');
+      txt(nHEl, '证明超额非随机所需样本（双侧 α=0.05, β=0.2）');
+      var msg = dp < 0.03 ? '超额可忽略' : dp < 0.08 ? '超额有限' : '超额显著但需大样本';
+      txt(vEl, msg);
+      tint(vEl, dp < 0.03 ? '#454c56' : '#b8730a');
+      txt(vhEl, 'AVIV<0.55 抄底叙事也要扣漂移');
+      draw(T, pb, ps * 100);
+    }
+
+    TEl.addEventListener('input', update);
+    psEl.addEventListener('input', update);
+    muEl.addEventListener('input', update);
+    sgEl.addEventListener('input', update);
+    update();
+  })();
+})();
+</script>
+</body>
+</html>

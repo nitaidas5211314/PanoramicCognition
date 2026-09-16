@@ -183,11 +183,14 @@
     {
       "slug": "BTC-市时模型（Cointime Framework）",
       "title": "BTC-市时模型（Cointime Framework）",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 23:32:13",
+      "finished": "2026-09-16 23:37:13",
+      "duration_sec": 300,
+      "outputs": [
+        "reports/BTC-市时模型（Cointime Framework）.html",
+        "reports/BTC-市时模型（Cointime Framework）.md"
+      ],
       "error": null
     },
     {
@@ -578,7 +581,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 23:31",
+  "updated": "2026-09-16 23:37",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
