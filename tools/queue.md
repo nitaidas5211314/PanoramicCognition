@@ -18,7 +18,7 @@
 - [x] BTC-MVRV 指标（Market Value to Realized Value）
 - [x] BTC-NVT（Network Value to Transactions）指标
 - [x] BTC-市时模型（Cointime Framework）
-- [ ] BTC-价值捕获与安全“微笑曲线”（Smile Curve）
+- [x] BTC-价值捕获与安全“微笑曲线”（Smile Curve）
 - [ ] BTC-反幂律增长与 S-曲线爆发猜想
 - [ ] BTC-Logit 曲线与分阶段假说
 - [ ] BTC-减半预期折现与牛市延时模型

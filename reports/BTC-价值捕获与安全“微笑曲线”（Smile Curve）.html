@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-价值捕获与安全“微笑曲线”（Smile Curve） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × Value Chain × Security Budget</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路径</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-价值捕获与安全“微笑曲线”（Smile Curve）</h1>
+  <p class="sub">用<strong>产业链微笑曲线</strong>读 BTC 谁赚钱、谁买单安全——L1 矿工在谷底，<strong>持币者与金融基建</strong>在两端；减半窗口则是<strong>安全预算的 U 形谷</strong></p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>微笑曲线有两条：价值捕获微笑 + 安全预算微笑。</strong> 施振荣（1992）观察 PC 产业：研发与品牌两端附加值高，制造环节在谷底<span class="tag t-fact">事实</span>。映射到 BTC：<strong>持币稀缺溢价（左端）</strong> 与 <strong>托管/交易/信贷基建（右端）</strong> 捕获绝大部分经济租；<strong>PoW 挖矿与裸 L1 结算（中间）</strong> 利润率最薄——2025 年示意模型下矿工+结算仅占链上价值流 <strong>~3%</strong>，持币升值占 <strong>~97%</strong><span class="tag t-inf">推论</span>。</p>
+<p>另一条：<strong>安全预算 = 区块补贴 + 手续费</strong>，决定 51% 攻击成本。补贴每四年减半，手续费尚未稳定接替——2024 后手续费仅占矿工收入 <strong>~3%</strong><span class="tag t-chk">待验证</span>，形成 <strong>「减半悬崖谷」</strong>：2028 若要保持 <strong>$15.6B</strong> 级安全支出，手续费占比需升至 <strong>~50%</strong><span class="tag t-inf">推论</span>——比当前高一个数量级。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>研究 <strong>BTC 生态里价值与安全的空间分布</strong>：谁在产业链上赚钱（微笑曲线），谁为网络安全持续付费（安全预算），两者如何互相牵制。</p>
+<div class="note red"><b>先划清边界</b><p>本手册<strong>不提供</strong>买卖信号。微笑曲线是<strong>结构框架</strong>，不是估值公式；安全预算讨论的是<strong>流量成本</strong>（Budish 2025 QJE），不是「市值的 X% 永远安全」。</p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>价值捕获分布、安全预算演化、减半悬崖、L2 费回流</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>不含具体矿机选股；不预测监管；不替代链上指标手册</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>补贴、手续费、算力、市值、产业链各层利润率</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>矿工/矿池、ETF 发行商、交易所、托管行、L2 运营方、持币者</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>Security Budget、Fee Share、Hashrate、Market Cap、Value Capture</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察的</td>
+<td>区块奖励、日手续费、算力、ETF AUM、交易所收入</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察但可推断</td>
+<td>闪电网络费（不进矿工口袋）、OTC 结算、矿机折旧</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>价格→矿工收入→算力→安全；L2 扩容→链上费压力↓<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>补贴↓→名义安全↓ = <span class="tag t-fact">事实</span>；费市自动补齐 = <span class="tag t-hyp">假设</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>算力与价格：价格→算力强，算力→价格弱<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>「BTC 涨=网络更安全」「L2=救比特币」口号</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>自由进入挖矿 + 流量安全成本 + 产业链租分配</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>涨价→算力↑→安全↑→信心↑→涨价（正）；L2 分流→费↓→安全↓（负）</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>时间延迟</td>
+<td>减半冲击 3–6 月算力调整；ETF 囤币使费市滞后数年</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>正：减半后价格翻倍惯例；负：费占比不足→算力出清</td>
+</tr>
+</tbody>
+</table></div>
+<h3>两条微笑曲线</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>曲线</th>
+<th>X 轴</th>
+<th>Y 轴</th>
+<th>谷底在哪</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>价值捕获微笑</strong></td>
+<td>产业链位置（稀缺→挖矿→L1→基建）</td>
+<td>经济租/利润率</td>
+<td>挖矿 + 裸 L1 结算</td>
+</tr>
+<tr>
+<td class="k"><strong>安全预算微笑</strong></td>
+<td>时间（减半周期）</td>
+<td>安全支出/市值</td>
+<td>补贴骤降、手续费未接替的窗口</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：回答「BTC 涨了，谁真赚钱？」</h3>
+<p>2025 年 BTC 从约 <strong>$25K</strong> 升至 <strong>$100K+</strong><span class="tag t-chk">待验证</span>，但矿工年收入仅 <strong>~$16B</strong>（含 <strong>3%</strong> 手续费），BlackRock IBIT 等 ETF 管理费 <strong>~$1.6B/年</strong><span class="tag t-inf">推论</span>——<strong>升值 captured 在持币端，不在生产端</strong>。</p>
+<h3>理由二：安全预算是 BTC 唯一的「运营成本」</h3>
+<p>Eric Budish（QJE 2025）证明：PoW 安全需要<strong>持续流量支付</strong>，与攻击收益线性相关<span class="tag t-fact">事实</span>。2026 年安全预算 <strong>~$16.1B</strong>，占市值 <strong>1.20%</strong><span class="tag t-inf">推论</span>——较 2015 年 <strong>8.75%</strong> 大幅压缩<span class="tag t-chk">待验证</span>。</p>
+<h3>理由三：2028–2032 是 live test 窗口</h3>
+<p>James O'Beirne 等 Core 开发者警告：2028 补贴降至 <strong>1.5625 BTC/块</strong> 时，若价格不翻倍，名义安全腰斩<span class="tag t-ana">分析</span>。Messari、SatoshiBench 均将下一减半标为关键观测点<span class="tag t-ana">分析</span>。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>BTC μ=50%/年 σ=65%</th>
+<th><strong>随机持币基准</strong></th>
+<th>「安全预算同比+20% 后 90 日胜率 58%」真实超额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">30 日</td>
+<td>—</td>
+<td><strong>54.3%</strong></td>
+<td>表面 +3.7 pp → 真实 <strong>+0.0 pp</strong>（噪声内）</td>
+</tr>
+<tr>
+<td class="k">90 日</td>
+<td>—</td>
+<td><strong>67.7%</strong></td>
+<td>表面 −9.7 pp → 真实 <strong>−9.7 pp</strong></td>
+</tr>
+<tr>
+<td class="k">180 日</td>
+<td>—</td>
+<td><strong>74.2%</strong></td>
+<td>低安全预算分位 80% 胜率 → 真实 <strong>+5.8 pp</strong><span class="tag t-hyp">假设</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>任何「安全预算信号」都要和对照基准比</strong>——BTC 有正漂移。</p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从 PoW 安全，到产业链微笑</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 微笑曲线 · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">越靠上越「协议硬约束」，越靠下越「金融基建可选择」</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 共识层</text>
+  <text x="148" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">PoW · 21M 上限 · 每 10 分钟一块</text>
+  <text x="148" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">失效：量子威胁 ECDLP【待验证】</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 安全预算层</text>
+  <text x="148" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">补贴 3.125 BTC + 手续费 ~3%</text>
+  <text x="148" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">年预算 ~$16.1B · 占市值 1.20%</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 算力市场层</text>
+  <text x="148" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">自由进入 · 价格→算力单向因果为主</text>
+  <text x="148" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">RESUNE 均衡【分析】arXiv:2508.06071</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 价值捕获左端</text>
+  <text x="148" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">稀缺溢价 · 自托管 · 结算终局性</text>
+  <text x="148" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">微笑曲线高点：持币升值 ~97% 价值流【推论】</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 价值捕获谷底</text>
+  <text x="148" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">ASIC 挖矿 · 裸 L1 出块 · 薄利竞争</text>
+  <text x="148" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">矿工占价值流 ~2.6%【推论】</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 费用市场层</text>
+  <text x="148" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">Ordinals/Runes 尖峰 · L2 批量结算</text>
+  <text x="148" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">2024 Q2 费曾超补贴 · 后回落【待验证】</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 价值捕获右端</text>
+  <text x="148" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">ETF 托管 · 交易所 · 信贷/质押</text>
+  <text x="148" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">「Layer Above the Lock」金融租【分析】</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ L2 分流层</text>
+  <text x="148" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">闪电（费不进矿工）vs 合并挖矿 L2</text>
+  <text x="148" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">扩容悖论：活性↑ 可能 安全预算↓【分析】</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="148" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">同时看价值落点 + 安全流量是否可持续</text>
+  <text x="148" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">减半窗口 = 两条曲线的交汇风险点</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">微笑曲线 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 微笑曲线</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 安全预算</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 流量信任成本</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 产业链租</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 补贴减半 SCHEDULE</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 自由进入挖矿</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• L2 费分流/回流</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 金融基建垄断租</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#b8dcc8" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 算安全预算占比</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 画产业链微笑</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 减半悬崖压力测试</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 漂移剥离胜率</text>
+  <path d="M214 146 L240 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#scA)"/>
+  <path d="M440 146 L466 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#scA)"/>
+  <defs><marker id="scA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c848f"/></marker></defs>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>价值捕获位置</th>
+<th>与安全预算关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>持币者（含 ETF）</strong></td>
+<td>微笑左端：稀缺溢价</td>
+<td>不直接付费；间接受益于安全</td>
+</tr>
+<tr>
+<td class="k"><strong>矿工/矿池</strong></td>
+<td>谷底：竞争化生产</td>
+<td><strong>直接领取</strong>补贴+手续费</td>
+</tr>
+<tr>
+<td class="k"><strong>ASIC 厂商</strong></td>
+<td>谷底上游：卖铲子</td>
+<td>费市萎缩→矿机需求↓<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k"><strong>ETF 托管行</strong></td>
+<td>右端：管理费</td>
+<td>依赖 L1 终局性，不补安全预算</td>
+</tr>
+<tr>
+<td class="k"><strong>交易所</strong></td>
+<td>右端：交易费</td>
+<td>内部结算不进链上费市</td>
+</tr>
+<tr>
+<td class="k"><strong>闪电 LSP</strong></td>
+<td>右端：路由费</td>
+<td><strong>零回流</strong>矿工<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>合并挖矿 L2</strong></td>
+<td>右端候选</td>
+<td>设计费可 100% 回流矿工<span class="tag t-hyp">假设</span></td>
+</tr>
+<tr>
+<td class="k"><strong>研究者</strong></td>
+<td>上游：协议设计</td>
+<td>Budish/RESUNE 定义约束</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>2026-09 量级<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Block Subsidy</strong></td>
+<td>每块新发行 BTC</td>
+<td><strong>3.125 BTC</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Daily Subsidy</strong></td>
+<td>144 块 × 补贴 × 价</td>
+<td><strong>~$42.8M</strong>（$95K）</td>
+</tr>
+<tr>
+<td class="k"><strong>Fee Share</strong></td>
+<td>手续费÷总矿工收入</td>
+<td><strong>~3.0%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Security Budget</strong></td>
+<td>年矿工总收入</td>
+<td><strong>~$16.1B</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Sec / MCap</strong></td>
+<td>安全预算÷市值</td>
+<td><strong>~1.20%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Attack Cost/Day</strong></td>
+<td>年预算÷365（51% 粗估）</td>
+<td><strong>~$44.1M/日</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Hashrate</strong></td>
+<td>全网算力</td>
+<td><strong>~750 EH/s</strong><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · 安全预算计算器</h3>
+<p>手算 <strong>年安全预算 = 日补贴 ÷ (1 − 费占比)</strong>。默认 2026-09：$95K · 费占比 3% · 市值 $1.34T。</p>
+<div class="ctrl"><label>BTC 价格 ($K)<input type="range" id="sc_price" min="40" max="150" step="1" value="95"><output id="sc_priceO">$95K</output></label></div>
+<div class="ctrl"><label>手续费占比 (%)<input type="range" id="sc_fee" min="0.5" max="50" step="0.1" value="3.0"><output id="sc_feeO">3.0%</output></label></div>
+<div class="ctrl"><label>市值 ($T)<input type="range" id="sc_mcap" min="0.5" max="3" step="0.01" value="1.34"><output id="sc_mcapO">$1.34T</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">年安全预算</span><strong id="sc_annual">$16.09B</strong></div>
+<div class="ro"><span class="k">占市值</span><strong id="sc_sec">1.20%</strong></div>
+<div class="ro"><span class="k">攻击成本粗估</span><strong id="sc_attack">$44.1M/日</strong></div>
+<canvas id="scBudgetChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="sc_v">中等</strong><span id="sc_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>因果链与反馈</h3>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">因果图 · 实线=因果 · 红虚线=反馈</text>
+  <rect x="30" y="50" width="110" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="85" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">BTC 价格</text>
+  <rect x="170" y="50" width="120" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="230" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">矿工收入</text>
+  <rect x="320" y="50" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="375" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">算力/安全</text>
+  <rect x="460" y="50" width="110" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="515" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">持币信心</text>
+  <rect x="170" y="150" width="130" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="235" y="170" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">区块补贴</text>
+  <text x="235" y="186" font-size="10" text-anchor="middle" fill="#7c848f" font-family="sans-serif">(每 4 年减半)</text>
+  <rect x="340" y="150" width="130" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="405" y="170" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">链上手续费</text>
+  <text x="405" y="186" font-size="10" text-anchor="middle" fill="#7c848f" font-family="sans-serif">(L2/铭文驱动)</text>
+  <rect x="200" y="250" width="160" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="280" y="270" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">金融基建租</text>
+  <text x="280" y="286" font-size="10" text-anchor="middle" fill="#7c848f" font-family="sans-serif">(微笑右端)</text>
+  <path d="M140 72 L170 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#scB)"/>
+  <path d="M290 72 L320 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#scB)"/>
+  <path d="M430 72 L460 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#scB)"/>
+  <path d="M515 94 L85 94 L85 50" stroke="#0f8a4d" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#scC)"/>
+  <path d="M235 150 L235 94" stroke="#d5342c" stroke-width="1.5" marker-end="url(#scD)"/>
+  <path d="M405 150 L290 94" stroke="#d5342c" stroke-width="1.5" marker-end="url(#scD)"/>
+  <path d="M515 94 L280 250" stroke="#b8730a" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#scE)"/>
+  <defs>
+    <marker id="scB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker>
+    <marker id="scC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#0f8a4d"/></marker>
+    <marker id="scD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+    <marker id="scE" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b8730a"/></marker>
+  </defs>
+</svg>
+<p><strong>读图要点</strong>：价格→收入→算力是主链<span class="tag t-ana">分析</span>（RESUNE, arXiv:2508.06071）。补贴 SCHEDULE 外生下降形成安全谷；L2 若分流链上费，与补贴下降形成<strong>双重挤压</strong><span class="tag t-inf">推论</span>。</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>隐藏关系一：价值微笑 ≠ 安全微笑</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>价值捕获微笑</th>
+<th>安全预算曲线</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">赢家</td>
+<td>持币者、托管/交易所</td>
+<td>全网（若预算够）</td>
+</tr>
+<tr>
+<td class="k">输家</td>
+<td>矿工（薄利）</td>
+<td>所有用户（若预算崩）</td>
+</tr>
+<tr>
+<td class="k">时间性</td>
+<td>牛市左端更陡</td>
+<td>减半后中段更陡</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>持币者赚最多，却不为安全直接付费</strong>——这是 BTC 经济模型的核心张力<span class="tag t-ana">分析</span>。</p>
+<h3>隐藏关系二：L2 的三难</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>L2 类型</th>
+<th>扩容</th>
+<th>费回流矿工</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">闪电网络</td>
+<td>强</td>
+<td><strong>无</strong></td>
+<td>LSP 收路由费</td>
+</tr>
+<tr>
+<td class="k">侧链/联邦</td>
+<td>中</td>
+<td>通常无</td>
+<td>Liquid, RSK</td>
+</tr>
+<tr>
+<td class="k">合并挖矿 L2</td>
+<td>强</td>
+<td><strong>可 100%</strong></td>
+<td>BIP300 类方案<span class="tag t-hyp">假设</span></td>
+</tr>
+<tr>
+<td class="k">Rollup 批量结算</td>
+<td>强</td>
+<td>部分（L1 结算费）</td>
+<td>Stacks, Merlin<span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>Blockspace 文（2025）估算：合并挖矿 L2 单笔 <strong>$0.10</strong> × 千万级 TPS 潜力 vs L1 每块 <strong>$200–300</strong> 费上限<span class="tag t-chk">待验证</span>——<strong>费市规模差 3–4 个数量级</strong>。</p>
+<div class="tool">
+<h3>工具 · 价值捕获微笑曲线</h3>
+<p>调节产业链各层价值份额，观察<strong>两端高、中间低</strong>是否成立。默认示意 2025 牛市结构。</p>
+<div class="ctrl"><label>持币/稀缺端 (%)<input type="range" id="sm_holder" min="50" max="98" step="1" value="85"><output id="sm_holderO">85%</output></label></div>
+<div class="ctrl"><label>挖矿端 (%)<input type="range" id="sm_miner" min="1" max="20" step="1" value="3"><output id="sm_minerO">3%</output></label></div>
+<div class="ctrl"><label>金融基建端 (%)<input type="range" id="sm_infra" min="1" max="30" step="1" value="5"><output id="sm_infraO">5%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">L1 结算（残差）</span><strong id="sm_l1O">7%</strong></div>
+<canvas id="smileChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="sm_v">典型微笑：两端高、中间低</strong><span id="sm_vh">—</span></div>
+</div>
+</div>
+<h3>隐藏关系三：跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>BTC 微笑曲线</th>
+<th>其他领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>微笑曲线</strong></td>
+<td>持币/基建 vs 挖矿</td>
+<td>台积电晶圆代工 vs 苹果设计</td>
+</tr>
+<tr>
+<td class="k"><strong>流量安全成本</strong></td>
+<td>持续矿工支付</td>
+<td>Budish：vs 法治固定成本</td>
+</tr>
+<tr>
+<td class="k"><strong>铁路+地产</strong></td>
+<td>Layer Above the Lock</td>
+<td>东京铁路公司做沿线开发</td>
+</tr>
+<tr>
+<td class="k"><strong>O 型环</strong></td>
+<td>协议层不可贸易优势</td>
+<td>21M 上限+PoW 共识</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>四阶段循环</h3>
+<ol>
+<li><strong>补贴主导期</strong>（2009–2020）：安全预算随补贴 SCHEDULE 上升，费占比 &lt;5%</li>
+<li><strong>费市觉醒期</strong>（2021–2024）：Ordinals/Runes 尖峰，费曾 <strong>&gt;50%</strong> 块收入<span class="tag t-chk">待验证</span></li>
+<li><strong>减半悬崖谷</strong>（2024–2032）：补贴骤降，费占比需从 <strong>3%→50%</strong> 才能维持预算<span class="tag t-inf">推论</span></li>
+<li><strong>费市稳态或出清</strong>：要么 L2 批量结算撑起费市，要么算力下降找新均衡<span class="tag t-hyp">假设</span></li>
+</ol>
+<div class="note amber"><b>扩容悖论</b><p>高效 L2 降低单笔链上成本 → 可能<strong>减少</strong>总手续费 → 与「费市接替补贴」目标冲突<span class="tag t-ana">分析</span>。合并挖矿是少数同时追求扩容+费回流的架构。</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>安全预算占市值：长期下行</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>年份</th>
+<th>市值<span class="tag t-chk">待验证</span></th>
+<th>安全预算</th>
+<th>安全 %</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2015</td>
+<td>$4B</td>
+<td>$350M</td>
+<td><strong>8.75%</strong></td>
+</tr>
+<tr>
+<td class="k">2018</td>
+<td>$130B</td>
+<td>$5.5B</td>
+<td><strong>~4.0%</strong></td>
+</tr>
+<tr>
+<td class="k">2021</td>
+<td>$1T</td>
+<td>$17B</td>
+<td><strong>1.7%</strong></td>
+</tr>
+<tr>
+<td class="k">2024</td>
+<td>$1.3T</td>
+<td>$15B</td>
+<td><strong>1.15%</strong></td>
+</tr>
+<tr>
+<td class="k">2026</td>
+<td>$1.34T</td>
+<td>$16.1B</td>
+<td><strong>1.20%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>趋势</strong>：市值涨快于安全预算 → 攻击成本占保护价值比例持续下降<span class="tag t-ana">分析</span>——Budish 称之为流量信任对规模经济的不利<span class="tag t-fact">事实</span>。</p>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">安全预算演化时间轴</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="80" cy="100" r="6" fill="#0f8a4d"/><text x="80" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2016</text><text x="80" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">补贴98%</text>
+  <circle cx="180" cy="100" r="6" fill="#0f8a4d"/><text x="180" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2020</text><text x="180" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">费5%</text>
+  <circle cx="280" cy="100" r="6" fill="#b8730a"/><text x="280" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024</text><text x="280" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">减半</text>
+  <circle cx="400" cy="100" r="6" fill="#d5342c"/><text x="400" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2028</text><text x="400" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">悬崖?</text>
+  <circle cx="520" cy="100" r="6" fill="#d5342c"/><text x="520" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2032</text><text x="520" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">费需35%+</text>
+  <circle cx="600" cy="100" r="6" fill="#7c848f"/><text x="600" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2140</text><text x="600" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">零补贴</text>
+  <text x="340" y="170" font-size="11" text-anchor="middle" fill="#7c848f" font-family="sans-serif">补贴 SCHEDULE 下行 · 手续费接替是未证假设</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>利益方</th>
+<th>激励</th>
+<th>对微笑曲线的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>持币者</strong></td>
+<td>升值最大化</td>
+<td>强化左端；不愿高链上费</td>
+</tr>
+<tr>
+<td class="k"><strong>矿工</strong></td>
+<td>收入最大化</td>
+<td>推合并挖矿 L2、反对大区块</td>
+</tr>
+<tr>
+<td class="k"><strong>ETF 发行商</strong></td>
+<td>AUM×费率</td>
+<td>强化右端；囤币降链上活动</td>
+</tr>
+<tr>
+<td class="k"><strong>交易所</strong></td>
+<td>交易量×费率</td>
+<td>内部账本分流费市</td>
+</tr>
+<tr>
+<td class="k"><strong>闪电 LSP</strong></td>
+<td>路由费</td>
+<td>右端获利、矿工零分成</td>
+</tr>
+<tr>
+<td class="k"><strong>Core 开发者</strong></td>
+<td>协议稳健</td>
+<td>谨慎改共识费规则</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>价值流与安全费「抽水」</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 价值流 → 安全费抽水图</text>
+  <rect x="40" y="50" width="600" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="340" y="80" font-size="12" text-anchor="middle" fill="#454c56" font-family="sans-serif">BTC 年度价值创造 ~$600B+ 升值【推论】</text>
+  <rect x="40" y="120" width="180" height="36" rx="6" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.2"/>
+  <text x="130" y="143" font-size="11" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">持币升值 ~97%</text>
+  <rect x="240" y="120" width="140" height="36" rx="6" fill="#fff7e6" stroke="#b8730a" stroke-width="1.2"/>
+  <text x="310" y="143" font-size="11" text-anchor="middle" fill="#b8730a" font-family="sans-serif">ETF/交易所 ~0.6%</text>
+  <rect x="400" y="120" width="120" height="36" rx="6" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.2"/>
+  <text x="460" y="143" font-size="11" text-anchor="middle" fill="#d5342c" font-family="sans-serif">矿工 ~2.6%</text>
+  <rect x="540" y="120" width="100" height="36" rx="6" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="590" y="143" font-size="11" text-anchor="middle" fill="#7c848f" font-family="sans-serif">L1结算残差</text>
+  <path d="M460 156 L460 200 L340 200 L340 230" stroke="#d5342c" stroke-width="1.5" fill="none" marker-end="url(#scF)"/>
+  <rect x="240" y="230" width="200" height="40" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="340" y="248" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">安全预算抽水</text>
+  <text x="340" y="262" font-size="10" text-anchor="middle" fill="#7c848f" font-family="sans-serif">仅矿工收入 $16.1B → 攻击成本上限</text>
+  <text x="520" y="195" font-size="10" fill="#d5342c" font-family="sans-serif">仅 2.6% 价值流</text>
+  <text x="130" y="195" font-size="10" fill="#0f8a4d" font-family="sans-serif">不付安全费</text>
+  <defs><marker id="scF" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker></defs>
+</svg>
+<p><strong>信息流</strong>：mempool.space / mempool 费率 → 矿池策略 → 算力部署；ETF 持仓报告 → 链上活跃度预期 → 费市定价。<strong>瓶颈</strong>：闪电/交易所内部流量不可见。</p>
+<div class="tool">
+<h3>工具 · 减半悬崖模拟器</h3>
+<p>若要保持 <strong>$15.6B</strong> 级年安全预算，2028/2032 各需多少<strong>手续费占比</strong>？</p>
+<div class="ctrl"><label>BTC 价格 ($K)<input type="range" id="hc_price" min="40" max="200" step="1" value="95"><output id="hc_priceO">$95K</output></label></div>
+<div class="ctrl"><label>当前费占比 (%)<input type="range" id="hc_fee" min="1" max="30" step="0.1" value="3.0"><output id="hc_feeO">3.0%</output></label></div>
+<div class="ctrl"><label>目标预算 ($B)<input type="range" id="hc_target" min="8" max="25" step="0.1" value="15.6"><output id="hc_targetO">$15.6B</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">当前年预算</span><strong id="hc_now">$16.09B</strong></div>
+<div class="ro"><span class="k">2028 所需费占比</span><strong id="hc_28">50.0%</strong></div>
+<div class="ro"><span class="k">2032 所需费占比</span><strong id="hc_32">75.0%</strong></div>
+<canvas id="halvingChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="hc_v">2028 前费率不足</strong><span id="hc_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>分清两条微笑曲线</strong></td>
+<td>价值捕获 ≠ 安全可持续</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>算 Sec/MCap 趋势</strong></td>
+<td>1.20% 且下行 = 红旗</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>跟踪 Fee Share 周线</strong></td>
+<td>mempool + 矿池数据</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>识别 L2 费回流路径</strong></td>
+<td>闪电 0% vs 合并挖矿 100%</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>减半日历压力测试</strong></td>
+<td>§12 悬崖模拟器</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>读 Budish 流量成本</strong></td>
+<td>攻击收益≠市值</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>漂移剥离任何信号</strong></td>
+<td>安全预算↑ 不等于 超额收益</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>对照 ETF 囤币效应</strong></td>
+<td>链上活动↓ → 费市萎缩</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>监控算力 3 月均线</strong></td>
+<td>价格滞后出清指标</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>30 分钟双曲线体检</strong></td>
+<td>§22 最小实践</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「BTC 涨 = 网络更安全」</summary><div class="dbody"><p><strong>错因</strong>：市值涨快于安全预算（1.20% vs 2015 年 8.75%）。<strong>对策</strong>：看 Sec/MCap 而非绝对算力。</p></div></details>
+<details><summary>2. 「矿工赚很多 = BTC 很健康」</summary><div class="dbody"><p><strong>错因</strong>：矿工仅占价值流 ~2.6%<span class="tag t-inf">推论</span>，且利润率薄。<strong>对策</strong>：看安全预算绝对额与费占比。</p></div></details>
+<details><summary>3. 「闪电扩容 = 利好矿工」</summary><div class="dbody"><p><strong>错因</strong>：闪电费 <strong>100% 给 LSP</strong>，不进安全预算<span class="tag t-fact">事实</span>。<strong>对策</strong>：区分 L2 架构。</p></div></details>
+<details><summary>4. 「减半必涨，安全无忧」</summary><div class="dbody"><p><strong>错因</strong>：RESUNE 模型预测减半 ceteris paribus 收缩算力与价格<span class="tag t-ana">分析</span>。<strong>对策</strong>：减半是供给冲击，非纯利好。</p></div></details>
+<details><summary>5. 把市值当攻击收益</summary><div class="dbody"><p><strong>错因</strong>：Budish：攻击者目标是可双花<strong>流量</strong>，非全部市值。<strong>对策</strong>：用 V_attack 而非 MCap。</p></div></details>
+<details><summary>6. 「费市会自动接替补贴」</summary><div class="dbody"><p><strong>错因</strong>：2024 后费占比回落至 ~3%<span class="tag t-chk">待验证</span>，Ordinals 尖峰未持续。<strong>对策</strong>：看 12 个月均线。</p></div></details>
+<details><summary>7. 忽视 ETF 对费市的挤压</summary><div class="dbody"><p><strong>错因</strong>：囤币降低链上结算需求 → 费市萎缩<span class="tag t-inf">推论</span>。<strong>对策</strong>：ETF 流 + 链上活动联读。</p></div></details>
+<details><summary>8. 「微笑曲线 = 永远成立」</summary><div class="dbody"><p><strong>错因</strong>：合并挖矿 L2 可能抬高中间段。<strong>对策</strong>：随架构演化更新曲线。</p></div></details>
+<details><summary>9. 单看算力绝对值</summary><div class="dbody"><p><strong>错因</strong>：算力高但 Sec/MCap 低 = 相对不安全。<strong>对策</strong>：算力×电价÷市值。</p></div></details>
+<details><summary>10. 胜率不算漂移</summary><div class="dbody"><p><strong>错因</strong>：BTC 随机做多 90 日基准 <strong>67.7%</strong>。<strong>对策</strong>：§12 漂移剥离器。</p></div></details>
+<details><summary>11. 把二手「97% 补贴」当永久</summary><div class="dbody"><p><strong>错因</strong>：费占比已从 &lt;1% 升至尖峰 50%+<span class="tag t-chk">待验证</span>，均值仍低。<strong>对策</strong>：标<span class="tag t-chk">待验证</span>，看分布非极值。</p></div></details>
+<details><summary>12. 「安全预算问题 = BTC 将死」</summary><div class="dbody"><p><strong>错因</strong>：多种均衡路径（价格翻倍、费市、算力出清）。<span class="tag t-ana">分析</span><strong>对策</strong>：情景分析而非单点预测。</p></div></details>
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>「安全预算同比+20% 后看涨」？先和<strong>随机持币基准</strong>比。</p>
+<div class="ctrl"><label>持有期（日）<input type="range" id="sc_T" min="5" max="365" step="5" value="90"><output id="sc_TO">90 日</output></label></div>
+<div class="ctrl"><label>信号胜率 (%)<input type="range" id="sc_ps" min="30" max="90" step="0.1" value="58.0"><output id="sc_psO">58.0%</output></label></div>
+<div class="ctrl"><label>年化漂移 μ (%)<input type="range" id="sc_mu" min="0" max="100" step="1" value="50"><output id="sc_muO">50%</output></label></div>
+<div class="ctrl"><label>年化波动 σ (%)<input type="range" id="sc_sg" min="30" max="100" step="1" value="65"><output id="sc_sgO">65%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="sc_base">67.7%</strong></div>
+<div class="ro"><span class="k">真实超额</span><strong id="sc_dp">-9.7 pp</strong></div>
+<div class="ro"><span class="k">所需样本 n</span><strong id="sc_n">111</strong></div>
+<canvas id="scDriftChart" height="176" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="sc_dv">跑输基准</strong><span id="sc_dvh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实映射</th>
+<th>可观察代理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">价值微笑左端</td>
+<td>持币升值</td>
+<td>BTC 年涨幅 vs 矿工收入</td>
+</tr>
+<tr>
+<td class="k">价值微笑谷底</td>
+<td>挖矿薄利</td>
+<td>矿企毛利率、算力价</td>
+</tr>
+<tr>
+<td class="k">价值微笑右端</td>
+<td>金融基建租</td>
+<td>ETF 费率×AUM、交易所收入</td>
+</tr>
+<tr>
+<td class="k">安全预算谷</td>
+<td>减半后费不足</td>
+<td>Fee Share 12 周均线</td>
+</tr>
+<tr>
+<td class="k">攻击成本</td>
+<td>51% 粗估</td>
+<td>年预算÷365</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<p><strong>决策漏斗</strong>（自上而下）：</p>
+<ol>
+<li><strong>结构</strong>：价值捕获在微笑哪一端？我在哪一端暴露？</li>
+<li><strong>安全</strong>：Sec/MCap 趋势向上还是向下？</li>
+<li><strong>减半</strong>：下一窗口费占比需达多少？（§12 模拟器）</li>
+<li><strong>L2</strong>：活动走哪条费回流路径？</li>
+<li><strong>执行</strong>：安全信号先漂移剥离——不单独交易</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 观察者</summary><div class="dbody"><ul>
+<li>[ ] 手算日补贴 = 144×3.125×$95K = $42.8M</li>
+<li>[ ] 解释微笑曲线两端 vs 谷底</li>
+<li>[ ] 说出安全预算两个来源</li>
+</ul></div></details>
+<details><summary>L2 · 分析师</summary><div class="dbody"><ul>
+<li>[ ] 算 Sec/MCap = 1.20%</li>
+<li>[ ] 复述 2028 费占比 50% 压力测试</li>
+<li>[ ] 区分闪电 vs 合并挖矿 L2</li>
+</ul></div></details>
+<details><summary>L3 · 建模者</summary><div class="dbody"><ul>
+<li>[ ] 建 Fee Share 12 周仪表盘</li>
+<li>[ ] 写 ETF 囤币→费市情景表</li>
+<li>[ ] 配 MVRV + 安全预算双读</li>
+</ul></div></details>
+<details><summary>L4 · 系统设计者</summary><div class="dbody"><ul>
+<li>[ ] 多信号（安全+估值+流量）投票</li>
+<li>[ ] 每减半周期更新微笑曲线参数</li>
+<li>[ ] 季度回测 Sec/MCap 信号</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：产业链地图绘制者（Chain Cartographer）。等级越高，越能同时看见「谁赚钱」与「谁买单安全」。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>等级</th>
+<th>任务</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Lv.1</td>
+<td>手算安全预算误差 &lt;2%</td>
+<td>解锁「补贴层」</td>
+</tr>
+<tr>
+<td class="k">Lv.2</td>
+<td>向朋友解释价值微笑 vs 安全谷</td>
+<td>解锁「捕获曲线」</td>
+</tr>
+<tr>
+<td class="k">Lv.3</td>
+<td>算出 2028 费占比需求 50%</td>
+<td>解锁「悬崖模拟器」</td>
+</tr>
+<tr>
+<td class="k">Lv.4</td>
+<td>连续 4 周记录 Fee Share</td>
+<td>解锁「L2 分流图」</td>
+</tr>
+<tr>
+<td class="k">Lv.5</td>
+<td>写一页「两条微笑如何冲突」</td>
+<td>通关</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>任务</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日</td>
+<td>记录 BTC 价 +  mempool 高费</td>
+<td>7 日表</td>
+</tr>
+<tr>
+<td class="k">每周</td>
+<td>更新 Fee Share 估算</td>
+<td>§06 工具截图</td>
+</tr>
+<tr>
+<td class="k">每月</td>
+<td>读一篇安全预算文</td>
+<td>3 行摘要</td>
+</tr>
+<tr>
+<td class="k">每季</td>
+<td>核对 Messari/Blockchair 矿工收入</td>
+<td>与手算误差 &lt;5%</td>
+</tr>
+<tr>
+<td class="k">每减半</td>
+<td>跑 §12 悬崖模拟器</td>
+<td>存档参数</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A · 若费市成功接替补贴</button><button class="tab" data-pane="tb1-1">情景 B · 若价格停滞过减半</button><button class="tab" data-pane="tb1-2">情景 C · 若闪电主导扩容</button><button class="tab" data-pane="tb1-3">情景 D · 若 ETF 持续囤币</button></div>
+<div class="pane on" id="tb1-0"><p>2032 费占比 <strong>35%+</strong>，安全预算维持 $15B+。反事实需 <strong>L2 批量结算 + 铭文类持续需求</strong><span class="tag t-hyp">假设</span>——2024 尖峰后回落使此情景存疑。</p></div><div class="pane" id="tb1-1"><p>2028 补贴减半、价格不动 → 名义安全腰斩 → 算力 3–6 月出清 <strong>30–40%</strong><span class="tag t-inf">推论</span>。RESUNE 模型支持收缩均衡<span class="tag t-ana">分析</span>。</p></div><div class="pane" id="tb1-2"><p>链上活动下降、Fee Share &lt;1% → 安全预算悬崖加深。<strong>合并挖矿 L2 成为矿工唯一盟友</strong><span class="tag t-inf">推论</span>。</p></div><div class="pane" id="tb1-3"><p>右端价值捕获强化、左端升值加速，但链上费市萎缩 → <strong>价值微笑更陡、安全谷更深</strong><span class="tag t-inf">推论</span>——两条曲线背离加剧。</p></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>目标</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 会算预算</strong></td>
+<td>3 天</td>
+<td>补贴+费+Sec%</td>
+<td>口算 $16.1B</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 会画微笑</strong></td>
+<td>1 周</td>
+<td>价值捕获分布</td>
+<td>捕获曲线实操</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 会测悬崖</strong></td>
+<td>2 周</td>
+<td>减半压力测试</td>
+<td>2028 费占比 50%</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 会迭代系统</strong></td>
+<td>1 月+</td>
+<td>双曲线+漂移剥离</td>
+<td>连续 2 月日志</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>任务</strong>：完成「双微笑体检」——算、画、判。</p>
+<ol>
+<li><strong>8 分钟 · 算安全预算</strong>：144×3.125×$95K×365÷(1−0.03) = <strong>$16.09B</strong>；÷$1.34T = <strong>1.20%</strong>。</li>
+<li><strong>7 分钟 · 画价值微笑</strong>：§08 工具，默认持币 85%/矿工 3%/基建 5% → 典型微笑。</li>
+<li><strong>8 分钟 · 测减半悬崖</strong>：§12 工具，2028 需费占比 <strong>50.0%</strong> vs 当前 <strong>3%</strong>。</li>
+<li><strong>7 分钟 · 漂移剥离</strong>：§14 工具，90 日 58% 胜率 → 真实超额 <strong>−9.7 pp</strong>。<strong>禁止写「安全预算高=必涨」。</strong></li>
+</ol>
+<p><strong>验证</strong>：年预算与 §06 默认读数误差 <strong>&lt;$0.2B</strong>。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>微笑曲线</td>
+<td>读施振荣原文摘要 + Layer Above the Lock</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>安全预算</td>
+<td>SatoshiBench 补贴 SCHEDULE + 手算</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>批评</td>
+<td>Budish QJE 2025 三方程 + 流量成本</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>工具</td>
+<td>§06–§14 四个交互模型</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>L2</td>
+<td>对比闪电 vs 合并挖矿费回流</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>数据</td>
+<td>记录 7 日 Fee Share + ETF 流</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>合成</td>
+<td>1 页「两条微笑如何互相牵制」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<p><strong>Week 1</strong>：微笑曲线 + 安全预算定义 + 手算（L1）
+<strong>Week 2</strong>：减半悬崖 + Fee Share 追踪 + 漂移剥离（L2）
+<strong>Week 3</strong>：L2 分流 + ETF 效应 + RESUNE 论文摘要（L3）
+<strong>Week 4</strong>：个人双曲线仪表盘 + 减半日历（L4）</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>最大坑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>价值捕获微笑</strong></td>
+<td>两端高、中间低</td>
+<td>忽视 L2 改变曲线</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>安全预算</strong></td>
+<td>补贴+手续费</td>
+<td>只看绝对额不看占比</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>Sec / MCap</strong></td>
+<td>安全占市值比</td>
+<td>长期下行被忽视</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>减半悬崖</strong></td>
+<td>补贴 SCHEDULE 外生下降</td>
+<td>假设价格必翻倍</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>Fee Share</strong></td>
+<td>费÷总收入</td>
+<td>被 Ordinals 尖峰误导</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>RESUNE 均衡</strong></td>
+<td>价格→算力单向</td>
+<td>减半收缩预测</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>Budish 流量成本</strong></td>
+<td>持续支付信任</td>
+<td>用市值代替 V_attack</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>L2 费回流矩阵</strong></td>
+<td>闪电 0% vs 合并挖矿</td>
+<td>混淆扩容与安全</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>Layer Above</strong></td>
+<td>金融基建租</td>
+<td>与矿工利益无关</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>对照基准</strong></td>
+<td>随机持币胜率</td>
+<td>μ,σ 敏感</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>安全</summary><div class="dbody"><ul>
+<li>当前 Fee Share 12 周均值？</li>
+<li>Sec/MCap 同比变了吗？</li>
+<li>算力 3 月均线方向？</li>
+</ul></div></details>
+<details><summary>价值捕获</summary><div class="dbody"><ul>
+<li>我在微笑哪一端暴露？</li>
+<li>ETF AUM 增速 vs 链上活动？</li>
+<li>矿工收入/市值比？</li>
+</ul></div></details>
+<details><summary>减半</summary><div class="dbody"><ul>
+<li>距下次减半几天？</li>
+<li>维持预算需费占比多少？</li>
+<li>价格翻倍假设成立吗？</li>
+</ul></div></details>
+<details><summary>决策</summary><div class="dbody"><ul>
+<li>信号胜率扣过漂移了吗？</li>
+<li>L2 活动走哪条费路径？</li>
+<li>是否 ≥3 独立信号？</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>合并挖矿 L2 能否重塑微笑谷底？</strong> BIP300/CUSF 激活进度<span class="tag t-chk">待验证</span></li>
+<li><strong>AI/HPC 矿场转型</strong>：算力复用能否补贴安全预算？<span class="tag t-hyp">假设</span></li>
+<li><strong>实体调整 Fee Share</strong>：剔除铭文投机后的「有机费市」</li>
+<li><strong>Sec/MCap 与 MVRV 联合分位</strong>：估值与安全分裂时如何加权？</li>
+<li><strong>后量子迁移成本</strong>：是否构成新的安全预算项？<span class="tag t-chk">待验证</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">微笑曲线概念</td>
+<td>产业理论</td>
+<td>Stan Shih / Acer 1992</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">安全预算定义</td>
+<td>行业站</td>
+<td>SatoshiBench / BTC.network</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Budish 流量成本</td>
+<td>学术论文</td>
+<td>QJE 2025, 140(1):1-62</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">RESUNE 均衡</td>
+<td>预印本</td>
+<td>arXiv:2508.06071</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">2024 后 Fee Share ~3%</td>
+<td>数据站</td>
+<td>Pine Analytics / Blockchair<span class="tag t-chk">待验证</span></td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Sec/MCap 历史序列</td>
+<td>教材</td>
+<td>Elementary Bitcoin Ch.38</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Ordinals/Runes 费尖峰</td>
+<td>行业研报</td>
+<td>Messari 2024 Q2</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Layer Above 框架</td>
+<td>分析文</td>
+<td>hari.computer 2025</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">闪电费不进矿工</td>
+<td>行业文</td>
+<td>Bitcoin Mining Investor 2025</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">合并挖矿 L2 潜力</td>
+<td>行业文</td>
+<td>Blockspace 2025</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2028 费占比压力测试</td>
+<td>本手册计算</td>
+<td>§12 默认参数</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供研究与学习，<strong>不构成任何投资建议</strong>。比特币极高波动，可能发生 &gt;50% 的 drawdown；安全预算、微笑曲线及任何产业链分析均<strong>不保证</strong>未来价格或网络安全水平。减半后手续费能否接替区块补贴是<strong>未证假设</strong>；历史「减半必涨」叙事多次依赖价格翻倍，不可外推。中国大陆对虚拟货币相关业务有严格监管，请遵守当地法律法规。作者不对使用本手册造成的任何损失负责。</p>
+</section>
+<footer>  <p>《BTC-价值捕获与安全“微笑曲线”（Smile Curve） · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 5 分 32 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC 价值捕获与安全微笑曲线》主题脚本
+   四个可调模型：
+     1. 安全预算计算器   — 补贴+手续费 vs 市值
+     2. 价值捕获微笑曲线 — 产业链各层价值占比
+     3. 减半悬崖模拟器   — 手续费占比需达多少
+     4. 漂移剥离器        — 安全信号胜率 vs 随机持币基准
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function fmtB(v) {
+    if (!isFinite(v)) return '—';
+    if (v >= 1e12) return '$' + (v / 1e12).toFixed(2) + 'T';
+    if (v >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+    return '$' + v.toFixed(0);
+  }
+
+  /* ══ 工具 1 · 安全预算计算器 ══ */
+  (function secBudget() {
+    var priceEl = $('sc_price'), feeEl = $('sc_fee'), mcapEl = $('sc_mcap');
+    if (!priceEl || !feeEl || !mcapEl) return;
+    var BLOCKS = 144, SUBSIDY = 3.125;
+
+    function update() {
+      var price = parseFloat(priceEl.value) * 1000;
+      var feeShare = parseFloat(feeEl.value) / 100;
+      var mcap = parseFloat(mcapEl.value) * 1e12;
+      var dailySub = BLOCKS * SUBSIDY * price;
+      var annualSub = dailySub * 365;
+      var annualTotal = feeShare >= 0.999 ? annualSub * 1000 : annualSub / (1 - feeShare);
+      var annualFee = annualTotal - annualSub;
+      var secPct = mcap > 0 ? annualTotal / mcap * 100 : 0;
+      var attackDay = annualTotal / 365;
+      txt($('sc_priceO'), '$' + (price / 1000).toFixed(0) + 'K');
+      txt($('sc_feeO'), (feeShare * 100).toFixed(1) + '%');
+      txt($('sc_mcapO'), fmtB(mcap));
+      txt($('sc_annual'), fmtB(annualTotal));
+      txt($('sc_sec'), secPct.toFixed(2) + '%');
+      txt($('sc_attack'), fmtB(attackDay) + '/日');
+      var z = secPct >= 1.5 ? { t: '充裕', c: '#0f8a4d', h: '高于 2024 均值 ~1.15%' }
+        : secPct >= 0.8 ? { t: '中等', c: '#b8730a', h: '补贴仍主导，手续费边际' }
+        : { t: '偏紧', c: '#d5342c', h: '接近安全预算悬崖【推论】' };
+      txt($('sc_v'), z.t);
+      tint($('sc_v'), z.c);
+      txt($('sc_vh'), z.h);
+      drawBudget(feeShare, secPct);
+    }
+
+    function drawBudget(feeShare, secPct) {
+      var cv = $('scBudgetChart');
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var subPct = 1 - feeShare;
+      var bars = [
+        { label: '区块补贴', pct: subPct, col: '#1d4ed8' },
+        { label: '交易手续费', pct: feeShare, col: '#b8730a' }
+      ];
+      var bx = pad.l, bw = iw;
+      var totalH = ih * 0.7;
+      var x0 = bx;
+      bars.forEach(function (b) {
+        var bw2 = bw * b.pct;
+        ctx.fillStyle = b.col;
+        ctx.fillRect(x0, pad.t + totalH * (1 - b.pct), bw2, totalH * b.pct);
+        if (b.pct > 0.08) {
+          ctx.fillStyle = '#fff';
+          ctx.font = '11px -apple-system,sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText((b.pct * 100).toFixed(1) + '%', x0 + bw2 / 2, pad.t + totalH * (1 - b.pct / 2));
+        }
+        x0 += bw2;
+      });
+      ctx.strokeStyle = '#c9d0d9';
+      ctx.strokeRect(bx, pad.t, bw, totalH);
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 12px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('安全预算占市值 ' + secPct.toFixed(2) + '%', pad.l + iw / 2, pad.t + totalH + 18);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillText('矿工收入结构（补贴 vs 手续费）', pad.l + iw / 2, y1 + 31);
+    }
+
+    priceEl.addEventListener('input', update);
+    feeEl.addEventListener('input', update);
+    mcapEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 2 · 价值捕获微笑曲线 ══ */
+  (function smileCurve() {
+    var holderEl = $('sm_holder'), minerEl = $('sm_miner'), infraEl = $('sm_infra');
+    if (!holderEl || !minerEl || !infraEl) return;
+
+    function update() {
+      var holder = parseFloat(holderEl.value);
+      var miner = parseFloat(minerEl.value);
+      var infra = parseFloat(infraEl.value);
+      var l1 = Math.max(1, 100 - holder - miner - infra);
+      txt($('sm_holderO'), holder.toFixed(0) + '%');
+      txt($('sm_minerO'), miner.toFixed(0) + '%');
+      txt($('sm_infraO'), infra.toFixed(0) + '%');
+      txt($('sm_l1O'), l1.toFixed(0) + '%');
+      var midLow = miner + l1;
+      var endsHigh = holder + infra;
+      var verdict = endsHigh > midLow * 1.5
+        ? { t: '典型微笑：两端高、中间低', c: '#0f8a4d', h: '协议/持币端与金融基建端捕获更多' }
+        : { t: '微笑扁平化', c: '#b8730a', h: '矿工或 L1 结算份额上升——可能接近减半窗口' };
+      txt($('sm_v'), verdict.t);
+      tint($('sm_v'), verdict.c);
+      txt($('sm_vh'), verdict.h);
+      drawSmile(holder, miner, l1, infra);
+    }
+
+    function drawSmile(holder, miner, l1, infra) {
+      var cv = $('smileChart');
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 20, t: 28, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var xs = [0, 0.2, 0.4, 0.6, 0.8, 1.0];
+      var ys = [holder, holder * 0.85, miner + l1, miner, l1 * 0.6 + miner * 0.4, infra];
+      var maxY = Math.max.apply(null, ys) * 1.15 || 1;
+      var sx = function (i) { return pad.l + xs[i] * iw; };
+      var sy = function (v) { return pad.t + ih - (v / maxY) * ih; };
+      ctx.fillStyle = '#f4f6f9';
+      ctx.fillRect(pad.l, pad.t, iw, ih);
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      var labels = ['持币/稀缺', '自托管', '挖矿+L1', '矿机', 'L1结算', '托管/交易'];
+      labels.forEach(function (lb, i) {
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '9px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(lb, sx(i), y1 + 13);
+      });
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(ys[0]));
+      for (var i = 1; i < xs.length; i++) {
+        var cpx = (sx(i - 1) + sx(i)) / 2;
+        ctx.quadraticCurveTo(cpx, sy(ys[i - 1]), sx(i), sy(ys[i]));
+      }
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      xs.forEach(function (_, i) {
+        ctx.fillStyle = i === 0 || i === 5 ? '#0f8a4d' : (i === 2 || i === 3 ? '#d5342c' : '#b8730a');
+        ctx.beginPath(); ctx.arc(sx(i), sy(ys[i]), 5, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('价值捕获份额（示意）', pad.l + iw / 2, y1 + 31);
+    }
+
+    holderEl.addEventListener('input', update);
+    minerEl.addEventListener('input', update);
+    infraEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 3 · 减半悬崖模拟器 ══ */
+  (function halvingCliff() {
+    var priceEl = $('hc_price'), feeEl = $('hc_fee'), targetEl = $('hc_target');
+    if (!priceEl || !feeEl || !targetEl) return;
+    var BLOCKS = 144;
+
+    function subsidyAt(era) {
+      return 50 / Math.pow(2, era);
+    }
+
+    function update() {
+      var price = parseFloat(priceEl.value) * 1000;
+      var feeNow = parseFloat(feeEl.value) / 100;
+      var targetB = parseFloat(targetEl.value);
+      var era2024 = 4, era2028 = 5, era2032 = 6;
+      var sub24 = subsidyAt(era2024) * BLOCKS * 365 * price;
+      var sub28 = subsidyAt(era2028) * BLOCKS * 365 * price;
+      var sub32 = subsidyAt(era2032) * BLOCKS * 365 * price;
+      var target = targetB * 1e9;
+      function feeNeed(sub) {
+        if (sub >= target) return 0;
+        return (target - sub) / target;
+      }
+      var fn28 = feeNeed(sub28);
+      var fn32 = feeNeed(sub32);
+      var total24 = sub24 / (1 - feeNow);
+      txt($('hc_priceO'), '$' + (price / 1000).toFixed(0) + 'K');
+      txt($('hc_feeO'), (feeNow * 100).toFixed(1) + '%');
+      txt($('hc_targetO'), '$' + targetB.toFixed(1) + 'B');
+      txt($('hc_now'), fmtB(total24));
+      txt($('hc_28'), (fn28 * 100).toFixed(1) + '%');
+      txt($('hc_32'), (fn32 * 100).toFixed(1) + '%');
+      var ok = feeNow >= fn28;
+      txt($('hc_v'), ok ? '当前费率路径可维持' : '2028 前费率不足');
+      tint($('hc_v'), ok ? '#0f8a4d' : '#d5342c');
+      txt($('hc_vh'), ok ? '但需持续 L2/铭文类需求【假设】' : '需手续费占比升至 ' + (fn28 * 100).toFixed(0) + '%【推论】');
+      drawCliff(feeNow, fn28, fn32, sub24, sub28, sub32, target);
+    }
+
+    function drawCliff(feeNow, fn28, fn32, sub24, sub28, sub32, target) {
+      var cv = $('halvingChart');
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var years = ['2024', '2028', '2032'];
+      var subs = [sub24, sub28, sub32];
+      var maxV = target * 1.1;
+      var gap = iw / (years.length - 1 || 1);
+      ctx.strokeStyle = '#d5342c';
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      var ty = pad.t + ih - (target / maxV) * ih;
+      ctx.moveTo(pad.l, ty); ctx.lineTo(w - pad.r, ty); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#d5342c';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('目标 $' + (target / 1e9).toFixed(1) + 'B', pad.l + 4, ty - 4);
+      years.forEach(function (yr, i) {
+        var x = pad.l + i * gap;
+        var sh = (subs[i] / maxV) * ih;
+        var fh = ((subs[i] / (1 - (i === 0 ? feeNow : (i === 1 ? fn28 : fn32))) - subs[i]) / maxV) * ih;
+        ctx.fillStyle = '#1d4ed8';
+        ctx.fillRect(x - 28, y1 - sh, 28, sh);
+        ctx.fillStyle = '#b8730a';
+        ctx.fillRect(x, y1 - sh - fh, 28, sh + fh);
+        ctx.fillStyle = '#454c56';
+        ctx.font = '11px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(yr, x, y1 + 13);
+      });
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('蓝=补贴 · 琥珀=手续费（维持目标预算所需）', pad.l + iw / 2, y1 + 31);
+    }
+
+    priceEl.addEventListener('input', update);
+    feeEl.addEventListener('input', update);
+    targetEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 4 · 漂移剥离器 ══ */
+  (function driftStrip() {
+    var TEl = $('sc_T'), psEl = $('sc_ps'), muEl = $('sc_mu'), sgEl = $('sc_sg');
+    if (!TEl || !psEl || !muEl || !sgEl) return;
+
+    function update() {
+      var T = parseFloat(TEl.value);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sg = parseFloat(sgEl.value) / 100;
+      var z = mu * (T / 252) / (sg * Math.sqrt(T / 252));
+      var pb = ncdf(z);
+      var dp = ps - pb;
+      var n = Math.pow(1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps)), 2) / Math.pow(ps - pb, 2);
+      txt($('sc_TO'), T + ' 日');
+      txt($('sc_psO'), (ps * 100).toFixed(1) + '%');
+      txt($('sc_muO'), (mu * 100).toFixed(0) + '%');
+      txt($('sc_sgO'), (sg * 100).toFixed(0) + '%');
+      txt($('sc_base'), (pb * 100).toFixed(1) + '%');
+      txt($('sc_dp'), (dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp');
+      txt($('sc_n'), isFinite(n) ? String(Math.ceil(n)) : '∞');
+      var verdict = dp >= 0.03
+        ? { t: '有统计超额', c: '#0f8a4d', h: '但仍需 n≥' + Math.ceil(n) + ' 次独立观测' }
+        : dp >= -0.03
+        ? { t: '与基准相当', c: '#454c56', h: '信号可能只是漂移噪声' }
+        : { t: '跑输基准', c: '#d5342c', h: '「高安全预算=看涨」需重验' };
+      txt($('sc_dv'), verdict.t);
+      tint($('sc_dv'), verdict.c);
+      txt($('sc_dvh'), verdict.h);
+      tint($('sc_dp'), dp >= 0 ? '#d5342c' : '#0f8a4d');
+      drawDrift(T, pb, ps);
+    }
+
+    function drawDrift(T, pb, ps) {
+      var cv = $('scDriftChart');
+      var s = fit(cv, 176);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 44, r: 12, t: 16, b: 32 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var bw = iw / 2 - 12;
+      var maxP = Math.max(pb, ps, 0.55) * 1.15;
+      var h1 = (pb / maxP) * ih, h2 = (ps / maxP) * ih;
+      ctx.fillStyle = '#eaf0ff';
+      ctx.fillRect(pad.l, pad.t + ih - h1, bw, h1);
+      ctx.fillStyle = '#fff7e6';
+      ctx.fillRect(pad.l + bw + 24, pad.t + ih - h2, bw, h2);
+      ctx.fillStyle = '#454c56';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('基准 ' + (pb * 100).toFixed(1) + '%', pad.l + bw / 2, pad.t + ih - h1 - 6);
+      ctx.fillText('信号 ' + (ps * 100).toFixed(1) + '%', pad.l + bw + 24 + bw / 2, pad.t + ih - h2 - 6);
+      ctx.fillStyle = '#7c848f';
+      ctx.fillText(T + ' 日持有胜率对比', pad.l + iw / 2, h - 8);
+    }
+
+    TEl.addEventListener('input', update);
+    psEl.addEventListener('input', update);
+    muEl.addEventListener('input', update);
+    sgEl.addEventListener('input', update);
+    update();
+  })();
+
+})();
+</script>
+</body>
+</html>
