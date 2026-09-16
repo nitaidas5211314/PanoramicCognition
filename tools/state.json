@@ -336,11 +336,14 @@
     {
       "slug": "BTC-LTH - STH 持仓与成本框架",
       "title": "BTC-LTH / STH 持仓与成本框架",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-17 00:32:43",
+      "finished": "2026-09-17 00:35:35",
+      "duration_sec": 172,
+      "outputs": [
+        "reports/BTC-LTH - STH 持仓与成本框架.html",
+        "reports/BTC-LTH - STH 持仓与成本框架.md"
+      ],
       "error": null
     },
     {
@@ -611,7 +614,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 00:32",
+  "updated": "2026-09-17 00:35",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
