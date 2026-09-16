@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-减半预期折现与牛市延时模型 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × Halving × Expectation Discounting</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路径</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-减半预期折现与牛市延时模型</h1>
+  <p class="sub">减半是<strong>可预见的供给冲击</strong>，但牛市顶往往<strong>延时 518–546 天</strong>才到——学会拆「已折现多少」与「还要等多久」</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>减半把日新增 BTC 从 900 砍到 450</strong><span class="tag t-fact">事实</span>——但这件事在代码里写死了十几年，聪明钱会在事件前<strong>逐步折现</strong>（K33：减半前一月平均 <strong>+14%</strong><span class="tag t-chk">待验证</span>）。2024 周期史上首次<strong>减半前即破 ATH</strong>（3 月 ~$73K）<span class="tag t-fact">事实</span>，说明折现程度极高。</p>
+<p>牛市顶则往往<strong>延时</strong>：2016 周期峰在减半后 <strong>518</strong> 天，2020 周期 <strong>546</strong> 天，均值 <strong>532</strong> 天 → 指向 2025 年 9–10 月<span class="tag t-inf">推论</span>；2025-10 现货峰 ~<strong>$126K</strong><span class="tag t-chk">待验证</span>与 Fidelity 四年顶日历（2025-10-06 ~$126,200）几乎重合<span class="tag t-chk">待验证</span>。<strong>折现回答「利好还剩多少」；延时回答「顶还要等多久」——两件事不能混为一谈。</strong></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>「BTC-减半预期折现与牛市延时模型」研究的是：<strong>可预见的供给冲击如何在时间轴上被价格提前吸收，以及牛市顶点相对减半事件的系统性滞后</strong>。它横跨 EMH（有效市场假说）、矿工经济学、周期叙事（Rekt Capital / Fidelity 四年顶）与 2024 ETF 时代的新变形。</p>
+<div class="note red"><b>先划清边界</b><p>本手册<strong>不提供</strong>「减半后 X 天必买/必卖」信号。样本仅 <strong>4 次减半</strong>、峰窗 <strong>±14 天</strong> 仍可能 miss；ETF 时代周期形态已在变形。</p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>预期折现曲线、有效供给冲击、减半后峰窗延时、周期加速/减速</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>不含山寨币；不预测监管；不替代链上估值（MVRV/S2F）</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>块奖励 schedule、priced-in 比例、halving→peak 天数</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>矿工（forced sellers）、ETF 买家、周期分析师、套利者</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>日 flow、折现率、加速天数、ReAccum 时长、M2 流动性</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察的</td>
+<td>减半日期、现货价、ETF 流量、期权偏度</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察但可推断</td>
+<td>「真实」priced-in 比例、未来 demand 弹性</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>预期→提前买压；减半→flow↓；流动性→延时/压缩峰窗</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>减半→flow 减半 = <span class="tag t-fact">事实</span>；折现→价涨 = <span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>四年顶与道琼斯周期<span class="tag t-ana">分析</span>、M2 扩张</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>「减半必涨」「已 price-in」两极争论</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>可预见冲击 + 流动性周期 + 叙事反馈</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>提前涨→「已折现」讨论→波动率下降</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>时间延迟</td>
+<td>峰在减半后 <strong>518–546</strong> 天；底可在减半前 <strong>517</strong> 天</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>正：稀缺叙事→HODL；负：利好兑现→sell the news</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：2024 是「折现极限测试」</h3>
+<p>第四次减半（<strong>2024-04-19</strong>）前 BTC 已在 <strong>3 月</strong>创 ATH ~<strong>$73,000</strong><span class="tag t-fact">事实</span>——此前三次减半时价格距前高仍跌 <strong>42–53%</strong><span class="tag t-fact">事实</span>。Galaxy / Coinbase 均指出这是<strong>史上最高 pre-halving 折现</strong><span class="tag t-ana">分析</span>。懂折现才能解释「减半后为何横盘 5 个月」。</p>
+<h3>理由二：延时模型给出可检验日历</h3>
+<p>Rekt Capital：峰在减半后 <strong>518–546</strong> 天<span class="tag t-chk">待验证</span>；JRFM (2024) 回归得 <strong>19 个月</strong>（2025-11）<span class="tag t-ana">分析</span>。2025-10 峰 ~$126K 若成立，则延时带<strong>命中</strong>——但若你 2024-05 就按「减半后 3 个月必暴涨」下注，会踏空整整一季。</p>
+<h3>理由三：必须和对照基准比</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>BTC μ=50%/年 σ=65%</th>
+<th><strong>随机持币基准</strong></th>
+<th>「减半后 90 日 78% 胜率」真实超额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">90 日</td>
+<td>—</td>
+<td><strong>67.7%</strong></td>
+<td>表面 +10.3 pp → 需 <strong>n≈151</strong> 次才显著</td>
+</tr>
+<tr>
+<td class="k">180 日</td>
+<td>—</td>
+<td><strong>74.2%</strong></td>
+<td>表面 +5.8 pp → 超额快速衰减</td>
+</tr>
+<tr>
+<td class="k">365 日</td>
+<td>—</td>
+<td><strong>82.3%</strong></td>
+<td>长期持币本身极强</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>BTC 有正漂移，基准不是 50%。</strong> 减半日历策略的「高胜率」大半是 β，不是 α。</p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从协议 schedule，到折现—延时双时钟</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">减半折现·延时 · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">越靠上越「协议硬约束」，越靠下越「行为/叙事可选择」</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 协议层</text>
+  <text x="148" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">210,000 区块/减半 · 奖励 6.25→3.125 · 日产出 ~450 BTC</text>
+  <text x="148" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">完全可预测——EMH 的出发点</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 供给冲击层</text>
+  <text x="148" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">年减发 ~164,250 BTC · 矿工 forced sell 压力减半</text>
+  <text x="148" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">冲击真实，但被 ETF 日流量稀释</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 预期折现层</text>
+  <text x="148" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">减半前 180 天指数折现可达 ~50%【推论】</text>
+  <text x="148" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">2024 预涨 ATH → 折现率史上最高</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 需求承接层</text>
+  <text x="148" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">美 spot ETF 持仓 >$100B【待验证】· IBIT 可秒吞日产量</text>
+  <text x="148" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">Hougan：supply 折现了，demand 未必</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 延时周期层</text>
+  <text x="148" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">峰：减半后 518–546 天 · 底：可提前 517 天</text>
+  <text x="148" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">Rekt「镜像周期」【待验证】</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 宏观流动性层</text>
+  <text x="148" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">M2 扩张常领先减半 · 流动性提供牛市燃料</text>
+  <text x="148" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">失效：2022 紧缩期减半叙事失灵</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 再积累层</text>
+  <text x="148" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">2024 ReAccum **205** 天 vs 2016/20 均值 **163** 天</text>
+  <text x="148" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">更长横盘 = 周期「减速」+42 天</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 传播层</text>
+  <text x="148" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">「减半倒计时」媒体 · 矿商 IPO 叙事 · 期权偏度</text>
+  <text x="148" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">失效：事件日波动率未必飙升（EMH）</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="148" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">双时钟：折现仪表盘 + 延时窗 · 不对照基准不下注</text>
+  <text x="148" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">区间思维 · n=4 样本谦卑</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">折现·延时 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 可预见冲击</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 预期折现</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 周期镜像</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 流动性滞后</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• flow 阶梯下降</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 套利者提前建仓</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• M2→risk-on 延时</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• ReAccum 蓄势</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#c6dcc9" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• §06 预期折现器</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• §09 牛市延时钟</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• §08 漂移剥离器</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• ETF/矿工流量表</text>
+  <defs><marker id="hdA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#454c56"/></marker></defs>
+  <line x1="214" y1="120" x2="238" y2="120" stroke="#454c56" stroke-width="1.2" marker-end="url(#hdA)"/>
+  <line x1="440" y1="120" x2="464" y2="120" stroke="#454c56" stroke-width="1.2" marker-end="url(#hdA)"/>
+</svg>
+<h3>跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>本主题结构</th>
+<th>其他领域</th>
+<th>共同数学</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">预期折现</td>
+<td>股息贴现 / 利率路径</td>
+<td>已知现金流→提前定价</td>
+</tr>
+<tr>
+<td class="k">供给冲击延时</td>
+<td>产能周期、OPEC 减产</td>
+<td>冲击可预见，价格路径滞后</td>
+</tr>
+<tr>
+<td class="k">镜像周期</td>
+<td>傅里叶对称、均值回归</td>
+<td>底↔顶时间对称<span class="tag t-hyp">假设</span></td>
+</tr>
+<tr>
+<td class="k">四年顶日历</td>
+<td>美国总统周期、奥运周期</td>
+<td>小样本巧合风险</td>
+</tr>
+<tr>
+<td class="k">sell the news</td>
+<td>财报、FDA 审批</td>
+<td>事件日波动率压缩</td>
+</tr>
+<tr>
+<td class="k">漂移剥离</td>
+<td>因子投资 α 检验</td>
+<td>p_base = Φ(μ√T/σ)</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>与折现/延时的关系</th>
+<th>激励扭曲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>矿工</strong></td>
+<td>减半前囤币、减半后抛压↓</td>
+<td>强调「供应危机」推销股权</td>
+</tr>
+<tr>
+<td class="k"><strong>ETF 发行商</strong></td>
+<td>持续买盘可覆盖日产量</td>
+<td>AUM 叙事→淡化周期风险</td>
+</tr>
+<tr>
+<td class="k"><strong>Rekt Capital 等</strong></td>
+<td>518–546 天峰窗框架</td>
+<td>内容流量 vs 预测失败</td>
+</tr>
+<tr>
+<td class="k"><strong>K33 / Galaxy</strong></td>
+<td>EMH vs 投机折现辩论</td>
+<td>研究声誉</td>
+</tr>
+<tr>
+<td class="k"><strong>Bitwise Hougan</strong></td>
+<td>supply 已折现、demand 未折现</td>
+<td>产品发行方</td>
+</tr>
+<tr>
+<td class="k"><strong>套利者</strong></td>
+<td>提前 6–12 个月建仓</td>
+<td>无动机公开折现进度</td>
+</tr>
+<tr>
+<td class="k"><strong>你</strong></td>
+<td>读者</td>
+<td>确认偏误：持币者倾向相信延时</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>2026-09 参考<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>halving_date</strong></td>
+<td>第四次减半</td>
+<td>2024-04-19</td>
+</tr>
+<tr>
+<td class="k"><strong>days_since_halving</strong></td>
+<td>距减半天数</td>
+<td>~515 天</td>
+</tr>
+<tr>
+<td class="k"><strong>priced_in</strong></td>
+<td>市场已折现比例</td>
+<td>高（pre-ATH）<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k"><strong>peak_window</strong></td>
+<td>减半后 518–546 天</td>
+<td>2025-09-19 ~ 10-17</td>
+</tr>
+<tr>
+<td class="k"><strong>cycle_accel</strong></td>
+<td>相对历史周期的加速天数</td>
+<td>2024 初 +260d → 横盘后 +150d<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k"><strong>reaccum_days</strong></td>
+<td>减半后横盘蓄势</td>
+<td><strong>205</strong>（+42 vs 均值）</td>
+</tr>
+<tr>
+<td class="k"><strong>daily_flow</strong></td>
+<td>日挖矿产出</td>
+<td><strong>~450 BTC</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>etf_daily</strong></td>
+<td>ETF 日均净买</td>
+<td>波动大，可 &gt;1000 BTC<span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · 预期折现器</h3>
+<p>指数折现模型：<strong>已折现 = 1 − e^(−k·t)</strong>，半衰期 180 天（k=ln2/180）。对比你设定的市场折现率。</p>
+<div class="ctrl"><label>距减半（天，事件前为正）<input type="range" id="hd_days" min="30" max="540" step="1" value="180"><output id="hd_daysO">180 天</output></label></div>
+<div class="ctrl"><label>市场已折现（%）<input type="range" id="hd_priced" min="0" max="100" step="1" value="55"><output id="hd_pricedO">55%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">模型折现</span><strong id="hd_disc">50.0%</strong><span id="hd_disch">—</span></div>
+<div class="ro"><span class="k">有效冲击</span><strong id="hd_eff">22.5%</strong><span id="hd_effh">—</span></div>
+<div class="ro"><span class="k">等效日减量</span><strong id="hd_shock">203 BTC/天</strong><span id="hd_shockh">—</span></div>
+<canvas id="hdDiscChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="hd_v">折现大致均衡</strong><span id="hd_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>主因果链</h3>
+<svg viewBox="0 0 680 340" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">减半 · 因果与反馈</text>
+  <rect x="30" y="50" width="120" height="36" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="44" y="74" font-size="11" font-weight="700" fill="#1d4ed8" font-family="sans-serif">可预见减半</text>
+  <rect x="200" y="50" width="120" height="36" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="214" y="74" font-size="11" font-weight="700" fill="#a06800" font-family="sans-serif">预期折现</text>
+  <rect x="370" y="50" width="120" height="36" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="384" y="74" font-size="11" font-weight="700" fill="#a06800" font-family="sans-serif">价格提前涨</text>
+  <rect x="540" y="50" width="120" height="36" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="554" y="74" font-size="11" font-weight="700" fill="#d5342c" font-family="sans-serif">事件日平淡</text>
+  <rect x="200" y="130" width="120" height="36" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="214" y="154" font-size="11" font-weight="700" fill="#1d4ed8" font-family="sans-serif">flow 减半</text>
+  <rect x="370" y="130" width="120" height="36" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="384" y="154" font-size="11" font-weight="700" fill="#0f8a4d" font-family="sans-serif">矿工抛压↓</text>
+  <rect x="540" y="130" width="120" height="36" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="554" y="154" font-size="11" font-weight="700" fill="#0f8a4d" font-family="sans-serif">边际供给紧</text>
+  <rect x="115" y="210" width="140" height="36" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="129" y="234" font-size="11" font-weight="700" fill="#a06800" font-family="sans-serif">M2 / 流动性扩张</text>
+  <rect x="300" y="210" width="140" height="36" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="314" y="234" font-size="11" font-weight="700" fill="#a06800" font-family="sans-serif">ReAccum 蓄势</text>
+  <rect x="485" y="210" width="140" height="36" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="499" y="234" font-size="11" font-weight="700" fill="#d5342c" font-family="sans-serif">牛市顶（延时）</text>
+  <defs>
+    <marker id="hdC" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#454c56"/></marker>
+    <marker id="hdR" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <line x1="150" y1="68" x2="198" y2="68" stroke="#454c56" stroke-width="1.3" marker-end="url(#hdC)"/>
+  <line x1="320" y1="68" x2="368" y2="68" stroke="#454c56" stroke-width="1.3" marker-end="url(#hdC)"/>
+  <line x1="490" y1="68" x2="538" y2="68" stroke="#454c56" stroke-width="1.3" marker-end="url(#hdC)"/>
+  <line x1="260" y1="86" x2="260" y2="128" stroke="#454c56" stroke-width="1.3" marker-end="url(#hdC)"/>
+  <line x1="320" y1="148" x2="368" y2="148" stroke="#454c56" stroke-width="1.3" marker-end="url(#hdC)"/>
+  <line x1="490" y1="148" x2="538" y2="148" stroke="#454c56" stroke-width="1.3" marker-end="url(#hdC)"/>
+  <line x1="430" y1="166" x2="555" y2="208" stroke="#454c56" stroke-width="1.3" marker-end="url(#hdC)"/>
+  <line x1="255" y1="228" x2="298" y2="228" stroke="#454c56" stroke-width="1.3" marker-end="url(#hdC)"/>
+  <line x1="440" y1="228" x2="483" y2="228" stroke="#454c56" stroke-width="1.3" marker-end="url(#hdC)"/>
+  <path d="M600 86 Q640 150 600 210" fill="none" stroke="#d5342c" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#hdR)"/>
+  <text x="618" y="150" font-size="9" fill="#d5342c" font-family="sans-serif">利好兑现</text>
+  <path d="M555 246 Q400 300 200 246" fill="none" stroke="#d5342c" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#hdR)"/>
+  <text x="340" y="318" font-size="9" fill="#d5342c" font-family="sans-serif">顶后熊市反馈</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>链条</th>
+<th>类型</th>
+<th>强度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">减半 → flow↓</td>
+<td><span class="tag t-fact">事实</span></td>
+<td>100%（代码保证）</td>
+</tr>
+<tr>
+<td class="k">预期 → 提前涨价</td>
+<td><span class="tag t-inf">推论</span></td>
+<td>高（2024 已演示）</td>
+</tr>
+<tr>
+<td class="k">flow↓ → 价格↑</td>
+<td><span class="tag t-inf">推论</span></td>
+<td>中（需 demand 配合）</td>
+</tr>
+<tr>
+<td class="k">流动性 → 延时顶</td>
+<td><span class="tag t-ana">分析</span></td>
+<td>中（M2 领先假说）</td>
+</tr>
+<tr>
+<td class="k">顶 → 熊市</td>
+<td><span class="tag t-fact">事实</span></td>
+<td>历史 4/4，幅度递减</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ol>
+<li><strong>折现与延时是正交维度</strong>：高折现不否定延时顶——2024 先涨后仍可在 535 天后见顶。</li>
+<li><strong>矿工 forced sell ↓ ≠ 价格必涨</strong>：运营费用刚性，减半后矿商可能更急于卖存量<span class="tag t-ana">分析</span>。</li>
+<li><strong>ETF 把「日产量」变成微观单位</strong>：IBIT 单日可买 &gt;1 天全网产量<span class="tag t-chk">待验证</span>——供给冲击被机构化吸收。</li>
+<li><strong>四年顶 ≈ 顶到顶 4 年</strong>：Fidelity 用 2013/17/21/25 顶连线，与减半日历部分错位<span class="tag t-ana">分析</span>。</li>
+<li><strong>道琼斯同步</strong>：批评者指出 BTC 峰与 DJI 峰时间差在缩小<span class="tag t-ana">分析</span>——减半可能只是「幸运计时器」。</li>
+<li><strong>期权市场</strong>：K33 观察减半日 OTM call 不热 → 事件日非大波动<span class="tag t-chk">待验证</span>。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>三阶段循环</h3>
+<pre><code>Phase A · 预期折现（减半前 6–18 个月）
+  → 套利者建仓 · 媒体倒计时 · 波动率抬升
+Phase B · 再积累 ReAccum（减半后 5–7 个月）
+  → 2024 特例：205 天横盘 · 周期「减速」
+Phase C · 抛物线 + 延时顶（减半后 15–18 个月）
+  → 518–546 天窗口 · M2/ETF 共振 · 随后回撤
+</code></pre>
+<div class="note blue"><b>EMH 与现实的折中</b><p>RSM (2024)：理性市场不应因可预见减半而事件前暴涨<span class="tag t-ana">分析</span>。但 K33 实证减半前一月 +14%<span class="tag t-chk">待验证</span>——<strong>市场不完全有效，但也不无限非理性</strong>；折现是渐进的，不是开关。</p></div>
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>「减半后 X 日胜率 Y%」必须减去 <strong>随机持币基准</strong>（μ=50%/年, σ=65%）。</p>
+<div class="ctrl"><label>持有期（交易日）<input type="range" id="ds_win" min="30" max="365" step="1" value="90"><output id="ds_winO">90 日</output></label></div>
+<div class="ctrl"><label>策略胜率（%）<input type="range" id="ds_strat" min="50" max="95" step="0.1" value="78.0"><output id="ds_stratO">78.0%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="ds_base">67.7%</strong><span id="ds_baseh">—</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="ds_ex">+10.3 pp</strong><span id="ds_exh">—</span></div>
+<div class="ro"><span class="k">显著性所需 n</span><strong id="ds_n">151</strong><span id="ds_nh">—</span></div>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ds_v">弱超额</strong><span id="ds_vh">n=4 周期不够</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>四次减半对照</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周期</th>
+<th>减半日</th>
+<th>减半前距 ATH</th>
+<th>减半→峰天数</th>
+<th>峰价<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2012</td>
+<td>2012-11-28</td>
+<td>未破前高</td>
+<td>~92→后延至 368d 周期</td>
+<td>~$1,150</td>
+</tr>
+<tr>
+<td class="k">2016</td>
+<td>2016-07-09</td>
+<td>−42%</td>
+<td><strong>518</strong></td>
+<td>~$19,800</td>
+</tr>
+<tr>
+<td class="k">2020</td>
+<td>2020-05-11</td>
+<td>−53%</td>
+<td><strong>546</strong></td>
+<td>~$69,000</td>
+</tr>
+<tr>
+<td class="k">2024</td>
+<td>2024-04-19</td>
+<td><strong>+ATH 先破</strong></td>
+<td><strong>~535</strong>（至 2025-10-06）</td>
+<td>~$126,000</td>
+</tr>
+</tbody>
+</table></div>
+<h3>演化时间轴</h3>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">减半周期 · 演化时间轴（2024 周期示意）</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="80" cy="100" r="6" fill="#454c56"/>
+  <text x="80" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2022-11</text>
+  <text x="80" y="122" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">熊市底</text>
+  <circle cx="200" cy="100" r="6" fill="#d5342c"/>
+  <text x="200" y="82" font-size="9" text-anchor="middle" fill="#d5342c" font-family="sans-serif">2024-03</text>
+  <text x="200" y="122" font-size="9" text-anchor="middle" fill="#d5342c" font-family="sans-serif">pre-ATH</text>
+  <circle cx="280" cy="100" r="8" fill="#1d4ed8"/>
+  <text x="280" y="72" font-size="10" text-anchor="middle" font-weight="700" fill="#1d4ed8" font-family="sans-serif">2024-04-19</text>
+  <text x="280" y="122" font-size="9" text-anchor="middle" fill="#1d4ed8" font-family="sans-serif">第四次减半</text>
+  <rect x="300" y="88" width="80" height="24" rx="4" fill="rgba(176,115,10,0.2)" stroke="#b8730a" stroke-width="1"/>
+  <text x="340" y="104" font-size="9" text-anchor="middle" fill="#a06800" font-family="sans-serif">ReAccum 205d</text>
+  <circle cx="520" cy="100" r="8" fill="#d5342c"/>
+  <text x="520" y="72" font-size="10" text-anchor="middle" font-weight="700" fill="#d5342c" font-family="sans-serif">2025-10</text>
+  <text x="520" y="122" font-size="9" text-anchor="middle" fill="#d5342c" font-family="sans-serif">延时峰 ~$126K</text>
+  <circle cx="600" cy="100" r="6" fill="#0f8a4d"/>
+  <text x="600" y="82" font-size="9" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">2026?</text>
+  <text x="600" y="122" font-size="9" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">回撤整理</text>
+  <text x="180" y="155" font-size="9" fill="#7c848f" font-family="sans-serif">←517d→</text>
+  <text x="400" y="155" font-size="9" fill="#7c848f" font-family="sans-serif">←535d→</text>
+</svg>
+<div class="tool">
+<h3>工具 · 牛市延时钟</h3>
+<p>历史峰窗 <strong>518–546</strong> 天（均值 <strong>532</strong>）。调节「周期加速」模拟 pre-ATH 带来的提前/延后。</p>
+<div class="ctrl"><label>当前：减半后天数<input type="range" id="hl_days" min="100" max="600" step="1" value="515"><output id="hl_daysO">515 天</output></label></div>
+<div class="ctrl"><label>周期加速（天，正值=峰提前）<input type="range" id="hl_accel" min="0" max="80" step="1" value="0"><output id="hl_accelO">0 天</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">预测峰日</span><strong id="hl_peak">2025-10-03</strong><span id="hl_peakh">—</span></div>
+<div class="ro"><span class="k">历史峰窗</span><strong id="hl_win">2025-09-19 ~ 2025-10-17</strong><span id="hl_winh">—</span></div>
+<div class="ro"><span class="k">历史样本</span><strong id="hl_hist">2016:518 · 2020:546</strong><span id="hl_histh">—</span></div>
+<canvas id="hlDelayChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="hl_v">峰窗附近</strong><span id="hl_vh">回撤 ≠ 周期终结</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>公开说法</th>
+<th>真实激励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">矿企 CEO</td>
+<td>「供应危机将至」</td>
+<td>股价 / 融资</td>
+</tr>
+<tr>
+<td class="k">ETF 营销</td>
+<td>「长期配置」</td>
+<td>规模增长</td>
+</tr>
+<tr>
+<td class="k">周期分析师</td>
+<td>「518 天后见顶」</td>
+<td>订阅 / 影响力</td>
+</tr>
+<tr>
+<td class="k">空头</td>
+<td>「已 price-in」</td>
+<td>做空或避险 PR</td>
+</tr>
+<tr>
+<td class="k">多头</td>
+<td>「demand 未折现」</td>
+<td>加仓叙事</td>
+</tr>
+<tr>
+<td class="k">媒体</td>
+<td>「减半倒计时」</td>
+<td>点击</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>激励扭曲结果</strong>：折现进度被<strong>系统性高估</strong>（多头）或<strong>低估</strong>（空头）——你要自己算 §06，不信口号。</p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">减半生态 · 资源与信息流（抽水图）</text>
+  <rect x="260" y="40" width="160" height="44" rx="8" fill="#f0f4fd" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="278" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">BTC 现货池</text>
+  <text x="278" y="74" font-size="10" fill="#454c56" font-family="sans-serif">折现与延时在此定价</text>
+  <rect x="40" y="120" width="130" height="40" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.2"/>
+  <text x="52" y="138" font-size="11" font-weight="700" fill="#0f8a4d" font-family="sans-serif">ETF 净流入</text>
+  <text x="52" y="152" font-size="9.5" fill="#454c56" font-family="sans-serif">可 >> 日产量</text>
+  <rect x="510" y="120" width="130" height="40" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.2"/>
+  <text x="522" y="138" font-size="11" font-weight="700" fill="#1d4ed8" font-family="sans-serif">折现预期流</text>
+  <text x="522" y="152" font-size="9.5" fill="#454c56" font-family="sans-serif">减半前 6–12 月</text>
+  <rect x="40" y="220" width="130" height="40" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.2"/>
+  <text x="52" y="238" font-size="11" font-weight="700" fill="#d5342c" font-family="sans-serif">矿工抛压</text>
+  <text x="52" y="252" font-size="9.5" fill="#454c56" font-family="sans-serif">~450 BTC/天</text>
+  <rect x="510" y="220" width="130" height="40" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.2"/>
+  <text x="522" y="238" font-size="11" font-weight="700" fill="#a06800" font-family="sans-serif">宏观流动性</text>
+  <text x="522" y="252" font-size="9.5" fill="#454c56" font-family="sans-serif">M2 / 利率</text>
+  <defs>
+    <marker id="hdGF" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#0f8a4d"/></marker>
+    <marker id="hdRF" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <line x1="170" y1="140" x2="258" y2="62" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#hdGF)"/>
+  <text x="175" y="88" font-size="9" fill="#0f8a4d" font-family="sans-serif">吸收日产量</text>
+  <line x1="510" y1="140" x2="422" y2="62" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdGF)"/>
+  <text x="430" y="88" font-size="9" fill="#1d4ed8" font-family="sans-serif">提前折现</text>
+  <line x1="170" y1="240" x2="258" y2="82" stroke="#d5342c" stroke-width="1.5" marker-end="url(#hdRF)"/>
+  <text x="175" y="200" font-size="9" fill="#d5342c" font-family="sans-serif">结构性卖压</text>
+  <line x1="510" y1="240" x2="422" y2="82" stroke="#b8730a" stroke-width="1.5" marker-end="url(#hdGF)"/>
+  <text x="430" y="200" font-size="9" fill="#b8730a" font-family="sans-serif">延时牛市燃料</text>
+</svg>
+<div class="tool">
+<h3>工具 · 供需平衡仪</h3>
+<p>减半后<strong>有效冲击</strong>取决于矿工抛压能否被 ETF/OTC 吸收。</p>
+<div class="ctrl"><label>矿工日抛压（BTC）<input type="range" id="sd_miner" min="200" max="900" step="5" value="450"><output id="sd_minerO">450 BTC</output></label></div>
+<div class="ctrl"><label>ETF 日净买（BTC）<input type="range" id="sd_etf" min="0" max="2000" step="10" value="680"><output id="sd_etfO">680 BTC</output></label></div>
+<div class="ctrl"><label>OTC/其他净买（BTC）<input type="range" id="sd_otc" min="0" max="1000" step="10" value="120"><output id="sd_otcO">120 BTC</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">日净吸收</span><strong id="sd_net">+350 BTC/天</strong><span id="sd_neth">—</span></div>
+<div class="ro"><span class="k">ETF/矿工比</span><strong id="sd_ratio">1.51×</strong><span id="sd_ratioh">—</span></div>
+<canvas id="sdBalChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="sd_v">需求 > 结构性抛压</strong><span id="sd_vh">减半冲击易被吸收</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>作用</th>
+<th>你怎么用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>双时钟思维</strong></td>
+<td>拆折现 vs 延时</td>
+<td>减半前看 §06，减半后看 §09</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>对照基准</strong></td>
+<td>防漂移当 alpha</td>
+<td>§08 漂移剥离器</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>ETF 流量</strong></td>
+<td>demand 是否承接</td>
+<td>§12 供需平衡仪</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>历史峰窗</strong></td>
+<td>518–546 天带</td>
+<td>输出区间，非单点</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>pre-ATH 信号</strong></td>
+<td>折现程度温度计</td>
+<td>2024 为极端案例</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>ReAccum 时长</strong></td>
+<td>周期加速/减速</td>
+<td>&gt;180 天 = 减速</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>M2 仪表盘</strong></td>
+<td>延时燃料</td>
+<td>Look Into Bitcoin 对照图</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>期权偏度</strong></td>
+<td>事件日风险定价</td>
+<td>减半周 put/call</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>样本谦卑</strong></td>
+<td>n=4</td>
+<td>不对第五次减半做点预测</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>写反事实日志</strong></td>
+<td>迭代模型</td>
+<td>每季记录偏差</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「减半当天必暴涨」</summary><div class="dbody"><p><strong>错。</strong> EMH + K33 期权数据：事件日常平淡。利好在<strong>之前</strong>折现。</p></div></details>
+<details><summary>2. 「已 price-in 所以减半无用」</summary><div class="dbody"><p><strong>片面。</strong> Hougan：supply 折现 ≠ demand 折现。flow↓ 仍改变边际均衡。</p></div></details>
+<details><summary>3. 「518 天是精确闹钟」</summary><div class="dbody"><p><strong>错。</strong> 区间 ±14 天，样本 n=2（2016/20）。2025 实际 ~535 天。</p></div></details>
+<details><summary>4. 「四年周期永远有效」</summary><div class="dbody"><p><strong>待验证。</strong> Fidelity 顶到顶 4 年命中 2025，但机制可能是宏观而非减半。</p></div></details>
+<details><summary>5. 「矿工抛压减半 = 价格翻倍」</summary><div class="dbody"><p><strong>需求函数缺失。</strong> 无买盘时 flow↓ 只降波动，不抬价。</p></div></details>
+<details><summary>6. 「pre-ATH = 牛市已结束」</summary><div class="dbody"><p><strong>错。</strong> 2024 pre-ATH 后仍涨至 $126K。高折现 ≠ 无延时顶。</p></div></details>
+<details><summary>7. 「ETF 杀死周期」</summary><div class="dbody"><p><strong>过度。</strong> ETF 改变形态，未废除流动性驱动峰顶。</p></div></details>
+<details><summary>8. 「减半策略 80% 胜率」</summary><div class="dbody"><p><strong>未扣漂移。</strong> 90 日基准 67.7%，真实超额或仅 +10 pp。</p></div></details>
+<details><summary>9. 「学术回归 19 个月必到顶」</summary><div class="dbody"><p><strong>JRFM 单篇。</strong> 一条回归线，自由度极低。</p></div></details>
+<details><summary>10. 「与道琼斯同步 = 减半无用」</summary><div class="dbody"><p><strong>非此即彼。</strong> 可能<strong>共同驱动</strong>（流动性），非减半单独有效。</p></div></details>
+<details><summary>11. 「横盘 5 个月 = 周期死了」</summary><div class="dbody"><p><strong>2024 教训。</strong> 更长 ReAccum 后仍可抛物线。</p></div></details>
+<details><summary>12. 「折现 100% 所以卖」</summary><div class="dbody"><p><strong>无工具可测 100%。</strong> 折现不可观测，只有代理指标。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实操作</th>
+<th>频率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">折现进度</td>
+<td>§06 工具 + pre-ATH 距离</td>
+<td>周</td>
+</tr>
+<tr>
+<td class="k">延时峰窗</td>
+<td>§09 牛市延时钟</td>
+<td>月</td>
+</tr>
+<tr>
+<td class="k">ETF 吸收</td>
+<td>Farside / 发行方数据</td>
+<td>日</td>
+</tr>
+<tr>
+<td class="k">矿工抛压</td>
+<td>算 450×卖出比例</td>
+<td>月</td>
+</tr>
+<tr>
+<td class="k">宏观燃料</td>
+<td>美 M2 YoY、实际利率</td>
+<td>周</td>
+</tr>
+</tbody>
+</table></div>
+<h3>2026-09 快照<span class="tag t-chk">待验证</span></h3>
+<ul>
+<li>第四次减半已过 <strong>~17 个月</strong>；距 2025-10 峰 <strong>~11 个月</strong></li>
+<li>现货 ~<strong>$95,000</strong>，较峰 <strong>−24.6%</strong>（涨红跌绿：回撤为绿）</li>
+<li>ETF 时代：交易所储备多年低位，「浮动供应」收缩</li>
+<li>下一次减半 <strong>~2028</strong>——第五次是<strong>样本外</strong>终极测试</li>
+</ul>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<pre><code>① 减半前 12 个月：跑 §06，记录折现 vs 模型
+② 减半日：不赌事件日波动；看期权偏度
+③ 减半后 0–6 月：盯 ReAccum 时长（&gt;180d = 减速）
+④ 减半后 12–18 月：§09 峰窗 ±30 天，配合 MVRV/宏观
+⑤ 任何「胜率」：§08 扣漂移
+⑥ 仓位 = f(区间, 置信度) — 不是 f(倒计时天数)
+</code></pre>
+<div class="note green"><b>正确用法</b><p>把本模型当作 <strong>双时钟仪表盘</strong>——左盘「利好剩多少」，右盘「顶还有多远」。两盘<strong>独立读数</strong>，不要合成一个「减半分数」。</p></div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 观察者</summary><div class="dbody"><ul>
+<li>[ ] 说出四次减半日期</li>
+<li>[ ] 解释 flow 900→450</li>
+<li>[ ] 背出 518–546 峰窗</li>
+</ul></div></details>
+<details><summary>L2 · 分析师</summary><div class="dbody"><ul>
+<li>[ ] 手算指数折现 180 天 = 50%</li>
+<li>[ ] 用 §08 剥离 78% 胜率</li>
+<li>[ ] 解释 2024 pre-ATH 含义</li>
+</ul></div></details>
+<details><summary>L3 · 建模者</summary><div class="dbody"><ul>
+<li>[ ] 建个人折现日志（每月）</li>
+<li>[ ] 对比 M2 与减半滞后</li>
+<li>[ ] 写 2028 第五次 falsify 条件</li>
+</ul></div></details>
+<details><summary>L4 · 系统设计者</summary><div class="dbody"><ul>
+<li>[ ] 双时钟 + 链上 + 宏观三表</li>
+<li>[ ] 禁止单点顶预测</li>
+<li>[ ] 每季更新样本表</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：周期计时员（Cycle Chronometer）。左腕折现盘，右腕延时盘。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>等级</th>
+<th>任务</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Lv.1</td>
+<td>手算 535 天峰日</td>
+<td>解锁「折现层」</td>
+</tr>
+<tr>
+<td class="k">Lv.2</td>
+<td>向朋友解释 EMH 悖论</td>
+<td>解锁「延时钟」</td>
+</tr>
+<tr>
+<td class="k">Lv.3</td>
+<td>记录 4 周 ETF/矿工比</td>
+<td>解锁「供需仪」</td>
+</tr>
+<tr>
+<td class="k">Lv.4</td>
+<td>写反事实：若 2024 未 pre-ATH</td>
+<td>解锁「镜像周期」</td>
+</tr>
+<tr>
+<td class="k">Lv.5</td>
+<td>一页「第五次减半假设」</td>
+<td>通关</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>任务</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日</td>
+<td>记录 BTC 价 + ETF 流向</td>
+<td>7 日表</td>
+</tr>
+<tr>
+<td class="k">每周</td>
+<td>更新 §06 折现读数</td>
+<td>截图</td>
+</tr>
+<tr>
+<td class="k">每月</td>
+<td>重算减半后天数 &amp; 峰窗</td>
+<td>§09</td>
+</tr>
+<tr>
+<td class="k">每季</td>
+<td>对比实际 vs 518–546 带</td>
+<td>偏差日志</td>
+</tr>
+<tr>
+<td class="k">每次减半</td>
+<td>更新四代对照表</td>
+<td>误差 &lt;3 天</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A · 若 2024 未 pre-ATH</button><button class="tab" data-pane="tb1-1">情景 B · 若 ETF 不存在</button><button class="tab" data-pane="tb1-2">情景 C · 若 518 天模板失效</button><button class="tab" data-pane="tb1-3">情景 D · 若折现达 100% 仍涨</button></div>
+<div class="pane on" id="tb1-0"><p>减半后或再现「三个月暴涨」旧剧本；折现率低，事件日波动更大。与实际「五个月横盘」形成对照——<strong>demand 结构变了</strong>。</p></div><div class="pane" id="tb1-1"><p>450 BTC/日减量或无法被单日吸收，价格对 flow 更敏感；延时峰或更早触发（供给弹性更低）。</p></div><div class="pane" id="tb1-2"><p>2025 未创新高 → 四年周期叙事重大 falsify。你应转向纯宏观/链上框架，而非微调天数。</p></div><div class="pane" id="tb1-3"><p>证明 <strong>demand 折现通道独立</strong>——Hougan 论点的极端版。supply 故事结束，liquidity 故事继续。</p></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>目标</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 会读日历</strong></td>
+<td>3 天</td>
+<td>减半日 + 峰窗</td>
+<td>口算 532 天</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 会拆双时钟</strong></td>
+<td>1 周</td>
+<td>折现 + 延时</td>
+<td>三工具实操</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 会接 demand</strong></td>
+<td>2 周</td>
+<td>ETF + M2 面板</td>
+<td>7 日流量日志</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 会迭代</strong></td>
+<td>1 月+</td>
+<td>2028 falsify 清单</td>
+<td>一季偏差 &lt;15%</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>任务</strong>：「减半双时钟三联检」</p>
+<ol>
+<li><strong>8 分钟 · 折现</strong>：§06 设「距减半 180 天、市场折现 55%」→ 模型折现应 <strong>50.0%</strong>，有效冲击 <strong>22.5%</strong>。</li>
+<li><strong>7 分钟 · 延时</strong>：§09 设减半后 <strong>515</strong> 天、加速 <strong>0</strong> 天 → 预测峰 <strong>2025-10-03</strong>，处于历史带内。</li>
+<li><strong>8 分钟 · 基准</strong>：§08 设 90 日、胜率 <strong>78%</strong> → 基准 <strong>67.7%</strong>，超额 <strong>+10.3 pp</strong>，n≈<strong>151</strong>。</li>
+<li><strong>7 分钟 · 结论</strong>：三句话——(a) 折现与模型差 (b) 是否在峰窗 (c) 策略是否 beat 基准。<strong>禁止写「必涨到 $X」。</strong></li>
+</ol>
+<p><strong>验证</strong>：三工具默认读数与上文误差 <strong>&lt;0.2 pp</strong>。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>定义</td>
+<td>读 Fidelity 四年周期 + Chainalysis 减半</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>折现</td>
+<td>EMH vs K33 + §06</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>延时</td>
+<td>Rekt 518–546 + §09</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>demand</td>
+<td>ETF 7 日 + §12</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>批评</td>
+<td>领英 OK「打碎周期论」摘要</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>基准</td>
+<td>§08 多组 μ/σ</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>合成</td>
+<td>1 页双时钟笔记</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<p><strong>Week 1</strong>：减半机制 + 四代表（L1）
+<strong>Week 2</strong>：折现模型 + 漂移剥离（L2）
+<strong>Week 3</strong>：延时峰窗 + ETF/M2（L3）
+<strong>Week 4</strong>：个人双时钟系统 + 2028 假设（L4）</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>最大坑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>指数折现</strong></td>
+<td>1−e^(−kt)</td>
+<td>k 不可直接观测</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>有效供给冲击</strong></td>
+<td>(1−π)×Δflow</td>
+<td>π 是信念不是事实</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>518–546 峰窗</strong></td>
+<td>减半后延时顶</td>
+<td>n=2</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>镜像周期</strong></td>
+<td>底 517d 前 / 顶 548d 后</td>
+<td>巧合风险</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>四年顶日历</strong></td>
+<td>顶到顶 ~4 年</td>
+<td>与减半错位</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>ReAccum 减速</strong></td>
+<td>横盘越久加速越少</td>
+<td>2024 +42d</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>ETF 吸收</strong></td>
+<td>日买/日产量</td>
+<td>流量波动</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>对照基准</strong></td>
+<td>随机持币胜率</td>
+<td>μ,σ 敏感</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>EMH 折中</strong></td>
+<td>渐进折现</td>
+<td>非 0/1</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>sell the news</strong></td>
+<td>事件日平淡</td>
+<td>不等于熊市</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>折现</summary><div class="dbody"><ul>
+<li>当前距下次减半多久？已折现多少（代理）？</li>
+<li>pre-ATH 是否出现？</li>
+<li>期权偏度是否看涨？</li>
+</ul></div></details>
+<details><summary>延时</summary><div class="dbody"><ul>
+<li>减半后天数？是否在 518–546 带？</li>
+<li>ReAccum 是否 &gt;180 天？</li>
+<li>M2 方向？</li>
+</ul></div></details>
+<details><summary>demand</summary><div class="dbody"><ul>
+<li>ETF 7 日净流入？</li>
+<li>矿工/ETF 日比？</li>
+<li>交易所储备趋势？</li>
+</ul></div></details>
+<details><summary>决策</summary><div class="dbody"><ul>
+<li>策略胜率是否扣过漂移？</li>
+<li>样本 n 是否够？</li>
+<li>是否把区间当单点？</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>第五次减半（~2028）</strong>：提前写下折现/延时 falsify 条件</li>
+<li><strong>折现率估计器</strong>：用期权隐含波动 + 远期曲线反推 π</li>
+<li><strong>M2 领先滞后回归</strong>：量化 liquidity vs halving 方差分解</li>
+<li><strong>矿股 vs spot 折现差</strong>：forced seller 视角的跨市场套利</li>
+<li><strong>与 PLT/S2F 耦合</strong>：供给时钟 + 估值时钟三联表</li>
+</ol>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2024-04-19 第四次减半</td>
+<td>链上</td>
+<td>Bitcoin Core</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">flow 900→450 BTC/日</td>
+<td>协议计算</td>
+<td>区块奖励</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">pre-ATH ~$73K (2024-03)</td>
+<td>市场</td>
+<td>CoinGecko 等</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">峰 518/546 天</td>
+<td>分析师</td>
+<td>Rekt Capital 2024</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2025-10 峰 ~$126K</td>
+<td>媒体</td>
+<td>Look Into Bitcoin / Fidelity</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">K33 减半前一月 +14%</td>
+<td>研报</td>
+<td>K33 Research 2024</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Hougan demand 未折现</td>
+<td>媒体</td>
+<td>CryptoSlate / Bitwise</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">JRFM 19 个月峰</td>
+<td>同行评审</td>
+<td>JRFM 2024 vol.17</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">ETF &gt;$100B</td>
+<td>行业</td>
+<td>BingX / Galaxy 2025</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">ReAccum 205 vs 163 天</td>
+<td>分析师</td>
+<td>Rekt Capital</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">EMH 减半悖论</td>
+<td>学术</td>
+<td>RSM Discovery 2024</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供研究与学习，<strong>不构成任何投资建议</strong>。比特币极高波动，可能发生 &gt;50% 的回撤；减半周期、预期折现与延时顶模型均基于<strong>仅 4 次历史样本</strong>，不保证 2028 第五次减半仍有效。请勿依据日历倒计时进行杠杆交易或集中配置。中国大陆对虚拟货币相关业务有严格监管，请遵守当地法律法规。作者不对使用本手册造成的任何损失负责。</p>
+</section>
+<footer>  <p>《BTC-减半预期折现与牛市延时模型 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 3 分 29 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC-减半预期折现与牛市延时模型》主题脚本
+   四个可调模型：
+     1. 预期折现器    — 距减半天数 → 已折现比例 → 有效供给冲击
+     2. 牛市延时钟    — 减半后天数 + 周期加速 → 预测峰窗
+     3. 漂移剥离器    — 减半择时胜率 vs 随机持币基准
+     4. 供需平衡仪    — 矿工日抛压 vs ETF/净需求吸收
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  var HALVING_2024 = new Date('2024-04-19T00:00:00Z');
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function fmtDate(d) {
+    return d.getUTCFullYear() + '-' +
+      String(d.getUTCMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getUTCDate()).padStart(2, '0');
+  }
+
+  function addDays(d, n) {
+    var r = new Date(d);
+    r.setUTCDate(r.getUTCDate() + n);
+    return r;
+  }
+
+  /* ══ 工具 1 · 预期折现器 ══ */
+  (function discountModel() {
+    var daysEl = $('hd_days'), pricedEl = $('hd_priced');
+    if (!daysEl || !pricedEl) return;
+    var daysO = $('hd_daysO'), pricedO = $('hd_pricedO');
+    var discEl = $('hd_disc'), discHEl = $('hd_disch');
+    var effEl = $('hd_eff'), effHEl = $('hd_effh');
+    var shockEl = $('hd_shock'), shockHEl = $('hd_shockh');
+    var vEl = $('hd_v'), vhEl = $('hd_vh');
+    var cv = $('hdDiscChart');
+
+    var K_HALF = Math.log(2) / 180;
+
+    function draw(days, priced, modelDisc) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 18, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxD = 540;
+      var sx = function (d) { return pad.l + (d / maxD) * iw; };
+      var sy = function (p) { return pad.t + (1 - p) * ih; };
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (var i = 0; i <= 60; i++) {
+        var d = maxD * i / 60;
+        var p = 1 - Math.exp(-K_HALF * d);
+        var x = sx(d), y = sy(p);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      var mx = sx(days), my = sy(modelDisc);
+      ctx.fillStyle = '#d5342c';
+      ctx.beginPath(); ctx.arc(mx, my, 5, 0, Math.PI * 2); ctx.fill();
+      var ux = sx(days), uy = sy(priced);
+      ctx.fillStyle = '#0f8a4d';
+      ctx.beginPath(); ctx.arc(ux, uy, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('距减半（天）', pad.l + iw / 2, y1 + 31);
+      ctx.save();
+      ctx.translate(14, pad.t + ih / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('已折现比例', 0, 0);
+      ctx.restore();
+    }
+
+    function update() {
+      var days = +daysEl.value;
+      var priced = +pricedEl.value / 100;
+      var modelDisc = 1 - Math.exp(-K_HALF * days);
+      var effShock = (1 - priced) * 0.5;
+      var dailyCut = 450;
+      txt(daysO, days + ' 天');
+      txt(pricedO, (+pricedEl.value).toFixed(0) + '%');
+      txt(discEl, (modelDisc * 100).toFixed(1) + '%');
+      txt(effEl, (effShock * 100).toFixed(1) + '%');
+      txt(shockEl, Math.round(dailyCut * effShock * 2) + ' BTC/天');
+      var gap = priced - modelDisc;
+      if (gap > 0.08) {
+        txt(discHEl, '市场折现 > 模型 → 可能过热');
+        txt(effHEl, '剩余冲击偏小');
+        txt(shockHEl, '供给侧利好已消化');
+        txt(vEl, '偏「已 price-in」');
+        txt(vhEl, '后续边际利好有限');
+        tint(vEl, '#d5342c');
+      } else if (gap < -0.08) {
+        txt(discHEl, '市场折现 < 模型 → 仍有空间');
+        txt(effHEl, '有效冲击偏大');
+        txt(shockHEl, '事件后或仍有买盘');
+        txt(vEl, '偏「未充分折现」');
+        txt(vhEl, '注意 demand 能否承接');
+        tint(vEl, '#0f8a4d');
+      } else {
+        txt(discHEl, '与指数折现模型接近');
+        txt(effHEl, '中性区间');
+        txt(shockHEl, '—');
+        txt(vEl, '折现大致均衡');
+        txt(vhEl, '—');
+        tint(vEl, '#454c56');
+      }
+      draw(days, priced, modelDisc);
+    }
+
+    daysEl.addEventListener('input', update);
+    pricedEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 2 · 牛市延时钟 ══ */
+  (function delayClock() {
+    var daysEl = $('hl_days'), accelEl = $('hl_accel');
+    if (!daysEl || !accelEl) return;
+    var daysO = $('hl_daysO'), accelO = $('hl_accelO');
+    var peakEl = $('hl_peak'), peakHEl = $('hl_peakh');
+    var winEl = $('hl_win'), winHEl = $('hl_winh');
+    var histEl = $('hl_hist'), histHEl = $('hl_histh');
+    var vEl = $('hl_v'), vhEl = $('hl_vh');
+    var cv = $('hlDelayChart');
+
+    var HIST = [518, 546];
+
+    function draw(daysAfter, accel, peakDays) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 18, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxD = 600;
+      var sx = function (d) { return pad.l + (d / maxD) * iw; };
+      var midY = pad.t + ih / 2;
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      ctx.fillStyle = 'rgba(29,78,216,0.12)';
+      ctx.fillRect(sx(518), pad.t, sx(546) - sx(518), ih);
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(sx(518), pad.t); ctx.lineTo(sx(518), y1); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(sx(546), pad.t); ctx.lineTo(sx(546), y1); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = '#d5342c';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), midY);
+      ctx.lineTo(sx(daysAfter), midY);
+      ctx.stroke();
+      ctx.fillStyle = '#d5342c';
+      ctx.beginPath(); ctx.arc(sx(daysAfter), midY, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#0f8a4d';
+      ctx.beginPath(); ctx.arc(sx(peakDays), midY - 20, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('518d', sx(518), y1 + 13);
+      ctx.fillText('546d', sx(546), y1 + 13);
+      ctx.fillText('减半后天数', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var daysAfter = +daysEl.value;
+      var accel = +accelEl.value;
+      var basePeak = 532;
+      var peakDays = Math.max(400, Math.min(580, basePeak - accel));
+      var peakDate = addDays(HALVING_2024, peakDays);
+      var lo = addDays(HALVING_2024, 518);
+      var hi = addDays(HALVING_2024, 546);
+      txt(daysO, daysAfter + ' 天');
+      txt(accelO, accel + ' 天');
+      txt(peakEl, fmtDate(peakDate));
+      txt(winEl, fmtDate(lo) + ' ~ ' + fmtDate(hi));
+      txt(histEl, '2016:518 · 2020:546 · 均值532');
+      var remain = peakDays - daysAfter;
+      if (remain > 60) {
+        txt(peakHEl, '距预测峰还有 ~' + remain + ' 天');
+        txt(winHEl, '历史带仍有效');
+        txt(histHEl, '样本 n=2，区间非点');
+        txt(vEl, '牛市延时进行中');
+        txt(vhEl, '勿把日历当闹钟');
+        tint(vEl, '#1d4ed8');
+      } else if (remain > -30) {
+        txt(peakHEl, '处于历史峰窗');
+        txt(winHEl, '高波动区');
+        txt(histHEl, '2025-10 峰 ~$126K【待验证】');
+        txt(vEl, '峰窗附近');
+        txt(vhEl, '回撤 ≠ 周期终结');
+        tint(vEl, '#d5342c');
+      } else {
+        txt(peakHEl, '已过模型峰窗 ' + Math.abs(remain) + ' 天');
+        txt(winHEl, '周期形态可能变形');
+        txt(histHEl, 'ETF 时代延时风险↑');
+        txt(vEl, '延时模型衰减区');
+        txt(vhEl, '换用宏观/链上信号');
+        tint(vEl, '#a06800');
+      }
+      draw(daysAfter, accel, peakDays);
+    }
+
+    daysEl.addEventListener('input', update);
+    accelEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 3 · 漂移剥离器 ══ */
+  (function driftStrip() {
+    var winEl = $('ds_win'), stratEl = $('ds_strat');
+    if (!winEl || !stratEl) return;
+    var winO = $('ds_winO'), stratO = $('ds_stratO');
+    var baseEl = $('ds_base'), baseHEl = $('ds_baseh');
+    var exEl = $('ds_ex'), exHEl = $('ds_exh');
+    var nEl = $('ds_n'), nHEl = $('ds_nh');
+    var vEl = $('ds_v'), vhEl = $('ds_vh');
+
+    function update() {
+      var T = +winEl.value;
+      var ps = +stratEl.value / 100;
+      var mu = 0.50, sig = 0.65;
+      var pb = ncdf(mu * (T / 252) / (sig * Math.sqrt(T / 252)));
+      var ex = ps - pb;
+      var n = Math.ceil(Math.pow(
+        (1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps))) / (ps - pb), 2
+      ));
+      txt(winO, T + ' 日');
+      txt(stratO, (ps * 100).toFixed(1) + '%');
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(exEl, (ex >= 0 ? '+' : '') + (ex * 100).toFixed(1) + ' pp');
+      txt(nEl, isFinite(n) && n > 0 ? String(n) : '—');
+      if (ex < 0.03) {
+        txt(baseHEl, '策略跑输随机持币');
+        txt(exHEl, '表面胜率可能是漂移');
+        txt(nHEl, '—');
+        txt(vEl, '无显著超额');
+        txt(vhEl, '减半日历 ≠ alpha');
+        tint(vEl, '#d5342c');
+      } else if (ex < 0.08) {
+        txt(baseHEl, '超额边际');
+        txt(exHEl, '需大样本验证');
+        txt(nHEl, '约需 ' + n + ' 次独立周期');
+        txt(vEl, '弱超额');
+        txt(vhEl, 'n=4 周期不够');
+        tint(vEl, '#a06800');
+      } else {
+        txt(baseHEl, '显著高于基准');
+        txt(exHEl, '仍须 OOS');
+        txt(nHEl, '约需 ' + n + ' 次');
+        txt(vEl, '表面可观');
+        txt(vhEl, '警惕过拟合 4 个样本');
+        tint(vEl, '#0f8a4d');
+      }
+    }
+
+    winEl.addEventListener('input', update);
+    stratEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 4 · 供需平衡仪 ══ */
+  (function supplyDemand() {
+    var minerEl = $('sd_miner'), etfEl = $('sd_etf'), otcEl = $('sd_otc');
+    if (!minerEl || !etfEl || !otcEl) return;
+    var minerO = $('sd_minerO'), etfO = $('sd_etfO'), otcO = $('sd_otcO');
+    var netEl = $('sd_net'), netHEl = $('sd_neth');
+    var ratioEl = $('sd_ratio'), ratioHEl = $('sd_ratioh');
+    var vEl = $('sd_v'), vhEl = $('sd_vh');
+    var cv = $('sdBalChart');
+
+    function draw(miner, etf, otc, net) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 56, r: 20, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var items = [
+        { label: '矿工抛压', v: miner, col: '#d5342c' },
+        { label: 'ETF 净买', v: etf, col: '#0f8a4d' },
+        { label: 'OTC/其他', v: otc, col: '#1d4ed8' }
+      ];
+      var maxV = Math.max(miner, etf, otc, 1) * 1.15;
+      var barH = ih / 3.5;
+      items.forEach(function (it, i) {
+        var y = pad.t + i * (barH + 14);
+        var bw = (it.v / maxV) * iw;
+        ctx.fillStyle = '#eef1f5';
+        ctx.fillRect(pad.l, y, iw, barH);
+        ctx.fillStyle = it.col;
+        ctx.fillRect(pad.l, y, bw, barH);
+        ctx.fillStyle = '#454c56';
+        ctx.font = '11px -apple-system,sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(it.label, pad.l, y - 4);
+        var lab = it.v.toFixed(0) + ' BTC';
+        ctx.textAlign = bw > 40 ? 'right' : 'left';
+        var tx = bw > 40 ? pad.l + bw - 6 : pad.l + bw + 8;
+        ctx.fillStyle = bw > 40 ? '#fff' : '#454c56';
+        ctx.fillText(lab, tx, y + barH / 2 + 4);
+      });
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('日流量（BTC）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var miner = +minerEl.value;
+      var etf = +etfEl.value;
+      var otc = +otcEl.value;
+      var net = etf + otc - miner;
+      var ratio = miner > 0 ? etf / miner : 0;
+      txt(minerO, miner + ' BTC');
+      txt(etfO, etf + ' BTC');
+      txt(otcO, otc + ' BTC');
+      txt(netEl, (net >= 0 ? '+' : '') + net.toFixed(0) + ' BTC/天');
+      txt(ratioEl, ratio.toFixed(2) + '×');
+      if (net > 200) {
+        txt(netHEl, '净吸收强劲');
+        txt(ratioHEl, 'ETF 可覆盖矿工');
+        txt(vEl, '需求 > 结构性抛压');
+        txt(vhEl, '减半冲击易被吸收');
+        tint(vEl, '#0f8a4d');
+      } else if (net > 0) {
+        txt(netHEl, '温和正吸收');
+        txt(ratioHEl, '边际偏紧');
+        txt(vEl, '均衡偏买');
+        txt(vhEl, '—');
+        tint(vEl, '#1d4ed8');
+      } else {
+        txt(netHEl, '抛压 > 吸收');
+        txt(ratioHEl, '供给压力显性');
+        txt(vEl, '折现或 demand 不足');
+        txt(vhEl, '价格承压');
+        tint(vEl, '#d5342c');
+      }
+      draw(miner, etf, otc, net);
+    }
+
+    minerEl.addEventListener('input', update);
+    etfEl.addEventListener('input', update);
+    otcEl.addEventListener('input', update);
+    update();
+  })();
+})();
+</script>
+</body>
+</html>
