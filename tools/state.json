@@ -53,11 +53,14 @@
     {
       "slug": "美债",
       "title": "美债",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 22:44:01",
+      "finished": "2026-09-16 22:47:31",
+      "duration_sec": 210,
+      "outputs": [
+        "reports/美债.html",
+        "reports/美债.md"
+      ],
       "error": null
     },
     {
@@ -548,7 +551,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 22:43",
+  "updated": "2026-09-16 22:47",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
