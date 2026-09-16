@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-ETF 资金流（反向指标） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × ETF × Flow Analytics</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路径</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-ETF 资金流（反向指标）</h1>
+  <p class="sub">极端<strong>净流出</strong>常被当作抄底信号——但单日噪声占 3–5% 成交量，<strong>干净连出</strong>与<strong>混合净流出</strong>是两种完全不同的市场</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>美国现货 BTC ETF 日净流入/流出</strong> = 各基金当日申购赎回净额之和<span class="tag t-fact">事实</span>。社交媒体常把「极端流出」当<strong>反向指标</strong>（别人恐惧我贪婪）——Santiment 2026 年 5 月称 10 日连出 <strong>$2.97B</strong> 可能是底<span class="tag t-chk">待验证</span>。</p>
+<p>但 <strong>单日流出只占现货成交量约 3–5%</strong><span class="tag t-ana">分析</span>，GBTC 78 日连出时 BTC 仍涨 <strong>91%</strong><span class="tag t-chk">待验证</span>——<strong>_rotation 不是 conviction</strong>。真正有用的是：<strong>(1) 是否「干净连出」（零流入日）(2) 是否跨基金广泛流出 (3) 是否持续多周</strong>——三者缺一，反向叙事往往只是噪声。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>「BTC-ETF 资金流（反向指标）」研究的是：<strong>用美国 11 只现货 BTC ETF 的日度申购赎回净额，推断机构需求、情绪极端与潜在价格拐点——并检验「流出=抄底信号」这一反向叙事在何种条件下成立、何时失效</strong>。</p>
+<div class="note red"><b>先划清边界</b><p>本手册<strong>不提供</strong>「流出 X 亿就买入」的信号。ETF 流是<strong>滞后于价格</strong>的需求响应（FalconX VAR：昨日流→今日价，系数 <strong>0.027</strong>）<span class="tag t-ana">分析</span>，同时与散户 funding 高度同步<span class="tag t-chk">待验证</span>——不是独立的「聪明钱」温度计。</p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>日/周/月 ETF 净流、连出 streak、干净 vs 混合窗口、反向 vs 动量读法</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>仅美国现货 ETF；不含期货 ETF、香港/欧洲产品、OTC 直接买币</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>申购(Create)、赎回(Redeem)、净流、AUM、份额、NAV 溢价</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>BlackRock(IBIT)、Fidelity(FBTC)、Grayscale(GBTC/BTC)、RIA/401k 渠道、套利 AP</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>日净流($)、连出天数、基金间离散度、宏观 VIX/DXY、BTC 现货量</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察的</td>
+<td>Farside/SoSoValue/bitbo 日表、各基金持仓 BTC 变动</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察但可推断</td>
+<td>AP 库存缓冲、场外对冲、同一 allocator 跨账户轮动</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>价格↑→申购↑→ETF 买现货→价↑（正反馈）；恐慌→赎回→卖现货→价↓</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>净流→现货买卖 = <span class="tag t-fact">事实</span>；流出→见底 = <span class="tag t-inf">推论</span>，条件依赖</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>流与价格 r≈<strong>0.30</strong>，R²≈<strong>9%</strong><span class="tag t-ana">分析</span>——共变≠可预测</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>「机构永不卖」「流出必见底」推特标题</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>401k/RIA 机械配置 + GBTC 费率套利 + 情绪顺周期申购</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>媒体报流出→恐慌赎回→更大流出（负反馈）；或极端后 V 反（反向）</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>时间延迟</td>
+<td>流数据 T+0 收盘后；对价影响 1–3 日（swing）至 2–4 周（trend）<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>正：涨→申购；负：跌→赎回；反向：极端流出→ capitulation→反弹</td>
+</tr>
+</tbody>
+</table></div>
+<h3>现货 ETF 流 vs 其他「流」</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>度量</th>
+<th>与反向叙事</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>日净流 ($)</strong></td>
+<td>申购−赎回</td>
+<td>最常用；单日噪声大</td>
+</tr>
+<tr>
+<td class="k"><strong>周累计</strong></td>
+<td>Σ 5 日</td>
+<td>动量/趋势读法更稳</td>
+</tr>
+<tr>
+<td class="k"><strong>干净 streak</strong></td>
+<td>连 N 日流出且无流入日</td>
+<td>反向信号质量↑<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>混合窗口</strong></td>
+<td>净流出但有散点流入</td>
+<td>分歧市场，非 capitulation</td>
+</tr>
+<tr>
+<td class="k"><strong>IBIT−GBTC 差</strong></td>
+<td>龙头 vs _legacy 赎回</td>
+<td>_rotation 剥离</td>
+</tr>
+<tr>
+<td class="k"><strong>AUM 占比</strong></td>
+<td>ETF 持 BTC / 总供应 ~<strong>5.5%</strong><span class="tag t-chk">待验证</span></td>
+<td>结构重要性，非日频信号</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：ETF 是 2024 年后 BTC 定价的新变量</h3>
+<p>2024-01-11 SEC 批准美国现货 ETF<span class="tag t-fact">事实</span>。首季 11 只 ETF 净流入约 <strong>$12.1B</strong><span class="tag t-chk">待验证</span>，BlackRock IBIT 累计净流入超 <strong>$64B</strong>（Farside 截至 2026）<span class="tag t-chk">待验证</span>——<strong>不理解流，就不理解 half of institutional tape</strong>。</p>
+<h3>理由二：「反向指标」与「动量指标」同时被数据支持</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>读法</th>
+<th>证据</th>
+<th>陷阱</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>反向</strong></td>
+<td>3+ 连出日 14 次中 11 次 5–10 日内见底 (<strong>78.6%</strong>)<span class="tag t-chk">待验证</span></td>
+<td>样本 n=14，过拟合</td>
+</tr>
+<tr>
+<td class="k"><strong>动量</strong></td>
+<td>跟流入买/流出卖，2024–26 累计 ~<strong>200%</strong> vs 持币 <strong>155%</strong><span class="tag t-chk">待验证</span></td>
+<td>可能不可外推</td>
+</tr>
+<tr>
+<td class="k"><strong>Retail 同步</strong></td>
+<td>ETF 流与 funding 同步，买顶卖底<span class="tag t-chk">待验证</span></td>
+<td>「机构=聪明钱」幻觉</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>同一数据，三种叙事</strong>——本手册教你按<strong>窗口结构</strong>选读法，而非站队。</p>
+<h3>理由三：任何「胜率」都要和对照基准比</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>BTC μ=50%/年 σ=65%</th>
+<th><strong>随机持币基准</strong></th>
+<th>「连出后 10 日反弹 78.6%」真实超额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">10 日</td>
+<td>—</td>
+<td><strong>56.1%</strong></td>
+<td>表面 +22.5 pp → 需样本 <strong>n≈35</strong> 才证显著</td>
+</tr>
+<tr>
+<td class="k">20 日</td>
+<td>—</td>
+<td><strong>58.6%</strong></td>
+<td>若胜率 70% → 真实 <strong>+11.4 pp</strong></td>
+</tr>
+<tr>
+<td class="k">40 日</td>
+<td>—</td>
+<td><strong>62.0%</strong></td>
+<td>若胜率 65% → 真实 <strong>+3.0 pp</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>BTC 有正漂移——<strong>反向叙事的真实 edge 随持有期快速衰减</strong>。</p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从 AP 申购，到「反向指标」叙事</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC-ETF 资金流 · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">越靠上越「硬数据」，越靠下越「解读可选择」</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 现货结算层</text>
+  <text x="148" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">ETF 净流 → AP 在现货市场买/卖 BTC</text>
+  <text x="148" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">Creation/Redemption 机制 · T+0 披露</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 基金产品层</text>
+  <text x="148" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">IBIT · FBTC · GBTC 等 11 只 · 费率 0.15%–1.5%</text>
+  <text x="148" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">IBIT+FBTC 占 AUM ~69%【待验证】</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 日度净流层</text>
+  <text x="148" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">Farside/SoSoValue 日表 · 占日成交量 3–5%</text>
+  <text x="148" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">单日噪声 · 勿当方向信号</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ Streak 结构层</text>
+  <text x="148" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">干净连出 vs 混合净流出 · 2026 最长 13 日</text>
+  <text x="148" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">结构 &gt;  headline 数字</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ _rotation 剥离层</text>
+  <text x="148" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">GBTC −$27.7B vs IBIT +$64B · 非 bearish conviction</text>
+  <text x="148" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">78 日 GBTC 流出时 BTC +91%【待验证】</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 价格反馈层</text>
+  <text x="148" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">VAR：流→价 r²≈9% · 价→流更显著</text>
+  <text x="148" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">反向因果：追涨申购 / 杀跌赎回</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 宏观调制层</text>
+  <text x="148" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">DXY · 美债 · VIX · 风险平价 de-risk</text>
+  <text x="148" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">2025-11 月流 −$3.48B + 宏观 → BTC −30%【待验证】</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 传播层</text>
+  <text x="148" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">「10 日连出 = 底」· Santiment · CT 标题党</text>
+  <text x="148" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">只展示 2025-11 反转例，隐藏混合窗口</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="148" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">结构 checklist → 反向/动量/忽略 三选一</text>
+  <text x="148" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">配链上/宏观 · 单流不交易</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">ETF 流 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 极端情绪</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 反向指标</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 机构需求</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 动量/趋势</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• AP 申购赎回</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 费率套利(GBTC)</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• RIA 再平衡</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 顺周期心理</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#b8dcc8" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 读 Farside 日表</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 判干净 streak</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 剥离 GBTC</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• §12 漂移剥离</text>
+  <path d="M214 146 L240 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#etfA)"/>
+  <path d="M440 146 L466 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#etfA)"/>
+  <defs><marker id="etfA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c848f"/></marker></defs>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>做什么</th>
+<th>与 ETF 流的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>BlackRock (IBIT)</strong></td>
+<td>最大现货 ETF</td>
+<td>累计净流入 ~<strong>$64B</strong><span class="tag t-chk">待验证</span>；单 fund 主导日流</td>
+</tr>
+<tr>
+<td class="k"><strong>Fidelity (FBTC)</strong></td>
+<td>第二大</td>
+<td>与 IBIT 日流相关 ~<strong>0.85</strong><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Grayscale (GBTC)</strong></td>
+<td>Legacy 1.5% 费率</td>
+<td>累计净流出 ~<strong>$27.7B</strong><span class="tag t-chk">待验证</span>——rotation 非看空</td>
+</tr>
+<tr>
+<td class="k"><strong>Authorized Participants</strong></td>
+<td>套利申购赎回</td>
+<td>缓冲短期流-价缺口</td>
+</tr>
+<tr>
+<td class="k"><strong>RIA / 401k 渠道</strong></td>
+<td>配置型买家</td>
+<td>涨时申购、跌时赎回<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Farside / SoSoValue</strong></td>
+<td>数据聚合</td>
+<td>行业事实标准<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Santiment 等</strong></td>
+<td>反向叙事传播</td>
+<td>「极端流出=底」社媒<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>FalconX / Ledger 学者</strong></td>
+<td>统计检验</td>
+<td>r=0.30、协整 10% 水平<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>2026-09 量级<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>日总净流</strong></td>
+<td>Σ 11 基金当日净流</td>
+<td>波动 <strong>±$500M</strong> 常态</td>
+</tr>
+<tr>
+<td class="k"><strong>周净流</strong></td>
+<td>5 日累计</td>
+<td><strong>±$1–3B</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>连出天数</strong></td>
+<td>连续净流出日数</td>
+<td>2026 最长 <strong>13 日</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>干净度</strong></td>
+<td>连出窗口内零流入日占比</td>
+<td>100% = capitulation 型</td>
+</tr>
+<tr>
+<td class="k"><strong>IBIT 占比</strong></td>
+<td>IBIT 流 / 总流</td>
+<td>常 <strong>&gt;50%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>GBTC 拖累</strong></td>
+<td>GBTC 日出流</td>
+<td>可占总流出 <strong>30–50%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>ETF 持 BTC</strong></td>
+<td>AUM 折算</td>
+<td>~<strong>110 万枚 / 5.5% 供应</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>流/成交量</strong></td>
+<td>日流 ÷ 现货日量</td>
+<td><strong>3–5%</strong> → 高噪声</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · 日流噪声比</h3>
+<p>单日 ETF 净流占现货成交量比例——低于 <strong>5%</strong> 时反向信号质量差【分析】。</p>
+<div class="ctrl"><label>日净流 ($M)<input type="range" id="etf_flow" min="-1500" max="1500" step="10" value="-563"><output id="etf_flowO">−$563M</output></label></div>
+<div class="ctrl"><label>现货日成交量 ($B)<input type="range" id="etf_vol" min="5" max="80" step="0.5" value="18"><output id="etf_volO">$18.0B</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">流/量占比</span><strong id="etf_ratio">3.13%</strong><span id="etf_ratioh">—</span></div>
+<div class="ro"><span class="k">信号等级</span><strong id="etf_grade">中等噪声</strong><span id="etf_gradeh">—</span></div>
+<canvas id="etfNoiseChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="etf_noise_v">需看 streak 结构</strong><span id="etf_noise_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>因果链与反馈</h3>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">ETF 流因果图 · 实线=因果 · 红虚线=反馈</text>
+  <rect x="30" y="50" width="110" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="85" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">BTC 价格</text>
+  <rect x="170" y="50" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="225" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">投资者情绪</text>
+  <rect x="310" y="50" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="365" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">ETF 申购/赎回</text>
+  <rect x="450" y="50" width="110" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="505" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">日净流</text>
+  <rect x="570" y="50" width="90" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="615" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">现货买卖</text>
+  <rect x="170" y="160" width="130" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="235" y="188" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">GBTC 费率 rotation</text>
+  <rect x="360" y="160" width="130" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="425" y="188" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">宏观 de-risk</text>
+  <rect x="200" y="250" width="140" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="270" y="278" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">媒体/社交传播</text>
+  <path d="M140 72 L170 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#etfB)"/>
+  <path d="M280 72 L310 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#etfB)"/>
+  <path d="M420 72 L450 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#etfB)"/>
+  <path d="M560 72 L570 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#etfB)"/>
+  <path d="M615 94 L615 160 L505 160 L505 94" stroke="#454c56" stroke-width="1.5" marker-end="url(#etfB)"/>
+  <path d="M235 160 L235 94 L225 94" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#etfC)"/>
+  <path d="M425 160 L365 94" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#etfC)"/>
+  <path d="M270 250 L365 94" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#etfC)"/>
+  <path d="M85 94 L85 250 L200 250" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#etfC)"/>
+  <defs>
+    <marker id="etfB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker>
+    <marker id="etfC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+  </defs>
+</svg>
+<p><strong>读图要点</strong>：价格→情绪→申购是<strong>主因果方向</strong>（FalconX：昨日价动量系数 <strong>0.802</strong>）<span class="tag t-ana">分析</span>。净流→现货买卖是机械链路<span class="tag t-fact">事实</span>。红色反馈：流出报道→恐慌赎回；或极端流出→反向抄底。</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>隐藏关系一：GBTC rotation 伪装成「机构撤离」</h3>
+<p>2024 初 GBTC <strong>78 个交易日</strong>连出 <strong>$17.5B</strong>，同期 BTC 涨 <strong>91%</strong><span class="tag t-chk">待验证</span>——原因是 <strong>1.5% 高费率→ 0.25% 新 ETF 迁移</strong>，非 macro bearish<span class="tag t-ana">分析</span>。读总流出前必须 <strong>Total − GBTC</strong> 或看 ex-GBTC 子集。</p>
+<h3>隐藏关系二：干净 streak ≠ 混合净流出</h3>
+<p>2026 年两例对比<span class="tag t-chk">待验证</span>：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>窗口</th>
+<th>结构</th>
+<th>净流</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">5/15–6/3</td>
+<td><strong>13 日零流入</strong></td>
+<td><strong>−$4.37B</strong></td>
+<td>capitulation 型</td>
+</tr>
+<tr>
+<td class="k">7 月下旬</td>
+<td>5 出 3 入</td>
+<td><strong>−$458M</strong></td>
+<td>分歧型，仍有买盘</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>同号 headline，不同市场</strong>——反向指标只对前者质量较高<span class="tag t-ana">分析</span>。</p>
+<div class="tool">
+<h3>工具 · 干净连出判定器</h3>
+<p>连出 <strong>N</strong> 日 + 干净度 → 估算 5–10 日内见底概率（校准自 3+ 日样本 <strong>11/14=78.6%</strong>【待验证】）。</p>
+<div class="ctrl"><label>连出天数<input type="range" id="etf_streak" min="1" max="15" step="1" value="5"><output id="etf_streakO">5 日</output></label></div>
+<div class="ctrl"><label>干净度 (%)<input type="range" id="etf_clean" min="0" max="100" step="5" value="100"><output id="etf_cleanO">100%</output></label></div>
+<div class="ctrl"><label>累计流出 ($B)<input type="range" id="etf_cum" min="0.1" max="5" step="0.05" value="2.97"><output id="etf_cumO">$2.97B</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">见底概率</span><strong id="etf_prob">84.7%</strong><span id="etf_probh">—</span></div>
+<div class="ro"><span class="k">信号类型</span><strong id="etf_sigtype">干净 capitulation</strong><span id="etf_sigtypeh">—</span></div>
+<canvas id="etfStreakChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="etf_streak_v">中等反向质量</strong><span id="etf_streak_vh">—</span></div>
+</div>
+</div>
+<h3>隐藏关系三：跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>ETF 流领域</th>
+<th>其他领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>极端情绪反向</strong></td>
+<td>连出 streak</td>
+<td>VIX spike 买 SPX、Put/Call 极端</td>
+</tr>
+<tr>
+<td class="k"><strong>顺周期 herd</strong></td>
+<td>涨申购跌赎回</td>
+<td>共同基金流量、散户 margin</td>
+</tr>
+<tr>
+<td class="k"><strong>产品 rotation</strong></td>
+<td>GBTC→IBIT</td>
+<td>封闭式基金→开放式、高费率→低费率</td>
+</tr>
+<tr>
+<td class="k"><strong>弱预测变量</strong></td>
+<td>r=0.30</td>
+<td>新闻 sentiment vs 股价</td>
+</tr>
+<tr>
+<td class="k"><strong>多周 persistence</strong></td>
+<td>月流 −$3.48B</td>
+<td>信用利差持续走阔</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>四模式循环</h3>
+<ol>
+<li><strong>积累模式</strong>：价稳+周流入 <strong>&gt;$1B</strong> → ETF 持续买现货</li>
+<li><strong>派发模式</strong>：价涨+流入减速 → 机构 gradual 止盈<span class="tag t-inf">推论</span></li>
+<li><strong>Capitulation 模式</strong>：<strong>干净</strong>连出 <strong>≥5 日</strong> + 宏观 stress → 反向窗口<span class="tag t-inf">推论</span></li>
+<li><strong>Rotation 模式</strong>：GBTC 出 / IBIT 进 → 总流假阴性/假阳性</li>
+</ol>
+<div class="note amber"><b>2026 新常态</b><p>666 个交易日至 2026-08，<strong>54%</strong> 的日子净流出（2024 仅 31%）<span class="tag t-chk">待验证</span>——「流出=异常」本身已失效，必须看<strong>幅度与结构</strong>。</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>ETF 流里程碑时间轴</h3>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC ETF 流 · 演化时间轴</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="70" cy="100" r="6" fill="#1d4ed8"/><text x="70" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024-01</text><text x="70" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">SEC 批准</text>
+  <circle cx="160" cy="100" r="6" fill="#0f8a4d"/><text x="160" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024 Q1</text><text x="160" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">+$12.1B</text>
+  <circle cx="260" cy="100" r="6" fill="#b8730a"/><text x="260" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024-05</text><text x="260" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">日出 −$564M→涨</text>
+  <circle cx="360" cy="100" r="6" fill="#d5342c"/><text x="360" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2025-11</text><text x="360" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">月出 −$3.48B</text>
+  <circle cx="460" cy="100" r="6" fill="#d5342c"/><text x="460" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2026 H1</text><text x="460" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">首净出半年 −$5.4B</text>
+  <circle cx="560" cy="100" r="6" fill="#0f8a4d"/><text x="560" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2026-05</text><text x="560" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">10 日连出</text>
+  <text x="340" y="170" font-size="11" text-anchor="middle" fill="#7c848f" font-family="sans-serif">从「单边吸金」到「流出常态化」· 反向逻辑须升级</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>利益方</th>
+<th>激励</th>
+<th>对流数据的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>ETF 发行商</strong></td>
+<td>AUM↑→ 管理费</td>
+<td>强调 inflow 里程碑</td>
+</tr>
+<tr>
+<td class="k"><strong>数据商</strong></td>
+<td>流量→ 订阅</td>
+<td>推 streak 警报</td>
+</tr>
+<tr>
+<td class="k"><strong>媒体</strong></td>
+<td>点击</td>
+<td>「历史最长流出」标题</td>
+</tr>
+<tr>
+<td class="k"><strong>Santiment 等</strong></td>
+<td>社媒 engagement</td>
+<td>反向叙事</td>
+</tr>
+<tr>
+<td class="k"><strong>GBTC 持有人</strong></td>
+<td>降费率迁移</td>
+<td>结构性 outflow</td>
+</tr>
+<tr>
+<td class="k"><strong>交易者</strong></td>
+<td>短期 alpha</td>
+<td>反向/动量两派</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>ETF 流 → 现货市场的「抽水/注水」</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">ETF 净流 → 现货抽水/注水</text>
+  <rect x="40" y="50" width="260" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="170" y="80" font-size="12" text-anchor="middle" fill="#454c56" font-family="sans-serif">RIA / 401k / 机构 allocator</text>
+  <rect x="380" y="50" width="260" height="50" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="510" y="80" font-size="12" text-anchor="middle" fill="#454c56" font-family="sans-serif">11 只现货 ETF · AUM ~$95B</text>
+  <path d="M170 100 L170 140 L340 140 L340 180" stroke="#0f8a4d" stroke-width="2" fill="none" marker-end="url(#etfD)"/>
+  <text x="120" y="125" font-size="10" fill="#0f8a4d" font-family="sans-serif">净流入 · AP 买 BTC</text>
+  <path d="M510 100 L510 140 L340 140" stroke="#d5342c" stroke-width="2" fill="none" marker-end="url(#etfE)"/>
+  <text x="540" y="125" font-size="10" fill="#d5342c" font-family="sans-serif">净流出 · AP 卖 BTC</text>
+  <rect x="240" y="180" width="200" height="44" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="340" y="207" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">Coinbase/Kraken 现货池</text>
+  <path d="M340 224 L340 250" stroke="#7c848f" stroke-width="1.5" marker-end="url(#etfF)"/>
+  <rect x="240" y="250" width="200" height="24" rx="6" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.2"/>
+  <text x="340" y="267" font-size="10" text-anchor="middle" fill="#d5342c" font-family="sans-serif">BTC 价格 · 仅占日成交量 ~3–5%</text>
+  <defs>
+    <marker id="etfD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#0f8a4d"/></marker>
+    <marker id="etfE" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+    <marker id="etfF" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c848f"/></marker>
+  </defs>
+</svg>
+<p><strong>信息流</strong>：ETF 托管行 → Farside 聚合 → bitbo/OpenLiquid 可视化 → CT/研报 → 交易者预期。<strong>瓶颈</strong>：AP 可用库存延迟流-价对齐；GBTC 与 IBIT <strong>不同投资者 cohort</strong> 被加总。</p>
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>「连出后 10 日反弹 <strong>78.6%</strong>」？先减<strong>随机持币基准 56.1%</strong>（μ=50%、σ=65%）。</p>
+<div class="ctrl"><label>持有期（日）<input type="range" id="etf_T" min="5" max="40" step="5" value="10"><output id="etf_TO">10 日</output></label></div>
+<div class="ctrl"><label>信号胜率 (%)<input type="range" id="etf_ps" min="50" max="95" step="0.1" value="78.6"><output id="etf_psO">78.6%</output></label></div>
+<div class="ctrl"><label>年化漂移 μ (%)<input type="range" id="etf_mu" min="0" max="100" step="1" value="50"><output id="etf_muO">50.0%</output></label></div>
+<div class="ctrl"><label>年化波动 σ (%)<input type="range" id="etf_sg" min="30" max="100" step="1" value="65"><output id="etf_sgO">65%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="etf_base">56.1%</strong><span id="etf_baseh">—</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="etf_dp">+22.5 pp</strong><span id="etf_dph">—</span></div>
+<div class="ro"><span class="k">所需样本 n</span><strong id="etf_n">35</strong><span id="etf_nh">—</span></div>
+<canvas id="etfDriftChart" height="176" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="etf_drift_v">超额可观但 n=14</strong><span id="etf_drift_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>判 streak 结构</strong></td>
+<td>干净 vs 混合，比 headline 数字优先</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>剥离 GBTC</strong></td>
+<td>ex-GBTC 流才是 demand 信号</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>看周/月尺度</strong></td>
+<td>单日 = 噪声（3–5% 成交量）</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>漂移剥离胜率</strong></td>
+<td>78.6% 默认仅 +22.5 pp（10 日）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>样本量意识</strong></td>
+<td>历史 n=14，远小于证明显需 n=35</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>双读法并存</strong></td>
+<td>反向（极端）+ 动量（趋势）</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>配宏观</strong></td>
+<td>2025-11 月流+宏观才跌 30%</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>IBIT 单 fund 确认</strong></td>
+<td>龙头流 &gt; 总流 50% 时权重↑</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>写 flow 日志</strong></td>
+<td>每日 1 行：总/IBIT/GBTC/streak</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>30 分钟四联检</strong></td>
+<td>§22 最小实践</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「单日流出 = 见顶/见底」</summary><div class="dbody"><p><strong>错因</strong>：流/量仅 <strong>3–5%</strong>；2024-05-01 出 <strong>$564M</strong> 后 3 周 BTC +18%<span class="tag t-chk">待验证</span>。<strong>对策</strong>：至少看 5 日 streak。</p></div></details>
+<details><summary>2. 「机构 = 聪明钱，流出 = 他们知道了」</summary><div class="dbody"><p><strong>错因</strong>：ETF 流与 funding <strong>同步</strong><span class="tag t-chk">待验证</span>——机构也 FOMO/ panic。<strong>对策</strong>：当 sentiment 放大器，非 oracle。</p></div></details>
+<details><summary>3. 忽视 GBTC rotation</summary><div class="dbody"><p><strong>错因</strong>：78 日 GBTC 出 + BTC +91%<span class="tag t-chk">待验证</span>。<strong>对策</strong>：读 ex-GBTC 或 IBIT-only。</p></div></details>
+<details><summary>4. 混合窗口当 capitulation</summary><div class="dbody"><p><strong>错因</strong>：2026-07 净出但 3 日仍有 inflow<span class="tag t-chk">待验证</span>。<strong>对策</strong>：§08 干净度。</p></div></details>
+<details><summary>5. 把 r=0.30 当「强预测」</summary><div class="dbody"><p><strong>错因</strong>：R²=<strong>9%</strong><span class="tag t-ana">分析</span>。<strong>对策</strong>：方向参考，非幅度。</p></div></details>
+<details><summary>6. 「流出日 &gt;50% = 熊市」</summary><div class="dbody"><p><strong>错因</strong>：2026 已 <strong>54%</strong> 流出日<span class="tag t-chk">待验证</span>。<strong>对策</strong>：看累计与结构。</p></div></details>
+<details><summary>7. 反向与动量混用</summary><div class="dbody"><p><strong>错因</strong>：趋势段跟流走、极端段反着走——规则不同。<strong>对策</strong>：先判 regime。</p></div></details>
+<details><summary>8. 样本 n=14 当「铁律」</summary><div class="dbody"><p><strong>错因</strong>：11/14=78.6%，置信区间极宽。<strong>对策</strong>：§12 n=35 门槛。</p></div></details>
+<details><summary>9. 忽视多周 bearish 信号</summary><div class="dbody"><p><strong>错因</strong>：2025-11~12 两月出 <strong>$4.57B</strong>，BTC <strong>−30%</strong><span class="tag t-chk">待验证</span>。<strong>对策</strong>：月尺度 outflow 可非反向。</p></div></details>
+<details><summary>10. 胜率不算漂移</summary><div class="dbody"><p><strong>错因</strong>：10 日基准 <strong>56.1%</strong> 非 50%。<strong>对策</strong>：§12 工具。</p></div></details>
+<details><summary>11. 把 SSRN 早期 R²=95% 外推</summary><div class="dbody"><p><strong>错因</strong>：仅 2024 初几周样本<span class="tag t-ana">分析</span>。<strong>对策</strong>：FalconX 全样本 r=0.30。</p></div></details>
+<details><summary>12. 单指标 All-in</summary><div class="dbody"><p><strong>错因</strong>：公开 streak 被 front-run。<strong>对策</strong>：≥3 独立信号。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实映射</th>
+<th>可观察代理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">机构 demand</td>
+<td>RIA 配置盘</td>
+<td>IBIT 日流</td>
+</tr>
+<tr>
+<td class="k">极端恐惧</td>
+<td>capitulation</td>
+<td>干净 10 日 streak</td>
+</tr>
+<tr>
+<td class="k">产品 migration</td>
+<td>费率套利</td>
+<td>GBTC 出 + IBIT 进</td>
+</tr>
+<tr>
+<td class="k">趋势 exhaustion</td>
+<td>涨但流入减速</td>
+<td>周流 5 日 MA 拐头</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<p><strong>决策漏斗</strong>：</p>
+<ol>
+<li><strong>Regime</strong>：趋势 or 震荡？（200DMA、波动）</li>
+<li><strong>结构</strong>：干净 streak？ex-GBTC 同向？</li>
+<li><strong>尺度</strong>：日/周/月哪个一致？</li>
+<li><strong>宏观</strong>：DXY、VIX、利率同向 stress？</li>
+<li><strong>执行</strong>：极端→考虑反向；趋势→考虑动量；混合→不行动</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 观察者</summary><div class="dbody"><ul>
+<li>[ ] 打开 Farside 读昨日总流 + IBIT + GBTC</li>
+<li>[ ] 解释 creation/redemption</li>
+<li>[ ] 说出 3–5% 噪声比</li>
+</ul></div></details>
+<details><summary>L2 · 分析师</summary><div class="dbody"><ul>
+<li>[ ] 判干净 vs 混合 streak</li>
+<li>[ ] 算 ex-GBTC 日流</li>
+<li>[ ] §12 剥离 78.6% 胜率</li>
+</ul></div></details>
+<details><summary>L3 · 建模者</summary><div class="dbody"><ul>
+<li>[ ] 建周流 5 日 MA 面板</li>
+<li>[ ] 回测 3+ 日 streak（自填 n）</li>
+<li>[ ] 对照 funding 相关</li>
+</ul></div></details>
+<details><summary>L4 · 系统设计者</summary><div class="dbody"><ul>
+<li>[ ] 多信号：流+链上+宏观</li>
+<li>[ ] 自动 streak 警报（带干净度）</li>
+<li>[ ] 季度更新样本外检验</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：ETF 流审计员（Flow Auditor）。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>等级</th>
+<th>任务</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Lv.1</td>
+<td>连续 5 天抄 Farside 三列</td>
+<td>解锁「噪声比」</td>
+</tr>
+<tr>
+<td class="k">Lv.2</td>
+<td>识别一次 GBTC rotation</td>
+<td>解锁「剥离层」</td>
+</tr>
+<tr>
+<td class="k">Lv.3</td>
+<td>算 10 日真实超额</td>
+<td>解锁「漂移剥离器」</td>
+</tr>
+<tr>
+<td class="k">Lv.4</td>
+<td>区分干净/混合窗口</td>
+<td>解锁「连出判定器」</td>
+</tr>
+<tr>
+<td class="k">Lv.5</td>
+<td>写「流不能回答什么」</td>
+<td>通关</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>任务</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日</td>
+<td>记录总/IBIT/GBTC 流</td>
+<td>7 日表</td>
+</tr>
+<tr>
+<td class="k">每周</td>
+<td>算周净流 + streak</td>
+<td>§08 截图</td>
+</tr>
+<tr>
+<td class="k">每月</td>
+<td>读一篇流数据批评文</td>
+<td>3 行摘要</td>
+</tr>
+<tr>
+<td class="k">每季</td>
+<td>更新 11/14 样本计数</td>
+<td>与 §12 n 对照</td>
+</tr>
+<tr>
+<td class="k">每年</td>
+<td>对比动量 vs 反向 PnL</td>
+<td>假设日志</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A · 若单日流出必反向</button><button class="tab" data-pane="tb1-1">情景 B · 若机构永不卖</button><button class="tab" data-pane="tb1-2">情景 C · 若无 GBTC 高费率</button><button class="tab" data-pane="tb1-3">情景 D · 若只跟流动量</button></div>
+<div class="pane on" id="tb1-0"><p>2024-05 最大日出后应暴跌——实际 <strong>3 周内 +18%</strong><span class="tag t-chk">待验证</span>→ <strong>单日反向叙事 falsified</strong>。</p></div><div class="pane" id="tb1-1"><p>2026 H1 不应净出 <strong>−$5.4B</strong><span class="tag t-chk">待验证</span>→ <strong>「永不卖」 falsified</strong>。</p></div><div class="pane" id="tb1-2"><p>总流出减 <strong>~30%</strong>，2024「流出日」比例下降——rotation 噪声消失<span class="tag t-inf">推论</span>。</p></div><div class="pane" id="tb1-3"><p>2024–26 动量策略 ~<strong>200%</strong> vs 持币 <strong>155%</strong><span class="tag t-chk">待验证</span>——但可能单周期 luck。</p></div>
+<div class="tool">
+<h3>工具 · 周流价格脉冲</h3>
+<p>周净流 → 预期 1 周 BTC 回报（线性近似，FalconX IRF 峰值 ~<strong>1.2%</strong>【分析】）。</p>
+<div class="ctrl"><label>周净流 ($M)<input type="range" id="etf_weekly" min="-3000" max="3000" step="50" value="-1500"><output id="etf_weeklyO">−$1,500M</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">预期 1 周回报</span><strong id="etf_wret">−1.8%</strong><span id="etf_wreth">—</span></div>
+<div class="ro"><span class="k">读法</span><strong id="etf_wread">动量偏空</strong><span id="etf_wreadh">—</span></div>
+<canvas id="etfWeeklyChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="etf_weekly_v">极端周流才显著</strong><span id="etf_weekly_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>目标</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 会读表</strong></td>
+<td>3 天</td>
+<td>Farside 三列</td>
+<td>口算流/量比</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 会剥噪声</strong></td>
+<td>1 周</td>
+<td>GBTC + streak</td>
+<td>§06–§08 工具</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 会检验</strong></td>
+<td>2 周</td>
+<td>漂移剥离 + 样本</td>
+<td>§12 n 计算</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 会迭代</strong></td>
+<td>1 月+</td>
+<td>双读法系统</td>
+<td>2 月 flow 日志</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>任务</strong>：「ETF 流四联检」——读、剥、算、判。</p>
+<ol>
+<li><strong>7 分钟 · 读表</strong>：打开 <a href="https://farside.co.uk/btc/">Farside</a>，抄昨日 <strong>Total / IBIT / GBTC</strong> 三数。</li>
+<li><strong>8 分钟 · 噪声</strong>：§06 工具，假设流出 <strong>$563M</strong>、日量 <strong>$18B</strong> → 占比 <strong>3.13%</strong> → <strong>中等噪声</strong>。</li>
+<li><strong>8 分钟 · 结构</strong>：§08 工具，5 日连出、干净 <strong>100%</strong>、累计 <strong>$2.97B</strong> → 概率 <strong>~84.7%</strong>（历史 n=14<span class="tag t-chk">待验证</span>）。</li>
+<li><strong>7 分钟 · 漂移</strong>：§12 工具，10 日 78.6% → 基准 <strong>56.1%</strong>，超额 <strong>+22.5 pp</strong>，证明显需 <strong>n=35</strong> &gt; 现有 <strong>14</strong> 次样本。</li>
+</ol>
+<p><strong>验证</strong>：四步数字与页面默认读数误差 <strong>&lt;0.2 pp</strong>；结论必含「样本不足，不交易」。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>机制</td>
+<td>SEC 批准 + AP 申购赎回 101</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>数据源</td>
+<td>Farside + bitbo 对照</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>Rotation</td>
+<td>GBTC 78 日案例笔记</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>工具</td>
+<td>§06–§12 四个模型</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>统计</td>
+<td>FalconX r=0.30 摘要</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>2026</td>
+<td>干净 13 日 vs 混合 7 月</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>合成</td>
+<td>1 页「反向何时用/不用」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<p><strong>Week 1</strong>：机制 + 日表 + 噪声比（L1）
+<strong>Week 2</strong>：GBTC 剥离 + streak 结构（L2）
+<strong>Week 3</strong>：漂移剥离 + 动量/反向双读法（L3）
+<strong>Week 4</strong>：个人 flow 日志 + 样本更新（L4）</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>最大坑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>日净流</strong></td>
+<td>申购−赎回</td>
+<td>3–5% 噪声</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>干净 streak</strong></td>
+<td>零流入连出</td>
+<td>与混合混淆</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>GBTC 剥离</strong></td>
+<td>ex-legacy 需求</td>
+<td>rotation 假看空</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>周/月累计</strong></td>
+<td>趋势尺度</td>
+<td>日频 overtrade</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>反向条件概率</strong></td>
+<td>11/14=78.6%</td>
+<td>n 太小</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>对照基准</strong></td>
+<td>随机持币胜率</td>
+<td>μ,σ 敏感</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>Flow-price r</strong></td>
+<td>r≈0.30</td>
+<td>非因果</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>动量策略</strong></td>
+<td>跟流买卖</td>
+<td>单周期</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>宏观调制</strong></td>
+<td>月流+stress</td>
+<td>忽略则误判</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>双读法切换</strong></td>
+<td>regime 依赖</td>
+<td>混用规则</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>日频</summary><div class="dbody"><ul>
+<li>昨日总/IBIT/GBTC 各多少？</li>
+<li>流/量比是否 &lt;5%？</li>
+<li>是否 ex-GBTC 同向？</li>
+</ul></div></details>
+<details><summary>结构</summary><div class="dbody"><ul>
+<li>当前 streak 几天？干净度？</li>
+<li>混合窗口还是 capitulation？</li>
+<li>最长 streak 与累计出量？</li>
+</ul></div></details>
+<details><summary>统计</summary><div class="dbody"><ul>
+<li>信号胜率是否扣过漂移？</li>
+<li>样本 n 是否 ≥ 证明显需？</li>
+<li>r=0.30 是否支持你的仓位？</li>
+</ul></div></details>
+<details><summary>决策</summary><div class="dbody"><ul>
+<li>Regime：反向 or 动量？</li>
+<li>宏观是否 stress？</li>
+<li>≥3 信号是否一致？</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>ex-GBTC 干净 streak 专用回测</strong>：能否把 11/14 提升到 n&gt;30？</li>
+<li><strong>ETF 流 + funding 合成 sentiment</strong>：比单流预测力提升多少？<span class="tag t-hyp">假设</span></li>
+<li><strong>香港/美国 ETF 流对比</strong>：全球 demand 是否分散单一美国 streak？</li>
+<li><strong>AP 库存缓冲模型</strong>：流-价滞后 1–3 日的微观解释</li>
+<li><strong>月流 + 信用利差</strong>：2025-11 bearish 组合的可复制规则</li>
+</ol>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">SEC 2024-01-11 批准</td>
+<td>监管</td>
+<td>SEC 公告</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Farside 日流数据</td>
+<td>数据聚合</td>
+<td>farside.co.uk/btc</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">IBIT 累计 ~$64B</td>
+<td>数据表</td>
+<td>Farside 2026</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">GBTC 累计 −$27.7B</td>
+<td>数据表</td>
+<td>Farside 2026</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">流/量 3–5%</td>
+<td>研究</td>
+<td>Yellow.com 2026</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">r=0.30, R²=9%</td>
+<td>统计</td>
+<td>FalconX 2024-10</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">3+ 日 11/14 见底</td>
+<td>统计</td>
+<td>Leverage Signals<span class="tag t-chk">待验证</span></td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">干净 vs 混合 2026</td>
+<td>分析</td>
+<td>decentralised.news 2026-08</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2026 H1 −$5.4B</td>
+<td>统计</td>
+<td>decentralised.news</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">10 日连出 $2.97B</td>
+<td>媒体</td>
+<td>BitRss/Santiment 2026-05</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">动量策略 200% vs 155%</td>
+<td>回测</td>
+<td>Digest Wire 2025-08</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">ETF 持 5.5% 供应</td>
+<td>行业</td>
+<td>Leverage Signals</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">VAR 系数 0.027/0.802</td>
+<td>统计</td>
+<td>FalconX</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">协整 10% 水平</td>
+<td>论文</td>
+<td>Ledger 2025</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供研究与学习，<strong>不构成任何投资建议</strong>。比特币与 ETF 均可出现极端波动与流动性缺口；ETF 流、反向指标及任何 streak 统计均<strong>不保证</strong>未来价格路径。历史样本（如 11/14）统计功效不足，请勿依据单一流数据加杠杆或集中配置。中国大陆对虚拟货币相关业务有严格监管，请遵守当地法律法规。作者不对使用本手册造成的任何损失负责。</p>
+</section>
+<footer>  <p>《BTC-ETF 资金流（反向指标） · 全景认知与实践操作手册》 · 生成于 2026-09-17 · 耗时 3 分 30 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC-ETF 资金流（反向指标）》主题脚本
+   四个可调模型：
+     1. 日流噪声比      — |流|/现货日量 → 信号等级
+     2. 干净连出判定器  — streak + 干净度 → 见底概率
+     3. 漂移剥离器      — 反向胜率 vs 随机持币基准
+     4. 周流价格脉冲    — 周净流 → 预期 1 周回报
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  /* ══ 工具 1 · 日流噪声比 ══ */
+  (function noiseRatio() {
+    var flowEl = $('etf_flow'), volEl = $('etf_vol');
+    if (!flowEl || !volEl) return;
+    var flowO = $('etf_flowO'), volO = $('etf_volO');
+    var ratioEl = $('etf_ratio'), ratioHEl = $('etf_ratioh');
+    var gradeEl = $('etf_grade'), gradeHEl = $('etf_gradeh');
+    var vEl = $('etf_noise_v'), vhEl = $('etf_noise_vh');
+    var cv = $('etfNoiseChart');
+
+    function grade(r) {
+      if (r >= 8) return { t: '高冲击', c: '#d5342c', h: '流/量≥8%——单日可独立影响价格', v: '可看单日方向', vh: '仍建议确认 streak' };
+      if (r >= 5) return { t: '偏高', c: '#b8730a', h: '流/量 5–8%——信号质量中等偏上', v: '结合 IBIT 方向', vh: 'ex-GBTC 确认' };
+      if (r >= 3) return { t: '中等噪声', c: '#454c56', h: '流/量 3–5%——行业典型区间', v: '需看 streak 结构', vh: '单日勿交易' };
+      return { t: '低信号', c: '#7c848f', h: '流/量<3%——几乎淹没在现货噪声里', v: '忽略单日', vh: '等周尺度' };
+    }
+
+    function draw(ratio) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxR = 12;
+      var sx = function (v) { return pad.l + (v / maxR) * iw; };
+      var zones = [
+        { lo: 0, hi: 3, col: '#f4f6f9', lab: '<3%' },
+        { lo: 3, hi: 5, col: '#fff7e6', lab: '3–5%' },
+        { lo: 5, hi: 8, col: '#fdf3f2', lab: '5–8%' },
+        { lo: 8, hi: maxR, col: '#fde8e8', lab: '>8%' }
+      ];
+      zones.forEach(function (z) {
+        ctx.fillStyle = z.col;
+        ctx.fillRect(sx(z.lo), pad.t, sx(z.hi) - sx(z.lo), ih);
+      });
+      [3, 5, 8].forEach(function (ref) {
+        var x = sx(ref);
+        ctx.strokeStyle = ref >= 5 ? '#d5342c' : '#c9d0d9';
+        ctx.setLineDash(ref >= 5 ? [] : [3, 3]);
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(ref) + '%', x, y1 + 13);
+      });
+      var rx = sx(Math.min(ratio, maxR));
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(rx, pad.t); ctx.lineTo(rx, y1); ctx.stroke();
+      ctx.fillStyle = '#1d4ed8';
+      ctx.beginPath(); ctx.arc(rx, pad.t + ih * 0.5, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 12px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(ratio.toFixed(2) + '%', rx, pad.t + ih * 0.5 - 14);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillText('|ETF 流| ÷ 现货日成交量', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var flow = parseFloat(flowEl.value);
+      var vol = parseFloat(volEl.value);
+      var ratio = Math.abs(flow) / (vol * 1000) * 100;
+      var g = grade(ratio);
+      txt(flowO, (flow >= 0 ? '+' : '−') + '$' + Math.abs(Math.round(flow)) + 'M');
+      txt(volO, '$' + vol.toFixed(1) + 'B');
+      txt(ratioEl, ratio.toFixed(2) + '%');
+      txt(ratioHEl, '|流|=' + Math.abs(flow).toFixed(0) + 'M · 量=' + vol.toFixed(1) + 'B');
+      txt(gradeEl, g.t);
+      tint(gradeEl, g.c);
+      txt(gradeHEl, g.h);
+      txt(vEl, g.v);
+      txt(vhEl, g.vh);
+      draw(ratio);
+    }
+
+    flowEl.addEventListener('input', update);
+    volEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 2 · 干净连出判定器 ══
+     校准：3+ 日历史 11/14=78.6%；默认 5 日/100% 干净/$2.97B → ~83% */
+  (function streakMeter() {
+    var streakEl = $('etf_streak'), cleanEl = $('etf_clean'), cumEl = $('etf_cum');
+    if (!streakEl || !cleanEl || !cumEl) return;
+    var streakO = $('etf_streakO'), cleanO = $('etf_cleanO'), cumO = $('etf_cumO');
+    var probEl = $('etf_prob'), probHEl = $('etf_probh');
+    var typeEl = $('etf_sigtype'), typeHEl = $('etf_sigtypeh');
+    var vEl = $('etf_streak_v'), vhEl = $('etf_streak_vh');
+    var cv = $('etfStreakChart');
+
+    function prob(days, cleanPct, cumB) {
+      var c = cleanPct / 100;
+      if (days < 3) return 0.50 + 0.02 * days;
+      return clamp(0.586 + 0.048 * (days - 3) + 0.12 * c + 0.015 * Math.min(cumB, 4), 0.45, 0.92);
+    }
+
+    function sigType(days, cleanPct) {
+      var c = cleanPct / 100;
+      if (days < 3) return { t: '噪声区', h: '连出<3 日——历史样本不纳入 11/14' };
+      if (c >= 0.95) return { t: '干净 capitulation', h: '零流入连出——机构 unanimous 撤退' };
+      if (c >= 0.6) return { t: '偏干净', h: '多数日出流，偶有散点流入' };
+      return { t: '混合净流出', h: '分歧市场—— headline 净出但仍有买盘' };
+    }
+
+    function verdict(p, days, c) {
+      if (days < 3) return { t: '样本外', h: '等待 streak≥3 再谈反向' };
+      if (c < 60) return { t: '反向禁用', h: '混合窗口——用动量或观望' };
+      if (p >= 0.80) return { t: '高反向质量', h: '结构类似 2026-05 10 日连出' };
+      if (p >= 0.70) return { t: '中等反向质量', h: '需配宏观与链上确认' };
+      return { t: '弱反向', h: '幅度/天数不足' };
+    }
+
+    function draw(p, days) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 20, t: 24, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var hist = 0.786;
+      ctx.fillStyle = '#eef1f5';
+      ctx.fillRect(pad.l, pad.t, iw, ih);
+      ctx.strokeStyle = '#c9d0d9';
+      for (var i = 0; i <= 4; i++) {
+        var gy = pad.t + ih * i / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      var sx = function (v) { return pad.l + v * iw; };
+      [0.5, hist, 0.92].forEach(function (ref, idx) {
+        var x = sx(ref);
+        ctx.strokeStyle = ref === hist ? '#b8730a' : '#c9d0d9';
+        ctx.setLineDash(ref === hist ? [4, 3] : []);
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = ref === hist ? '#b8730a' : '#7c848f';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText((ref * 100).toFixed(1) + '%', x, y1 + 13);
+        if (ref === hist) {
+          ctx.fillStyle = '#b8730a';
+          ctx.font = '9px -apple-system,sans-serif';
+          ctx.fillText('3+日 11/14', x, pad.t - 6);
+        }
+      });
+      var px = sx(p);
+      ctx.fillStyle = p >= hist ? '#0f8a4d' : '#d5342c';
+      ctx.fillRect(pad.l, pad.t + ih * 0.55, px - pad.l, 22);
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 12px -apple-system,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('P=' + (p * 100).toFixed(1) + '% · ' + days + ' 日 streak', pad.l + 6, pad.t + ih * 0.55 + 16);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('5–10 日内见底概率（模型估计）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var days = parseInt(streakEl.value, 10);
+      var clean = parseFloat(cleanEl.value);
+      var cum = parseFloat(cumEl.value);
+      var p = prob(days, clean, cum);
+      var st = sigType(days, clean);
+      var vd = verdict(p, days, clean);
+      txt(streakO, days + ' 日');
+      txt(cleanO, clean.toFixed(0) + '%');
+      txt(cumO, '$' + cum.toFixed(2) + 'B');
+      txt(probEl, (p * 100).toFixed(1) + '%');
+      txt(probHEl, '历史 3+ 日样本 11/14=78.6%【待验证】');
+      txt(typeEl, st.t);
+      txt(typeHEl, st.h);
+      txt(vEl, vd.t);
+      tint(vEl, vd.t.indexOf('高') >= 0 ? '#0f8a4d' : (vd.t.indexOf('禁用') >= 0 ? '#d5342c' : '#b8730a'));
+      txt(vhEl, vd.h);
+      draw(p, days);
+    }
+
+    streakEl.addEventListener('input', update);
+    cleanEl.addEventListener('input', update);
+    cumEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 3 · 漂移剥离器 ══ */
+  (function driftStrip() {
+    var TEl = $('etf_T'), psEl = $('etf_ps'), muEl = $('etf_mu'), sgEl = $('etf_sg');
+    if (!TEl || !psEl || !muEl || !sgEl) return;
+    var TO = $('etf_TO'), psO = $('etf_psO'), muO = $('etf_muO'), sgO = $('etf_sgO');
+    var baseEl = $('etf_base'), baseHEl = $('etf_baseh');
+    var dpEl = $('etf_dp'), dpHEl = $('etf_dph');
+    var nEl = $('etf_n'), nHEl = $('etf_nh');
+    var vEl = $('etf_drift_v'), vhEl = $('etf_drift_vh');
+    var cv = $('etfDriftChart');
+
+    function draw(pb, ps) {
+      var s = fit(cv, 176);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 108, r: 66, t: 30, b: 34 };
+      var bw = w - pad.l - pad.r;
+      var x0 = 0.40, x1 = 1.0;
+      var sx = function (p) { return pad.l + (p - x0) / (x1 - x0) * bw; };
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      [0.5, 0.6, 0.7, 0.8, 0.9, 1.0].forEach(function (g) {
+        var x = sx(g);
+        ctx.strokeStyle = g === 0.5 ? '#c9d0d9' : '#eef1f5';
+        ctx.lineWidth = g === 0.5 ? 1.4 : 1;
+        ctx.beginPath(); ctx.moveTo(x, pad.t - 6); ctx.lineTo(x, h - pad.b); ctx.stroke();
+        ctx.fillStyle = '#7c848f';
+        ctx.fillText((g * 100).toFixed(0) + '%', x, h - pad.b + 15);
+      });
+      var rows = [
+        { label: '随机持币基准', p: pb, col: '#8a6d1f' },
+        { label: '反向信号胜率', p: ps, col: '#1d4ed8' }
+      ];
+      rows.forEach(function (r, i) {
+        var y = pad.t + 22 + i * 58;
+        ctx.fillStyle = '#454c56';
+        ctx.textAlign = 'right';
+        ctx.font = '12px -apple-system,sans-serif';
+        ctx.fillText(r.label, pad.l - 12, y + 17);
+        ctx.fillStyle = '#eef1f5';
+        ctx.fillRect(pad.l, y, bw, 24);
+        ctx.fillStyle = r.col;
+        ctx.fillRect(pad.l, y, Math.max(0, sx(r.p) - pad.l), 24);
+        ctx.fillStyle = r.col;
+        ctx.textAlign = 'left';
+        ctx.font = '700 12.5px -apple-system,sans-serif';
+        ctx.fillText((r.p * 100).toFixed(1) + '%', sx(r.p) + 7, y + 17);
+      });
+      var dp = ps - pb;
+      ctx.strokeStyle = dp >= 0 ? '#0f8a4d' : '#d5342c';
+      ctx.lineWidth = 1.6;
+      var ya = pad.t + 22 + 12, yb = pad.t + 22 + 58 + 12;
+      ctx.beginPath();
+      ctx.moveTo(sx(pb), ya + 14); ctx.lineTo(sx(pb), yb - 14);
+      ctx.moveTo(sx(ps), ya + 14); ctx.lineTo(sx(ps), yb - 14);
+      ctx.stroke();
+      ctx.fillStyle = dp >= 0 ? '#0f8a4d' : '#d5342c';
+      ctx.font = '700 11.5px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText((dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp',
+                   (sx(pb) + sx(ps)) / 2, yb + 16);
+    }
+
+    function update() {
+      var T = parseFloat(TEl.value);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sg = parseFloat(sgEl.value) / 100;
+      txt(TO, T + ' 日');
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(1) + '%');
+      txt(sgO, (sg * 100).toFixed(0) + '%');
+      var y = T / 252;
+      var pb = ncdf(mu * y / (sg * Math.sqrt(y)));
+      var dp = ps - pb;
+      var n = null;
+      if (dp > 1e-6) {
+        var num = 1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps));
+        n = Math.ceil(num * num / (dp * dp));
+      }
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(baseHEl, 'μ=' + (mu * 100).toFixed(0) + '% · σ=' + (sg * 100).toFixed(0) + '% · ' + T + ' 日');
+      txt(dpEl, (dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp');
+      tint(dpEl, dp <= 0 ? 'var(--red)' : (dp < 0.05 ? 'var(--amber)' : 'var(--green)'));
+      txt(dpHEl, dp <= 0 ? '反向信号未跑赢随机持币' : '扣除漂移后的净优势');
+      txt(nEl, n === null ? '∞' : n.toLocaleString('en-US'));
+      txt(nHEl, n === null ? '超额非正' : '单侧 5%、检验力 80%');
+      var label, hint;
+      if (n !== null && n > 14) {
+        label = '超额可观但 n=14';
+        hint = '证明显需 n=' + n + '，历史仅 14 次 3+ 日样本';
+      } else if (dp >= 0.15) {
+        label = '超额大';
+        hint = '统计上 attractive，但 regime 可能变';
+      } else if (dp >= 0.05) {
+        label = '超额中等';
+        hint = '扣除漂移后仍有 edge，注意交易成本';
+      } else {
+        label = '超额有限';
+        hint = '接近随机，勿重仓';
+      }
+      txt(vEl, label);
+      txt(vhEl, hint);
+      draw(pb, ps);
+    }
+
+    TEl.addEventListener('input', update);
+    psEl.addEventListener('input', update);
+    muEl.addEventListener('input', update);
+    sgEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 4 · 周流价格脉冲 ══
+     校准：周流 −$1500M → 预期 −1.8%（IRF 峰值 ~1.2% 日频外推） */
+  (function weeklyPulse() {
+    var wEl = $('etf_weekly');
+    if (!wEl) return;
+    var wO = $('etf_weeklyO');
+    var retEl = $('etf_wret'), retHEl = $('etf_wreth');
+    var readEl = $('etf_wread'), readHEl = $('etf_wreadh');
+    var vEl = $('etf_weekly_v'), vhEl = $('etf_weekly_vh');
+    var cv = $('etfWeeklyChart');
+
+    function expectedRet(weeklyM) {
+      return clamp(weeklyM / 833, -2.5, 2.5);
+    }
+
+    function read(ret, w) {
+      if (Math.abs(w) < 300) return { t: '中性', h: '周流 |W|<$300M——常态噪声', v: '极端周流才显著', vh: '勿 overtrade' };
+      if (ret >= 1.5) return { t: '动量偏多', h: '大幅净流入——趋势跟随读法', v: '跟流做多（趋势段）', vh: '非 capitulation 反向' };
+      if (ret <= -1.5) return { t: '动量偏空', h: '大幅净流出——趋势跟随读法', v: '谨慎或等干净 streak', vh: '若干净连出≥5 日转反向' };
+      return { t: '弱信号', h: '周流中等——方向参考', v: '配日 streak 结构', vh: '单周不决策' };
+    }
+
+    function draw(ret, weekly) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 56, r: 16, t: 28, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var midY = pad.t + ih / 2;
+      ctx.fillStyle = '#f4f6f9';
+      ctx.fillRect(pad.l, pad.t, iw, ih);
+      ctx.strokeStyle = '#c9d0d9';
+      ctx.beginPath(); ctx.moveTo(pad.l, midY); ctx.lineTo(w - pad.r, midY); ctx.stroke();
+      var maxRet = 2.5;
+      var sy = function (r) { return midY - (r / maxRet) * (ih / 2 - 8); };
+      var barW = Math.min(80, iw * 0.35);
+      var bx = pad.l + iw / 2 - barW / 2;
+      var top = sy(Math.max(0, ret)), bot = sy(Math.min(0, ret));
+      ctx.fillStyle = ret >= 0 ? '#d5342c' : '#0f8a4d';
+      if (ret >= 0) ctx.fillRect(bx, top, barW, midY - top);
+      else ctx.fillRect(bx, midY, barW, bot - midY);
+      ctx.fillStyle = ret >= 0 ? '#d5342c' : '#0f8a4d';
+      ctx.font = 'bold 13px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText((ret >= 0 ? '+' : '') + ret.toFixed(1) + '%', bx + barW / 2, ret >= 0 ? top - 8 : bot + 18);
+      ctx.fillStyle = '#454c56';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillText('W=' + (weekly >= 0 ? '+' : '−') + '$' + Math.abs(Math.round(weekly)) + 'M', pad.l + iw / 2, pad.t + ih + 2);
+      [-2.5, -1.2, 0, 1.2, 2.5].forEach(function (r) {
+        var y = sy(r);
+        ctx.strokeStyle = '#eef1f5';
+        ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '9px -apple-system,sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText((r > 0 ? '+' : '') + r.toFixed(1) + '%', pad.l - 6, y + 3);
+      });
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('预期 1 周 BTC 回报（模型）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var w = parseFloat(wEl.value);
+      var ret = expectedRet(w);
+      var rd = read(ret, w);
+      txt(wO, (w >= 0 ? '+' : '−') + '$' + Math.abs(Math.round(w)).toLocaleString('en-US') + 'M');
+      txt(retEl, (ret >= 0 ? '+' : '') + ret.toFixed(1) + '%');
+      tint(retEl, ret >= 0 ? '#d5342c' : '#0f8a4d');
+      txt(retHEl, '线性近似 · IRF 峰值 ~1.2%【分析】');
+      txt(readEl, rd.t);
+      txt(readHEl, rd.h);
+      txt(vEl, rd.v);
+      txt(vhEl, rd.vh);
+      draw(ret, w);
+    }
+
+    wEl.addEventListener('input', update);
+    update();
+  })();
+})();
+</script>
+</body>
+</html>

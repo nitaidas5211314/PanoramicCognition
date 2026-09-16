@@ -33,7 +33,7 @@
 - [x] BTC-矿工成本线 / 矿工底
 - [x] BTC-均线体系：200周 / 200日 / 两年均线乘数
 - [x] BTC-SSR RSI（稳定币供给比率 RSI）
-- [ ] BTC-ETF 资金流（反向指标）
+- [x] BTC-ETF 资金流（反向指标）
 - [ ] BTC-恐惧贪婪指数与资金费率
 - [ ] BTC-彩虹图（Rainbow Chart）
 - [ ] BTC-威科夫积累/派发与相对强弱 RSI

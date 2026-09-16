@@ -388,11 +388,14 @@
     {
       "slug": "BTC-ETF 资金流（反向指标）",
       "title": "BTC-ETF 资金流（反向指标）",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-17 00:49:51",
+      "finished": "2026-09-17 00:53:21",
+      "duration_sec": 210,
+      "outputs": [
+        "reports/BTC-ETF 资金流（反向指标）.html",
+        "reports/BTC-ETF 资金流（反向指标）.md"
+      ],
       "error": null
     },
     {
@@ -623,7 +626,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 00:49",
+  "updated": "2026-09-17 00:53",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
