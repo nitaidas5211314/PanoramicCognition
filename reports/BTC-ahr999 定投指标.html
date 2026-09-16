@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-ahr999 定投指标 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × DCA × Valuation Heuristic</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-ahr999 定投指标</h1>
+  <p class="sub">用<strong>（现价÷GMA200）×（现价÷幂律估值）</strong>合成一条定投择时线——底阈 0.45 仍有用，顶阈 1.2 在 Cycle 4 已<strong>结构性失效</strong></p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>ahr999 =（现价 ÷ 200 日几何定投成本）×（现价 ÷ 指数增长估值）。</strong> 九神（ahr999）在《囤比特币》中把两个「低估比值」相乘，合成一条便于定投决策的曲线<span class="tag t-fact">事实</span>。指数增长估值 = <strong>10^(5.84×log₁₀(币龄)−17.01)</strong>，币龄自 2009-01-03 起算<span class="tag t-fact">事实</span>。</p>
+<p>经验阈值：<strong>&lt;0.45</strong> 抄底区（历史约 <strong>8.5%</strong> 时间）、<strong>0.45–1.2</strong> 定投区（<strong>46.3%</strong>）、<strong>&gt;1.2</strong> 谨慎区<span class="tag t-ana">分析</span>。2026-09-09 读数 <strong>0.503</strong><span class="tag t-chk">待验证</span>——仍在定投区。但 Cycle 4 牛顶 ATH（$124,824）时 ahr999 仅 <strong>1.16</strong>，<strong>从未触发「暂停定投」</strong><span class="tag t-chk">待验证</span>——<strong>底信号尚可，顶信号已死</strong>。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>「BTC-ahr999」研究的是：<strong>用价格相对 200 日几何成本与幂律增长曲线的双重偏离，指导比特币定投节奏的经验框架及其在成熟周期的失效边界</strong>。它是中文囤币圈最流行的「一张图定策略」指标之一，核心思想是「同时低于成本线且低于长期增长线 = 极佳买点」。</p>
+<div class="note red"><b>先划清边界</b><p>本手册<strong>不提供</strong>「ahr999 到 X 就买卖」的信号。ahr999 是<strong>纯价格启发式</strong>——看不见 ETF 流、链上 cohort、衍生品仓位。把它当<strong>周期仪表盘</strong>，不当单点触发器。</p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>ahr999 公式、GMA200、幂律估值、阈值漂移、与 S2F/PL 的关系</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>不含链上、不含宏观；不预测监管；不替代仓位管理</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>现货价、GMA200、指数增长估值、ahr999 比值、区间阈值</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>九神、囤币社区、TradingView 脚本作者、CoinGlass、开源数据集维护者</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>Price、GMA200、coin_age、ExpGrowth、ahr999</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察的</td>
+<td>交易所日收盘价、公开仪表盘、Binance klines</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察但可推断</td>
+<td>各平台用 SMA 还是 GMA、参数是否每月重拟合</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>价格↓→ahr↓→抄底叙事→买盘→价格↑</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>公式是代数恒等式 = <span class="tag t-fact">事实</span>；低 ahr→后续涨 = <span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>ahr999 与价格平方相关——高位必然读数高</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>「0.45 抄底、1.2 停投」口诀</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>成本锚 + 幂律增长锚的双因子低估检测</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>社区传播阈值→集体定投→抬升 GMA200→压低 ahr</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>时间延迟</td>
+<td>GMA200 滞后约 200 日；幂律估值仅随币龄单调升</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>正：恐慌→ahr 极低→抄底潮；负：牛市→ahr 长期 &gt;1.2 但价格仍涨</td>
+</tr>
+</tbody>
+</table></div>
+<h3>公式拆解</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>分量</th>
+<th>公式</th>
+<th>2026-09-17 量级<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>币龄</strong></td>
+<td>距 2009-01-03 天数</td>
+<td><strong>6466 天</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>指数增长估值</strong></td>
+<td>10^(5.84·log₁₀(币龄)−17.01)</td>
+<td><strong>$175,434</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>GMA200</strong></td>
+<td>(∏P_i)^(1/200)，i=过去 200 日</td>
+<td><strong>~$69,953</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>比值 1</strong></td>
+<td>Price ÷ GMA200</td>
+<td><strong>1.119</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>比值 2</strong></td>
+<td>Price ÷ ExpGrowth</td>
+<td><strong>0.446</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>ahr999</strong></td>
+<td>比值 1 × 比值 2</td>
+<td><strong>0.500</strong></td>
+</tr>
+</tbody>
+</table></div>
+<div class="note amber"><b>GMA vs SMA</b><p>九神原文用<strong>几何平均</strong>（GMA200）；部分平台（含 ahr999.aix4u.com 表格列名）显示 SMA200<span class="tag t-chk">待验证</span>。GMA 对极端低价日更敏感，与 SMA 可差 <strong>1–3%</strong>，进而使 ahr999 偏移 <strong>2–6%</strong><span class="tag t-inf">推论</span>。</p></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：中文囤币圈的「共同语言」</h3>
+<p>《囤比特币》与 ahr999 是中文 BTC 社区传播最广的估值框架之一<span class="tag t-fact">事实</span>。不懂它，就无法阅读大量中文研报、微博与社群讨论。</p>
+<h3>理由二：2024–2026 是阈值 falsify 的 live test</h3>
+<p>Cycle 4 牛熊振幅从早期 <strong>~22×</strong> 压缩到 <strong>~2×</strong><span class="tag t-ana">分析</span>——ahr999 几乎全程落在 0.45–1.2「定投区」，<strong>顶信号在 ATH 从未触发</strong><span class="tag t-chk">待验证</span>。这是检验「固定阈值能否穿越周期」的绝佳窗口。</p>
+<h3>理由三：学会「底有效、顶无效」的不对称</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>信号</th>
+<th>Cycle 1–3</th>
+<th>Cycle 4<span class="tag t-chk">待验证</span></th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>底 &lt;0.45</strong></td>
+<td>均触发</td>
+<td>触发（最低 ~0.40）</td>
+<td>仍可参考</td>
+</tr>
+<tr>
+<td class="k"><strong>顶 &gt;1.2 停投</strong></td>
+<td>牛顶远超 1.2</td>
+<td>ATH 仅 1.16</td>
+<td><strong>已失效</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>理由四：对照基准剥离「定投永远对」</h3>
+<p>BTC 年化漂移 μ≈<strong>50%</strong>、σ≈<strong>65%</strong> 时，随机持币 <strong>90 日</strong>基准胜率 <strong>67.7%</strong>——「ahr999 在定投区买入」表面正确，很大一部分是<strong>漂移本身</strong><span class="tag t-inf">推论</span>。任何信号都要减基准（见 §12 漂移剥离器）。</p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从创世区块，到定投按钮</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC-ahr999 · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">越靠上越「硬数据」，越靠下越「阈值/行为可选择」</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 价格数据层</text>
+  <text x="148" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">日收盘价 · Binance/Coinbase 等</text>
+  <text x="148" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">失效：交易所溢价、稳定币对偏差</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 成本锚层</text>
+  <text x="148" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">GMA200 · 200 日几何定投成本</text>
+  <text x="148" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">滞后 ~200 日 · 牛市中常 < 现价</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 增长锚层</text>
+  <text x="148" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">幂律估值 · 5.84/−17.01 固定参数</text>
+  <text x="148" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">失效：九神「每月重拟合」未被主流实现</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 合成指数层</text>
+  <text x="148" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">ahr999 = (P/GMA)×(P/Exp) · 与 P² 相关</text>
+  <text x="148" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">两因子同时低估才极低</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 阈值层</text>
+  <text x="148" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">0.45 / 1.2 / 5 · 2019 历史分布校准</text>
+  <text x="148" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">失效：Cycle 4 顶未触 1.2</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 传播层</text>
+  <text x="148" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">《囤比特币》· 微博 · TradingView</text>
+  <text x="148" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">只展示 2017 底，隐藏 2024 顶失效</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 执行层</text>
+  <text x="148" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">定投金额调节 · 抄底加码</text>
+  <text x="148" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">与交易所 DCA 机器人对接</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 对照层</text>
+  <text x="148" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">MVRV · NVT · ETF 流 · 分位数</text>
+  <text x="148" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">单指标 blind spot 互补</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="148" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">底阈当「加深定投」而非「梭哈」</text>
+  <text x="148" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">顶阈当「减速」而非「清仓」</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">ahr999 概念 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 双锚低估</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 幂律增长</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 定投纪律</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 周期振幅衰减</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• GMA200 成本锚</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• log-log 币龄拟合</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 两比值相乘</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 固定阈值分区</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#b8dcc8" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 读 CoinGlass/开源集</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• <0.45 加码定投</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 配 MVRV 分位</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 漂移剥离胜率</text>
+  <path d="M214 146 L240 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#ahA)"/>
+  <path d="M440 146 L466 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#ahA)"/>
+  <defs><marker id="ahA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c848f"/></marker></defs>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>做什么</th>
+<th>与 ahr999 的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>九神（ahr999）</strong></td>
+<td>《囤比特币》作者</td>
+<td>原创公式与阈值；提出每月重拟合<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>囤币社区</strong></td>
+<td>长期持有叙事</td>
+<td>传播 0.45/1.2 口诀</td>
+</tr>
+<tr>
+<td class="k"><strong>TradingView 作者</strong></td>
+<td>Pine Script 实现</td>
+<td>discountry 等开源脚本<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>RuochenLyu</strong></td>
+<td>ahr999-dataset</td>
+<td>可复现日频数据集<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>CoinGlass 等</strong></td>
+<td>聚合仪表盘</td>
+<td>参数未公开，反向推断≈原版<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k"><strong>批评者（Coinlive/btcoak）</strong></td>
+<td>周期振幅分析</td>
+<td>顶信号失效、阈值老化<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>ETF 发行商</strong></td>
+<td>机械买盘</td>
+<td>抬高 GMA200、压缩 ahr 波动<span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>敏感度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Price</strong></td>
+<td>日收盘价</td>
+<td>ahr ∝ P²</td>
+</tr>
+<tr>
+<td class="k"><strong>GMA200</strong></td>
+<td>200 日几何均价</td>
+<td>滞后 200 日；牛市中压低 ahr</td>
+</tr>
+<tr>
+<td class="k"><strong>coin_age</strong></td>
+<td>创世至今日数</td>
+<td>每日 +1，缓慢抬升 ExpGrowth</td>
+</tr>
+<tr>
+<td class="k"><strong>ExpGrowth</strong></td>
+<td>幂律拟合价</td>
+<td>固定参数；不随市场变</td>
+</tr>
+<tr>
+<td class="k"><strong>ahr999</strong></td>
+<td>两比值之积</td>
+<td>综合读数</td>
+</tr>
+<tr>
+<td class="k"><strong>quantile5y</strong></td>
+<td>5 年滚动分位</td>
+<td>替代固定阈值的现代读法<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · AHR999 公式计算器</h3>
+<p>手算 <strong>ahr999 = (P/GMA200) × (P/ExpGrowth)</strong>。默认 2026-09 参数。</p>
+<div class="ctrl"><label>现价 ($)<input type="range" id="ahr_price" min="20000" max="150000" step="100" value="78306"><output id="ahr_priceO">$78,306</output></label></div>
+<div class="ctrl"><label>GMA200 ($)<input type="range" id="ahr_gma" min="30000" max="100000" step="50" value="69953"><output id="ahr_gmaO">$69,953</output></label></div>
+<div class="ctrl"><label>币龄（天）<input type="range" id="ahr_age" min="3000" max="7000" step="1" value="6466"><output id="ahr_ageO">6466 天</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">比值 1</span><strong id="ahr_r1">1.119</strong><span id="ahr_r1h">—</span></div>
+<div class="ro"><span class="k">比值 2</span><strong id="ahr_r2">0.446</strong><span id="ahr_r2h">—</span></div>
+<div class="ro"><span class="k">幂律估值</span><strong id="ahr_fit">$175,434</strong><span id="ahr_fith">—</span></div>
+<div class="ro"><span class="k">ahr999</span><strong id="ahr_val">0.500</strong><span id="ahr_valh">—</span></div>
+<canvas id="ahrChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ahr_v">定投区</strong><span id="ahr_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>因果链与反馈</h3>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">ahr999 因果图 · 实线=因果 · 红虚线=反馈</text>
+  <rect x="30" y="50" width="120" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="90" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">现货买卖压力</text>
+  <rect x="200" y="50" width="120" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="260" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">BTC 价格 P</text>
+  <rect x="370" y="50" width="120" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="430" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">P/GMA200</text>
+  <rect x="540" y="50" width="120" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="600" y="78" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">ahr999</text>
+  <rect x="200" y="150" width="140" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="270" y="170" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">200 日收盘价</text>
+  <text x="270" y="186" font-size="10" text-anchor="middle" fill="#7c848f" font-family="sans-serif">滚动窗口</text>
+  <rect x="400" y="150" width="140" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="470" y="178" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">GMA200</text>
+  <rect x="200" y="250" width="140" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="270" y="270" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">定投/抄底行为</text>
+  <text x="270" y="286" font-size="10" text-anchor="middle" fill="#7c848f" font-family="sans-serif">ahr&lt;0.45 触发</text>
+  <rect x="400" y="250" width="140" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="470" y="270" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">币龄 → ExpGrowth</text>
+  <text x="470" y="286" font-size="10" text-anchor="middle" fill="#7c848f" font-family="sans-serif">慢变量，日 +1</text>
+  <path d="M150 72 L200 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#ahB)"/>
+  <path d="M320 72 L370 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#ahB)"/>
+  <path d="M490 72 L540 72" stroke="#454c56" stroke-width="1.5" marker-end="url(#ahB)"/>
+  <path d="M260 94 L270 150" stroke="#454c56" stroke-width="1.5" marker-end="url(#ahB)"/>
+  <path d="M340 172 L400 172" stroke="#454c56" stroke-width="1.5" marker-end="url(#ahB)"/>
+  <path d="M470 150 L470 94 L430 94" stroke="#454c56" stroke-width="1.5" marker-end="url(#ahB)"/>
+  <path d="M600 94 L600 250 L340 250" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ahC)"/>
+  <path d="M270 250 L260 94" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ahC)"/>
+  <defs>
+    <marker id="ahB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker>
+    <marker id="ahC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+  </defs>
+</svg>
+<p><strong>读图要点</strong>：ahr999 分子含 <strong>P²</strong>——它是价格的二次函数，不是独立外生信号。红色反馈：低 ahr → 社区抄底 → 买盘推高 P → ahr 回升。</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>隐藏关系一：ahr999 ≈ (P/GMA)² × (GMA/Exp)</h3>
+<p>因 ahr = (P/GMA)×(P/Exp)，当 GMA 接近 Exp 时（早期周期），两因子相关；成熟期 GMA &lt;&lt; Exp 时，<strong>第二因子 (P/Exp) 主导低位读数</strong><span class="tag t-inf">推论</span>。</p>
+<h3>隐藏关系二：与 Power Law 的同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>ahr999 领域</th>
+<th>其他领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>log-log 币龄拟合</strong></td>
+<td>ExpGrowth = 10^(a·log(age)+b)</td>
+<td>PlanB S2F、Giovanni Power Law</td>
+</tr>
+<tr>
+<td class="k"><strong>双因子低估</strong></td>
+<td>P/GMA × P/Exp</td>
+<td>P/B × P/PEG（股票）</td>
+</tr>
+<tr>
+<td class="k"><strong>固定阈值老化</strong></td>
+<td>0.45/1.2</td>
+<td>MVRV 3.5、S2F 偏离度</td>
+</tr>
+<tr>
+<td class="k"><strong>振幅压缩</strong></td>
+<td>Cycle 4 顶 1.16</td>
+<td>VIX 长期下行</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · 区间判定仪表盘</h3>
+<p>拖动 ahr999 读数，对照<strong>九神 2019 历史时间占比</strong>与三区阈值。</p>
+<div class="ctrl"><label>ahr999<input type="range" id="ahr_z_val" min="0.1" max="8" step="0.01" value="0.50"><output id="ahr_z_valO">0.50</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">5 年分位近似</span><strong id="ahr_z_pct">27.4%</strong><span id="ahr_z_pcth">—</span></div>
+<div class="ro"><span class="k">历史区间</span><strong id="ahr_z_hist">定投区</strong><span id="ahr_z_histh">—</span></div>
+<canvas id="ahrZoneChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ahr_z_v">可定投</strong><span id="ahr_z_vh">—</span></div>
+</div>
+</div>
+<h3>隐藏关系三：「每月重拟合」从未落地</h3>
+<p>九神提出参数应每月重拟合<span class="tag t-ana">分析</span>，但 GitHub、TradingView、ahr999.aix4u.com 均用固定 <strong>5.84 / −17.01</strong><span class="tag t-chk">待验证</span>——<strong>理论框架与工程实现脱节</strong>。</p>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>四阶段循环（ahr999 视角）</h3>
+<ol>
+<li><strong>深熊</strong>：P 远低于 GMA 与 Exp → ahr <strong>&lt;0.45</strong> → 社区「抄底」叙事</li>
+<li><strong>复苏</strong>：P 回升穿越 GMA → ahr 升至 0.45–1.2 → 「正常定投」</li>
+<li><strong>牛市</strong>：P 快速拉升 → ahr 逼近 1.2 → 老框架喊「停投」（Cycle 4 未触发）</li>
+<li><strong>成熟化</strong>：振幅压缩 → ahr 全程挤在窄带 → 阈值失去区分力</li>
+</ol>
+<div class="note amber"><b>价格翻倍 → ahr 约翻四倍</b><p>因 ahr ∝ P²（GMA/Exp 短期近似常数），<strong>P×2 → ahr×4</strong>。现价 $78K、ahr≈0.50；若涨至 $156K 且 GMA 滞后，ahr 可逼近 <strong>2.0</strong><span class="tag t-inf">推论</span>。</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>周期振幅衰减：ahr999 顶逐轮下移</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周期</th>
+<th>熊底 ahr<span class="tag t-chk">待验证</span></th>
+<th>牛顶 ahr<span class="tag t-chk">待验证</span></th>
+<th>振幅</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Cycle 1</td>
+<td>~0.30</td>
+<td>~12+</td>
+<td><strong>~22×</strong></td>
+</tr>
+<tr>
+<td class="k">Cycle 2</td>
+<td>~0.35</td>
+<td>~6.5</td>
+<td><strong>~11×</strong></td>
+</tr>
+<tr>
+<td class="k">Cycle 3</td>
+<td>~0.42</td>
+<td>~2.7</td>
+<td><strong>~6×</strong></td>
+</tr>
+<tr>
+<td class="k">Cycle 4</td>
+<td>~0.40</td>
+<td><strong>~1.16</strong></td>
+<td><strong>~2×</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>1.2 顶阈在 Cycle 4 ATH 从未触发</strong><span class="tag t-chk">待验证</span>——2021 顶 ahr 曾达 <strong>9.25</strong>（4 月）与 <strong>3.80</strong>（11 月）<span class="tag t-chk">待验证</span>，「&gt;1.2 停投」若严格执行会错过大半牛市。</p>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">ahr999 周期演化时间轴</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="80" cy="100" r="6" fill="#0f8a4d"/><text x="80" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2015</text><text x="80" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">ahr~0.3</text>
+  <circle cx="180" cy="100" r="6" fill="#0f8a4d"/><text x="180" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2018</text><text x="180" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">ahr~0.4</text>
+  <circle cx="300" cy="100" r="6" fill="#d5342c"/><text x="300" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2021</text><text x="300" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">ahr~9.3</text>
+  <circle cx="420" cy="100" r="6" fill="#0f8a4d"/><text x="420" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2022</text><text x="420" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">ahr~0.4</text>
+  <circle cx="520" cy="100" r="6" fill="#b8730a"/><text x="520" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024 ATH</text><text x="520" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">ahr~1.16</text>
+  <circle cx="600" cy="100" r="6" fill="#1d4ed8"/><text x="600" y="82" font-size="10" text-anchor="middle" fill="#454c56" font-family="sans-serif">2026</text><text x="600" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">ahr~0.50</text>
+  <text x="340" y="170" font-size="11" text-anchor="middle" fill="#7c848f" font-family="sans-serif">顶递减 · 底持稳 · 固定阈值需分位替代</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>利益方</th>
+<th>激励</th>
+<th>对 ahr999 的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>九神/囤币 KOL</strong></td>
+<td>影响力与书籍销售</td>
+<td>强化「简单阈值」叙事</td>
+</tr>
+<tr>
+<td class="k"><strong>交易所</strong></td>
+<td>交易量</td>
+<td>抄底区鼓励加仓交易</td>
+</tr>
+<tr>
+<td class="k"><strong>数据平台</strong></td>
+<td>流量</td>
+<td>聚合展示，参数不透明</td>
+</tr>
+<tr>
+<td class="k"><strong>长期定投者</strong></td>
+<td>纪律与心理安慰</td>
+<td>低 ahr 时坚持买入</td>
+</tr>
+<tr>
+<td class="k"><strong>批评者</strong></td>
+<td>差异化观点</td>
+<td>揭露顶信号失效</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>资金流与「定投抽水」</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">ahr999 区间 → 定投流量（资金流抽水图）</text>
+  <rect x="40" y="50" width="600" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="340" y="80" font-size="12" text-anchor="middle" fill="#454c56" font-family="sans-serif">散户可部署法币 · 月薪/积蓄</text>
+  <rect x="40" y="120" width="180" height="36" rx="6" fill="#e8f5ee" stroke="#0f8a4d" stroke-width="1.2"/>
+  <text x="130" y="143" font-size="11" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">ahr&lt;0.45 · 加码 2–3×</text>
+  <rect x="250" y="120" width="180" height="36" rx="6" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.2"/>
+  <text x="340" y="143" font-size="11" text-anchor="middle" fill="#1d4ed8" font-family="sans-serif">0.45–1.2 · 常规定投</text>
+  <rect x="460" y="120" width="180" height="36" rx="6" fill="#fff7e6" stroke="#b8730a" stroke-width="1.2"/>
+  <text x="550" y="143" font-size="11" text-anchor="middle" fill="#b8730a" font-family="sans-serif">&gt;1.2 · 减速（Cycle4失效）</text>
+  <path d="M130 156 L130 200 L340 200 L340 230" stroke="#0f8a4d" stroke-width="1.5" fill="none" marker-end="url(#ahD)"/>
+  <path d="M340 156 L340 200" stroke="#1d4ed8" stroke-width="1.5" fill="none"/>
+  <path d="M550 156 L550 200 L340 200" stroke="#b8730a" stroke-width="1.5" fill="none" marker-end="url(#ahE)"/>
+  <rect x="240" y="230" width="200" height="40" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="340" y="255" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">现货/ETF 买盘池</text>
+  <defs>
+    <marker id="ahD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#0f8a4d"/></marker>
+    <marker id="ahE" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b8730a"/></marker>
+  </defs>
+</svg>
+<p><strong>信息流路径</strong>：Binance klines → 开源脚本/数据集 → CoinGlass/TradingView → 中文社群 → 定投行为。<strong>瓶颈</strong>：GMA vs SMA、参数固定 vs 重拟合——同指标不同源可差 <strong>5%+</strong><span class="tag t-inf">推论</span>。</p>
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>「ahr999 在定投区买入胜率 75%」？先和<strong>随机持币基准</strong>比。</p>
+<div class="ctrl"><label>持有期（日）<input type="range" id="ahr_T" min="5" max="365" step="5" value="90"><output id="ahr_TO">90 日</output></label></div>
+<div class="ctrl"><label>信号胜率 (%)<input type="range" id="ahr_ps" min="50" max="90" step="0.1" value="75.0"><output id="ahr_psO">75.0%</output></label></div>
+<div class="ctrl"><label>年化漂移 μ (%)<input type="range" id="ahr_mu" min="0" max="100" step="1" value="50"><output id="ahr_muO">50%</output></label></div>
+<div class="ctrl"><label>年化波动 σ (%)<input type="range" id="ahr_sg" min="30" max="100" step="1" value="65"><output id="ahr_sgO">65%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="ahr_base">67.7%</strong><span id="ahr_baseh">—</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="ahr_dp">+7.3 pp</strong><span id="ahr_dph">—</span></div>
+<div class="ro"><span class="k">所需样本 n</span><strong id="ahr_n">382</strong><span id="ahr_nh">—</span></div>
+<canvas id="ahrDriftChart" height="176" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ahr_v3">超额有限</strong><span id="ahr_v3h">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>底阈仍可用、顶阈当减速</strong></td>
+<td>&lt;0.45 加码；&gt;1.2 勿当清仓信号</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>用 5 年分位替代绝对值</strong></td>
+<td>quantile5y ~27% 比裸读 0.50 更有信息量</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>确认 GMA 而非 SMA</strong></td>
+<td>实现差异可偏移 2–6%</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>配 MVRV/NVT</strong></td>
+<td>补「纯价格」盲区</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>漂移剥离胜率</strong></td>
+<td>任何「定投区有效」先减基准</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>跟踪振幅压缩</strong></td>
+<td>Cycle 5 可能全程 0.4–1.0</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>自建可复现数据集</strong></td>
+<td>ahr999-dataset 思路</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>写阈值衰减日志</strong></td>
+<td>每周期记录实际顶/底 ahr</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>定投金额分档</strong></td>
+<td>0.45 以下 2×、以上 1×，而非全有/全无</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>30 分钟三联检</strong></td>
+<td>算、比、判——§22</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「ahr999&gt;1.2 就该卖」</summary><div class="dbody"><p><strong>错因</strong>：2021 年 1–2 月 ahr 已 &gt;1.2，但 4 月顶 $64K、11 月顶 $69K<span class="tag t-chk">待验证</span>。<strong>对策</strong>：&gt;1.2 当「减速定投」，不当卖出触发器。</p></div></details>
+<details><summary>2. 「ahr999 在定投区 = 低估」</summary><div class="dbody"><p><strong>错因</strong>：Cycle 4 <strong>绝大多数日子</strong>都在 0.45–1.2——这是「相对低位」不是「绝对便宜」<span class="tag t-ana">分析</span>。<strong>对策</strong>：看分位数 + 链上指标。</p></div></details>
+<details><summary>3. 「0.45 抄底 = 立刻 V 反」</summary><div class="dbody"><p><strong>错因</strong>：2022 年 ahr ~0.4 持续数月，价仍横盘<span class="tag t-chk">待验证</span>。<strong>对策</strong>：&lt;0.45 是区间，加大定投频率而非梭哈。</p></div></details>
+<details><summary>4. 忽视 ahr ∝ P²</summary><div class="dbody"><p><strong>错因</strong>：指标与价格机械相关，非独立信号。<strong>对策</strong>：理解公式，不迷信「魔法数字」。</p></div></details>
+<details><summary>5. 把 SMA 当 GMA</summary><div class="dbody"><p><strong>错因</strong>：平台实现不一。<strong>对策</strong>：自己算或认准数据源。</p></div></details>
+<details><summary>6. 相信「每月重拟合」已实现</summary><div class="dbody"><p><strong>错因</strong>：全网固定 5.84/−17.01<span class="tag t-chk">待验证</span>。<strong>对策</strong>：若要重拟合，自己跑回归。</p></div></details>
+<details><summary>7. 单指标 All-in</summary><div class="dbody"><p><strong>错因</strong>：纯价格、无链上、无流。<strong>对策</strong>：≥3 独立信号。</p></div></details>
+<details><summary>8. 忽视 ETF 结构变迁</summary><div class="dbody"><p><strong>错因</strong>：机械买盘抬 GMA、压低波动<span class="tag t-inf">推论</span>。<strong>对策</strong>：对比 Pre/Post ETF 分位。</p></div></details>
+<details><summary>9. 把二手阈值当【事实】</summary><div class="dbody"><p><strong>错因</strong>：0.45/1.2 来自 2019 样本<span class="tag t-ana">分析</span>。<strong>对策</strong>：标<span class="tag t-chk">待验证</span>，滚动校准。</p></div></details>
+<details><summary>10. 胜率不算漂移</summary><div class="dbody"><p><strong>错因</strong>：90 日随机持币基准 <strong>67.7%</strong>。<strong>对策</strong>：§12 漂移剥离器。</p></div></details>
+<details><summary>11. 用 ahr999 做日内</summary><div class="dbody"><p><strong>错因</strong>：GMA200 日频工具。<strong>对策</strong>：日线收盘后读一次即可。</p></div></details>
+<details><summary>12. 「九神指标永远适用」</summary><div class="dbody"><p><strong>错因</strong>：Cycle 4 顶信号已 falsify<span class="tag t-ana">分析</span>。<strong>对策</strong>：底看 ahr，顶看别的（MVRV Z、资金流）。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实映射</th>
+<th>可观察代理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">成本锚</td>
+<td>过去 200 日买家均价</td>
+<td>GMA200</td>
+</tr>
+<tr>
+<td class="k">增长锚</td>
+<td>比特币成熟度曲线</td>
+<td>ExpGrowth(币龄)</td>
+</tr>
+<tr>
+<td class="k">低估</td>
+<td>两锚同时下方</td>
+<td>ahr999 &lt; 0.45</td>
+</tr>
+<tr>
+<td class="k">过热</td>
+<td>远高于两锚</td>
+<td>ahr999 &gt; 1.2（已弱化）</td>
+</tr>
+<tr>
+<td class="k">振幅压缩</td>
+<td>ETF 时代波动收窄</td>
+<td>Cycle 4 顶仅 1.16</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<h3>决策漏斗</h3>
+<ol>
+<li><strong>读数</strong>：今日 ahr999 + 5 年分位</li>
+<li><strong>对照</strong>：MVRV Z、ETF 净流入</li>
+<li><strong>分档</strong>：&lt;0.45 加码 / 0.45–1.2 常规定投 / &gt;1.2 维持最小定投</li>
+<li><strong>记录</strong>：每周截图存档，跟踪阈值漂移</li>
+<li><strong>复盘</strong>：每季度检验「信号−基准」超额</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>Lv.1 观察者（0–2 周）</summary><div class="dbody"><ul>
+<li>手算一次 ahr999（§07 工具）</li>
+<li>读懂三区阈值与历史占比</li>
+<li>区分 GMA 与 SMA</li>
+</ul></div></details>
+<details><summary>Lv.2 分析者（2–6 周）</summary><div class="dbody"><ul>
+<li>拉 5 年 ahr999 序列，标顶底</li>
+<li>对比 CoinGlass vs 开源集差异</li>
+<li>跑漂移剥离器</li>
+</ul></div></details>
+<details><summary>Lv.3 构建者（6–12 周）</summary><div class="dbody"><ul>
+<li>自建日频计算脚本</li>
+<li>写分位替代固定阈的回测</li>
+<li>与 MVRV 联合信号</li>
+</ul></div></details>
+<details><summary>Lv.4 系统者（12 周+）</summary><div class="dbody"><ul>
+<li>动态阈值（滚动分位）</li>
+<li>多数据源交叉验证</li>
+<li>定投金额自适应规则</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：囤币指挥官。<strong>经验值</strong>：每正确识别一个区间 +10 XP。<strong>Boss</strong>：「阈值老化」——Cycle 5 全程定投区。<strong>装备</strong>：公式计算器、漂移剥离器、分位仪表盘。<strong>成就</strong>：「四次抄底见证者」（亲历四个 &lt;0.45 区间）。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>难度</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">手算今日 ahr999</td>
+<td>★</td>
+<td>理解公式</td>
+</tr>
+<tr>
+<td class="k">找出 GMA vs SMA 差异</td>
+<td>★★</td>
+<td>数据源意识</td>
+</tr>
+<tr>
+<td class="k">标注 Cycle 4 顶为何 &lt;1.2</td>
+<td>★★★</td>
+<td>阈值批判</td>
+</tr>
+<tr>
+<td class="k">写 90 日漂移剥离报告</td>
+<td>★★★</td>
+<td>统计纪律</td>
+</tr>
+<tr>
+<td class="k">搭建可复现数据集</td>
+<td>★★★★</td>
+<td>工程能力</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">场景 A：严格「&gt;1.2 停投」</button><button class="tab" data-pane="tb1-1">场景 B：仅 &lt;0.45 加码</button><button class="tab" data-pane="tb1-2">场景 C：Cycle 5 全程 0.5–0.9</button></div>
+<div class="pane on" id="tb1-0"><p>2021-01 ahr 突破 1.2 时价约 <strong>$35K</strong><span class="tag t-chk">待验证</span>。停投会错过 4 月 <strong>$64K</strong> 与 11 月 <strong>$69K</strong> 两段涨幅——<strong>真实 dated 假信号</strong><span class="tag t-ana">分析</span>。</p></div><div class="pane" id="tb1-1"><p>四轮熊市底均触发 &lt;0.45（含 Cycle 4 的 <strong>~0.40</strong>）<span class="tag t-chk">待验证</span>。若仅在抄底区 2× 定投、其余 1×，心理可承受且历史有效<span class="tag t-inf">推论</span>。</p></div><div class="pane" id="tb1-2"><p>若振幅继续压缩，固定阈值将<strong>永久绿灯</strong>——此时只有<strong>分位数 + 链上</strong>仍有区分力<span class="tag t-hyp">假设</span>。</p></div>
+<div class="tool">
+<h3>工具 · 周期振幅压缩器</h3>
+<p>拖动 Cycle 4 熊底/牛顶 ahr，观察<strong>振幅收窄</strong>如何使 0.45/1.2 失效。</p>
+<div class="ctrl"><label>熊底 ahr<input type="range" id="ahr_amp_bot" min="0.2" max="0.6" step="0.01" value="0.40"><output id="ahr_amp_botO">0.40</output></label></div>
+<div class="ctrl"><label>牛顶 ahr<input type="range" id="ahr_amp_top" min="0.8" max="3" step="0.01" value="1.16"><output id="ahr_amp_topO">1.16</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">振幅</span><strong id="ahr_amp_ratio">2.9×</strong><span id="ahr_amp_ratioh">—</span></div>
+<div class="ro"><span class="k">熊底</span><strong id="ahr_amp_ahrbot">0.40</strong><span>—</span></div>
+<div class="ro"><span class="k">牛顶</span><strong id="ahr_amp_ahrtop">1.16</strong><span>—</span></div>
+<canvas id="ahrAmpChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="ahr_amp_v">阈值几乎无法区分牛熊</strong><span id="ahr_amp_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>检验标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1</strong></td>
+<td>读懂公式与三区</td>
+<td>能口述 ahr999 定义</td>
+</tr>
+<tr>
+<td class="k"><strong>L2</strong></td>
+<td>识别阈值老化</td>
+<td>能解释 Cycle 4 顶失效</td>
+</tr>
+<tr>
+<td class="k"><strong>L3</strong></td>
+<td>漂移剥离 + 分位</td>
+<td>能算真实超额与 5y 分位</td>
+</tr>
+<tr>
+<td class="k"><strong>L4</strong></td>
+<td>自建系统</td>
+<td>有可复现日频管道 + 多信号</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>今天就能做，成本 ≈ 0，产出可验证。</strong></p>
+<ol>
+<li><strong>5 分钟 · 手算</strong>：用 §07 工具，输入今日价（CoinGecko）、币龄 <strong>6466</strong>、估 GMA200 <strong>$69,953</strong> → 应得 ahr ≈ <strong>0.50</strong></li>
+<li><strong>10 分钟 · 对照</strong>：打开 <a href="https://ahr999.aix4u.com/">ahr999.aix4u.com</a>，比对你的读数与平台差多少</li>
+<li><strong>10 分钟 · 漂移剥离</strong>：§12 工具，设 90 日、信号胜率 75%、μ=50%、σ=65% → 基准 <strong>67.7%</strong>，超额 <strong>+7.3 pp</strong></li>
+<li><strong>5 分钟 · 写一句结论</strong>：「底阈尚可，顶阈已死；我采用 &lt;0.45 加码、&gt;1.2 不减仓」</li>
+</ol>
+<p><strong>验证</strong>：笔记本留下四行数字 + 一句结论 + 截图日期。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>行动</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>公式</td>
+<td>手算 + 对照开源集</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>历史</td>
+<td>标 2015/2018/2021/2022 底 ahr</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>顶失效</td>
+<td>读 Cycle 4 ATH 案例</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>GMA vs SMA</td>
+<td>同一日两种实现对比</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>漂移剥离</td>
+<td>写 30/90/180 日超额表</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>多信号</td>
+<td>同屏 ahr999 + MVRV</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>规则</td>
+<td>写下你的三分档定投表</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>目标</th>
+<th>交付物</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>公式 + 历史</td>
+<td>ahr 顶底标注图</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>批评 + 分位</td>
+<td>「顶失效」一页备忘</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>工程</td>
+<td>本地日频计算脚本</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>系统</td>
+<td>定投分档 + 复盘模板</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>ahr999 公式</strong></td>
+<td>(P/GMA)×(P/Exp)</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>幂律估值</strong></td>
+<td>10^(5.84·log(age)−17.01)</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>GMA200</strong></td>
+<td>几何均值成本锚</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>三区阈值</strong></td>
+<td>0.45 / 1.2 / 5</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>历史时间占比</strong></td>
+<td>8.5% / 46.3% / 29.3%</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>振幅压缩</strong></td>
+<td>顶从 12→1.16</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>P² 相关性</strong></td>
+<td>非独立信号</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>漂移基准</strong></td>
+<td>p_base = Φ(μ√T/σ)</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>5 年分位</strong></td>
+<td>替代固定阈</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>底有效顶无效</strong></td>
+<td>不对称使用</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>公式与实现</summary><div class="dbody"><ul>
+<li>你用的数据源是 GMA 还是 SMA？</li>
+<li>参数 5.84/−17.01 最后一次重拟合是什么时候？</li>
+<li>币龄起算日是 2009-01-03 还是 2010-07-17？</li>
+</ul></div></details>
+<details><summary>阈值与周期</summary><div class="dbody"><ul>
+<li>你的投资周期内，顶阈 1.2 是否曾正确预警？</li>
+<li>Cycle 5 若全程 0.4–1.0，你的规则会怎样？</li>
+<li>5 年分位 27% 对你意味着什么？</li>
+</ul></div></details>
+<details><summary>决策与风控</summary><div class="dbody"><ul>
+<li>&lt;0.45 你加码多少倍？有上限吗？</li>
+<li>
+<blockquote>
+<p>1.2 你减仓还是仅减速定投？</p>
+</blockquote>
+</li>
+<li>单指标最大仓位占比是多少？</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li><strong>动态阈值</strong>：滚动 5 年分位替代 0.45/1.2</li>
+<li><strong>与 MVRV 联合</strong>：ahr 低 + MVRV&lt;1 双重确认</li>
+<li><strong>ETF 时代校准</strong>：Pre/Post 2024-01 子样本</li>
+<li><strong>参数重拟合</strong>：每月 OLS log(price)~log(age)</li>
+<li><strong>实盘日志</strong>：连续 12 个月记录「信号 vs 基准」</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">ahr999 公式</td>
+<td>原创著作</td>
+<td>九神《囤比特币》/ ahr999.com</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">历史时间占比 8.5/46.3/29.3%</td>
+<td>作者统计</td>
+<td>九神 2019 文章</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">2026-09-09 读数 0.503</td>
+<td>开源数据集</td>
+<td>ahr999.aix4u.com</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Cycle 4 ATH ahr~1.16</td>
+<td>二手分析</td>
+<td>Coinlive 2025</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">GMA200 实现差异</td>
+<td>工程对比</td>
+<td>TradingView / GitHub</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">漂移基准公式</td>
+<td>统计推导</td>
+<td>本手册 §12 工具</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供学习与研究，<strong>不构成任何投资建议</strong>。比特币价格波动极大，过往 ahr999 区间分布不代表未来。作者不对依据本手册做出的任何投资决策承担责任。请根据自身风险承受能力独立判断，必要时咨询持牌专业人士。定投并不能保证盈利，「抄底区」可能持续数月且价格仍下跌。</p>
+</section>
+<footer>  <p>《BTC-ahr999 定投指标 · 全景认知与实践操作手册》 · 生成于 2026-09-17 · 耗时 3 分 28 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC-ahr999 定投指标》主题脚本
+   四个可调模型：
+     1. AHR999 公式计算器   — 现价 / GMA200 × 现价 / 指数增长估值
+     2. 区间判定仪表盘      — 0.45 / 1.2 阈值与历史分布
+     3. 漂移剥离器          — 抄底信号胜率 vs 随机持币基准
+     4. 周期振幅压缩器      — 牛熊振幅收窄对阈值的影响
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function expGrowth(coinAge) {
+    if (coinAge <= 0) return NaN;
+    return Math.pow(10, 5.84 * Math.log10(coinAge) - 17.01);
+  }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function fmtUsd(v) {
+    if (!isFinite(v)) return '—';
+    if (v >= 1000) return '$' + Math.round(v).toLocaleString('en-US');
+    return '$' + v.toFixed(2);
+  }
+
+  function zone(ahr) {
+    if (ahr < 0.45) return { t: '抄底区', c: '#0f8a4d', h: '<0.45 · 历史约 8.5% 时间' };
+    if (ahr < 1.2) return { t: '定投区', c: '#1d4ed8', h: '0.45–1.2 · 历史约 46.3% 时间' };
+    if (ahr < 5) return { t: '谨慎区', c: '#b8730a', h: '1.2–5 · 历史约 29.3% 时间' };
+    return { t: '泡沫区', c: '#d5342c', h: '>5 · 九神原框架不考虑卖出' };
+  }
+
+  /* ══ 工具 1 · AHR999 公式计算器 ══ */
+  (function ahrCalc() {
+    var priceEl = $('ahr_price'), gmaEl = $('ahr_gma'), ageEl = $('ahr_age');
+    if (!priceEl || !gmaEl || !ageEl) return;
+    var priceO = $('ahr_priceO'), gmaO = $('ahr_gmaO'), ageO = $('ahr_ageO');
+    var r1El = $('ahr_r1'), r1hEl = $('ahr_r1h');
+    var r2El = $('ahr_r2'), r2hEl = $('ahr_r2h');
+    var fitEl = $('ahr_fit'), fithEl = $('ahr_fith');
+    var ahrEl = $('ahr_val'), ahrhEl = $('ahr_valh');
+    var vEl = $('ahr_v'), vhEl = $('ahr_vh');
+    var cv = $('ahrChart');
+
+    function draw(ahr) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxA = 6;
+      var sx = function (v) { return pad.l + (Math.min(v, maxA) / maxA) * iw; };
+      var bands = [
+        { lo: 0, hi: 0.45, col: '#e8f5ee' },
+        { lo: 0.45, hi: 1.2, col: '#eaf0ff' },
+        { lo: 1.2, hi: 5, col: '#fff7e6' },
+        { lo: 5, hi: maxA, col: '#fdf3f2' }
+      ];
+      bands.forEach(function (b) {
+        ctx.fillStyle = b.col;
+        ctx.fillRect(sx(b.lo), pad.t, sx(b.hi) - sx(b.lo), ih);
+      });
+      [0.45, 1.2, 5].forEach(function (ref) {
+        var x = sx(ref);
+        ctx.strokeStyle = ref === 0.45 ? '#0f8a4d' : ref === 1.2 ? '#1d4ed8' : '#d5342c';
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(ref), x, y1 + 13);
+      });
+      var mx = sx(ahr);
+      ctx.strokeStyle = '#15181d';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(mx, pad.t); ctx.lineTo(mx, y1); ctx.stroke();
+      ctx.fillStyle = '#15181d';
+      ctx.beginPath(); ctx.arc(mx, pad.t + ih * 0.5, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 12px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(ahr.toFixed(3), mx, pad.t + ih * 0.5 - 14);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('AHR999 指数', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var price = parseFloat(priceEl.value);
+      var gma = parseFloat(gmaEl.value);
+      var age = parseInt(ageEl.value, 10);
+      var fitVal = expGrowth(age);
+      if (gma <= 0 || fitVal <= 0) return;
+      var r1 = price / gma;
+      var r2 = price / fitVal;
+      var ahr = r1 * r2;
+      var z = zone(ahr);
+      txt(priceO, fmtUsd(price));
+      txt(gmaO, fmtUsd(gma));
+      txt(ageO, age + ' 天');
+      txt(r1El, r1.toFixed(3));
+      txt(r1hEl, '现价 ÷ GMA200');
+      txt(r2El, r2.toFixed(3));
+      txt(r2hEl, '现价 ÷ 指数增长估值');
+      txt(fitEl, fmtUsd(fitVal));
+      txt(fithEl, '10^(5.84·log₁₀(币龄)−17.01)');
+      txt(ahrEl, ahr.toFixed(3));
+      txt(ahrhEl, '两比值之积');
+      txt(vEl, z.t);
+      tint(vEl, z.c);
+      txt(vhEl, z.h);
+      draw(ahr);
+    }
+
+    priceEl.addEventListener('input', update);
+    gmaEl.addEventListener('input', update);
+    ageEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 2 · 区间判定仪表盘 ══ */
+  (function ahrZone() {
+    var ahrEl = $('ahr_z_val');
+    if (!ahrEl) return;
+    var ahrO = $('ahr_z_valO');
+    var pctEl = $('ahr_z_pct'), pcthEl = $('ahr_z_pcth');
+    var histEl = $('ahr_z_hist'), histhEl = $('ahr_z_histh');
+    var vEl = $('ahr_z_v'), vhEl = $('ahr_z_vh');
+    var cv = $('ahrZoneChart');
+
+    function histPct(ahr) {
+      if (ahr < 0.45) return 4.25;
+      if (ahr < 1.2) return 27.4;
+      if (ahr < 5) return 65;
+      return 92;
+    }
+
+    function draw(ahr) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 56, r: 16, t: 28, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var bars = [
+        { lo: 0, hi: 0.45, pct: 8.5, col: '#0f8a4d', label: '抄底' },
+        { lo: 0.45, hi: 1.2, pct: 46.3, col: '#1d4ed8', label: '定投' },
+        { lo: 1.2, hi: 5, pct: 29.3, col: '#b8730a', label: '谨慎' },
+        { lo: 5, hi: 12, pct: 15.9, col: '#d5342c', label: '>5' }
+      ];
+      var maxA = 12;
+      var sx = function (v) { return pad.l + (v / maxA) * iw; };
+      bars.forEach(function (b) {
+        var x0 = sx(b.lo), x1 = sx(b.hi);
+        ctx.fillStyle = b.col + '33';
+        ctx.fillRect(x0, pad.t, x1 - x0, ih);
+        ctx.fillStyle = b.col;
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(b.label + ' ' + b.pct + '%', (x0 + x1) / 2, pad.t + 14);
+      });
+      var mx = sx(Math.min(ahr, maxA));
+      ctx.strokeStyle = '#15181d';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(mx, pad.t); ctx.lineTo(mx, y1); ctx.stroke();
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('当前 ' + ahr.toFixed(2), mx, y1 - 6);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillText('历史时间占比（九神 2019 统计）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var ahr = parseFloat(ahrEl.value);
+      var z = zone(ahr);
+      var hp = histPct(ahr);
+      txt(ahrO, ahr.toFixed(2));
+      txt(pctEl, hp.toFixed(1) + '%');
+      txt(pcthEl, '近似历史分位（5 年滚动参考）');
+      txt(histEl, z.t);
+      tint(histEl, z.c);
+      txt(histhEl, z.h);
+      txt(vEl, ahr < 0.45 ? '深度低估' : ahr < 1.2 ? '可定投' : '偏热');
+      tint(vEl, z.c);
+      txt(vhEl, 'Cycle 4 顶仅 ~1.16，上阈已失效');
+      draw(ahr);
+    }
+
+    ahrEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 3 · 漂移剥离器 ══ */
+  (function ahrDrift() {
+    var TEl = $('ahr_T'), psEl = $('ahr_ps'), muEl = $('ahr_mu'), sgEl = $('ahr_sg');
+    if (!TEl || !psEl) return;
+    var TO = $('ahr_TO'), psO = $('ahr_psO'), muO = $('ahr_muO'), sgO = $('ahr_sgO');
+    var baseEl = $('ahr_base'), basehEl = $('ahr_baseh');
+    var dpEl = $('ahr_dp'), dphEl = $('ahr_dph');
+    var nEl = $('ahr_n'), nhEl = $('ahr_nh');
+    var vEl = $('ahr_v3'), vhEl = $('ahr_v3h');
+    var cv = $('ahrDriftChart');
+
+    function sampleN(pb, ps) {
+      var diff = ps - pb;
+      if (diff <= 0.001) return Infinity;
+      var z = 1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps));
+      return Math.ceil((z * z) / (diff * diff));
+    }
+
+    function draw(T, pb, ps) {
+      var s = fit(cv, 176);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 44, r: 16, t: 20, b: 36 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var pts = [];
+      for (var t = 5; t <= 365; t += 5) {
+        var tt = t / 252;
+        var mu = parseFloat(muEl.value) / 100;
+        var sg = parseFloat(sgEl.value) / 100;
+        pts.push({ t: t, p: ncdf(mu * tt / (sg * Math.sqrt(tt))) });
+      }
+      var maxP = 0.95;
+      var sx = function (t) { return pad.l + (t / 365) * iw; };
+      var sy = function (p) { return pad.t + ih - (p / maxP) * ih; };
+      ctx.strokeStyle = '#c9d0d9';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      ctx.strokeStyle = '#7c848f';
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(pad.l, sy(0.5));
+      ctx.lineTo(w - pad.r, sy(0.5));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = '#454c56';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      pts.forEach(function (p, i) {
+        if (i === 0) ctx.moveTo(sx(p.t), sy(p.p));
+        else ctx.lineTo(sx(p.t), sy(p.p));
+      });
+      ctx.stroke();
+      var tx = sx(T);
+      var ty = sy(pb);
+      ctx.fillStyle = '#1d4ed8';
+      ctx.beginPath(); ctx.arc(tx, ty, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#d5342c';
+      ctx.beginPath(); ctx.arc(tx, sy(ps), 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('持有期（日）', pad.l + iw / 2, h - 8);
+    }
+
+    function update() {
+      var T = parseInt(TEl.value, 10);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sg = parseFloat(sgEl.value) / 100;
+      var tt = T / 252;
+      var pb = ncdf(mu * tt / (sg * Math.sqrt(tt)));
+      var dp = (ps - pb) * 100;
+      var n = sampleN(pb, ps);
+      txt(TO, T + ' 日');
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(0) + '%');
+      txt(sgO, (sg * 100).toFixed(0) + '%');
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(basehEl, '随机持币 p_base');
+      txt(dpEl, (dp >= 0 ? '+' : '') + dp.toFixed(1) + ' pp');
+      tint(dpEl, dp >= 3 ? '#0f8a4d' : dp >= 0 ? '#b8730a' : '#d5342c');
+      txt(dphEl, '信号胜率 − 基准');
+      txt(nEl, isFinite(n) ? String(n) : '∞');
+      txt(nhEl, '证明 6pp 超额所需次数');
+      var verdict = dp >= 6 ? '超额显著' : dp >= 2 ? '超额有限' : '接近基准';
+      txt(vEl, verdict);
+      tint(vEl, dp >= 6 ? '#0f8a4d' : '#b8730a');
+      txt(vhEl, 'ahr999<0.45 底信号历史有效，但顶信号已失效');
+      draw(T, pb, ps);
+    }
+
+    [TEl, psEl, muEl, sgEl].forEach(function (el) { el.addEventListener('input', update); });
+    update();
+  })();
+
+  /* ══ 工具 4 · 周期振幅压缩器 ══ */
+  (function ahrAmp() {
+    var botEl = $('ahr_amp_bot'), topEl = $('ahr_amp_top');
+    if (!botEl || !topEl) return;
+    var botO = $('ahr_amp_botO'), topO = $('ahr_amp_topO');
+    var ratioEl = $('ahr_amp_ratio'), ratiohEl = $('ahr_amp_ratioh');
+    var ahrBotEl = $('ahr_amp_ahrbot'), ahrTopEl = $('ahr_amp_ahrtop');
+    var vEl = $('ahr_amp_v'), vhEl = $('ahr_amp_vh');
+    var cv = $('ahrAmpChart');
+
+    function draw(bot, top, amp) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 56, r: 16, t: 28, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var cycles = [
+        { name: 'C1', amp: 22, bot: 0.3, top: 12 },
+        { name: 'C2', amp: 11, bot: 0.35, top: 6.5 },
+        { name: 'C3', amp: 6, bot: 0.42, top: 2.7 },
+        { name: 'C4', amp: amp, bot: bot, top: top }
+      ];
+      var maxAmp = 24;
+      var barW = iw / cycles.length * 0.6;
+      var gap = iw / cycles.length;
+      cycles.forEach(function (c, i) {
+        var cx = pad.l + gap * i + gap / 2;
+        var bh = (c.amp / maxAmp) * ih;
+        var col = i === 3 ? '#1d4ed8' : '#c9d0d9';
+        ctx.fillStyle = col;
+        ctx.fillRect(cx - barW / 2, y1 - bh, barW, bh);
+        ctx.fillStyle = '#454c56';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(c.name, cx, y1 + 13);
+        ctx.fillText(c.amp.toFixed(1) + '×', cx, y1 - bh - 6);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '9px -apple-system,sans-serif';
+        ctx.fillText(c.bot + '–' + c.top, cx, y1 - bh - 18);
+      });
+      ctx.strokeStyle = '#0f8a4d';
+      ctx.setLineDash([3, 3]);
+      var y045 = y1 - (0.45 / 12) * ih * (24 / maxAmp);
+      ctx.beginPath(); ctx.moveTo(pad.l, y045); ctx.lineTo(w - pad.r, y045); ctx.stroke();
+      ctx.strokeStyle = '#d5342c';
+      var y12 = y1 - (1.2 / 12) * ih * (24 / maxAmp);
+      ctx.beginPath(); ctx.moveTo(pad.l, y12); ctx.lineTo(w - pad.r, y12); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('周期振幅（牛顶 ahr ÷ 熊底 ahr 近似）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var bot = parseFloat(botEl.value);
+      var top = parseFloat(topEl.value);
+      if (bot <= 0) return;
+      var amp = top / bot;
+      txt(botO, bot.toFixed(2));
+      txt(topO, top.toFixed(2));
+      txt(ratioEl, amp.toFixed(1) + '×');
+      txt(ratiohEl, '振幅 = 顶 ÷ 底');
+      txt(ahrBotEl, bot.toFixed(2));
+      txt(ahrTopEl, top.toFixed(2));
+      var msg = amp < 3 ? '阈值几乎无法区分牛熊' : amp < 8 ? '上阈 1.2 可能失效' : '阈值区分度尚可';
+      txt(vEl, msg);
+      tint(vEl, amp < 3 ? '#d5342c' : '#b8730a');
+      txt(vhEl, 'Cycle 4 振幅 ~2×，ATH 时 ahr 仅 1.16');
+      draw(bot, top, amp);
+    }
+
+    botEl.addEventListener('input', update);
+    topEl.addEventListener('input', update);
+    update();
+  })();
+})();
+</script>
+</body>
+</html>
