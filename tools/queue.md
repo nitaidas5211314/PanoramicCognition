@@ -35,6 +35,6 @@
 - [x] BTC-SSR RSI（稳定币供给比率 RSI）
 - [x] BTC-ETF 资金流（反向指标）
 - [x] BTC-恐惧贪婪指数与资金费率
-- [ ] BTC-彩虹图（Rainbow Chart）
+- [x] BTC-彩虹图（Rainbow Chart）
 - [ ] BTC-威科夫积累/派发与相对强弱 RSI
 - [ ] BTC-逃顶指标批判：5 大卖出信号与幸存者偏差
