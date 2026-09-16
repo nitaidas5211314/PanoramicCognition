@@ -284,11 +284,14 @@
     {
       "slug": "BTC-链上与周期技术指标",
       "title": "BTC-链上与周期技术指标",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-17 00:16:09",
+      "finished": "2026-09-17 00:18:38",
+      "duration_sec": 149,
+      "outputs": [
+        "reports/BTC-链上与周期技术指标.html",
+        "reports/BTC-链上与周期技术指标.md"
+      ],
       "error": null
     },
     {
@@ -599,7 +602,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 00:15",
+  "updated": "2026-09-17 00:18",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

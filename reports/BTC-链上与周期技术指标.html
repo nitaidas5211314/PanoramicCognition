@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-链上与周期技术指标 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × On-Chain × Cycle Technicals</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路径</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-链上与周期技术指标</h1>
+  <p class="sub">把<strong>链上估值</strong>（MVRV/NUPL/SOPR）与<strong>周期技术</strong>（减半/Pi Cycle/RSI）叠成<strong>信号栈</strong>——单指标口诀在 ETF 时代已结构性失效</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>BTC 链上与周期技术指标</strong> = 用<strong>链上账本</strong>（谁持有、盈亏结构、是否向交易所转移）+ <strong>周期时钟</strong>（减半、移动均线交叉、历史分位）读 BTC 在<strong>大周期</strong>中的位置——不是预测下一根 K 线，而是回答「全网是否过热、周期是否完整、边际买家是否还在盈利」。</p>
+<p>2024–2026 的核心教训：2025 峰 MVRV 仅 <strong>~2.52</strong>、NUPL 未持续 <strong>&gt;0.75</strong>，Pi Cycle 在 2024-03 <strong>误报顶</strong>后价仍创新高<span class="tag t-chk">待验证</span>——<strong>必须把多信号叠成栈，并对照随机持币基准</strong>，不能死守 3.5 / +7 / Pi 交叉口诀。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>研究的是：<strong>如何把 Glassnode 式链上振荡器与减半/Pi Cycle/RSI 等周期技术读法组合成可校准的 BTC 宏观仪表盘</strong>，及其在现货 ETF 时代的有效边界。</p>
+<div class="note red"><b>先划清边界</b><p>本手册<strong>不提供</strong>买卖信号。链上指标度量<strong>存量结构</strong>；周期指标度量<strong>时间节律</strong>——二者都慢、都 coincident 居多，需配 ETF 流、宏观流动性与<strong>对照基准</strong>。</p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>MVRV/NUPL/SOPR、交易所储备、ETF 流、Pi Cycle、减半时钟、Puell/RSI</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界</td>
+<td>不含订单簿 HFT；不预测监管；不替代仓位管理</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>UTXO 成本基线、周期顶底阈值、机构资金流</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>链上分析师、ETF AP、矿工、数据商、周期理论传播者</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>MVRV、NUPL、SOPR、储备、ETF 净流入、111/350 DMA</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察</td>
+<td>链上索引、ETF 日报、DMA 图表、Fear &amp; Greed</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察</td>
+<td>OTC 真实成本、丢失币、AP 实物申购路径</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>价格→MVRV↑；ETF 申购→储备↓；矿工收入→Puell↑</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>UTXO 重定价 = <span class="tag t-fact">事实</span>；Pi 交叉→顶 = <span class="tag t-inf">推论</span>已 falsify 一次</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>多数指标与价格共线——非独立 alpha</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层</td>
+<td>「3.5 必顶」「Pi 交叉必卖」「减半后 18 个月必顶」</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层</td>
+<td>成本基线 + 供应冲击 + 行为激励 + 时间节律叙事</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>高 NUPL→媒体 FOMO→更多买盘→NUPL 更高</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>延迟</td>
+<td>Realized Cap 仅随链上转移更新；Pi Cycle <strong>滞后</strong></td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>正：盈利扩张循环；负： capitulation→抄底叙事</td>
+</tr>
+</tbody>
+</table></div>
+<h3>两大子系统</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>子系统</th>
+<th>代表指标</th>
+<th>回答的问题</th>
+<th>典型失效</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>链上估值</strong></td>
+<td>MVRV、NUPL、SOPR、VDD、Reserve Risk</td>
+<td>全网贵不贵、谁在卖</td>
+<td>ETF 抬成本基线；阈值漂移</td>
+</tr>
+<tr>
+<td class="k"><strong>周期技术</strong></td>
+<td>减半时钟、Pi Cycle、Puell、周 RSI</td>
+<td>周期走到哪了</td>
+<td>2024 Pi 误报；第四周期涨幅仅 <strong>~31%</strong><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：2024–2026 是「口诀集体失效」的 live test</h3>
+<p>第四减半（2024-04-19）后 <strong>881 日</strong>，涨幅远低于 2020 周期同期 <strong>436%</strong><span class="tag t-chk">待验证</span>；Pi Cycle 2024-03 交叉后仅回调 <strong>~20%</strong> 而非历史 <strong>&gt;50%</strong><span class="tag t-ana">分析</span>。不学这一课，会继续用 2017 图表指挥 2026 仓位。</p>
+<h3>理由二：ETF 改变了信息流，没改变链上数学</h3>
+<p>CoinShares Q4 2025：价格跌 <strong>23%</strong> 但全球 ETF 流仍 <strong>+$37 亿</strong><span class="tag t-chk">待验证</span>；13F 专业持仓全年 <strong>+32%</strong><span class="tag t-chk">待验证</span>。链上储备与 ETF 流<strong>可同向可背离</strong>——必须分读「可见流动性」与「托管_redirect」。</p>
+<h3>理由三：任何胜率都要减漂移</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>μ=50%/年 σ=65%</th>
+<th><strong>随机持币基准</strong></th>
+<th>「Pi 顶卖空 65% 胜率」真实超额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">20 日</td>
+<td>—</td>
+<td><strong>58.6%</strong></td>
+<td>表面 +6.4 pp → 真实 <strong>+6.4 pp</strong></td>
+</tr>
+<tr>
+<td class="k">40 日</td>
+<td>—</td>
+<td><strong>62.0%</strong></td>
+<td>表面 +3 pp → 真实 <strong>~+3 pp</strong></td>
+</tr>
+<tr>
+<td class="k">90 日</td>
+<td>—</td>
+<td><strong>67.7%</strong></td>
+<td>表面 +2 pp → 真实 <strong>~+2 pp</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>BTC 正漂移使「周期顶信号」的表观胜率被<strong>系统性抬高</strong>——§12 漂移剥离器必跑。</p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从 UTXO 到周期决策</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 链上×周期 · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">越靠上越「硬数据」，越靠下越「阈值/叙事可选择」</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① UTXO 账本</text>
+  <text x="130" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">Realized Cap · SOPR 分子分母</text>
+  <text x="130" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">丢失币/自转账噪声</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 链上估值层</text>
+  <text x="130" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">MVRV · NUPL · SOPR · VDD · Reserve Risk</text>
+  <text x="130" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">阈值 3.5/0.75 在 ETF 时代漂移</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 流动与储备层</text>
+  <text x="130" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">交易所储备 · ETF 申购/赎回 · LTH/STH 供应</text>
+  <text x="130" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">实物申购可绕过交易所余额</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 周期时钟层</text>
+  <text x="130" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">减半 · 距顶/底日数 · Performance Multiple</text>
+  <text x="130" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">第四周期峰值延迟 ~570 日【待验证】</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 周期技术层</text>
+  <text x="130" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">Pi Cycle · Puell · 周 RSI · Mayer Multiple</text>
+  <text x="130" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">Pi 2024 误报 · 滞后性</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 矿工与生产者层</text>
+  <text x="130" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">Puell Multiple · MPI · 哈希率/价背离</text>
+  <text x="130" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">手续费 Runes 脉冲后回落【事实】</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 机构流层</text>
+  <text x="130" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">现货 ETF · 13F · Coinbase Premium</text>
+  <text x="130" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">流≠买：实物 vs 现金申购</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 传播层</text>
+  <text x="130" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">「3.5 必顶」「Pi 交叉必卖」KOL 图表</text>
+  <text x="130" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">只展示 2017 顶，隐藏 2024 偏离</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="130" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">信号栈 ≥3 一致 · 分位阈 · 漂移剥离</text>
+  <text x="130" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">单指标不交易</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">链上×周期 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 均值回归</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 四年节律</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 未实现盈亏</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 供应冲击</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• UTXO 成本基线</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 减半发行率</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• DMA 交叉滞后</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• ETF 机械流</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#b8dcc8" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 三联检仪表盘</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 减半日计数</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• Pi 距离 %</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 漂移剥离胜率</text>
+  <path d="M214 146 L240 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#bcA)"/>
+  <path d="M440 146 L466 146" stroke="#7c848f" stroke-width="1.5" marker-end="url(#bcA)"/>
+  <defs><marker id="bcA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c848f"/></marker></defs>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>做什么</th>
+<th>与指标栈的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Glassnode / Coin Metrics</strong></td>
+<td>链上索引</td>
+<td>MVRV/SOPR 定义方<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k"><strong>Philip Swift</strong></td>
+<td>Pi Cycle Top</td>
+<td>111/350 DMA 交叉；2024 误报<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>PlanB</strong></td>
+<td>S2F 模型</td>
+<td>2025 价远低于 $500K 预测<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k"><strong>ETF 发行商/AP</strong></td>
+<td>实物/现金申购</td>
+<td>改变储备与成本基线<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k"><strong>CoinShares / Kaiko</strong></td>
+<td>机构流研究</td>
+<td>13F、ETF 流解读<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k"><strong>矿工</strong></td>
+<td>区块奖励+费</td>
+<td>Puell/MPI 信号源</td>
+</tr>
+<tr>
+<td class="k"><strong>链上 KOL</strong></td>
+<td>传播阈值</td>
+<td>放大幸存者偏差</td>
+</tr>
+<tr>
+<td class="k"><strong>BIS 研究者</strong></td>
+<td>方法论批评</td>
+<td>链上精度有限<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>2026-09 量级<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>MVRV</strong></td>
+<td>市值÷已实现市值</td>
+<td><strong>~1.41</strong>（+41% 未实现盈利）</td>
+</tr>
+<tr>
+<td class="k"><strong>NUPL</strong></td>
+<td>(MCap−RCap)/MCap</td>
+<td><strong>~0.29</strong>（Optimism 区）</td>
+</tr>
+<tr>
+<td class="k"><strong>SOPR</strong></td>
+<td>花费输出市值÷创建时市值</td>
+<td><strong>~1.0</strong>（盈亏平衡）</td>
+</tr>
+<tr>
+<td class="k"><strong>LTH-SOPR</strong></td>
+<td>长期持有者版</td>
+<td><strong>~0.94</strong>（亏损出货）</td>
+</tr>
+<tr>
+<td class="k"><strong>距第四减半</strong></td>
+<td>2024-04-19 起算</td>
+<td><strong>881 日</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>Pi Cycle 间距</strong></td>
+<td>(350×2 DMA − 111 DMA)/111</td>
+<td><strong>宽距</strong>（无 imminent 交叉）</td>
+</tr>
+<tr>
+<td class="k"><strong>ETF 5 日流</strong></td>
+<td>全球现货 ETF 净流入</td>
+<td>波动；Q4 2025 仍为正<span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · 链上信号栈</h3>
+<p>叠 <strong>MVRV → NUPL 区</strong>、<strong>SOPR 方向</strong>、<strong>过热计数</strong>。默认 2026-09 温和区间。</p>
+<div class="ctrl"><label>MVRV<input type="range" id="bc_mvrv" min="0.8" max="4" step="0.01" value="1.41"><output id="bc_mvrvO">1.41</output></label></div>
+<div class="ctrl"><label>SOPR<input type="range" id="bc_sopr" min="0.85" max="1.15" step="0.01" value="1.00"><output id="bc_soprO">1.00</output></label></div>
+<div class="ctrl"><label>MVRV Z-Score<input type="range" id="bc_z" min="-2" max="8" step="0.05" value="0.35"><output id="bc_zO">+0.35σ</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">NUPL</span><strong id="bc_nupl">29.1%</strong><span id="bc_nuplh">—</span></div>
+<div class="ro"><span class="k">情绪区</span><strong id="bc_zone">Optimism</strong><span id="bc_zoneh">—</span></div>
+<div class="ro"><span class="k">过热信号数</span><strong id="bc_hot">0 / 3</strong><span id="bc_hoth">—</span></div>
+<canvas id="bc_stackChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="bc_stack_v">周期未完成</strong><span id="bc_stack_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>因果链：链上 ↔ 价格 ↔ 周期技术</h3>
+<svg viewBox="0 0 680 340" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">链上×周期因果图 · 实线=因果 · 红虚线=反馈</text>
+  <rect x="30" y="50" width="110" height="40" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="85" y="75" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">ETF/现货需求</text>
+  <rect x="170" y="50" width="90" height="40" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="215" y="75" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">BTC 价格</text>
+  <rect x="290" y="50" width="100" height="40" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="340" y="75" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">MVRV/NUPL</text>
+  <rect x="420" y="50" width="100" height="40" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="470" y="75" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">SOPR/储备</text>
+  <rect x="550" y="50" width="100" height="40" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="600" y="75" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">Pi/Puell/RSI</text>
+  <rect x="170" y="140" width="120" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="230" y="162" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">变现/抛压</text>
+  <text x="230" y="178" font-size="9.5" text-anchor="middle" fill="#7c848f" font-family="sans-serif">高 NUPL 激励</text>
+  <rect x="330" y="140" width="120" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="390" y="167" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">减半发行率↓</text>
+  <rect x="170" y="240" width="120" height="44" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="230" y="262" font-size="10.5" text-anchor="middle" fill="#454c56" font-family="sans-serif">DMA 交叉</text>
+  <text x="230" y="278" font-size="9.5" text-anchor="middle" fill="#7c848f" font-family="sans-serif">滞后确认</text>
+  <path d="M140 70 L170 70" stroke="#454c56" stroke-width="1.5" marker-end="url(#bcB)"/>
+  <path d="M260 70 L290 70" stroke="#454c56" stroke-width="1.5" marker-end="url(#bcB)"/>
+  <path d="M390 70 L420 70" stroke="#454c56" stroke-width="1.5" marker-end="url(#bcB)"/>
+  <path d="M520 70 L550 70" stroke="#454c56" stroke-width="1.5" marker-end="url(#bcB)"/>
+  <path d="M340 90 L230 140" stroke="#454c56" stroke-width="1.5" marker-end="url(#bcB)"/>
+  <path d="M390 184 L340 90" stroke="#454c56" stroke-width="1.5" marker-end="url(#bcB)"/>
+  <path d="M215 90 L230 240" stroke="#454c56" stroke-width="1.5" marker-end="url(#bcB)"/>
+  <path d="M600 90 L600 140 L350 140" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#bcC)"/>
+  <path d="M230 184 L215 90" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#bcC)"/>
+  <defs>
+    <marker id="bcB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker>
+    <marker id="bcC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d5342c"/></marker>
+  </defs>
+</svg>
+<p><strong>读图要点</strong>：价格推高 MVRV/NUPL（快变量）；Pi Cycle 由 DMA <strong>滞后</strong>推导（慢变量）；红色反馈：链上过热 → 抛压 → 价格 → 周期指标同步回落。</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>隐藏关系一：MVRV 与 NUPL 同源但速度不同</h3>
+<p>NUPL = (MVRV−1)/MVRV<span class="tag t-fact">事实</span>。MVRV <strong>1.41 → NUPL 29.1%</strong>；<strong>2.52 → 60.3%</strong>。NUPL 对情绪区更敏感；MVRV Z 对历史极端更稳健<span class="tag t-ana">分析</span>——<strong>应配对读，非二选一</strong>。</p>
+<h3>隐藏关系二：ETF 流 ≠ 交易所买盘</h3>
+<p>实物申购可把 BTC 从 OTC 直接送入托管，<strong>储备可升可降</strong>而 ETF 仍净流入<span class="tag t-ana">分析</span>。CVJ 2026：储备反弹 <strong>28K BTC</strong> 与 ETF 流入可同时发生<span class="tag t-chk">待验证</span>。</p>
+<div class="tool">
+<h3>工具 · 减半周期时钟</h3>
+<p>距 <strong>2024-04-19</strong> 第四减半的日数 vs 历史峰值延迟（2016/2020/2024 周期）。</p>
+<div class="ctrl"><label>距减半（日）<input type="range" id="bc_hdays" min="100" max="900" step="1" value="881"><output id="bc_hdaysO">881 日</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">参考峰延迟</span><strong id="bc_hpeak">570 日</strong><span id="bc_hpeakh">2024 周期 Nov 2025</span></div>
+<div class="ro"><span class="k">周期相位</span><strong id="bc_hphase">峰后调整</strong><span id="bc_hphaseh">—</span></div>
+<canvas id="bc_hChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="bc_h_v">已过典型峰位</strong><span id="bc_h_vh">—</span></div>
+</div>
+</div>
+<h3>隐藏关系三：跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>BTC 链上×周期</th>
+<th>其他领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>慢变量分母</strong></td>
+<td>Realized Cap</td>
+<td>央行资产负债表</td>
+</tr>
+<tr>
+<td class="k"><strong>滞后交叉</strong></td>
+<td>Pi Cycle DMA</td>
+<td>金叉/死叉 MACD</td>
+</tr>
+<tr>
+<td class="k"><strong>发行率冲击</strong></td>
+<td>减半</td>
+<td>OPEC 减产</td>
+</tr>
+<tr>
+<td class="k"><strong>分位极端</strong></td>
+<td>MVRV Z</td>
+<td>信用利差 Z</td>
+</tr>
+<tr>
+<td class="k"><strong>胜率漂移</strong></td>
+<td>随机持币基准</td>
+<td>股票长期正 drift</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>信号栈：三问三分读</h3>
+<p>Onchain Decoded 2026 纪律<span class="tag t-ana">分析</span>：</p>
+<ol>
+<li><strong>储备问</strong>：供应变多还是变少？（交易所 + ETF 托管）</li>
+<li><strong>边际买家问</strong>：STH-SOPR 是否 &lt;1 而价仍涨？（健康 rally vs 亏损推动）</li>
+<li><strong>估值问</strong>：MVRV Z 是否进入历史上沿？</li>
+</ol>
+<p><strong>三者同向</strong>才升级结论；多数周份它们<strong>分歧</strong>——分歧本身说明周期未走完。</p>
+<h3>四阶段 + 周期时钟</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>链上特征</th>
+<th>周期技术</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">积累</td>
+<td>MVRV 1.0–1.5 · SOPR≈1</td>
+<td>减半后 0–300 日</td>
+</tr>
+<tr>
+<td class="k">扩张</td>
+<td>NUPL 0.25–0.50 · SOPR&gt;1 上行</td>
+<td>Performance Multiple &gt;2</td>
+</tr>
+<tr>
+<td class="k">派发</td>
+<td>MVRV&gt;2.5 · LTH 流出</td>
+<td>Pi 接近/交叉 · Puell&gt;1.4</td>
+</tr>
+<tr>
+<td class="k">清算</td>
+<td>MVRV&lt;1 · LTH-SOPR&lt;1</td>
+<td>峰后 12–18 月</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note amber"><b>2026 异常：「无狂热顶」</b><p>Amberdata/BGeometrics：2025 顶 MVRV <strong>~2.52</strong>、NUPL 未 sustained <strong>&gt;0.75</strong>——<strong>顶了但没有 euphoria</strong><span class="tag t-chk">待验证</span>。周期可能「不完整」或「结构变平」。</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>减半周期与指标峰值衰减</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>减半</th>
+<th>日期</th>
+<th>后 12M 涨幅<span class="tag t-chk">待验证</span></th>
+<th>峰 MVRV<span class="tag t-chk">待验证</span></th>
+<th>Pi 有效？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">3rd</td>
+<td>2020-05</td>
+<td>+541%</td>
+<td>~3.7</td>
+<td>是</td>
+</tr>
+<tr>
+<td class="k">4th</td>
+<td>2024-04</td>
+<td><strong>+31~41%</strong></td>
+<td>~2.52</td>
+<td><strong>2024 误报</strong></td>
+</tr>
+<tr>
+<td class="k">—</td>
+<td>2026-09</td>
+<td>881 日 · 调整中</td>
+<td>~1.41</td>
+<td>宽距</td>
+</tr>
+</tbody>
+</table></div>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 周期演化时间轴</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="70" cy="100" r="6" fill="#454c56"/><text x="70" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2016</text>
+  <circle cx="170" cy="100" r="6" fill="#454c56"/><text x="170" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2020</text>
+  <circle cx="280" cy="100" r="6" fill="#b8730a"/><text x="280" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2024 减半</text>
+  <circle cx="380" cy="100" r="6" fill="#d5342c"/><text x="380" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">Pi 误报</text>
+  <circle cx="470" cy="100" r="6" fill="#d5342c"/><text x="470" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2025 顶</text>
+  <circle cx="560" cy="100" r="6" fill="#0f8a4d"/><text x="560" y="82" font-size="9" text-anchor="middle" fill="#454c56" font-family="sans-serif">2026 深值</text>
+  <text x="380" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">MVRV 2.52</text>
+  <text x="560" y="130" font-size="9" text-anchor="middle" fill="#7c848f" font-family="sans-serif">Z~0.2–0.4</text>
+  <text x="340" y="170" font-size="11" text-anchor="middle" fill="#7c848f" font-family="sans-serif">涨幅压缩 · 顶阈下移 · Pi 需降级为栈内一票</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>利益方</th>
+<th>激励</th>
+<th>对指标叙事的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>数据订阅商</strong></td>
+<td>指标知名度</td>
+<td>推固定阈值</td>
+</tr>
+<tr>
+<td class="k"><strong>ETF 发行商</strong></td>
+<td>AUM 增长</td>
+<td>淡化「顶」信号</td>
+</tr>
+<tr>
+<td class="k"><strong>周期 KOL</strong></td>
+<td>内容传播</td>
+<td>只展示 2017 Pi 成功案例</td>
+</tr>
+<tr>
+<td class="k"><strong>矿工</strong></td>
+<td>现金流</td>
+<td>Puell 高时抛售</td>
+</tr>
+<tr>
+<td class="k"><strong>AP/做市商</strong></td>
+<td>申购费差</td>
+<td>实物流隐藏于储备外</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>资金流：ETF 托管 vs 交易所可见池</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 资金流 · 抽水图（链上储备 + ETF 托管）</text>
+  <rect x="40" y="50" width="260" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="170" y="80" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">现货 ETF 托管 · Coinbase Prime 等</text>
+  <rect x="380" y="50" width="260" height="50" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="510" y="80" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">中心化交易所可见储备</text>
+  <rect x="140" y="130" width="400" height="40" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="340" y="155" font-size="11" text-anchor="middle" fill="#454c56" font-family="sans-serif">OTC / 实物申购 / 冷钱包 · 绕过交易所余额</text>
+  <path d="M170 100 L170 130 L340 130 L340 170" stroke="#1d4ed8" stroke-width="1.5" fill="none" marker-end="url(#bcD)"/>
+  <path d="M510 100 L510 130 L340 130" stroke="#b8730a" stroke-width="1.5" fill="none" marker-end="url(#bcD)"/>
+  <rect x="240" y="190" width="200" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="340" y="210" font-size="11" text-anchor="middle" fill="#d5342c" font-family="sans-serif">潜在卖压池</text>
+  <text x="340" y="226" font-size="9.5" text-anchor="middle" fill="#7c848f" font-family="sans-serif">高 NUPL + 储备↑ = 警惕</text>
+  <defs><marker id="bcD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#454c56"/></marker></defs>
+</svg>
+<div class="tool">
+<h3>工具 · Pi Cycle 距离计</h3>
+<p>111 日 DMA 须<strong>上穿</strong> 350 日 DMA×2 才触发 Pi 顶信号。调节两线估算间距 %。</p>
+<div class="ctrl"><label>111 日 DMA ($K)<input type="range" id="bc_d111" min="50000" max="130000" step="500" value="85000"><output id="bc_d111O">$85,000</output></label></div>
+<div class="ctrl"><label>350 日 DMA×2 ($K)<input type="range" id="bc_d350" min="50000" max="150000" step="500" value="90000"><output id="bc_d350O">$90,000</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">间距</span><strong id="bc_pigap">+5.9%</strong><span id="bc_pigaph">111 低于 350×2</span></div>
+<div class="ro"><span class="k">Pi 状态</span><strong id="bc_pist">未交叉</strong><span id="bc_pisth">—</span></div>
+<canvas id="bc_piChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="bc_pi_v">宽距 · 非顶区</strong><span id="bc_pi_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>信号栈 ≥3</strong></td>
+<td>MVRV Z + NUPL + SOPR/Pi 至少三票</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>分位阈替代绝对值</strong></td>
+<td>与自身 3 年分位比</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>减半时钟 + 链上</strong></td>
+<td>日数 alone 不够</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>Pi 降级</strong></td>
+<td>2024 误报写入规则</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>ETF 流三分读</strong></td>
+<td>流/储备/premium</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>STH-SOPR 背离</strong></td>
+<td>价新高 SOPR 不确认</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>漂移剥离</strong></td>
+<td>任何胜率减基准</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>Puell 配哈希率</strong></td>
+<td>价涨 hash 不涨 = 挤压</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>写周期日志</strong></td>
+<td>每季记录实际峰 MVRV</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>30 分钟三联检</strong></td>
+<td>§22</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「MVRV&gt;3.5 必顶」</summary><div class="dbody"><p>2025 峰 <strong>~2.52</strong><span class="tag t-chk">待验证</span>。<strong>对策</strong>：NUPL + Z 分位。</p></div></details>
+<details><summary>2. 「Pi 交叉 = 立刻卖」</summary><div class="dbody"><p>2024-03 交叉后价仍创新高<span class="tag t-ana">分析</span>。<strong>对策</strong>：栈内一票，非 veto。</p></div></details>
+<details><summary>3. 「减半后 18 个月必顶」</summary><div class="dbody"><p>第四周期峰 <strong>~570 日</strong> 但涨幅仅 <strong>x1.75</strong><span class="tag t-chk">待验证</span>。<strong>对策</strong>：幅度与时机分开看。</p></div></details>
+<details><summary>4. 「ETF 流入 = 储备必降」</summary><div class="dbody"><p>实物申购可绕过交易所<span class="tag t-ana">分析</span>。<strong>对策</strong>：三分读。</p></div></details>
+<details><summary>5. 「SOPR&gt;1 永远看涨」</summary><div class="dbody"><p>需<strong>方向</strong>：价涨 SOPR 下行 = 亏损推动 rally<span class="tag t-ana">分析</span>。<strong>对策</strong>：看 SOPR 斜率。</p></div></details>
+<details><summary>6. 「S2F 定价」</summary><div class="dbody"><p>PlanB 预测与实际差一个数量级<span class="tag t-chk">待验证</span>。<strong>对策</strong>：当叙事非模型。</p></div></details>
+<details><summary>7. 「NUPL&gt;0.75 才完周期」</summary><div class="dbody"><p>2025 未达仍见顶<span class="tag t-chk">待验证</span>。<strong>对策</strong>：「无狂热顶」情景。</p></div></details>
+<details><summary>8. 单指标 All-in</summary><div class="dbody"><p>公开栈被 trade against。<strong>对策</strong>：私有权重 + 多源。</p></div></details>
+<details><summary>9. 忽视 LTH-SOPR capitulation</summary><div class="dbody"><p>2026 初 LTH-SOPR <strong>~0.94</strong> 与深值区共振<span class="tag t-chk">待验证</span>。<strong>对策</strong>：长短期分开。</p></div></details>
+<details><summary>10. 胜率不算漂移</summary><div class="dbody"><p>90 日基准 <strong>67.7%</strong>。<strong>对策</strong>：§12 工具。</p></div></details>
+<details><summary>11. 链上当精确会计</summary><div class="dbody"><p>BIS：解读可差 <strong>6×</strong><span class="tag t-ana">分析</span>。<strong>对策</strong>：近似仪表盘。</p></div></details>
+<details><summary>12. 用 Pi 做日内</summary><div class="dbody"><p>DMA <strong>滞后数周</strong>。<strong>对策</strong>：周期尺度 only。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实映射</th>
+<th>可观察代理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">全网盈亏</td>
+<td>持有者浮盈比例</td>
+<td>NUPL <strong>29.1%</strong></td>
+</tr>
+<tr>
+<td class="k">周期位置</td>
+<td>减半后天数</td>
+<td><strong>881 日</strong></td>
+</tr>
+<tr>
+<td class="k">技术顶距</td>
+<td>DMA 结构</td>
+<td>Pi 宽距</td>
+</tr>
+<tr>
+<td class="k">机构底</td>
+<td>专业持仓</td>
+<td>13F <strong>+32%</strong> YoY<span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<p><strong>决策漏斗</strong>：</p>
+<ol>
+<li>宏观流动性方向？</li>
+<li>链上栈：MVRV/NUPL/SOPR 分位？</li>
+<li>周期栈：减半相位 + Pi 距离 + Puell？</li>
+<li>机构：ETF 5 日流 + 储备趋势？</li>
+<li>执行：仅当 ≥3 独立层同向；仓位匹配<strong>月</strong>尺度</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 观察者</summary><div class="dbody"><ul>
+<li>[ ] 手算 NUPL：MVRV 1.41 → <strong>29.1%</strong></li>
+<li>[ ] 说出 Pi Cycle 两线定义</li>
+<li>[ ] 解释 SOPR=1 含义</li>
+</ul></div></details>
+<details><summary>L2 · 分析师</summary><div class="dbody"><ul>
+<li>[ ] 叠 §06 信号栈读过热数</li>
+<li>[ ] 复述 2024 Pi 误报</li>
+<li>[ ] 漂移剥离 65% vs 62% 基准</li>
+</ul></div></details>
+<details><summary>L3 · 建模者</summary><div class="dbody"><ul>
+<li>[ ] ETF 流+储备+premium 三联</li>
+<li>[ ] 减半时钟 vs 历史峰延迟</li>
+<li>[ ] STH/LTH SOPR 分拆</li>
+</ul></div></details>
+<details><summary>L4 · 系统设计者</summary><div class="dbody"><ul>
+<li>[ ] 个人信号栈权重表</li>
+<li>[ ] 每季峰 MVRV 日志</li>
+<li>[ ] 反事实清单（§20）</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：周期雷达员（Cycle Radar）。等级越高，越不信单指标，越会写「改变主线的证据」。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>等级</th>
+<th>任务</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Lv.1</td>
+<td>手算 NUPL 误差 &lt;0.5pp</td>
+<td>解锁「信号栈」</td>
+</tr>
+<tr>
+<td class="k">Lv.2</td>
+<td>解释 Pi 2024 误报</td>
+<td>解锁「Pi 距离计」</td>
+</tr>
+<tr>
+<td class="k">Lv.3</td>
+<td>漂移剥离真实超额 &lt;5pp</td>
+<td>解锁「减半时钟」</td>
+</tr>
+<tr>
+<td class="k">Lv.4</td>
+<td>4 周 ETF+储备日志</td>
+<td>解锁「资金流图」</td>
+</tr>
+<tr>
+<td class="k">Lv.5</td>
+<td>写「栈不能回答什么」</td>
+<td>通关</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>任务</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日</td>
+<td>Fear &amp; Greed + 收盘价</td>
+<td>7 日表</td>
+</tr>
+<tr>
+<td class="k">每周</td>
+<td>MVRV/NUPL/SOPR 三联</td>
+<td>§06 截图</td>
+</tr>
+<tr>
+<td class="k">每月</td>
+<td>ETF 5 日流 + 储备</td>
+<td>与 Kaiko/CVJ 对照</td>
+</tr>
+<tr>
+<td class="k">每季</td>
+<td>Pi 间距 + Puell</td>
+<td>§08/§12 工具</td>
+</tr>
+<tr>
+<td class="k">每年</td>
+<td>记录峰 MVRV/NUPL</td>
+<td>§10 表追加</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A · 若 3.5 顶阈仍有效</button><button class="tab" data-pane="tb1-1">情景 B · 若 Pi 仍一票否决</button><button class="tab" data-pane="tb1-2">情景 C · 若无 ETF</button><button class="tab" data-pane="tb1-3">情景 D · 若链上栈三票全热</button></div>
+<div class="pane on" id="tb1-0"><p>2025 应 MVRV&gt;3.5。实际 <strong>~2.52</strong>——<strong>支持阈值下移</strong>。</p></div><div class="pane" id="tb1-1"><p>2024-03 后不应新高。实际 2025 ATH <strong>~$126K</strong><span class="tag t-chk">待验证</span>——<strong>Pi 须降级</strong>。</p></div><div class="pane" id="tb1-2"><p>第四周期涨幅或更接近历史；MVRV 波动更大<span class="tag t-inf">推论</span>。实际涨幅 <strong>~31%</strong>——机构化压缩波动。</p></div><div class="pane" id="tb1-3"><p>2025 应 NUPL&gt;0.75  sustained。实际未达——<strong>「无狂热顶」</strong>情景成立<span class="tag t-chk">待验证</span>。</p></div>
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>「周期顶信号 65% 胜率」？先减<strong>随机持币基准</strong>（μ=50%/年 σ=65%）。</p>
+<div class="ctrl"><label>持有期（日）<input type="range" id="bc_T" min="5" max="180" step="5" value="40"><output id="bc_TO">40 日</output></label></div>
+<div class="ctrl"><label>信号胜率 (%)<input type="range" id="bc_ps" min="50" max="85" step="0.1" value="65.0"><output id="bc_psO">65.0%</output></label></div>
+<div class="ctrl"><label>年化漂移 μ (%)<input type="range" id="bc_mu" min="0" max="100" step="1" value="50"><output id="bc_muO">50.0%</output></label></div>
+<div class="ctrl"><label>年化波动 σ (%)<input type="range" id="bc_sg" min="30" max="100" step="1" value="65"><output id="bc_sgO">65%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="bc_base">62.0%</strong><span id="bc_baseh">—</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="bc_dp">+3.0 pp</strong><span id="bc_dph">—</span></div>
+<div class="ro"><span class="k">所需样本 n</span><strong id="bc_n">2083</strong><span id="bc_nh">—</span></div>
+<canvas id="bc_driftChart" height="176" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="bc_drift_v">超额有限</strong><span id="bc_drift_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>目标</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 会读栈</strong></td>
+<td>3 天</td>
+<td>NUPL/SOPR/Pi 定义</td>
+<td>手算 29.1%</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 会拆失效</strong></td>
+<td>1 周</td>
+<td>2024 Pi + 2025 顶阈</td>
+<td>漂移剥离</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 会配流</strong></td>
+<td>2 周</td>
+<td>ETF+储备+链上</td>
+<td>三联日志</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 会迭代</strong></td>
+<td>1 月+</td>
+<td>个人栈+分位阈</td>
+<td>2 月无口诀交易</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>任务</strong>：「链上×周期三联检」——算、叠、判。</p>
+<ol>
+<li><strong>8 分钟 · NUPL</strong>：MVRV <strong>1.41</strong> → NUPL <strong>29.1%</strong>（Optimism）。</li>
+<li><strong>7 分钟 · 信号栈</strong>：§06 默认 → 过热 <strong>0/3</strong>。</li>
+<li><strong>8 分钟 · Pi 距离</strong>：§12 默认 <strong>+5.9%</strong> → <strong>未交叉</strong>。</li>
+<li><strong>7 分钟 · 漂移</strong>：§12 工具 40 日 65% → 基准 <strong>62.0%</strong>，超额 <strong>+3.0 pp</strong>，<strong>n≈2083</strong>。</li>
+</ol>
+<p><strong>验证</strong>：NUPL 与 §06 误差 <strong>&lt;0.2pp</strong>；禁止写「Pi 交叉必卖」。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>链上基础</td>
+<td>Glassnode MVRV/NUPL/SOPR 指南</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>周期技术</td>
+<td>Pi Cycle + 减半时间线</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>失效案例</td>
+<td>2024 Pi + 2025 无狂热顶</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>工具</td>
+<td>§06–§12 四个模型</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>ETF</td>
+<td>CoinShares 13F 摘要</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>储备</td>
+<td>交易所储备 vs ETF 实物</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>合成</td>
+<td>1 页个人信号栈权重</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<p><strong>Week 1</strong>：链上三指标 + 手算（L1）
+<strong>Week 2</strong>：Pi/减半/Puell + 误报史（L2）
+<strong>Week 3</strong>：ETF 流三分读 + 储备日志（L3）
+<strong>Week 4</strong>：信号栈仪表盘 + 分位阈 habit（L4）</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>最大坑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>MVRV/NUPL</strong></td>
+<td>全网盈亏结构</td>
+<td>阈值漂移</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>SOPR</strong></td>
+<td>边际转移盈亏</td>
+<td>需看方向</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>MVRV Z</strong></td>
+<td>历史极端</td>
+<td>+7 失效</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>Pi Cycle</strong></td>
+<td>111 上穿 350×2</td>
+<td>2024 误报</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>减半时钟</strong></td>
+<td>供应冲击节律</td>
+<td>涨幅压缩</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>Puell Multiple</strong></td>
+<td>矿工收入热</td>
+<td>费脉冲噪声</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>ETF 流</strong></td>
+<td>机构需求</td>
+<td>≠ 交易所买</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>交易所储备</strong></td>
+<td>可见卖压</td>
+<td>实物绕过</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>对照基准</strong></td>
+<td>随机持币胜率</td>
+<td>必减漂移</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>信号栈</strong></td>
+<td>多票投票</td>
+<td>单指标</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>链上</summary><div class="dbody"><ul>
+<li>MVRV/NUPL/SOPR 各多少？同向吗？</li>
+<li>LTH-SOPR 是否 capitulation？</li>
+<li>Z 分位 vs 绝对 3.5？</li>
+</ul></div></details>
+<details><summary>周期</summary><div class="dbody"><ul>
+<li>距减半几天？已过历史峰延迟吗？</li>
+<li>Pi 间距 %？Puell/RSI？</li>
+<li>本周期峰 MVRV 记录了吗？</li>
+</ul></div></details>
+<details><summary>机构</summary><div class="dbody"><ul>
+<li>ETF 5 日流？13F 趋势？</li>
+<li>储备 vs 流是否背离？</li>
+</ul></div></details>
+<details><summary>决策</summary><div class="dbody"><ul>
+<li>过热信号 ≥几票？</li>
+<li>胜率扣过漂移吗？</li>
+<li>写什么会改变主线？</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>「无狂热顶」是否新范式</strong>：NUPL 上限下移的结构性原因</li>
+<li><strong>STH 栈 vs LTH 栈</strong>：哪条对 ETF 时代更领先？</li>
+<li><strong>Pi + MVRV Z 联合概率</strong>：历史共现条件下的回撤分布</li>
+<li><strong>实物申购占比</strong>：能否链上代理 ETF 真实买压？</li>
+<li><strong>第五减半预演</strong>：2028 时钟与当前栈如何衔接？</li>
+</ol>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">MVRV/NUPL 2026 读数</td>
+<td>行业分析</td>
+<td>Amberdata 2026 / Screk 2026</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2025 峰 MVRV ~2.52</td>
+<td>行业分析</td>
+<td>BGeometrics / Amberdata</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Pi Cycle 2024 误报</td>
+<td>媒体</td>
+<td>Ryder / Bitcoin Magazine</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">第四减半后 881 日</td>
+<td>计算</td>
+<td>2024-04-19 → 2026-09-17</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">第四周期涨幅 ~31–41%</td>
+<td>研报</td>
+<td>Kaiko / ARK / Gate Learn</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">ETF Q4 2025 流 +$3.7B</td>
+<td>机构报告</td>
+<td>CoinShares 13F Q4 2025</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">储备反弹 28K BTC</td>
+<td>媒体</td>
+<td>CVJ.AI 2026</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">S2F 失效</td>
+<td>社区模型</td>
+<td>CapBitcoin 2026</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">BIS 链上精度</td>
+<td>央行研究</td>
+<td>BIS 工作论文</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">漂移基准公式</td>
+<td>手册规范</td>
+<td>panorama-handbook §1</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供研究与学习，<strong>不构成任何投资建议</strong>。比特币极高波动，可能发生 &gt;50% 的 drawdown；MVRV、NUPL、Pi Cycle、减半时钟及任何链上/周期阈值均<strong>不保证</strong>未来价格路径。历史阈值（3.5、NUPL 0.75、Pi 交叉）在 ETF 时代已多次<strong>未被触及或误报</strong>，请勿依据单一指标进行杠杆交易或集中配置。中国大陆对虚拟货币相关业务有严格监管，请遵守当地法律法规。作者不对使用本手册造成的任何损失负责。</p>
+</section>
+<footer>  <p>《BTC-链上与周期技术指标 · 全景认知与实践操作手册》 · 生成于 2026-09-17 · 耗时 2 分 29 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC-链上与周期技术指标》主题脚本
+   四个可调模型：
+     1. 链上信号栈     — MVRV → NUPL + SOPR + Z 过热计数
+     2. 减半周期时钟   — 距减半日数 vs 历史峰延迟
+     3. Pi Cycle 距离计 — 111 DMA vs 350×2 间距
+     4. 漂移剥离器     — 周期信号胜率 vs 随机持币基准
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function fmtK(v) {
+    return '$' + Math.round(v).toLocaleString('en-US');
+  }
+
+  /* ══ 工具 1 · 链上信号栈 ══ */
+  (function signalStack() {
+    var mvrvEl = $('bc_mvrv'), soprEl = $('bc_sopr'), zEl = $('bc_z');
+    if (!mvrvEl || !soprEl || !zEl) return;
+    var mvrvO = $('bc_mvrvO'), soprO = $('bc_soprO'), zO = $('bc_zO');
+    var nuplEl = $('bc_nupl'), nuplHEl = $('bc_nuplh');
+    var zoneEl = $('bc_zone'), zoneHEl = $('bc_zoneh');
+    var hotEl = $('bc_hot'), hotHEl = $('bc_hoth');
+    var vEl = $('bc_stack_v'), vhEl = $('bc_stack_vh');
+    var cv = $('bc_stackChart');
+
+    function nuplZone(n) {
+      if (n >= 0.75) return { z: 'Euphoria', c: '#d5342c', h: '历史顶区参考；2025 未 sustained 达此' };
+      if (n >= 0.5) return { z: 'Belief/Greed', c: '#d5342c', h: '偏高；需配 SOPR 与 Pi' };
+      if (n >= 0.25) return { z: 'Optimism', c: '#b8730a', h: '2026-09 默认区' };
+      if (n >= 0) return { z: 'Hope/Fear', c: '#454c56', h: '低盈利；常对应调整' };
+      return { z: 'Capitulation', c: '#0f8a4d', h: '全网整体亏损' };
+    }
+
+    function draw(mvrv, z, hot) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 16, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var refs = [
+        { lo: 0, hi: 1, col: '#e8f5ee', label: 'MVRV<1' },
+        { lo: 1, hi: 2, col: '#f4f6f9', label: '1–2' },
+        { lo: 2, hi: 3.5, col: '#fff7e6', label: '2–3.5' },
+        { lo: 3.5, hi: 4.2, col: '#fdf3f2', label: '>3.5' }
+      ];
+      var maxM = 4.2;
+      var sx = function (v) { return pad.l + (v / maxM) * iw; };
+      refs.forEach(function (b) {
+        ctx.fillStyle = b.col;
+        ctx.fillRect(sx(b.lo), pad.t, sx(b.hi) - sx(b.lo), ih);
+      });
+      [1, 2, 3.5].forEach(function (r) {
+        var x = sx(r);
+        ctx.strokeStyle = r >= 3.5 ? '#d5342c' : '#c9d0d9';
+        ctx.setLineDash(r >= 3.5 ? [4, 3] : []);
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(r), x, y1 + 13);
+      });
+      var mx = sx(Math.min(mvrv, maxM));
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(mx, pad.t); ctx.lineTo(mx, y1); ctx.stroke();
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 11px -apple-system,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('MVRV ' + mvrv.toFixed(2), pad.l, pad.t - 4);
+      ctx.fillStyle = hot >= 2 ? '#d5342c' : '#454c56';
+      ctx.textAlign = 'right';
+      ctx.fillText('过热 ' + hot + '/3 · Z=' + (z >= 0 ? '+' : '') + z.toFixed(2), w - pad.r, pad.t - 4);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('MVRV 带 · 顶阈 3.5（ETF 时代常未触达）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var mvrv = parseFloat(mvrvEl.value);
+      var sopr = parseFloat(soprEl.value);
+      var z = parseFloat(zEl.value);
+      var nupl = (mvrv - 1) / mvrv;
+      var zinfo = nuplZone(nupl);
+      var hot = 0;
+      if (mvrv >= 2.5) hot++;
+      if (nupl >= 0.5) hot++;
+      if (z >= 2.5) hot++;
+      txt(mvrvO, mvrv.toFixed(2));
+      txt(soprO, sopr.toFixed(2));
+      txt(zO, (z >= 0 ? '+' : '') + z.toFixed(2) + 'σ');
+      txt(nuplEl, (nupl * 100).toFixed(1) + '%');
+      txt(nuplHEl, 'NUPL=(MVRV−1)/MVRV');
+      txt(zoneEl, zinfo.z);
+      tint(zoneEl, zinfo.c);
+      txt(zoneHEl, zinfo.h);
+      txt(hotEl, hot + ' / 3');
+      txt(hotHEl, 'MVRV≥2.5 · NUPL≥0.5 · Z≥2.5');
+      var verdict = hot >= 2 ? '栈偏热 · 警惕派发' : hot === 1 ? '单票过热 · 勿独断' : '周期未完成（链上视角）';
+      var vcol = hot >= 2 ? '#d5342c' : hot === 1 ? '#b8730a' : '#0f8a4d';
+      txt(vEl, verdict);
+      tint(vEl, vcol);
+      txt(vhEl, 'SOPR=' + sopr.toFixed(2) + (sopr < 0.98 ? ' · 亏损转移' : sopr > 1.02 ? ' · 盈利转移' : ' · 平衡'));
+      draw(mvrv, z, hot);
+    }
+    [mvrvEl, soprEl, zEl].forEach(function (el) { el.addEventListener('input', update); });
+    update();
+  })();
+
+  /* ══ 工具 2 · 减半周期时钟 ══ */
+  (function halvingClock() {
+    var daysEl = $('bc_hdays');
+    if (!daysEl) return;
+    var daysO = $('bc_hdaysO'), peakEl = $('bc_hpeak'), peakHEl = $('bc_hpeakh');
+    var phaseEl = $('bc_hphase'), phaseHEl = $('bc_hphaseh');
+    var vEl = $('bc_h_v'), vhEl = $('bc_h_vh');
+    var cv = $('bc_hChart');
+    var PEAKS = [
+      { era: '2016 周期', days: 518, label: '2017 顶' },
+      { era: '2020 周期', days: 548, label: '2021 顶' },
+      { era: '2024 周期', days: 570, label: '2025 顶' }
+    ];
+
+    function phase(d) {
+      if (d < 200) return { t: '减半后早期', c: '#454c56', h: '供应冲击消化期' };
+      if (d < 450) return { t: '扩张中段', c: '#b8730a', h: '历史强势段' };
+      if (d < 570) return { t: '接近典型峰位', c: '#d5342c', h: '2016–2024 峰延迟 518–570 日' };
+      if (d < 750) return { t: '峰后调整', c: '#1d4ed8', h: '2026-09：881 日在此区' };
+      return { t: '深周期后段', c: '#0f8a4d', h: '距下次减半渐近' };
+    }
+
+    function draw(days) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 56, r: 20, t: 28, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var maxD = 900;
+      var sx = function (d) { return pad.l + (d / maxD) * iw; };
+      ctx.fillStyle = '#f4f6f9';
+      ctx.fillRect(pad.l, pad.t, iw, ih);
+      PEAKS.forEach(function (p) {
+        var x = sx(p.days);
+        ctx.strokeStyle = '#d5342c';
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, y1); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#7c848f';
+        ctx.font = '9px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.days + 'd', x, y1 + 13);
+        ctx.fillText(p.label, x, pad.t - 6);
+      });
+      var dx = sx(days);
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(dx, pad.t); ctx.lineTo(dx, y1); ctx.stroke();
+      ctx.fillStyle = '#1d4ed8';
+      ctx.beginPath(); ctx.arc(dx, pad.t + ih * 0.55, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#15181d';
+      ctx.font = 'bold 11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('当前 ' + days + ' 日', dx, pad.t + ih * 0.55 - 12);
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillText('距第四减半（2024-04-19）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var days = parseInt(daysEl.value, 10);
+      var ph = phase(days);
+      txt(daysO, days + ' 日');
+      txt(peakEl, '570 日');
+      txt(peakHEl, '2024 周期 Nov 2025【待验证】');
+      txt(phaseEl, ph.t);
+      tint(phaseEl, ph.c);
+      txt(phaseHEl, ph.h);
+      var vtxt = days > 570 ? '已过典型峰延迟 · 调整/再定价阶段' : days > 450 ? '进入历史顶窗口' : '周期早中段';
+      txt(vEl, vtxt);
+      tint(vEl, days > 570 ? '#1d4ed8' : days > 450 ? '#d5342c' : '#454c56');
+      txt(vhEl, '第四周期涨幅远低于 2020【待验证】');
+      draw(days);
+    }
+    daysEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 3 · Pi Cycle 距离计 ══ */
+  (function piCycle() {
+    var d111El = $('bc_d111'), d350El = $('bc_d350');
+    if (!d111El || !d350El) return;
+    var d111O = $('bc_d111O'), d350O = $('bc_d350O');
+    var gapEl = $('bc_pigap'), gapHEl = $('bc_pigaph');
+    var stEl = $('bc_pist'), stHEl = $('bc_pisth');
+    var vEl = $('bc_pi_v'), vhEl = $('bc_pi_vh');
+    var cv = $('bc_piChart');
+
+    function draw(d111, d350x2, crossed) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 48, r: 16, t: 32, b: 46 };
+      var iw = w - pad.l - pad.r;
+      var y1 = h - 46;
+      var y111 = 80, y350 = 140;
+      var minP = Math.min(d111, d350x2) * 0.92;
+      var maxP = Math.max(d111, d350x2) * 1.08;
+      var sx = function (p) { return pad.l + ((p - minP) / (maxP - minP)) * iw; };
+      ctx.strokeStyle = '#eef1f5';
+      ctx.beginPath(); ctx.moveTo(pad.l, y111); ctx.lineTo(w - pad.r, y111); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(pad.l, y350); ctx.lineTo(w - pad.r, y350); ctx.stroke();
+      ctx.fillStyle = '#1d4ed8';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('111 DMA', pad.l - 6, y111 + 4);
+      ctx.fillStyle = '#b8730a';
+      ctx.fillText('350×2 DMA', pad.l - 6, y350 + 4);
+      var x111 = sx(d111), x350 = sx(d350x2);
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(x111, y111 - 8); ctx.lineTo(x111, y111 + 8); ctx.stroke();
+      ctx.strokeStyle = '#b8730a';
+      ctx.beginPath(); ctx.moveTo(x350, y350 - 8); ctx.lineTo(x350, y350 + 8); ctx.stroke();
+      if (crossed) {
+        ctx.strokeStyle = '#d5342c';
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath(); ctx.moveTo(x111, y111); ctx.lineTo(x350, y350); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Pi Cycle · 111 须上穿 350×2', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var d111 = parseFloat(d111El.value);
+      var d350 = parseFloat(d350El.value);
+      var crossed = d111 >= d350;
+      var gap = crossed ? ((d111 - d350) / d350 * 100) : ((d350 - d111) / d111 * 100);
+      txt(d111O, fmtK(d111));
+      txt(d350O, fmtK(d350));
+      if (crossed) {
+        txt(gapEl, '+' + gap.toFixed(1) + '%');
+        txt(gapHEl, '111 高于 350×2 · Pi 触发');
+        txt(stEl, '已交叉');
+        tint(stEl, '#d5342c');
+        txt(stHEl, '2024-03 曾误报 · 须栈内确认');
+        txt(vEl, 'Pi 信号 · 勿一票否决');
+        tint(vEl, '#d5342c');
+      } else {
+        txt(gapEl, '+' + gap.toFixed(1) + '%');
+        txt(gapHEl, '111 低于 350×2 · 间距');
+        txt(stEl, '未交叉');
+        tint(stEl, '#0f8a4d');
+        txt(stHEl, '2026-07 宽距状态【待验证】');
+        txt(vEl, '宽距 · 非顶区');
+        tint(vEl, '#0f8a4d');
+      }
+      txt(vhEl, '默认 85000/90000 → +5.9%');
+      draw(d111, d350, crossed);
+    }
+    [d111El, d350El].forEach(function (el) { el.addEventListener('input', update); });
+    update();
+  })();
+
+  /* ══ 工具 4 · 漂移剥离器 ══ */
+  (function driftStrip() {
+    var TEl = $('bc_T'), psEl = $('bc_ps'), muEl = $('bc_mu'), sgEl = $('bc_sg');
+    if (!TEl || !psEl || !muEl || !sgEl) return;
+    var TO = $('bc_TO'), psO = $('bc_psO'), muO = $('bc_muO'), sgO = $('bc_sgO');
+    var baseEl = $('bc_base'), baseHEl = $('bc_baseh');
+    var dpEl = $('bc_dp'), dpHEl = $('bc_dph');
+    var nEl = $('bc_n'), nHEl = $('bc_nh');
+    var vEl = $('bc_drift_v'), vhEl = $('bc_drift_vh');
+    var cv = $('bc_driftChart');
+    var ctx = cv ? cv.getContext('2d') : null;
+
+    function draw(pb, ps) {
+      if (!ctx) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.clientWidth || 600, h = 176;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 108, r: 66, t: 30, b: 34 };
+      var bw = w - pad.l - pad.r;
+      var x0 = 0.40, x1 = 1.0;
+      var sx = function (p) { return pad.l + (p - x0) / (x1 - x0) * bw; };
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      [0.5, 0.6, 0.7, 0.8, 0.9, 1.0].forEach(function (g) {
+        var x = sx(g);
+        ctx.strokeStyle = g === 0.5 ? '#c9d0d9' : '#eef1f5';
+        ctx.lineWidth = g === 0.5 ? 1.4 : 1;
+        ctx.beginPath(); ctx.moveTo(x, pad.t - 6); ctx.lineTo(x, h - pad.b); ctx.stroke();
+        ctx.fillStyle = '#7c848f';
+        ctx.fillText((g * 100).toFixed(0) + '%', x, h - pad.b + 15);
+      });
+      var rows = [
+        { label: '随机持币基准', p: pb, col: '#8a6d1f' },
+        { label: '周期信号胜率', p: ps, col: '#1d4ed8' }
+      ];
+      rows.forEach(function (r, i) {
+        var y = pad.t + 22 + i * 58;
+        ctx.fillStyle = '#454c56';
+        ctx.textAlign = 'right';
+        ctx.font = '12px -apple-system,sans-serif';
+        ctx.fillText(r.label, pad.l - 12, y + 17);
+        ctx.fillStyle = '#eef1f5';
+        ctx.fillRect(pad.l, y, bw, 24);
+        ctx.fillStyle = r.col;
+        ctx.fillRect(pad.l, y, Math.max(0, sx(r.p) - pad.l), 24);
+        ctx.fillStyle = r.col;
+        ctx.textAlign = 'left';
+        ctx.font = '700 12.5px -apple-system,sans-serif';
+        var lab = (r.p * 100).toFixed(1) + '%';
+        var lx = Math.min(sx(r.p) + 7, w - pad.r - ctx.measureText(lab).width - 4);
+        ctx.fillText(lab, lx, y + 17);
+      });
+    }
+
+    function update() {
+      var T = parseInt(TEl.value, 10);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sg = parseFloat(sgEl.value) / 100;
+      var pb = ncdf(mu * (T / 252) / (sg * Math.sqrt(T / 252)));
+      var dp = ps - pb;
+      var n = dp > 0 ? Math.ceil(Math.pow(1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps)), 2) / (dp * dp)) : Infinity;
+      txt(TO, T + ' 日');
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(1) + '%');
+      txt(sgO, (sg * 100).toFixed(0) + '%');
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(baseHEl, 'Φ(μ·√T/σ)');
+      txt(dpEl, (dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp');
+      tint(dpEl, dp >= 0.05 ? '#0f8a4d' : dp >= 0 ? '#b8730a' : '#d5342c');
+      txt(dpHEl, '信号 − 基准');
+      txt(nEl, isFinite(n) ? String(n) : '∞');
+      txt(nHEl, 'α=5% · 80% 检验力');
+      var vtxt = dp < 0.02 ? '几乎无超额' : dp < 0.05 ? '超额有限' : '超额尚可 · 仍要 n 够';
+      txt(vEl, vtxt);
+      tint(vEl, dp < 0.02 ? '#d5342c' : dp < 0.05 ? '#b8730a' : '#0f8a4d');
+      txt(vhEl, 'BTC μ=50% σ=65% 默认');
+      draw(pb, ps);
+    }
+    [TEl, psEl, muEl, sgEl].forEach(function (el) { el.addEventListener('input', update); });
+    update();
+  })();
+})();
+</script>
+</body>
+</html>
