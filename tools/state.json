@@ -427,11 +427,14 @@
     {
       "slug": "BTC-威科夫积累-派发与相对强弱 RSI",
       "title": "BTC-威科夫积累/派发与相对强弱 RSI",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-17 01:01:04",
+      "finished": "2026-09-17 01:06:59",
+      "duration_sec": 355,
+      "outputs": [
+        "reports/BTC-威科夫积累-派发与相对强弱 RSI.html",
+        "reports/BTC-威科夫积累-派发与相对强弱 RSI.md"
+      ],
       "error": null
     },
     {
@@ -632,7 +635,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 01:00",
+  "updated": "2026-09-17 01:06",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

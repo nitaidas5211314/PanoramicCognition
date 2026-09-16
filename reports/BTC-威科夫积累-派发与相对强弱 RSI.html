@@ -1,0 +1,2195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-威科夫积累/派发与相对强弱 RSI · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × Wyckoff × RSI</small></div>
+  <nav id="nav">
+    <div class="navgroup">正文</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">入口</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <div class="navgroup">路径</div>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天实践计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-威科夫积累/派发与相对强弱 RSI</h1>
+  <p class="sub">把比特币的<strong>区间结构、量价事件与 RSI 动量</strong>焊成一套可证伪的读盘系统——<strong>威科夫告诉你「主力在干什么」，RSI 告诉你「这件事有没有力气」</strong></p>
+  <div class="meta">
+    <span class="chip b">27 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>在比特币上读威科夫，不是找「庄家」，而是在一个 24 小时、全球联动的市场里，用区间 + 量价事件推断大资金是在收货还是在出货；RSI 与相对强弱，则是这套推断的「力气计」——告诉你动量有没有跟上价格叙事。</strong></p>
+<p>三根支柱：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>支柱</th>
+<th>在 BTC 上意味着什么</th>
+<th>观测入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">威科夫结构</td>
+<td>吸筹/派发/再吸筹的区间与事件序列</td>
+<td>周线区间、Spring/UTAD、SOS/SOW</td>
+</tr>
+<tr>
+<td class="k">RSI 动量</td>
+<td>涨跌的「速度」是否衰竭或加速</td>
+<td>RSI(14)、背离、50 中轴</td>
+</tr>
+<tr>
+<td class="k">相对强弱</td>
+<td>BTC 相对加密大盘是否还在「带队」</td>
+<td>BTC.D、ETH/BTC、个股/指数比</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>最锋利的组合</strong>：区间底部 + Spring + 看涨 RSI 背离 + 相对强度回升 → 高置信吸筹剧本；区间顶部 + UTAD + 看跌背离 + BTC 涨而山寨不涨 → 高置信派发剧本。</p>
+<p><strong>最危险的误用</strong>：单独拿 RSI&lt;30 或 RSI&gt;70 当买卖信号——<span class="tag t-ana">分析</span>2023 年 PMC 发表的加密货币 RSI 回测显示，传统超买超卖在加密市场风险极高，趋势行情里 RSI 可长期钝化。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话边界</h3>
+<p>本手册研究的<strong>不是</strong>「比特币明天涨到多少」，而是：<strong>在给定价格区间里，供给与需求的相对强弱如何演化，以及 RSI/相对强弱能否为威科夫事件提供独立确认。</strong></p>
+<h3>用 15 个问题划定边界</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">研究什么</td>
+<td>BTC 周线/日线级别的交易区间、威科夫事件、RSI 与相对强弱的三重交叉验证</td>
+</tr>
+<tr>
+<td class="k">边界在哪</td>
+<td>不管链上基本面叙事、不管监管政策细节；只读<strong>可观测的价格量行为</strong></td>
+</tr>
+<tr>
+<td class="k">核心对象</td>
+<td>「复合人」在 BTC 上的建仓/出货痕迹；ETF 与 OTC 是当代复合人的新面孔</td>
+</tr>
+<tr>
+<td class="k">参与者</td>
+<td>现货 ETF 发行方、矿工、长期持有者、杠杆散户、做市商、稳定币发行方</td>
+</tr>
+<tr>
+<td class="k">核心变量</td>
+<td>区间边界、量比、RSI(14)、BTC.D、ETH/BTC、永续资金费率</td>
+</tr>
+<tr>
+<td class="k">可观察</td>
+<td>K 线、成交量、RSI、Dominance、链上交易所净流入（辅助）</td>
+</tr>
+<tr>
+<td class="k">不可观察但可推断</td>
+<td>大户成本区、剩余可卖库存、是否处于 Phase C</td>
+</tr>
+<tr>
+<td class="k">谁影响谁</td>
+<td>宏观流动性 → BTC 趋势 → 山寨滞后跟涨/跟跌 → RSI 与情绪反馈</td>
+</tr>
+<tr>
+<td class="k">确定因果</td>
+<td>供应枯竭（缩量回踩）+ 动量回升（RSI 背离）→ 少量买盘即可推价</td>
+</tr>
+<tr>
+<td class="k">只是相关</td>
+<td>「RSI 超卖」与「马上反弹」——相关，但趋势里可连续超卖数周</td>
+</tr>
+<tr>
+<td class="k">表层现象</td>
+<td>Spring、UTAD、SOS、LPSY 等标签</td>
+</tr>
+<tr>
+<td class="k">底层机制</td>
+<td>筹码从「对价格敏感的手」转移到「对价格不敏感的手」</td>
+</tr>
+<tr>
+<td class="k">反馈</td>
+<td>突破 → 吸引杠杆 → 加速；假突破 → 爆仓 → 反向加速</td>
+</tr>
+<tr>
+<td class="k">时间延迟</td>
+<td>BTC 周线吸筹可持续 3–18 个月；日线 Spring 到 SOS 可仅 2–8 周</td>
+</tr>
+<tr>
+<td class="k">正负反馈</td>
+<td>ETF 净流入正反馈；清算级联负反馈</td>
+</tr>
+</tbody>
+</table></div>
+<h3>BTC 与股市的三个结构性差异</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>股市（威科夫原境）</th>
+<th>BTC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">交易时间</td>
+<td>有收盘</td>
+<td><strong>24/7</strong>，周末也有 Spring</td>
+</tr>
+<tr>
+<td class="k">杠杆工具</td>
+<td>保证金有限</td>
+<td>永续合约、高杠杆、资金费率</td>
+</tr>
+<tr>
+<td class="k">信息层</td>
+<td>财报、监管</td>
+<td>链上数据、ETF 流量、矿工抛压</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span><strong>Spring 在 BTC 上往往更「尖锐」</strong>——杠杆清算可在数小时内完成，回收速度比传统股票快一个数量级；但<strong>区间边界也更常被「插针」测试</strong>，需要放宽「收回」的时间窗口到日线收盘而非 intraday。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>四个理由</h3>
+<div class="grid g2">
+<div class="card"><h4>BTC 是威科夫思想的「压力测试场」</h4><p>24 小时交易 + 高波动 + 全球散户，让「复合人」痕迹既更明显（清算瀑布），也更容易被误读（每一根针都可事后叫 Spring）。</p></div>
+<div class="card"><h4>RSI 给威科夫补上「力气」这一维</h4><p>同样一个 Spring，若 RSI 在低位形成<strong>看涨背离</strong>（价格新低、RSI 抬高），回收可信度显著高于 RSI 同步创新低的情形。<span class="tag t-chk">待验证</span>BeInCrypto 对 2021 年 BTC 吸筹段的案例回顾支持这一组合，但缺乏系统回测。</p></div>
+<div class="card"><h4>相对强弱是 BTC 周期的「罗盘」</h4><p>BTC.D 从 63% 回落到 50% 区间时，往往对应资金从 BTC 向山寨轮动。<span class="tag t-chk">待验证</span>crypto.news 2026 年中期数据：BTC.D 处于 50% 中段、山寨季指数 &lt;40，说明「BTC 带队、山寨滞后」仍是主流结构。</p></div>
+<div class="card"><h4>失败模式可被清晰枚举</h4><p>把「标签通胀」「RSI 钝化」「宏观一票否决」写进检查清单，比泛泛的「技术分析」更可迭代。</p></div>
+</div>
+<div class="note amber"><b>一句话定性</b><p>这不是预测 BTC 价格的系统，而是一套<strong>在区间里写剧本、用 RSI 和相对强弱做确认、用证伪条件管风险</strong>的读盘框架。</p></div>
+<hr />
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<svg viewBox="0 0 680 620" width="100%" style="max-width:680px">
+  <text x="12" y="18" font-size="12.5" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 威科夫 × RSI 九层世界（自上而下）</text>
+  <rect x="12" y="32" width="656" height="52" rx="9" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="26" y="52" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">L1 · 全球宏观流动性</text>
+  <text x="26" y="70" font-size="10.5" fill="#454c56" font-family="sans-serif">美联储利率 · 美元流动性 · 风险资产偏好 — 决定 BTC Beta，威科夫无法对抗</text>
+  <rect x="12" y="92" width="656" height="52" rx="9" fill="#f2f7f4" stroke="#c6dcc9" stroke-width="1.3"/>
+  <text x="26" y="112" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">L2 · 加密大盘结构</text>
+  <text x="26" y="130" font-size="10.5" fill="#454c56" font-family="sans-serif">总市值趋势 · BTC.D · 稳定币供给 — 决定「只做 BTC」还是「做山寨相对强度」</text>
+  <rect x="12" y="152" width="656" height="52" rx="9" fill="#f7f6f2" stroke="#ded8c4" stroke-width="1.3"/>
+  <text x="26" y="172" font-size="12" font-weight="700" fill="#8a6d1f" font-family="sans-serif">L3 · 资金流与 ETF 层</text>
+  <text x="26" y="190" font-size="10.5" fill="#454c56" font-family="sans-serif">现货 ETF 净流入/流出 · 矿工抛压 · 交易所余额 — 当代「复合人」的订单流</text>
+  <rect x="12" y="212" width="656" height="52" rx="9" fill="#fdf3f2" stroke="#f0cdc9" stroke-width="1.3"/>
+  <text x="26" y="232" font-size="12" font-weight="700" fill="#d5342c" font-family="sans-serif">L4 · BTC 周线结构层</text>
+  <text x="26" y="250" font-size="10.5" fill="#454c56" font-family="sans-serif">吸筹 / 派发 / 再吸筹的大区间 — 决定本周期做多还是防守</text>
+  <rect x="12" y="272" width="656" height="52" rx="9" fill="#fdf3f2" stroke="#f0cdc9" stroke-width="1.3"/>
+  <text x="26" y="292" font-size="12" font-weight="700" fill="#d5342c" font-family="sans-serif">L5 · 日线交易区间层</text>
+  <text x="26" y="310" font-size="10.5" fill="#454c56" font-family="sans-serif">当前矩形上下沿 — 所有 Spring/UTAD 都附着在此</text>
+  <rect x="12" y="332" width="656" height="52" rx="9" fill="#f6f2fb" stroke="#dccdf0" stroke-width="1.3"/>
+  <text x="26" y="352" font-size="12" font-weight="700" fill="#6b3fa0" font-family="sans-serif">L6 · 威科夫事件序列层</text>
+  <text x="26" y="370" font-size="10.5" fill="#454c56" font-family="sans-serif">SC→AR→ST→Spring/UTAD→SOS/SOW→LPS/LPSY — 顺序即信息</text>
+  <rect x="12" y="392" width="656" height="52" rx="9" fill="#f2f8fb" stroke="#c4dde9" stroke-width="1.3"/>
+  <text x="26" y="412" font-size="12" font-weight="700" fill="#1a6d8a" font-family="sans-serif">L7 · RSI 与背离层</text>
+  <text x="26" y="430" font-size="10.5" fill="#454c56" font-family="sans-serif">RSI(14) 水平、斜率、与价格的背离 — 动量是否支持结构叙事</text>
+  <rect x="12" y="452" width="656" height="52" rx="9" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="26" y="472" font-size="12" font-weight="700" fill="#454c56" font-family="sans-serif">L8 · 执行与杠杆层</text>
+  <text x="26" y="490" font-size="10.5" fill="#454c56" font-family="sans-serif">永续仓位、资金费率、清算簇 — 你的下单会改变被观测对象</text>
+  <rect x="12" y="512" width="656" height="60" rx="9" fill="#fff8ec" stroke="#f0dcb4" stroke-width="1.4"/>
+  <text x="26" y="532" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">L9 · 你的持仓与叙事层</text>
+  <text x="26" y="550" font-size="10.5" fill="#454c56" font-family="sans-serif">持有多头时更容易把震荡读成吸筹；空仓时更容易把再吸筹读成派发</text>
+  <text x="26" y="566" font-size="10.5" fill="#a06800" font-family="sans-serif">→ 先写证伪条件，再允许自己「看见」形态</text>
+  <text x="12" y="614" font-size="10.5" fill="#7c848f" font-family="sans-serif">L1–L3 约束 L4–L6；L7 独立验证 L6；L9 污染以上所有层的读数</text>
+</svg>
+<hr />
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>威科夫四阶段（BTC 语境）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>复合人在做什么</th>
+<th>BTC 上常见痕迹</th>
+<th>RSI 典型读数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">吸筹 Accumulation</td>
+<td>低位分批买入</td>
+<td>宽幅震荡、下跌缩量、Spring</td>
+<td>30–45 区钝化后抬升</td>
+</tr>
+<tr>
+<td class="k">拉升 Markup</td>
+<td>趋势跟随</td>
+<td>突破区间、回踩 LPS</td>
+<td>RSI 50 上方、未长期 &gt;70</td>
+</tr>
+<tr>
+<td class="k">派发 Distribution</td>
+<td>高位分批卖出</td>
+<td>上冲回落、UTAD、SOW</td>
+<td>70 上方钝化或顶背离</td>
+</tr>
+<tr>
+<td class="k">下跌 Markdown</td>
+<td>趋势做空</td>
+<td>跌破区间、反弹无力</td>
+<td>RSI &lt;50 且背离失效</td>
+</tr>
+</tbody>
+</table></div>
+<h3>三种区间类型（最易混淆）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>前置趋势</th>
+<th>突破后通常</th>
+<th>误判代价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">吸筹</td>
+<td>长期下跌后</td>
+<td>新一轮 Markup</td>
+<td>过早做空</td>
+</tr>
+<tr>
+<td class="k">再吸筹 Re-accumulation</td>
+<td>上涨中途横盘</td>
+<td>趋势延续</td>
+<td>过早止盈</td>
+</tr>
+<tr>
+<td class="k">派发</td>
+<td>长期上涨后</td>
+<td>Markdown</td>
+<td>过早抄底</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-ana">分析</span>2024 年 BTC 在 $53,000–$74,000 的横盘，市场同时存在「派发」与「再吸筹」两种解读；<strong>直到区间向上突破或向下跌破，统计上仍无法区分</strong>——这是威科夫在 BTC 上最诚实的局限。</p>
+<h3>RSI 在体系中的位置</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>用法</th>
+<th>正确</th>
+<th>错误</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">确认 Spring</td>
+<td>价格新低 + RSI 抬高（看涨背离）</td>
+<td>RSI&lt;30 就买入</td>
+</tr>
+<tr>
+<td class="k">确认 UTAD</td>
+<td>价格新高 + RSI 走低（看跌背离）</td>
+<td>RSI&gt;70 就做空</td>
+</tr>
+<tr>
+<td class="k">趋势过滤</td>
+<td>周线 RSI &gt;50 才做多吸筹突破</td>
+<td>忽略趋势单向钝化</td>
+</tr>
+<tr>
+<td class="k">相对强弱</td>
+<td>BTC RSI 强于 ETH 同期</td>
+<td>只看 BTC 绝对 RSI</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>RSI 公式</strong>（标准 14 期）：先算平均涨幅 $\overline{g}$ 与平均跌幅 $\overline{l}$，$RS=\overline{g}/\overline{l}$，$RSI=100-100/(1+RS)$。<span class="tag t-fact">事实</span>定义来自 Wilder，Investopedia 等教科书一致。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>目标函数</th>
+<th>在威科夫叙事中的角色</th>
+<th>可观测代理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">现货 ETF 授权参与者</td>
+<td>套利申赎、管理规模</td>
+<td>大规模「被动复合人」</td>
+<td>每日净流入、溢价/折价</td>
+</tr>
+<tr>
+<td class="k">矿工</td>
+<td>覆盖运营成本</td>
+<td>结构性卖压（尤其在减半前后）</td>
+<td>矿工钱包流出、算力</td>
+</tr>
+<tr>
+<td class="k">长期持有者 (LTH)</td>
+<td>跨周期配置</td>
+<td>吸筹阶段的供给吸收者</td>
+<td>链上 LTH 供应变化</td>
+</tr>
+<tr>
+<td class="k">杠杆散户</td>
+<td>短期收益</td>
+<td>Spring/UTAD 的流动性提供者</td>
+<td>清算量、持仓量 OI</td>
+</tr>
+<tr>
+<td class="k">做市商</td>
+<td>赚价差、控库存</td>
+<td>努力与结果律里的「吸收」</td>
+<td>订单簿深度、点差</td>
+</tr>
+<tr>
+<td class="k">稳定币发行方</td>
+<td>维持锚定与规模</td>
+<td>间接流动性阀门</td>
+<td>USDT/USDC 市值</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span>2024 年 1 月现货 BTC ETF 通过后，<strong>「复合人」不再只是 OTC 大户</strong>——ETF 申赎机制使传统金融的日内流量成为 BTC 量价的一部分，威科夫读盘必须多看一层 ETF 流量，而不能只盯交易所 K 线。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>威科夫用途</th>
+<th>RSI/RS 用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">区间上沿 $R$</td>
+<td>至少两次被拒绝的高点</td>
+<td>派发测试、SOS 突破位</td>
+<td>突破时 RSI 是否同步新高</td>
+</tr>
+<tr>
+<td class="k">区间下沿 $S$</td>
+<td>至少两次获支撑的低点</td>
+<td>Spring 测试位</td>
+<td>Spring 时 RSI 是否背离</td>
+</tr>
+<tr>
+<td class="k">量比 $v$</td>
+<td>当日量 ÷ 20 日均量</td>
+<td>努力与结果</td>
+<td>不直接进 RSI，但验证背离</td>
+</tr>
+<tr>
+<td class="k">RSI(14)</td>
+<td>14 期相对强弱</td>
+<td>动量确认</td>
+<td>核心输出</td>
+</tr>
+<tr>
+<td class="k">BTC.D</td>
+<td>BTC 市值 ÷ 加密总市值</td>
+<td>资金是否还在 BTC</td>
+<td>与 RSI 交叉：BTC 涨但 RSI 与 BTC.D 同弱 → 虚假强度</td>
+</tr>
+<tr>
+<td class="k">ETH/BTC</td>
+<td>以太相对比特币</td>
+<td>山寨轮动领先指标</td>
+<td>ETH/BTC RSI 常领先 BTC.D 2–4 周<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">资金费率</td>
+<td>永续多空平衡</td>
+<td>极端正费率 → 多头拥挤</td>
+<td>与 RSI&gt;70 共振时警惕 UTAD</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>吸筹链条（因果方向）</h3>
+<pre><code>宏观流动性宽松 → ETF/OTC 净流入 → 区间下沿缩量止跌
+→ Spring 洗杠杆 → RSI 看涨背离 → SOS 放量突破
+→ LPS 缩量回踩 → Markup 延续
+</code></pre>
+<h3>派发链条</h3>
+<pre><code>流动性收紧或利好出尽 → 区间上沿放量滞涨 → UTAD 假突破
+→ RSI 看跌背离 → SOW 跌破区间 → LPSY 无力反弹 → Markdown
+</code></pre>
+<h3>因果图（实线 = 因果，虚线 = 反馈）</h3>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="bwkA" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#454c56"/>
+    </marker>
+    <marker id="bwkAr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#d5342c"/>
+    </marker>
+  </defs>
+  <text x="12" y="18" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 吸筹因果与反馈（简化）</text>
+  <rect x="20" y="40" width="100" height="36" rx="6" fill="#f0f4fd" stroke="#c3d1f0"/>
+  <text x="70" y="63" text-anchor="middle" font-size="11" fill="#1d4ed8" font-family="sans-serif">流动性</text>
+  <rect x="160" y="40" width="100" height="36" rx="6" fill="#f2f7f4" stroke="#c6dcc9"/>
+  <text x="210" y="63" text-anchor="middle" font-size="11" fill="#0f8a4d" font-family="sans-serif">净流入</text>
+  <rect x="300" y="40" width="100" height="36" rx="6" fill="#fdf3f2" stroke="#f0cdc9"/>
+  <text x="350" y="63" text-anchor="middle" font-size="11" fill="#d5342c" font-family="sans-serif">缩量止跌</text>
+  <rect x="440" y="40" width="100" height="36" rx="6" fill="#f6f2fb" stroke="#dccdf0"/>
+  <text x="490" y="63" text-anchor="middle" font-size="11" fill="#6b3fa0" font-family="sans-serif">Spring</text>
+  <rect x="560" y="40" width="100" height="36" rx="6" fill="#f2f8fb" stroke="#c4dde9"/>
+  <text x="610" y="63" text-anchor="middle" font-size="11" fill="#1a6d8a" font-family="sans-serif">RSI 背离</text>
+  <line x1="120" y1="58" x2="158" y2="58" stroke="#454c56" stroke-width="1.5" marker-end="url(#bwkA)"/>
+  <line x1="260" y1="58" x2="298" y2="58" stroke="#454c56" stroke-width="1.5" marker-end="url(#bwkA)"/>
+  <line x1="400" y1="58" x2="438" y2="58" stroke="#454c56" stroke-width="1.5" marker-end="url(#bwkA)"/>
+  <line x1="540" y1="58" x2="558" y2="58" stroke="#454c56" stroke-width="1.5" marker-end="url(#bwkA)"/>
+  <rect x="200" y="120" width="120" height="36" rx="6" fill="#fff8ec" stroke="#f0dcb4"/>
+  <text x="260" y="143" text-anchor="middle" font-size="11" fill="#a06800" font-family="sans-serif">SOS 突破</text>
+  <rect x="360" y="120" width="120" height="36" rx="6" fill="#f0f4fd" stroke="#c3d1f0"/>
+  <text x="420" y="143" text-anchor="middle" font-size="11" fill="#1d4ed8" font-family="sans-serif">Markup</text>
+  <line x1="610" y1="76" x2="610" y2="200" x2="610" y2="200" stroke="#454c56" stroke-width="1.5"/>
+  <line x1="610" y1="200" x2="260" y2="200" stroke="#454c56" stroke-width="1.5"/>
+  <line x1="260" y1="200" x2="260" y2="156" stroke="#454c56" stroke-width="1.5" marker-end="url(#bwkA)"/>
+  <line x1="320" y1="138" x2="358" y2="138" stroke="#454c56" stroke-width="1.5" marker-end="url(#bwkA)"/>
+  <path d="M 420 156 Q 420 220 350 250" fill="none" stroke="#d5342c" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#bwkAr)"/>
+  <text x="380" y="248" font-size="10" fill="#d5342c" font-family="sans-serif">正反馈：突破吸引杠杆</text>
+  <path d="M 490 76 Q 520 100 540 200" fill="none" stroke="#d5342c" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#bwkAr)"/>
+  <text x="530" y="190" font-size="10" fill="#d5342c" font-family="sans-serif">负反馈：假突破爆仓</text>
+  <rect x="20" y="260" width="640" height="44" rx="6" fill="#f4f6f9" stroke="#c9d0d9"/>
+  <text x="340" y="286" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">仅相关非因果：RSI&lt;30 与「马上反弹」— 在 Markdown 可连续数周成立</text>
+</svg>
+<hr />
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>同构 1：Spring ↔ 流动性掠夺 ↔ RSI 背离</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>领域</th>
+<th>表面事件</th>
+<th>底层结构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">威科夫</td>
+<td>Spring 跌破支撑收回</td>
+<td>触发止损簇、吸收浮筹</td>
+</tr>
+<tr>
+<td class="k">微观结构</td>
+<td>流动性空洞 + 快速回补</td>
+<td>大单吃单后价格反弹</td>
+</tr>
+<tr>
+<td class="k">RSI</td>
+<td>价格新低、动量抬高</td>
+<td>下跌「速度」放缓，≠ 已反转</td>
+</tr>
+</tbody>
+</table></div>
+<h3>同构 2：凯利仓位 ↔ 威科夫赔率 ↔ RSI 过滤</h3>
+<p>只在 <strong>盈亏比 &gt; 2</strong> 且 <strong>RSI 确认</strong> 时下注，等价于在边缘为正时放大仓位——与凯利准则「只在期望为正时参与」同构。</p>
+<h3>同构 3：BTC.D ↔ 生态位相对强度</h3>
+<p>威科夫强调个股的<strong>相对强度</strong>；在加密市场，<strong>BTC.D 就是 BTC 的相对强度指数</strong>。吸筹阶段 BTC 常先涨（BTC.D 升），山寨季则 BTC.D 降而总市值升。</p>
+<h3>隐藏关系：ETF 流量与「努力与结果」</h3>
+<p><span class="tag t-chk">待验证</span>ETF 大幅净流入日，若 BTC 涨幅很小（大努力小结果），可能是授权参与者在<strong>对冲申购</strong>而非趋势买盘——这与威科夫「吸收」读法一致，但与「利好必涨」叙事冲突。</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 1 · RSI 背离强度计：价格与动量是否「说两套话」</h4></div>
+  <p class="tool-sub">输入两段价格变化与对应 RSI 变化，计算背离强度分（0–100）。<b>看涨背离</b>：价格走低而 RSI 抬高；<b>看跌背离</b>：价格走高而 RSI 降低。在 Spring/UTAD 附近，强度 &gt;60 才视为有效确认。</p>
+  <canvas id="bwk_rsiChart" height="214" style="height:214px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="bwk_p1">价格变化 1（%）</label>
+    <input type="range" id="bwk_p1" min="-15" max="5" step="0.1" value="-5.0">
+    <output id="bwk_p1O">-5.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="bwk_r1">RSI 变化 1（点）</label>
+    <input type="range" id="bwk_r1" min="-15" max="15" step="0.1" value="4.0">
+    <output id="bwk_r1O">+4.0</output>
+  </div>
+  <div class="ctrl">
+    <label for="bwk_p2">价格变化 2（%）</label>
+    <input type="range" id="bwk_p2" min="-10" max="8" step="0.1" value="-2.5">
+    <output id="bwk_p2O">-2.5%</output>
+  </div>
+  <div class="ctrl">
+    <label for="bwk_r2">RSI 变化 2（点）</label>
+    <input type="range" id="bwk_r2" min="-15" max="15" step="0.1" value="5.5">
+    <output id="bwk_r2O">+5.5</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">背离类型</div><div class="val" id="bwk_divType">看涨背离</div><div class="hint" id="bwk_divTypeh">价格下行、RSI 抬升</div></div>
+    <div class="ro"><div class="lbl">背离强度</div><div class="val" id="bwk_divScore">73</div><div class="hint" id="bwk_divScoreh">0–100，越高越可靠</div></div>
+    <div class="ro"><div class="lbl">隐含 RSI 斜率差</div><div class="val" id="bwk_slope">+2.2</div><div class="hint" id="bwk_slopeh">RSI 变化率 − 价格变化率（归一化）</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="bwk_div_v" style="font-size:15px">有效确认</div>
+      <div class="hint" id="bwk_div_vh" style="margin-top:0">可纳入 Spring 剧本，仍需量能配合</div>
+    </div>
+  </div>
+</div>
+<p><strong>默认读数示例</strong>：价格两段合计走低约 7.5%，RSI 合计抬高约 9.5 点 → 强度约 73 分，属「可纳入 Spring 剧本」档。<strong>若价格与 RSI 同向新低，强度接近 0</strong>——此时 Spring 更像真破位。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>Phase A–E 在 BTC 上的运行逻辑</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>吸筹/再吸筹</th>
+<th>派发</th>
+<th>RSI 辅助</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">A</td>
+<td>SC/BC 放量，AR 定界</td>
+<td>BC 见顶，AR 定上沿</td>
+<td>极值后首次背离萌芽</td>
+</tr>
+<tr>
+<td class="k">B</td>
+<td>横盘换手，主力吃货</td>
+<td>横盘出货，反弹缩量</td>
+<td>40–60 区间震荡</td>
+</tr>
+<tr>
+<td class="k">C</td>
+<td><strong>Spring</strong>（可选）</td>
+<td><strong>UTAD</strong>（可选）</td>
+<td>背离最常用窗口</td>
+</tr>
+<tr>
+<td class="k">D</td>
+<td>SOS + LPS</td>
+<td>SOW + LPSY</td>
+<td>突破后 RSI 能否站稳 50</td>
+</tr>
+<tr>
+<td class="k">E</td>
+<td>Markup</td>
+<td>Markdown</td>
+<td>趋势钝化或崩溃</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-fact">事实</span>Wyckoff Analytics 官方说明：Spring 与 UTAD <strong>不是必需元素</strong>——没有 Spring 的吸筹 schematic 同样有效；<strong>把「必须有 Spring」当成规则，是散户教程最常见的简化错误</strong>。</p>
+<h3>资金流抽水图（派发阶段）</h3>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <text x="12" y="18" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 派发阶段资金流（简化抽水图）</text>
+  <rect x="40" y="40" width="600" height="80" rx="8" fill="#fdf3f2" stroke="#f0cdc9" stroke-width="1.3"/>
+  <text x="340" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#d5342c" font-family="sans-serif">交易区间（派发 TR）</text>
+  <text x="80" y="88" font-size="10" fill="#454c56" font-family="sans-serif">散户 + 杠杆多头</text>
+  <text x="520" y="88" font-size="10" fill="#454c56" font-family="sans-serif">ETF/OTC/早期持有者</text>
+  <path d="M 200 100 L 480 100" stroke="#d5342c" stroke-width="2" marker-end="url(#pumpR)"/>
+  <defs><marker id="pumpR" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#d5342c"/></marker></defs>
+  <text x="340" y="115" text-anchor="middle" font-size="10" fill="#d5342c" font-family="sans-serif">筹码 + 法币流向复合人</text>
+  <rect x="120" y="140" width="440" height="50" rx="6" fill="#f4f6f9" stroke="#c9d0d9"/>
+  <text x="340" y="162" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">抽水机制：上涨缩量（努力小结果小）· 下跌放量（供应主导）</text>
+  <text x="340" y="178" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">UTAD 假突破：最后一次高价出货 · RSI 顶背离同步</text>
+  <rect x="200" y="210" width="280" height="36" rx="6" fill="#f0f4fd" stroke="#c3d1f0"/>
+  <text x="340" y="233" text-anchor="middle" font-size="11" fill="#1d4ed8" font-family="sans-serif">Phase E：Markdown · 杠杆级联清算</text>
+</svg>
+<hr />
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>BTC 历史上的威科夫争议案例</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>时期</th>
+<th>区间（约）</th>
+<th>主流解读</th>
+<th>结果</th>
+<th>RSI/RS 注记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2021.02–05</td>
+<td>$47k–$64k</td>
+<td>派发</td>
+<td>跌破后跌至 $29k</td>
+<td>顶区 RSI 钝化后快速下穿 50</td>
+</tr>
+<tr>
+<td class="k">2024.03–08</td>
+<td>$53k–$74k</td>
+<td>再吸筹 vs 派发并存</td>
+<td><span class="tag t-chk">待验证</span>后续向上突破</td>
+<td>夏季 Spring 测试 $53.4k 时 RSI 背离被广泛讨论</td>
+</tr>
+<tr>
+<td class="k">2025.01</td>
+<td>上冲 $109k 后回落</td>
+<td>派发 Upthrust</td>
+<td><span class="tag t-ana">分析</span>多家指向 Phase D、目标 $70k–$86k</td>
+<td>RSI 高位背离与 LPSY 无力反弹</td>
+</tr>
+</tbody>
+</table></div>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="12" y="18" font-size="12.5" font-weight="700" fill="#15181d" font-family="sans-serif">BTC 威科夫周期演化时间轴（示意，非精确比例）</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="80" cy="100" r="7" fill="#0f8a4d"/>
+  <text x="80" y="82" text-anchor="middle" font-size="9" fill="#0f8a4d" font-family="sans-serif">2018–20</text>
+  <text x="80" y="125" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">吸筹</text>
+  <circle cx="200" cy="100" r="7" fill="#d5342c"/>
+  <text x="200" y="82" text-anchor="middle" font-size="9" fill="#d5342c" font-family="sans-serif">2020–21</text>
+  <text x="200" y="125" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">Markup</text>
+  <circle cx="320" cy="100" r="7" fill="#8a6d1f"/>
+  <text x="320" y="82" text-anchor="middle" font-size="9" fill="#8a6d1f" font-family="sans-serif">2021–22</text>
+  <text x="320" y="125" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">派发→Markdown</text>
+  <circle cx="440" cy="100" r="7" fill="#0f8a4d"/>
+  <text x="440" y="82" text-anchor="middle" font-size="9" fill="#0f8a4d" font-family="sans-serif">2022–24</text>
+  <text x="440" y="125" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">再吸筹争议</text>
+  <circle cx="560" cy="100" r="7" fill="#8a6d1f"/>
+  <text x="560" y="82" text-anchor="middle" font-size="9" fill="#8a6d1f" font-family="sans-serif">2025</text>
+  <text x="560" y="125" text-anchor="middle" font-size="9" fill="#454c56" font-family="sans-serif">派发争议</text>
+  <text x="340" y="165" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">每一段「争议区间」都是方法试金石：事后标签永远比事前容易</text>
+</svg>
+<p><strong>演化规律</strong>：BTC 减半周期约 4 年，与威科夫「大级别吸筹—拉升—派发」在时间上常重叠，但<strong>不同步</strong>——不要用减半日历替代区间读盘。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>激励</th>
+<th>如何扭曲你的读盘</th>
+<th>对冲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">分析师/KOL</td>
+<td>流量、返佣</td>
+<td>任何走势都能套威科夫标签</td>
+<td>只看可证伪条件</td>
+</tr>
+<tr>
+<td class="k">交易所</td>
+<td>交易量、爆仓</td>
+<td>鼓励杠杆在 Spring/UTAD 边缘开仓</td>
+<td>降低杠杆、等 LPS</td>
+</tr>
+<tr>
+<td class="k">ETF 发行方</td>
+<td>规模、管理费</td>
+<td>强调长期持有、淡化区间风险</td>
+<td>独立看净流入与价格位移</td>
+</tr>
+<tr>
+<td class="k">你自己</td>
+<td>回本、踏空恐惧</td>
+<td>持仓方向污染结构判断</td>
+<td>先写证伪合同</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>抽象 ↔ 机制 ↔ 操作 三层映射</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <text x="12" y="18" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">抽象概念 → 底层机制 → 可执行操作</text>
+  <rect x="20" y="40" width="190" height="200" rx="8" fill="#f0f4fd" stroke="#c3d1f0"/>
+  <text x="115" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象层</text>
+  <text x="35" y="88" font-size="10" fill="#454c56" font-family="sans-serif">· 吸筹 / 派发</text>
+  <text x="35" y="108" font-size="10" fill="#454c56" font-family="sans-serif">· 相对强弱</text>
+  <text x="35" y="128" font-size="10" fill="#454c56" font-family="sans-serif">· 动量衰竭</text>
+  <text x="35" y="148" font-size="10" fill="#454c56" font-family="sans-serif">· 复合人</text>
+  <rect x="245" y="40" width="190" height="200" rx="8" fill="#f2f7f4" stroke="#c6dcc9"/>
+  <text x="340" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#0f8a4d" font-family="sans-serif">机制层</text>
+  <text x="260" y="88" font-size="10" fill="#454c56" font-family="sans-serif">· 止损簇触发与回收</text>
+  <text x="260" y="108" font-size="10" fill="#454c56" font-family="sans-serif">· 供应吸收 vs 释放</text>
+  <text x="260" y="128" font-size="10" fill="#454c56" font-family="sans-serif">· RSI 涨跌速度差</text>
+  <text x="260" y="148" font-size="10" fill="#454c56" font-family="sans-serif">· BTC 资金轮动</text>
+  <rect x="470" y="40" width="190" height="200" rx="8" fill="#fff8ec" stroke="#f0dcb4"/>
+  <text x="565" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#a06800" font-family="sans-serif">操作层</text>
+  <text x="485" y="88" font-size="10" fill="#454c56" font-family="sans-serif">· 画周线区间</text>
+  <text x="485" y="108" font-size="10" fill="#454c56" font-family="sans-serif">· 标 Spring + 背离</text>
+  <text x="485" y="128" font-size="10" fill="#454c56" font-family="sans-serif">· 等 SOS→LPS 入场</text>
+  <text x="485" y="148" font-size="10" fill="#454c56" font-family="sans-serif">· 看 BTC.D 过滤</text>
+  <text x="485" y="168" font-size="10" fill="#454c56" font-family="sans-serif">· 写证伪 + 仓位</text>
+  <line x1="210" y1="140" x2="243" y2="140" stroke="#454c56" stroke-width="1.3"/>
+  <line x1="435" y1="140" x2="468" y2="140" stroke="#454c56" stroke-width="1.3"/>
+</svg>
+<h3>信息源优先级</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>来源</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>周线/日线 K 线 + 量</td>
+<td>区间与事件</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>RSI(14) + BTC.D / ETH/BTC</td>
+<td>动量与相对强弱</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>ETF 日净流入、资金费率</td>
+<td>当代订单流</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>链上 LTH、交易所余额</td>
+<td>辅助验证，非主信号</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>社交媒体威科夫 counts</td>
+<td><strong>仅作假设</strong>，需自行验证</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>为什么杠杆高</th>
+<th>落地动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>周线定多空，日线找事件</strong></td>
+<td>一次性过滤 80% 逆势交易</td>
+<td>周线区间不明则不做</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>Spring/UTAD 必须配 RSI 背离</strong></td>
+<td>把假突破与真洗盘分开一档</td>
+<td>背离强度 &lt;40 则观望</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>进场点后移到 LPS/LPSY 后</strong></td>
+<td>避开最大爆仓区</td>
+<td>突破日不追</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>用 BTC.D 过滤山寨威科夫</strong></td>
+<td>山寨吸筹常随 BTC 错杀</td>
+<td>BTC.D 急升时慎做多山寨</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>开仓前写证伪条件</strong></td>
+<td>对抗 L9 持仓偏见</td>
+<td>价格/时间/RSI 三选一写清</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>先算赔率再算故事</strong></td>
+<td>形态会骗人，赔率不会</td>
+<td>盈亏比 &lt;2 不做</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>对照随机做多基准胜率</strong></td>
+<td>BTC 正漂移使「60% 胜率」缩水</td>
+<td>用工具 3 剥漂移</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>记录每笔含失败</strong></td>
+<td>唯一真实胜率来源</td>
+<td>一行日记</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>宏观 L1 一票否决</strong></td>
+<td>2020.03、2022 全结构失效</td>
+<td>极端波动周减仓</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>RSI 周期与持仓周期对齐</strong></td>
+<td>日线 Spring 用 RSI(14)；周线用 RSI(14) 或 21</td>
+<td>周期错配则信号无效</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱 1 · 把 RSI 超买超卖当反转信号</summary><div class="dbody"><p><strong>症状</strong>：RSI&gt;70 做空、RSI&lt;30 做多，在 BTC 趋势里连续亏损。</p>
+<p><strong>机制</strong>：<span class="tag t-ana">分析</span>PMC 2023 年加密货币 RSI 研究表明，传统阈值在趋势市场高波动环境下失效；BTC 牛市可 RSI&gt;70 维持数周。</p>
+<p><strong>对冲</strong>：RSI 只作<strong>背离与 50 中轴</strong>工具，不作绝对阈值。</p></div></details>
+<details><summary>陷阱 2 · 每一个跌破都叫 Spring</summary><div class="dbody"><p><strong>症状</strong>：杠杆清算后反弹 1 根 K 线就标注 Spring。</p>
+<p><strong>机制</strong>：真 Spring 需<strong>收盘收回区间内</strong> + 缩量 + 最好在 Phase C。<span class="tag t-fact">事实</span>Wyckoff Analytics：Spring 是测试供应，不是 intraday 插针。</p>
+<p><strong>对冲</strong>：用工具 4 打质量分，&lt;50 则标「待观察」。</p></div></details>
+<details><summary>陷阱 3 · 忽视再吸筹与派发的对称性</summary><div class="dbody"><p><strong>症状</strong>：牛市横盘一律当「洗盘」，熊市横盘一律当「筑底」。</p>
+<p><strong>机制</strong>：再吸筹与派发在 K 线上几乎相同，区别在<strong>前置趋势与突破方向</strong>。</p>
+<p><strong>对冲</strong>：先答「前面是 Markup 还是 Markdown？」再贴标签。</p></div></details>
+<details><summary>陷阱 4 · 相对强弱只看 BTC 自己</summary><div class="dbody"><p><strong>症状</strong>：BTC 横盘微涨，以为强势，实则山寨暴涨 BTC 跑输。</p>
+<p><strong>机制</strong>：BTC.D 下降 + 总市值上升 = 资金轮动，不是 BTC 带队。</p>
+<p><strong>对冲</strong>：同时打开 BTC.D 与 ETH/BTC。</p></div></details>
+<details><summary>陷阱 5 · 漂移幻觉（「胜率 62%」）</summary><div class="dbody"><p><strong>症状</strong>：回测胜率 62%，以为显著优于随机。</p>
+<p><strong>机制</strong>：BTC 年化漂移约 45%、波动 55% 时，<strong>持有 20 日随机做多基准胜率已达 59.1%</strong>——真实超额仅约 2.9pp，需约 2259 次交易才能统计证明。</p>
+<p><strong>对冲</strong>：用工具 3，超额 &lt;3pp 默认无效。</p></div></details>
+<details><summary>陷阱 6 · ETF 利好 = SOS</summary><div class="dbody"><p><strong>症状</strong>：ETF 通过日追涨，随后长期横盘。</p>
+<p><strong>机制</strong>：消息日往往是<strong>情绪 BC</strong>，不是结构 SOS。</p>
+<p><strong>对冲</strong>：消息日后等 LPS，不看首日 K 线。</p></div></details>
+<details><summary>陷阱 7 · 多时间框架 RSI 打架</summary><div class="dbody"><p><strong>症状</strong>：日线背离但周线 RSI 下行，仍做多。</p>
+<p><strong>机制</strong>：大周期动量压制小周期背离。</p>
+<p><strong>对冲</strong>：周线 RSI 方向与交易方向一致才开仓。</p></div></details>
+<details><summary>陷阱 8 · 忽视资金费率极端</summary><div class="dbody"><p><strong>症状</strong>：Spring 做多同时费率 0.1%/8h。</p>
+<p><strong>机制</strong>：多头拥挤时 Spring 易变「多杀多」起点。</p>
+<p><strong>对冲</strong>：费率 &gt;0.05%/8h 时减仓或观望。</p></div></details>
+<details><summary>陷阱 9 · 样本 = 自己记得的几次</summary><div class="dbody"><p><strong>症状</strong>：「上次 Spring 都涨了」。</p>
+<p><strong>机制</strong>：幸存者偏差 + 无记录。</p>
+<p><strong>对冲</strong>：遮图测验 20 次 + 记录表。</p></div></details>
+<details><summary>陷阱 10 · 把分析师目标价当因果计数</summary><div class="dbody"><p><strong>症状</strong>：「威科夫目标 $144k」满仓。</p>
+<p><strong>机制</strong>：P&amp;F 计数是<strong>机制推导的上限</strong>，不是承诺；且 BTC 波动大，格值选取主观。</p>
+<p><strong>对冲</strong>：目标价 ×0.7 再算赔率，&lt;2 不做。</p></div></details>
+<details><summary>陷阱 11 · 链上叙事覆盖量价</summary><div class="dbody"><p><strong>症状</strong>：LTH 增持所以忽略 SOW。</p>
+<p><strong>机制</strong>：链上与价格可长期背离；威科夫读的是<strong>成交</strong>。</p>
+<p><strong>对冲</strong>：链上仅作二级确认，不否决价量。</p></div></details>
+<details><summary>陷阱 12 · 24/7 市场不设时间证伪</summary><div class="dbody"><p><strong>症状</strong>：横盘三个月仍「等 SOS」。</p>
+<p><strong>机制</strong>：机会成本 + 结构可能已失效。</p>
+<p><strong>对冲</strong>：20 个交易日无进展则作废假设。</p></div></details>
+<hr />
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<h3>案例骨架：2024 再吸筹叙事（<span class="tag t-chk">待验证</span>）</h3>
+<p><span class="tag t-chk">待验证</span>Cointelegraph 2024 年 8 月报道：BTC 或处于再吸筹 Test 阶段，测试 Spring 低点约 $53,400，若突破 $74,000 则进入 SOS。<span class="tag t-ana">分析</span>同期 RSI 从超卖区抬升、与价格形成背离的讨论增多——<strong>这是「结构 + 动量」组合的典型教科书描述，不是事后确认的事实</strong>。</p>
+<p>读盘清单：</p>
+<ol>
+<li>周线区间是否清晰？上下沿各至少 2 次触碰</li>
+<li>跌破 $53.4k 是否<strong>收盘收回</strong>？量能是否低于 SC？</li>
+<li>RSI 在第二次探底时是否高于第一次？</li>
+<li>突破 $74k 是否量比 &gt;1.5？回踩是否 LPS？</li>
+</ol>
+<p><strong>任一否 → 降级为「观望」</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<h3>决策表（BTC 专用）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>RSI</th>
+<th>相对强弱</th>
+<th>行动</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Spring + 收回</td>
+<td>看涨背离 &gt;60 分</td>
+<td>BTC.D 企稳或 ETH/BTC 见底</td>
+<td>等 SOS→LPS 轻仓试多</td>
+</tr>
+<tr>
+<td class="k">横盘 Phase B</td>
+<td>40–60</td>
+<td>无方向</td>
+<td><strong>不交易</strong></td>
+</tr>
+<tr>
+<td class="k">UTAD</td>
+<td>看跌背离</td>
+<td>BTC 涨、山寨更强（BTC.D 降）</td>
+<td>不追多，考虑减仓</td>
+</tr>
+<tr>
+<td class="k">SOW 跌破</td>
+<td>RSI &lt;45 且无背离</td>
+<td>BTC.D 升（资金回流 BTC 避险）</td>
+<td>不做多，等待新区间</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 2 · 威科夫相位置信度：吸筹 vs 派发（0–100）</h4></div>
+  <p class="tool-sub">用<strong>位置分位、上涨/下跌量比、RSI 水平</strong>三因素估计当前更像吸筹还是派发。不是自动标签机——输出 &lt;55 分时必须标「不确定」。</p>
+  <div class="ctrl">
+    <label for="bwk_pos">价格在区间中的位置（%）</label>
+    <input type="range" id="bwk_pos" min="0" max="100" step="1" value="28">
+    <output id="bwk_posO">28%（偏下）</output>
+  </div>
+  <div class="ctrl">
+    <label for="bwk_vUp">上涨日量比（均量倍数）</label>
+    <input type="range" id="bwk_vUp" min="0.3" max="3" step="0.1" value="0.8">
+    <output id="bwk_vUpO">0.8×</output>
+  </div>
+  <div class="ctrl">
+    <label for="bwk_vDn">下跌日量比（均量倍数）</label>
+    <input type="range" id="bwk_vDn" min="0.3" max="3" step="0.1" value="1.4">
+    <output id="bwk_vDnO">1.4×</output>
+  </div>
+  <div class="ctrl">
+    <label for="bwk_rsiLv">RSI(14) 当前值</label>
+    <input type="range" id="bwk_rsiLv" min="20" max="80" step="0.5" value="38">
+    <output id="bwk_rsiLvO">38</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">吸筹置信度</div><div class="val" id="bwk_acc">60</div><div class="hint" id="bwk_acch">0=纯派发，100=纯吸筹</div></div>
+    <div class="ro"><div class="lbl">派发置信度</div><div class="val" id="bwk_dist">40</div><div class="hint" id="bwk_disth">100 − 吸筹置信度</div></div>
+    <div class="ro"><div class="lbl">量价信号</div><div class="val" id="bwk_vq" style="font-size:14px">跌放量涨缩量</div><div class="hint" id="bwk_vqh">偏吸筹特征</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="bwk_phase_v" style="font-size:15px">偏吸筹</div>
+      <div class="hint" id="bwk_phase_vh" style="margin-top:0">需 Spring/SOS 事件确认，不可直接满仓</div>
+    </div>
+  </div>
+</div>
+<p><strong>默认读数</strong>：位置 28%、涨缩量 0.8×、跌放量 1.4×、RSI 38 → 吸筹置信度约 <strong>60</strong>，属「偏吸筹但需事件确认」——与 2024 年夏季 BTC 叙事方向一致，<strong>不构成投资建议</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>能力</th>
+<th>达标检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>画 BTC 周线区间</td>
+<td>两人独立画出的边界相差 &lt;5%</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>标 Spring/UTAD/SOS/SOW</td>
+<td>能说出每一标签的量价依据</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>手算 RSI(14) 与背离</td>
+<td>与软件值误差 &lt;1 点</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>读 BTC.D + ETH/BTC</td>
+<td>能判断当前是 Regime 1–4 哪一种</td>
+</tr>
+<tr>
+<td class="k">L5</td>
+<td>写完整证伪合同</td>
+<td>含价格、时间、RSI 三条之一</td>
+</tr>
+<tr>
+<td class="k">L6</td>
+<td>记录 30 笔统计胜率</td>
+<td>有真实超额 vs 基准的计算</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：你是「区间侦探」，在「Compound City」地图上解锁五个关卡——<strong>画界 → 找 Spring → 验背离 → 等 LPS → 写复盘</strong>。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>关卡</th>
+<th>任务</th>
+<th>奖励（自我约定）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1-1</td>
+<td>找出 2024 BTC 区间的上下沿</td>
+<td>允许自己看一次分析师观点</td>
+</tr>
+<tr>
+<td class="k">1-2</td>
+<td>标出 3 个历史 Spring，遮图验证</td>
+<td>解锁「工具 4」</td>
+</tr>
+<tr>
+<td class="k">2-1</td>
+<td>连续 7 天记录 RSI+结构</td>
+<td>解锁「相对强弱」章节重读</td>
+</tr>
+<tr>
+<td class="k">Boss</td>
+<td>30 笔实盘或模拟记录</td>
+<td>才有资格调整个人规则</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>频率</th>
+<th>任务</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日</td>
+<td>更新 BTC 区间与 RSI</td>
+<td>一行状态：Phase / RSI / BTC.D</td>
+</tr>
+<tr>
+<td class="k">每周</td>
+<td>遮图测验 5 次</td>
+<td>命中率</td>
+</tr>
+<tr>
+<td class="k">每月</td>
+<td>用工具 3 复核策略超额</td>
+<td>是否仍 &gt;3pp</td>
+</tr>
+<tr>
+<td class="k">每季</td>
+<td>对照链上 + ETF 流量</td>
+<td>一份矛盾清单</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A：Spring 完美但 RSI 无背离</button><button class="tab" data-pane="tb1-1">情景 B：RSI 背离但无 Spring</button><button class="tab" data-pane="tb1-2">情景 C：BTC 派发但山寨暴涨</button><button class="tab" data-pane="tb1-3">情景 D：ETF 连续净流入但价格横盘</button></div>
+<div class="pane on" id="tb1-0"><p><strong>假设</strong>：价格跌破区间 2.5% 后 2 日收回，量能 0.7×，但 RSI 创新低。</p>
+<p><strong>后果</strong>：<span class="tag t-inf">推论</span>历史上此类「结构对、动量错」案例后续 SOS 成功率低于「结构+背离双确认」情形——应降仓位 50% 或等二次测试。</p>
+<p><strong>洞察</strong>：威科夫事件与 RSI 是<strong>独立证据源</strong>，缺一不否决但应打折。</p></div><div class="pane" id="tb1-1"><p><strong>假设</strong>：区间中部 RSI 看涨背离，价格未测下沿。</p>
+<p><strong>后果</strong>：可能是<strong>下跌中继</strong>而非吸筹末端——背离在中继段常见。</p>
+<p><strong>洞察</strong>：背离必须发生在<strong>区间下沿 30% 分位以内</strong>才纳入吸筹剧本（杠杆点 4）。</p></div><div class="pane" id="tb1-2"><p><strong>假设</strong>：BTC 周线 UTAD，ETH 突破新高，BTC.D 快速下降。</p>
+<p><strong>后果</strong>：组合若全仓 BTC 多头受损；若持有山寨则可能阶段性盈利——<strong>派发是 BTC 结构，不一定是全市场结构</strong>。</p>
+<p><strong>洞察</strong>：威科夫要<strong>按标的分别画区间</strong>；BTC 派发 + 山寨吸筹可并存。</p></div><div class="pane" id="tb1-3"><p><strong>假设</strong>：一周净流入 $1B+，BTC 波动 &lt;3%，RSI 50 附近。</p>
+<p><strong>后果</strong>：大努力小结果 → 吸收或对冲申购，<strong>不是 SOS</strong>。</p>
+<p><strong>洞察</strong>：努力与结果律优先于叙事；净流入需配价格位移。</p></div>
+<hr />
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>标志</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">新手</td>
+<td>0–6 周</td>
+<td>能画区间 + 读出 RSI，不急于下单</td>
+</tr>
+<tr>
+<td class="k">进阶</td>
+<td>2–4 月</td>
+<td>背离 + 相位工具与手动判断一致率 &gt;70%</td>
+</tr>
+<tr>
+<td class="k">熟练</td>
+<td>6–12 月</td>
+<td>30+ 笔记录，算清真实超额</td>
+</tr>
+<tr>
+<td class="k">专家</td>
+<td>1 年+</td>
+<td>能明确说「当前环境威科夫降权，改用 X」</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<h3>今天就做：BTC 威科夫-RSI 一页纸</h3>
+<p><strong>成本</strong>：0 元，30 分钟，TradingView 或同类免费图表即可。</p>
+<h4>步骤</h4>
+<ol>
+<li><strong>（5 分钟）</strong> 打开 BTC/USDT <strong>周线</strong>，画最近 12 个月的矩形区间。</li>
+<li><strong>（5 分钟）</strong> 切日线，标当前处于 Phase A–E 哪一段；若说不清，写「Phase B 不确定」。</li>
+<li><strong>（8 分钟）</strong> 加 RSI(14)，比较最近两个局部低点：价格与 RSI 是否背离？用工具 1 估强度。</li>
+<li><strong>（7 分钟）</strong> 打开 BTC.D，写一句：BTC 相对加密大盘是走强还是走弱？</li>
+<li><strong>（5 分钟）</strong> 写证伪条件一行，例如：「若周线收盘跌破 $X 或 20 日内 RSI 续创新低，放弃吸筹假设。」</li>
+</ol>
+<h4>产出</h4>
+<p>一张截图 + 五句文字：<strong>区间、Phase、背离分、BTC.D 方向、证伪条件</strong>——30 天后回看，这是你的第一个可验证数据点。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天实践计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>任务</th>
+<th>时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>完成上一节一页纸</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>复盘 2021 BTC 派发段，标 UTAD+RSI</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>复盘 2024 再吸筹争议，列正反证据</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>遮图测验 10 次（只给左 70% K 线）</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>手算 5 日 RSI 与软件对照</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>用工具 2/4 给 3 个历史 Spring 打分</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>写本周最不确定的一个问题</td>
+<td>30 min</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>重点</th>
+<th>达标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>区间 + Phase 语言</td>
+<td>能盲画 2024 区间</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>RSI 背离</td>
+<td>10 次背离判断有记录</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>相对强弱 BTC.D</td>
+<td>能解释当前 Regime</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>证伪 + 记录</td>
+<td>≥10 笔含失败样本</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>四阶段循环</td>
+<td>吸筹→Markup→派发→Markdown</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>Phase A–E</td>
+<td>事件顺序约束假设</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>Spring / UTAD</td>
+<td>假突破测试供应/需求</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>努力与结果</td>
+<td>量比 vs 波幅</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>RSI(14) 公式</td>
+<td>动量速度，非价格</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>看涨/看跌背离</td>
+<td>价格与动量语义分裂</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>BTC.D 四 Regime</td>
+<td>资金轮动的宏观 RSI</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>随机做多基准</td>
+<td>剥离 BTC 正漂移</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>盈亏比门槛</td>
+<td>期望为正的前提</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>证伪合同</td>
+<td>L9 偏见的唯一解药</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>结构</summary><div class="dbody"><ul>
+<li>周线区间上下沿各被测试了几次？</li>
+<li>当前更靠近再吸筹还是派发？前置趋势是什么？</li>
+<li>最近是否有 Spring/UTAD？是否收盘确认？</li>
+</ul></div></details>
+<details><summary>动量与相对强弱</summary><div class="dbody"><ul>
+<li>RSI 在最近两个同向极值是否背离？</li>
+<li>周线 RSI 与日线 RSI 是否同向？</li>
+<li>BTC.D 与 ETH/BTC 指向同一叙事吗？</li>
+</ul></div></details>
+<details><summary>风险与统计</summary><div class="dbody"><ul>
+<li>盈亏比是否 ≥2？</li>
+<li>策略胜率扣掉 20 日基准后是否仍 &gt;3pp？</li>
+<li>证伪条件是否可观测且会在 20 日内触发？</li>
+</ul></div></details>
+<hr />
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>订单流与威科夫</strong>：把 CVD、足迹图接入 Spring 识别（L8 层）</li>
+<li><strong>链上 + 结构</strong>：LTH 变化率作为 Phase B 长度的贝叶斯先验</li>
+<li><strong>跨品种配对</strong>：ETH/BTC 区间与 BTC 区间共振交易</li>
+<li><strong>机器学习辅助</strong>：用标注好的 Spring 数据集训练分类器——<strong>仅作排序，不作黑箱</strong></li>
+<li><strong>回测纪律</strong>：按 PMC 2023 框架系统测试「背离+Spring」vs 纯 Spring</li>
+</ol>
+<hr />
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Wyckoff Spring/UTAD 定义</td>
+<td>方法论原文</td>
+<td>Wyckoff Analytics 官网</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2024 BTC 再吸筹报道</td>
+<td>媒体</td>
+<td>Cointelegraph / TradingView 2024-08</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2025 派发解读</td>
+<td>媒体</td>
+<td>Cointelegraph / cryptonews.net 2025</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">RSI 定义与公式</td>
+<td>教科书</td>
+<td>Investopedia RSI 条目</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">加密货币 RSI 回测</td>
+<td>学术论文</td>
+<td>PMC9920669, 2023</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">BTC.D 与山寨季</td>
+<td>行业分析</td>
+<td>crypto.news 2026 中期综述</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">随机做多基准公式</td>
+<td>项目内推导</td>
+<td>全景引擎 SKILL §1</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">ETF 流量影响</td>
+<td>行业观察</td>
+<td>多家 2024–2025 报道</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记说明：<strong><span class="tag t-fact">事实</span></strong> 可核对一手来源；<strong><span class="tag t-ana">分析</span></strong> 机构或作者判断；<strong><span class="tag t-inf">推论</span></strong> 本手册推导；<strong><span class="tag t-hyp">假设</span></strong> 待检验；<strong><span class="tag t-chk">待验证</span></strong> 二手数据或争议案例。</p>
+<hr />
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供学习与研究，<strong>不构成任何投资建议</strong>。比特币及衍生品波动极大，杠杆可能导致本金全部损失。文中历史案例、胜率与超额收益均来自特定样本与假设，<strong>过去表现不代表未来结果</strong>。作者不对依据本手册做出的任何交易决策承担责任。请在充分了解风险、遵守当地法规的前提下独立决策。</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 3 · BTC 漂移剥离器：「62% 胜率」还剩多少超额</h4></div>
+  <p class="tool-sub">BTC 长期正漂移使「持有 N 日随机做多」的胜率远高于 50%。默认参数：年化漂移 45%、波动 55%（【待验证】来自近年 BTC 波动率共识区间）。</p>
+  <canvas id="bwk_driftChart" height="176" style="height:176px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="bwk_dT">持有期（交易日）</label>
+    <input type="range" id="bwk_dT" min="5" max="60" step="1" value="20">
+    <output id="bwk_dTO">20 日</output>
+  </div>
+  <div class="ctrl">
+    <label for="bwk_dps">策略报告胜率</label>
+    <input type="range" id="bwk_dps" min="50" max="80" step="0.1" value="62.0">
+    <output id="bwk_dpsO">62.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="bwk_dmu">BTC 年化漂移</label>
+    <input type="range" id="bwk_dmu" min="0" max="80" step="1" value="45">
+    <output id="bwk_dmuO">45%</output>
+  </div>
+  <div class="ctrl">
+    <label for="bwk_dsg">BTC 年化波动</label>
+    <input type="range" id="bwk_dsg" min="30" max="90" step="1" value="55">
+    <output id="bwk_dsgO">55%</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">随机做多基准</div><div class="val" id="bwk_dbase">59.1%</div><div class="hint" id="bwk_dbaseh">相同持有期、相同漂移假设</div></div>
+    <div class="ro"><div class="lbl">真实超额</div><div class="val" id="bwk_ddp">+2.9 pp</div><div class="hint" id="bwk_ddph">策略胜率 − 基准</div></div>
+    <div class="ro"><div class="lbl">证明非随机所需样本</div><div class="val" id="bwk_dn">2259</div><div class="hint" id="bwk_dnh">单侧 5%、检验力 80%</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="bwk_d_v" style="font-size:15px">超额可疑</div>
+      <div class="hint" id="bwk_d_vh" style="margin-top:0">2.9pp 易被成本与过拟合吞噬</div>
+    </div>
+  </div>
+</div>
+
+<div class="tool">
+  <div class="tool-hd"><h4>工具 4 · Spring/UTAD 质量分（BTC 波动校准）</h4></div>
+  <p class="tool-sub">针对 BTC 略放宽深度最优区间（1%–4%）。跌破深度、收回速度、量能三因子合成 0–100 分。</p>
+  <div class="ctrl">
+    <label for="bwk_spd">跌破/突破深度（%）</label>
+    <input type="range" id="bwk_spd" min="0.5" max="12" step="0.1" value="2.5">
+    <output id="bwk_spdO">2.5%</output>
+  </div>
+  <div class="ctrl">
+    <label for="bwk_spt">收回/回落 K 线数</label>
+    <input type="range" id="bwk_spt" min="1" max="10" step="1" value="2">
+    <output id="bwk_sptO">2 根</output>
+  </div>
+  <div class="ctrl">
+    <label for="bwk_spv">测试日量比</label>
+    <input type="range" id="bwk_spv" min="0.3" max="4" step="0.1" value="0.8">
+    <output id="bwk_spvO">0.8×</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">质量分</div><div class="val" id="bwk_spScore">83.0</div><div class="hint" id="bwk_spScoreh">Spring 越高越好；UTAD 时反向理解</div></div>
+    <div class="ro"><div class="lbl">深度/速度/量能</div><div class="val" id="bwk_spParts" style="font-size:14px">0.95 / 0.51 / 1.00</div><div class="hint" id="bwk_spPartsh">分项 0–1</div></div>
+    <div class="ro"><div class="lbl">BTC 最优深度</div><div class="val" id="bwk_spOpt" style="font-size:14px">1%–4%</div><div class="hint" id="bwk_spOpth">较股票略宽</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="bwk_sp_v" style="font-size:15px">高质量 Spring</div>
+      <div class="hint" id="bwk_sp_vh" style="margin-top:0">等 SOS 突破 + RSI&gt;50 再考虑入场</div>
+    </div>
+  </div>
+</div>
+</section>
+<footer>  <p>《BTC-威科夫积累/派发与相对强弱 RSI · 全景认知与实践操作手册》 · 生成于 2026-09-17 · 耗时 5 分 55 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* BTC 威科夫 × RSI 主题脚本 — 4 个可调模型 */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  /* 工具 1 · RSI 背离强度计 */
+  (function rsiDiv() {
+    var p1El = $('bwk_p1'), r1El = $('bwk_r1'), p2El = $('bwk_p2'), r2El = $('bwk_r2');
+    if (!p1El || !r1El || !p2El || !r2El) return;
+    var p1O = $('bwk_p1O'), r1O = $('bwk_r1O'), p2O = $('bwk_p2O'), r2O = $('bwk_r2O');
+    var typeEl = $('bwk_divType'), typehEl = $('bwk_divTypeh');
+    var scoreEl = $('bwk_divScore'), scorehEl = $('bwk_divScoreh');
+    var slopeEl = $('bwk_slope'), slopehEl = $('bwk_slopeh');
+    var vEl = $('bwk_div_v'), vhEl = $('bwk_div_vh');
+    var cv = $('bwk_rsiChart');
+    var ctx = cv ? cv.getContext('2d') : null;
+
+    function draw(p1, p2, r1, r2, score, bull) {
+      if (!ctx) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.clientWidth || 600, h = 214;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+
+      var pl = 56, pr = 24, pt = 28, pb = 46;
+      var bw = w - pl - pr, bh = h - pt - pb;
+      var y1 = h - pb;
+
+      ctx.strokeStyle = '#eef1f5';
+      ctx.lineWidth = 1;
+      for (var g = 0; g <= 4; g++) {
+        var gy = pt + bh * g / 4;
+        ctx.beginPath(); ctx.moveTo(pl, gy); ctx.lineTo(w - pr, gy); ctx.stroke();
+      }
+
+      var px = [pl + bw * 0.2, pl + bw * 0.55, pl + bw * 0.85];
+      var priceY = [
+        pt + bh * 0.35,
+        pt + bh * (0.35 + Math.max(-0.25, Math.min(0.25, (-p1 - p2) / 40))),
+        pt + bh * (0.35 + Math.max(-0.25, Math.min(0.35, (-p1 - p2) / 30)))
+      ];
+      var rsiBase = 42;
+      var ry = [
+        pt + bh * (1 - (rsiBase + r1 * 0.8) / 100),
+        pt + bh * (1 - (rsiBase + r1 + r2 * 0.5) / 100 * 0.95),
+        pt + bh * (1 - (rsiBase + r1 + r2) / 100 * 0.9)
+      ];
+
+      ctx.strokeStyle = '#d5342c';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(px[0], priceY[0]);
+      ctx.lineTo(px[1], priceY[1]);
+      ctx.lineTo(px[2], priceY[2]);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(px[0], ry[0]);
+      ctx.lineTo(px[1], ry[1]);
+      ctx.lineTo(px[2], ry[2]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillStyle = '#d5342c';
+      ctx.textAlign = 'left';
+      ctx.fillText('价格', pl, pt - 8);
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillText('RSI', pl + 36, pt - 8);
+
+      ctx.fillStyle = '#7c848f';
+      ctx.textAlign = 'center';
+      ctx.fillText('时间 →', pl + bw / 2, y1 + 31);
+      ['T1', 'T2', 'T3'].forEach(function (lab, i) {
+        ctx.fillText(lab, px[i], y1 + 13);
+      });
+
+      ctx.fillStyle = bull ? '#0f8a4d' : '#d5342c';
+      ctx.textAlign = 'right';
+      ctx.font = '700 12px -apple-system,sans-serif';
+      ctx.fillText('强度 ' + score, w - pr, pt + 14);
+    }
+
+    function upd() {
+      var p1 = parseFloat(p1El.value), r1 = parseFloat(r1El.value);
+      var p2 = parseFloat(p2El.value), r2 = parseFloat(r2El.value);
+      txt(p1O, (p1 >= 0 ? '+' : '') + p1.toFixed(1) + '%');
+      txt(r1O, (r1 >= 0 ? '+' : '') + r1.toFixed(1));
+      txt(p2O, (p2 >= 0 ? '+' : '') + p2.toFixed(1) + '%');
+      txt(r2O, (r2 >= 0 ? '+' : '') + r2.toFixed(1));
+
+      var priceSlope = p1 + p2;
+      var rsiSlope = r1 + r2;
+      var normSlope = rsiSlope - priceSlope * 0.6;
+
+      var bull = priceSlope < -0.5 && rsiSlope > 0.5;
+      var bear = priceSlope > 0.5 && rsiSlope < -0.5;
+      var raw = bull ? (rsiSlope - priceSlope * 0.5) : (bear ? (-rsiSlope + priceSlope * 0.5) : Math.abs(normSlope) * 0.3);
+      var score = Math.round(Math.min(100, Math.max(0, raw * 5.5)));
+
+      if (bull) {
+        txt(typeEl, '看涨背离');
+        txt(typehEl, '价格下行、RSI 抬升');
+      } else if (bear) {
+        txt(typeEl, '看跌背离');
+        txt(typehEl, '价格上行、RSI 走低');
+      } else {
+        txt(typeEl, '无显著背离');
+        txt(typehEl, '价格与动量方向一致');
+      }
+
+      txt(scoreEl, String(score));
+      txt(scorehEl, '0–100，越高越可靠');
+      txt(slopeEl, (normSlope >= 0 ? '+' : '') + normSlope.toFixed(1));
+      txt(slopehEl, 'RSI 变化率 − 价格变化率（归一化）');
+
+      var label, hint, col;
+      if (score >= 65) {
+        label = '有效确认'; hint = '可纳入 Spring/UTAD 剧本，仍需量能配合'; col = 'var(--green)';
+      } else if (score >= 40) {
+        label = '弱背离'; hint = '仅作观察，不作为单独入场依据'; col = 'var(--amber)';
+      } else {
+        label = '无效'; hint = '动量未支持结构叙事'; col = 'var(--red)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(p1, p2, r1, r2, score, bull);
+    }
+
+    [p1El, r1El, p2El, r2El].forEach(function (el) { el.addEventListener('input', upd); });
+    window.addEventListener('resize', upd);
+    upd();
+  })();
+
+  /* 工具 2 · 威科夫相位置信度 */
+  (function phaseScore() {
+    var posEl = $('bwk_pos'), vUpEl = $('bwk_vUp'), vDnEl = $('bwk_vDn'), rsiEl = $('bwk_rsiLv');
+    if (!posEl || !vUpEl || !vDnEl || !rsiEl) return;
+    var posO = $('bwk_posO'), vUpO = $('bwk_vUpO'), vDnO = $('bwk_vDnO'), rsiO = $('bwk_rsiLvO');
+    var accEl = $('bwk_acc'), acchEl = $('bwk_acch');
+    var distEl = $('bwk_dist'), disthEl = $('bwk_disth');
+    var vqEl = $('bwk_vq'), vqhEl = $('bwk_vqh');
+    var vEl = $('bwk_phase_v'), vhEl = $('bwk_phase_vh');
+
+    function upd() {
+      var pos = parseFloat(posEl.value);
+      var vUp = parseFloat(vUpEl.value), vDn = parseFloat(vDnEl.value);
+      var rsi = parseFloat(rsiEl.value);
+
+      txt(posO, pos + '%' + (pos < 35 ? '（偏下）' : pos > 65 ? '（偏上）' : '（中部）'));
+      txt(vUpO, vUp.toFixed(1) + '×');
+      txt(vDnO, vDn.toFixed(1) + '×');
+      txt(rsiO, rsi.toFixed(1));
+
+      var posScore = (100 - pos) * 0.35;
+      var volScore = (vDn - vUp) * 18 + (vDn < 1 ? 8 : 0) + (vUp < 1 ? 8 : 0);
+      var rsiScore = rsi < 45 ? (45 - rsi) * 0.6 : rsi > 60 ? -(rsi - 60) * 0.8 : 5;
+      var acc = Math.round(Math.min(100, Math.max(0, posScore + volScore + rsiScore + 12)));
+      var dist = 100 - acc;
+
+      txt(accEl, String(acc));
+      txt(acchEl, '0=纯派发，100=纯吸筹');
+      txt(distEl, String(dist));
+      txt(disthEl, '100 − 吸筹置信度');
+
+      var vqLab, vqHint;
+      if (vDn > vUp * 1.1 && vUp < 1.1) {
+        vqLab = '跌放量涨缩量'; vqHint = '偏吸筹特征';
+      } else if (vUp > vDn * 1.1 && vDn < 1.1) {
+        vqLab = '涨放量跌缩量'; vqHint = '偏派发特征';
+      } else {
+        vqLab = '量价均衡'; vqHint = 'Phase B 典型，方向不明';
+      }
+      txt(vqEl, vqLab); txt(vqhEl, vqHint);
+
+      var label, hint, col;
+      if (acc >= 65) {
+        label = '偏吸筹'; hint = '需 Spring/SOS 事件确认，不可直接满仓'; col = 'var(--green)';
+      } else if (acc <= 35) {
+        label = '偏派发'; hint = '警惕 UTAD/SOW，不宜盲目抄底'; col = 'var(--red)';
+      } else {
+        label = '不确定'; hint = 'Phase B 中段，等待 Phase C 事件'; col = 'var(--amber)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+    }
+
+    [posEl, vUpEl, vDnEl, rsiEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* 工具 3 · BTC 漂移剥离器 */
+  (function driftStrip() {
+    var TEl = $('bwk_dT'), psEl = $('bwk_dps'), muEl = $('bwk_dmu'), sgEl = $('bwk_dsg');
+    if (!TEl || !psEl || !muEl || !sgEl) return;
+    var TO = $('bwk_dTO'), psO = $('bwk_dpsO'), muO = $('bwk_dmuO'), sgO = $('bwk_dsgO');
+    var baseEl = $('bwk_dbase'), basehEl = $('bwk_dbaseh');
+    var dpEl = $('bwk_ddp'), dphEl = $('bwk_ddph');
+    var nEl = $('bwk_dn'), nhEl = $('bwk_dnh');
+    var vEl = $('bwk_d_v'), vhEl = $('bwk_d_vh');
+    var cv = $('bwk_driftChart');
+    var ctx = cv ? cv.getContext('2d') : null;
+
+    function draw(pb, ps) {
+      if (!ctx) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.clientWidth || 600, h = 176;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 108, r: 66, t: 30, b: 34 };
+      var bw = w - pad.l - pad.r;
+      var x0 = 0.40, x1 = 1.0;
+      var sx = function (p) { return pad.l + (p - x0) / (x1 - x0) * bw; };
+
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      [0.5, 0.6, 0.7, 0.8, 0.9, 1.0].forEach(function (g) {
+        var x = sx(g);
+        ctx.strokeStyle = g === 0.5 ? '#c9d0d9' : '#eef1f5';
+        ctx.lineWidth = g === 0.5 ? 1.4 : 1;
+        ctx.beginPath(); ctx.moveTo(x, pad.t - 6); ctx.lineTo(x, h - pad.b); ctx.stroke();
+        ctx.fillStyle = '#7c848f';
+        ctx.fillText((g * 100).toFixed(0) + '%', x, h - pad.b + 15);
+      });
+
+      var rows = [
+        { label: '随机做多基准', p: pb, col: '#8a6d1f' },
+        { label: '策略报告胜率', p: ps, col: '#1d4ed8' }
+      ];
+      rows.forEach(function (r, i) {
+        var y = pad.t + 22 + i * 58;
+        ctx.fillStyle = '#454c56';
+        ctx.textAlign = 'right';
+        ctx.font = '12px -apple-system,sans-serif';
+        ctx.fillText(r.label, pad.l - 12, y + 17);
+        ctx.fillStyle = '#eef1f5';
+        ctx.fillRect(pad.l, y, bw, 24);
+        ctx.fillStyle = r.col;
+        ctx.fillRect(pad.l, y, Math.max(0, sx(r.p) - pad.l), 24);
+        ctx.fillStyle = r.col;
+        ctx.textAlign = 'left';
+        ctx.font = '700 12.5px -apple-system,sans-serif';
+        ctx.fillText((r.p * 100).toFixed(1) + '%', sx(r.p) + 7, y + 17);
+      });
+
+      var dp = ps - pb;
+      ctx.strokeStyle = dp >= 0 ? '#0f8a4d' : '#d5342c';
+      ctx.lineWidth = 1.6;
+      var ya = pad.t + 22 + 12, yb = pad.t + 22 + 58 + 12;
+      ctx.beginPath();
+      ctx.moveTo(sx(pb), ya + 14); ctx.lineTo(sx(pb), yb - 14);
+      ctx.moveTo(sx(ps), ya + 14); ctx.lineTo(sx(ps), yb - 14);
+      ctx.stroke();
+      ctx.fillStyle = dp >= 0 ? '#0f8a4d' : '#d5342c';
+      ctx.font = '700 11.5px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText((dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp',
+                   (sx(pb) + sx(ps)) / 2, yb + 16);
+    }
+
+    function upd() {
+      var T = parseFloat(TEl.value);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sg = parseFloat(sgEl.value) / 100;
+
+      txt(TO, T + ' 日');
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(0) + '%');
+      txt(sgO, (sg * 100).toFixed(0) + '%');
+
+      var y = T / 252;
+      var drift = mu * y, sd = sg * Math.sqrt(y);
+      var pb = ncdf(drift / sd);
+      var dp = ps - pb;
+
+      var n = null;
+      if (dp > 1e-6) {
+        var num = 1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps));
+        n = Math.ceil(num * num / (dp * dp));
+      }
+
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(basehEl, '漂移 ' + (drift * 100).toFixed(2) + '% · 波动 ' + (sd * 100).toFixed(2) + '%');
+      txt(dpEl, (dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp');
+      tint(dpEl, dp <= 0 ? 'var(--red)' : (dp < 0.03 ? 'var(--amber)' : 'var(--green)'));
+      txt(dphEl, dp <= 0 ? '策略未跑赢随机做多' : '扣除漂移后的净优势');
+      txt(nEl, n === null ? '∞' : n.toLocaleString('en-US'));
+      txt(nhEl, n === null ? '超额非正' : '单侧 5%、检验力 80%');
+
+      var label, hint, col;
+      if (dp <= 0) {
+        label = '无超额'; hint = '扣掉漂移后跑输随机做多'; col = 'var(--red)';
+      } else if (dp < 0.03) {
+        label = '超额可疑'; hint = (dp * 100).toFixed(1) + 'pp 易被成本与过拟合吞噬'; col = 'var(--red)';
+      } else if (dp < 0.06) {
+        label = '超额有限'; hint = '有优势但远小于表面胜率暗示'; col = 'var(--amber)';
+      } else {
+        label = '超额显著'; hint = '仍须核对成本与样本外'; col = 'var(--green)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(pb, ps);
+    }
+
+    [TEl, psEl, muEl, sgEl].forEach(function (el) { el.addEventListener('input', upd); });
+    window.addEventListener('resize', upd);
+    upd();
+  })();
+
+  /* 工具 4 · Spring/UTAD 质量分 */
+  (function springScore() {
+    var dEl = $('bwk_spd'), tEl = $('bwk_spt'), vEl = $('bwk_spv');
+    if (!dEl || !tEl || !vEl) return;
+    var dO = $('bwk_spdO'), tO = $('bwk_sptO'), vO = $('bwk_spvO');
+    var scoreEl = $('bwk_spScore'), scorehEl = $('bwk_spScoreh');
+    var partsEl = $('bwk_spParts'), partshEl = $('bwk_spPartsh');
+    var optEl = $('bwk_spOpt'), opthEl = $('bwk_spOpth');
+    var vvEl = $('bwk_sp_v'), vvhEl = $('bwk_sp_vh');
+
+    function upd() {
+      var d = parseFloat(dEl.value), t = parseFloat(tEl.value), v = parseFloat(vEl.value);
+      txt(dO, d.toFixed(1) + '%');
+      txt(tO, t + ' 根');
+      txt(vO, v.toFixed(1) + '×');
+
+      var ds = Math.exp(-Math.pow((d - 2.5) / 2.4, 2));
+      var ss = Math.exp(-t / 3);
+      var vs = 1 / (1 + 1.2 * Math.max(0, v - 1));
+      var score = 100 * (0.4 * ds + 0.35 * ss + 0.25 * vs);
+
+      txt(scoreEl, score.toFixed(1));
+      txt(scorehEl, 'Spring 越高越好；UTAD 时反向理解');
+      txt(partsEl, ds.toFixed(2) + ' / ' + ss.toFixed(2) + ' / ' + vs.toFixed(2));
+      txt(partshEl, '分项 0–1');
+      txt(optEl, '1%–4%');
+      txt(opthEl, '较股票略宽');
+
+      var label, hint, col;
+      if (score >= 75) {
+        label = '高质量 Spring'; hint = '等 SOS 突破 + RSI>50 再考虑入场'; col = 'var(--green)';
+      } else if (score >= 50) {
+        label = '中等质量'; hint = '需二次测试或更强背离确认'; col = 'var(--amber)';
+      } else {
+        label = '低质量 / 疑似真破位'; hint = '不宜按 Spring 建仓'; col = 'var(--red)';
+      }
+      txt(vvEl, label); txt(vvhEl, hint); tint(vvEl, col);
+    }
+
+    [dEl, tEl, vEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
