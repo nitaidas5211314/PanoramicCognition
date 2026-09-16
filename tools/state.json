@@ -144,11 +144,14 @@
     {
       "slug": "BTC-时间幂律模型（Power Law Theory, PLT）",
       "title": "BTC-时间幂律模型（Power Law Theory, PLT）",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 23:17:11",
+      "finished": "2026-09-16 23:21:30",
+      "duration_sec": 259,
+      "outputs": [
+        "reports/BTC-时间幂律模型（Power Law Theory, PLT）.html",
+        "reports/BTC-时间幂律模型（Power Law Theory, PLT）.md"
+      ],
       "error": null
     },
     {
@@ -569,7 +572,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 23:16",
+  "updated": "2026-09-16 23:21",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
