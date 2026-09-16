@@ -27,11 +27,14 @@
     {
       "slug": "威科夫交易法",
       "title": "威科夫交易法",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 22:32:29",
+      "finished": "2026-09-16 22:37:31",
+      "duration_sec": 302,
+      "outputs": [
+        "reports/威科夫交易法.html",
+        "reports/威科夫交易法.md"
+      ],
       "error": null
     },
     {
@@ -542,7 +545,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 22:25",
+  "updated": "2026-09-16 22:37",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
