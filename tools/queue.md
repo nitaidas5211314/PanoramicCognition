@@ -22,7 +22,7 @@
 - [x] BTC-反幂律增长与 S-曲线爆发猜想
 - [x] BTC-Logit 曲线与分阶段假说
 - [x] BTC-减半预期折现与牛市延时模型
-- [ ] BTC-价格影响的“平方根定律”（Square Root Law）
+- [x] BTC-价格影响的“平方根定律”（Square Root Law）
 - [ ] BTC-饼金比（BTC-to-Gold Ratio）与中枢位移
 - [ ] BTC-终极对决：四年周期理论 vs. 幂律通道下轨
 - [ ] BTC-链上与周期技术指标

@@ -245,11 +245,14 @@
     {
       "slug": "BTC-价格影响的“平方根定律”（Square Root Law）",
       "title": "BTC-价格影响的“平方根定律”（Square Root Law）",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-17 00:01:04",
+      "finished": "2026-09-17 00:05:33",
+      "duration_sec": 269,
+      "outputs": [
+        "reports/BTC-价格影响的“平方根定律”（Square Root Law）.html",
+        "reports/BTC-价格影响的“平方根定律”（Square Root Law）.md"
+      ],
       "error": null
     },
     {
@@ -590,7 +593,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 00:00",
+  "updated": "2026-09-17 00:05",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
