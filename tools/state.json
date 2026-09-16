@@ -14,11 +14,14 @@
     {
       "slug": "AI量化交易",
       "title": "AI量化交易",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 22:20:27",
+      "finished": "2026-09-16 22:25:37",
+      "duration_sec": 310,
+      "outputs": [
+        "reports/AI量化交易.html",
+        "reports/AI量化交易.md"
+      ],
       "error": null
     },
     {
@@ -219,7 +222,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 22:02",
+  "updated": "2026-09-16 22:25",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
