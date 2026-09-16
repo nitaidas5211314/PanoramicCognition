@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日元加息 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>BoJ × Global Carry</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天计划</a>
+    <div class="navgroup">模型与探索</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>日元加息</h1>
+  <p class="sub">日本央行结束<strong>负利率时代</strong>后的政策正常化——不只是国内利率 +25bp，而是全球套息交易的「抽水泵」在拧紧。</p>
+  <div class="meta">
+    <span class="chip b">27 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>日元加息 = 日本央行（BoJ）把政策利率从负利率/零附近逐步上调，并同步缩减国债购买（缩表）</strong>，目标是让通胀稳定在 2% 附近、结束「异次元宽松」。</p>
+<p>但它在全球系统里的角色远不止「日本国内货币政策」：过去三十年低利率使日元成为<strong>全球最便宜的融资货币</strong>——借日元、投全球高收益资产（套息交易 carry trade）的规模，BIS 估算 2024 年 3 月约 <strong>¥40 万亿</strong>（约 <strong>$2500 亿</strong>【待验证·BIS Bulletin 90】）。</p>
+<p><strong>2024 年 3 月 19 日</strong>结束负利率（−0.1% → 0–0.1%）【事实·BOJ】→ <strong>7 月 31 日</strong>加至 <strong>0.25%</strong> → <strong>2025 年 1 月 24 日</strong>加至 <strong>0.5%</strong> → <strong>2025 年 12 月 19 日</strong>加至 <strong>0.75%</strong>【待验证·大公国际/中证网】。每一次加息都在<strong>抬高全球杠杆的融资成本</strong>；2024 年 8 月 5 日 TOPIX 单日 <strong>−12%</strong>、USD/JPY 自 161 急贬至 141 区，就是套息平仓的教科书样本【事实·BIS/日经】。</p>
+<p>读「日元加息」，核心问题不是「还会加几次」，而是：<strong>你的资产定价里，有多少收益来自「廉价日元杠杆」？</strong></p>
+<hr />
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话边界</h3>
+<p>「日元加息」研究的是：<strong>日本央行如何把超宽松货币政策正常化，以及这一过程如何通过汇率、资本流与杠杆链条影响全球资产</strong>。</p>
+<p>核心对象是 <strong>BoJ 政策利率 + 国债购买 + 前瞻指引</strong> 三件套，不是「日元会不会升值」这一个报价。</p>
+<h3>用 15 个问题划定边界</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">研究什么</td>
+<td>加息路径、缩表节奏、实际利率、套息 unwind、全球传导</td>
+</tr>
+<tr>
+<td class="k">边界在哪</td>
+<td>国内货币政策 vs 全球跨境融资；名义加息 vs 实际仍为负</td>
+</tr>
+<tr>
+<td class="k">核心对象</td>
+<td>无担保隔夜拆借利率（政策利率）、YCC 退出、JGB 购买</td>
+</tr>
+<tr>
+<td class="k">参与者</td>
+<td>BoJ、日本企业/家计、全球对冲基金/银行、Fed/ECB（相对政策）</td>
+</tr>
+<tr>
+<td class="k">核心变量</td>
+<td>政策利率、核心 CPI、USD/JPY、美日利差、套息头寸</td>
+</tr>
+<tr>
+<td class="k">可观察</td>
+<td>BOJ 声明、短端 OIS、USD/JPY、CFTC 日元持仓、外国银行东京分行资产</td>
+</tr>
+<tr>
+<td class="k">不可观察但可推断</td>
+<td>真实套息规模、杠杆倍数、margin 触发线</td>
+</tr>
+<tr>
+<td class="k">谁影响谁</td>
+<td>BoJ 加息→日元融资成本↑→carry 收益↓→平仓→全球卖压</td>
+</tr>
+<tr>
+<td class="k">确定因果</td>
+<td>利差↓使 carry 数学收益↓<span class="tag t-inf">推论</span>；大规模 unwind 放大波动【事实·BIS】</td>
+</tr>
+<tr>
+<td class="k">只是相关</td>
+<td>「加息后日元仍弱」——财政担忧、利差仍宽可并存【分析·上海证券报 2025-12】</td>
+</tr>
+<tr>
+<td class="k">表层现象</td>
+<td>「日本终于加息了」头条</td>
+</tr>
+<tr>
+<td class="k">底层机制</td>
+<td>负反馈：波动↑→去杠杆→波动进一步↑</td>
+</tr>
+<tr>
+<td class="k">反馈</td>
+<td>日元升值→进口降价→通胀↓→BoJ 加息节奏放缓（负反馈）</td>
+</tr>
+<tr>
+<td class="k">时间延迟</td>
+<td>政策决议→OIS 定价：分钟级；carry 平仓→全球资产：天–周级</td>
+</tr>
+<tr>
+<td class="k">正负反馈</td>
+<td>Unwind 是正反馈；工资-通胀螺旋是慢速正反馈</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>这一节是地基：后面四个工具都建立在「加息如何改变 carry 的数学」之上。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>四个理由</h3>
+<div class="grid g2">
+<div class="card"><h4>它是全球流动性的「暗渠闸门」</h4><p>BIS 称 yen-denominated 跨境贷款 2024 年 3 月约 <strong>¥40 万亿</strong>【待验证·BIS GLI】。加息不直接抽走美元流动性，但提高这条暗渠的成本——2024 年 8 月全球波动就是证据。</p></div>
+<div class="card"><h4>它训练「政策正常化的副作用」思维</h4><p>BoJ 自己承认：长期超宽松<strong>培育</strong>了套息膨胀【分析·日经 2024-08】。加息者既是医生也是「成瘾源」——理解激励才能读声明。</p></div>
+<div class="card"><h4>它有可验证的数学</h4><p>套息总回报 ≈ 利差 + 汇率变动（工具 1）。2024-07 利差约 <strong>+3.75%</strong>、8 月 USD/JPY <strong>−9.3%</strong>（161.7→146.6）→ 总回报转负【推论·已验算】——不是叙事，是算术。</p></div>
+<div class="card"><h4>它连接宏观与微观杠杆</h4><p>同一事件（7/31 加息）在不同市场间隔数天才引爆——因为 <strong>margin 与 positioning</strong> 才是扳机【分析·华尔街见闻/郭磊】。</p></div>
+</div>
+<div class="note amber"><b>一句话定性</b><p>日元加息是全球版的「把垫在资产下面的免费杠杆抽走一根」——抽多快，取决于 BoJ；摔多重，取决于全球杠杆堆多高。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>第 01 节划边界，这一节回答「为什么要学」。没有它，后面 27 节会退化成汇率八卦。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>日元加息嵌套在全球货币-杠杆体系九层结构中：</p>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="jyA" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#454c56"/>
+    </marker>
+  </defs>
+  <rect x="70" y="20" width="540" height="46" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="40" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 通胀与工资 · 2% 目标 · 春斗</text>
+  <text x="86" y="58" font-size="10.5" fill="#454c56" font-family="sans-serif">2024 核心 CPI 持续 ≥2%【事实·BOJ Outlook】</text>
+  <rect x="70" y="76" width="540" height="46" rx="9" fill="#e7eef6" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="96" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② BoJ 工具箱 · 利率 · YCC 退出 · JGB 购买</text>
+  <text x="86" y="114" font-size="10.5" fill="#454c56" font-family="sans-serif">2013 QQE → 2016 负利率 → 2024 正常化</text>
+  <rect x="70" y="132" width="540" height="46" rx="9" fill="#dfe9f4" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="152" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 国内传导 · 银行 · 企业 · 家计</text>
+  <text x="86" y="170" font-size="10.5" fill="#454c56" font-family="sans-serif">短端利率↑ · 房贷/企业融资滞后调整</text>
+  <rect x="70" y="188" width="540" height="46" rx="9" fill="#d6e3f1" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="208" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 汇率定价 · USD/JPY · 实际利率差</text>
+  <text x="86" y="226" font-size="10.5" fill="#454c56" font-family="sans-serif">名义加息 ≠ 实际利率转正（0.75%−2.5%=−1.75%）</text>
+  <rect x="70" y="244" width="540" height="46" rx="9" fill="#cfe0ee" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="264" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 套息交易 · 借日元 · 投全球</text>
+  <text x="86" y="282" font-size="10.5" fill="#454c56" font-family="sans-serif">BIS ¥40 万亿中值 · nickels vs steamroller</text>
+  <rect x="70" y="300" width="540" height="46" rx="9" fill="#c6dcec" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="320" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 全球资产 · 美股 · 美债 · EM · 日股</text>
+  <text x="86" y="338" font-size="10.5" fill="#454c56" font-family="sans-serif">2024-08-05 TOPIX −12% · 全球 equity 共振</text>
+  <rect x="70" y="356" width="540" height="46" rx="9" fill="#bcd6e8" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="86" y="376" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 相对政策 · Fed 降息 vs BoJ 加息</text>
+  <text x="86" y="394" font-size="10.5" fill="#454c56" font-family="sans-serif">2025-12 美日央行「背向而行」【分析·财新】</text>
+  <rect x="70" y="412" width="540" height="46" rx="9" fill="#e9ddc9" stroke="#c9b48a" stroke-width="1.2"/>
+  <text x="86" y="432" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 日本对外资产负债 · 海外债券 · 保险资金</text>
+  <text x="86" y="450" font-size="10.5" fill="#454c56" font-family="sans-serif">日本持美债约 $1.2 万亿量级【待验证·大公国际】</text>
+  <rect x="70" y="468" width="540" height="46" rx="9" fill="#f0d2cd" stroke="#d8a79c" stroke-width="1.2"/>
+  <text x="86" y="488" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 财政与结构 · 债务/GDP · 人口 · 财政可持续性</text>
+  <text x="86" y="506" font-size="10.5" fill="#454c56" font-family="sans-serif">2025-12 加息后日元仍弱 → 财政担忧主导【分析·上海证券报】</text>
+  <line x1="340" y1="66" x2="340" y2="76" stroke="#454c56" stroke-width="1.5" marker-end="url(#jyA)"/>
+  <line x1="340" y1="122" x2="340" y2="132" stroke="#454c56" stroke-width="1.5" marker-end="url(#jyA)"/>
+  <line x1="340" y1="178" x2="340" y2="188" stroke="#454c56" stroke-width="1.5" marker-end="url(#jyA)"/>
+  <line x1="340" y1="234" x2="340" y2="244" stroke="#454c56" stroke-width="1.5" marker-end="url(#jyA)"/>
+  <line x1="340" y1="290" x2="340" y2="300" stroke="#454c56" stroke-width="1.5" marker-end="url(#jyA)"/>
+  <line x1="340" y1="346" x2="340" y2="356" stroke="#454c56" stroke-width="1.5" marker-end="url(#jyA)"/>
+  <line x1="340" y1="402" x2="340" y2="412" stroke="#454c56" stroke-width="1.5" marker-end="url(#jyA)"/>
+  <line x1="340" y1="458" x2="340" y2="468" stroke="#454c56" stroke-width="1.5" marker-end="url(#jyA)"/>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>九层地图是导航仪：读 BoJ 声明时先定位——是第 ② 层工具变化，还是第 ⑤ 层 carry 反馈？</p>
+<hr />
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>一句话</th>
+<th>连到谁</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>政策利率</strong></td>
+<td>无担保隔夜拆借引导目标</td>
+<td>OIS、短端 JGB</td>
+</tr>
+<tr>
+<td class="k"><strong>负利率（2016–2024）</strong></td>
+<td>超额准备金 −0.1%</td>
+<td>全球最便宜融资</td>
+</tr>
+<tr>
+<td class="k"><strong>YCC</strong></td>
+<td>10Y 收益率曲线控制（已取消）</td>
+<td>JGB 市场功能</td>
+</tr>
+<tr>
+<td class="k"><strong>QQE/缩表</strong></td>
+<td>国债购买 5.7→2.9 万亿日元/月【事实·BOJ 2024-07】</td>
+<td>长端收益率</td>
+</tr>
+<tr>
+<td class="k"><strong>套息交易</strong></td>
+<td>借低息日元投高息资产</td>
+<td>USD/JPY、VIX</td>
+</tr>
+<tr>
+<td class="k"><strong>Carry unwind</strong></td>
+<td>波动↑→被迫平仓</td>
+<td>全球 cross-asset</td>
+</tr>
+<tr>
+<td class="k"><strong>实际利率</strong></td>
+<td>名义 − 通胀；2025-12 仍约 <strong>−1.75%</strong>【推论·已验算】</td>
+<td>「真收紧」程度</td>
+</tr>
+<tr>
+<td class="k"><strong>春斗/工资</strong></td>
+<td>薪资上涨→服务通胀→加息理由</td>
+<td>植田「virtuous cycle」</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note blue"><b>跨域同构</b><p><strong>套息交易 ↔ 捡硬币迎蒸汽机</strong>（BIS 原话）：小概率大损失 ↔ 卖虚值期权。<strong>加息正常化 ↔ 戒断反应</strong>：剂量减小但成瘾结构（杠杆）仍在。<strong>美日政策剪刀差 ↔ 对冲基金的「双端 bet」</strong>：一端降息一端加息，中间是 volatility。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>概念地图把「加息」从新闻变成关系网——后面因果图与工具都建立在这张网上。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>角色</th>
+<th>对加息叙事的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>日本央行（植田和男）</strong></td>
+<td>设定利率、缩表、前瞻指引</td>
+<td>强调「数据依赖、渐进正常化」【事实·BOJ】</td>
+</tr>
+<tr>
+<td class="k"><strong>日本企业/工会</strong></td>
+<td>春斗工资、定价</td>
+<td>工资增速决定「可持续 2% 通胀」</td>
+</tr>
+<tr>
+<td class="k"><strong>全球对冲基金/银行</strong></td>
+<td>套息、杠杆、FX swap</td>
+<td>外国银行东京分行资产 2024-03 约 <strong>¥13.5 万亿</strong>【待验证·日经/BoJ】</td>
+</tr>
+<tr>
+<td class="k"><strong>美联储</strong></td>
+<td>相对利率</td>
+<td>2024-08 弱非农触发「衰退交易」放大 unwind</td>
+</tr>
+<tr>
+<td class="k"><strong>日本寿险/养老金</strong></td>
+<td>海外债券配置</td>
+<td>长期可能回流日本【分析·上海证券报】</td>
+</tr>
+<tr>
+<td class="k"><strong>财政当局</strong></td>
+<td>债务发行、刺激</td>
+<td>财政担忧可压过加息本应的日元支撑</td>
+</tr>
+<tr>
+<td class="k"><strong>BIS/IMF</strong></td>
+<td>全球金融稳定评估</td>
+<td>2024-08 事件 post-mortem【事实·BIS Bulletin 90】</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>参与者表回答「谁在动 carry」——尤其要盯住 <strong>全球杠杆玩家 + Fed 相对路径</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>当前锚点（2026-09）</th>
+<th>读法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>BoJ 政策利率</strong></td>
+<td><strong>0.75%</strong>（2025-12 后）【待验证·大公国际】</td>
+<td>2024-03 前为 −0.1%</td>
+</tr>
+<tr>
+<td class="k"><strong>核心 CPI</strong></td>
+<td>BOJ 展望 ~<strong>2.5%</strong>（2024 FY）→ <strong>2.1%</strong>（2025 FY）【事实·BOJ 2024-07】</td>
+<td>实际利率仍负</td>
+</tr>
+<tr>
+<td class="k"><strong>USD/JPY</strong></td>
+<td>2024-08 低点 ~<strong>141</strong>；2025-12 仍 <strong>157+</strong>【待验证·中证网】</td>
+<td>加息≠升值（positioning 关键）</td>
+</tr>
+<tr>
+<td class="k"><strong>美日 2Y 利差</strong></td>
+<td>演示默认美 <strong>4.25%</strong> vs 日 <strong>0.50%</strong> → <strong>+3.75pp</strong>【假设·工具 2】</td>
+<td>carry 空间</td>
+</tr>
+<tr>
+<td class="k"><strong>JGB 购买</strong></td>
+<td>每月 <strong>5.7→2.9</strong> 万亿日元路径【事实·BOJ】</td>
+<td>长端供给冲击</td>
+</tr>
+<tr>
+<td class="k"><strong>套息规模</strong></td>
+<td>BIS 中值 <strong>¥40 万亿</strong>【待验证·BIS】</td>
+<td>unwind 上限代理</td>
+</tr>
+<tr>
+<td class="k"><strong>CFTC 日元净持仓</strong></td>
+<td>2025-05 后净<strong>多</strong>头 vs 2024-07 净<strong>空</strong>【分析·兴业研究/中证网】</td>
+<td>解释「卖事实」</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>变量表是「每日扫描清单」——先看 BoJ 利率路径，再看 USD/JPY 与 positioning。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<p>加息因果链：<strong>工资-通胀→BoJ 加息→实际融资成本高→carry 收益↓→（若叠加外部冲击）平仓→全球卖压→波动↑→进一步平仓</strong>。实线主传导，红色虚线反馈。</p>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="jyC" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#454c56"/>
+    </marker>
+    <marker id="jyR" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+  <rect x="15" y="120" width="95" height="50" rx="8" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="28" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">工资·通胀</text>
+  <text x="28" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">春斗·CPI</text>
+  <rect x="125" y="120" width="95" height="50" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="138" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">BoJ 加息</text>
+  <text x="138" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">利率·缩表</text>
+  <rect x="235" y="120" width="95" height="50" rx="8" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="248" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">日元融资成本</text>
+  <text x="248" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">短端·swap</text>
+  <rect x="345" y="120" width="95" height="50" rx="8" fill="#fdf2e6" stroke="#b8730a" stroke-width="1.3"/>
+  <text x="358" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">carry 收益</text>
+  <text x="358" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">利差+汇率</text>
+  <rect x="455" y="120" width="95" height="50" rx="8" fill="#f0d2cd" stroke="#d8a79c" stroke-width="1.3"/>
+  <text x="468" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">全球资产</text>
+  <text x="468" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">股·债·EM</text>
+  <rect x="565" y="120" width="95" height="50" rx="8" fill="#e3edf7" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="578" y="142" font-size="10.5" font-weight="700" fill="#15181d" font-family="sans-serif">USD/JPY</text>
+  <text x="578" y="158" font-size="9" fill="#7c848f" font-family="sans-serif">汇率定价</text>
+  <rect x="125" y="220" width="120" height="44" rx="8" fill="#f0d2cd" stroke="#d8a79c" stroke-width="1.3"/>
+  <text x="138" y="240" font-size="10" font-weight="700" fill="#15181d" font-family="sans-serif">外部冲击</text>
+  <text x="138" y="256" font-size="9" fill="#7c848f" font-family="sans-serif">弱非农·VIX</text>
+  <line x1="110" y1="145" x2="120" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#jyC)"/>
+  <line x1="220" y1="145" x2="230" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#jyC)"/>
+  <line x1="330" y1="145" x2="340" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#jyC)"/>
+  <line x1="440" y1="145" x2="450" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#jyC)"/>
+  <line x1="550" y1="145" x2="560" y2="145" stroke="#454c56" stroke-width="1.8" marker-end="url(#jyC)"/>
+  <line x1="617" y1="120" x2="290" y2="90" stroke="#d5342c" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#jyR)"/>
+  <line x1="500" y1="170" x2="400" y2="210" stroke="#d5342c" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#jyR)"/>
+  <line x1="185" y1="220" x2="280" y2="172" stroke="#d5342c" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#jyR)"/>
+  <text x="420" y="95" font-size="9" fill="#d5342c" font-family="sans-serif">日元升值→carry FX 损</text>
+  <text x="430" y="205" font-size="9" fill="#d5342c" font-family="sans-serif">卖压→波动→再平仓</text>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>因果图是手册枢纽：<strong>2024-08 不是「加息单日」故事，而是「加息 + 弱非农」双触发</strong>【分析·郭磊/中证网】。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>名义加息 ≠ 实际收紧</strong>：2025-12 政策 <strong>0.75%</strong> 减核心 CPI <strong>2.5%</strong> = 实际 <strong>−1.75%</strong>【推论·已验算】——BoJ 仍说「实际利率显著为负」【事实·CNBC 2024-07】。</li>
+<li><strong>加息后日元仍弱</strong>：2025-12 加息当日 USD/JPY 突破 <strong>157</strong>——positioning 已净多、财政担忧、利差仍宽【分析·中证网/上海证券报】。</li>
+<li><strong>日股与日元</strong>：2024-08 海外投资者占东京交易所 <strong>6–7 成</strong>【待验证·日经】——同一批玩家在 FX 与 equity 双向平仓。</li>
+<li><strong>美债需求</strong>：日本投资者「借日元买美债」边际吸引力下降，但存量不会一夜撤离【分析·大公国际】。</li>
+<li><strong>「仅部分 unwind」</strong>：BIS 称 2024-08 后市场快速企稳，<strong>仍有头寸在重建</strong>【事实·BIS Bulletin 90】。</li>
+</ul>
+<blockquote>
+<p><span class="tag t-inf">推论</span>隐藏关系的共同形状：<strong>名义 vs 实际、stock vs flow、日本国内 vs 全球杠杆</strong>三层常被混为一谈。</p>
+</blockquote>
+<h3>它在整个系统里的作用</h3>
+<p>这一节是陷阱预警的机理层——§14 里每条谬误几乎都能在这里找到根源。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>全球 carry 机器：<strong>BoJ 设定短端→银行/基金 Tokyo 分行与 FX swap 融日元→投美股/美债/EM/crypto→margin 与 vol 监控→冲击时同步去杠杆</strong>。下图是「资金流抽水」。</p>
+<svg viewBox="0 0 680 290" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="jyF" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#454c56"/>
+    </marker>
+    <marker id="jyFL" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+  <rect x="20" y="60" width="150" height="170" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="34" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">BoJ · 日本短端</text>
+  <text x="34" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 政策利率</text>
+  <text x="34" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· JGB 购买缩减</text>
+  <text x="34" y="144" font-size="10.5" fill="#454c56" font-family="sans-serif">· 前瞻指引</text>
+  <rect x="265" y="60" width="170" height="170" rx="9" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.6"/>
+  <text x="279" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">套息融资层</text>
+  <text x="279" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 外国银行东京分行</text>
+  <text x="279" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· FX swap · cross-currency</text>
+  <text x="279" y="144" font-size="10.5" fill="#454c56" font-family="sans-serif">· 杠杆 · margin</text>
+  <text x="279" y="164" font-size="10.5" fill="#454c56" font-family="sans-serif">· BIS ¥40 万亿代理</text>
+  <rect x="510" y="60" width="150" height="170" rx="9" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="524" y="84" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">全球风险资产</text>
+  <text x="524" y="104" font-size="10.5" fill="#454c56" font-family="sans-serif">· 美股 · 日股</text>
+  <text x="524" y="124" font-size="10.5" fill="#454c56" font-family="sans-serif">· 美债 · EM 债</text>
+  <text x="524" y="144" font-size="10.5" fill="#454c56" font-family="sans-serif">· crypto · 高 beta</text>
+  <line x1="170" y1="120" x2="260" y2="120" stroke="#454c56" stroke-width="2" marker-end="url(#jyF)"/>
+  <line x1="435" y1="120" x2="505" y2="120" stroke="#454c56" stroke-width="2" marker-end="url(#jyF)"/>
+  <line x1="350" y1="230" x2="350" y2="262" stroke="#d5342c" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#jyFL)"/>
+  <text x="200" y="250" font-size="10.5" fill="#d5342c" font-family="sans-serif">抽水：加息 · 日元升值 · 波动率 · margin call</text>
+  <text x="200" y="278" font-size="11" font-weight="700" fill="#d5342c" font-family="sans-serif">2024-08：双触发（BoJ + 弱非农）→ 跨市场同步去杠杆</text>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>运行机制图把「25bp 加息」具象化为<strong>全球杠杆管道里的压强变化</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 210" width="100%" style="max-width:680px">
+  <line x1="50" y1="120" x2="650" y2="120" stroke="#454c56" stroke-width="2"/>
+  <g font-family="sans-serif" font-size="10" fill="#15181d">
+    <circle cx="70" cy="120" r="5" fill="#1d4ed8"/>
+    <text x="70" y="100" text-anchor="middle" font-weight="700">2013</text>
+    <text x="70" y="142" text-anchor="middle">QQE 启动</text>
+    <circle cx="140" cy="120" r="5" fill="#1d4ed8"/>
+    <text x="140" y="100" text-anchor="middle" font-weight="700">2016</text>
+    <text x="140" y="142" text-anchor="middle">负利率 −0.1%</text>
+    <circle cx="220" cy="120" r="5" fill="#0f8a4d"/>
+    <text x="220" y="100" text-anchor="middle" font-weight="700">2024-03</text>
+    <text x="220" y="142" text-anchor="middle">退出负利率</text>
+    <text x="220" y="156" text-anchor="middle">0–0.1%</text>
+    <circle cx="310" cy="120" r="5" fill="#b8730a"/>
+    <text x="310" y="100" text-anchor="middle" font-weight="700">2024-07</text>
+    <text x="310" y="142" text-anchor="middle">加至 0.25%</text>
+    <text x="310" y="156" text-anchor="middle">公布缩表</text>
+    <circle cx="400" cy="120" r="5" fill="#d5342c"/>
+    <text x="400" y="100" text-anchor="middle" font-weight="700">2024-08</text>
+    <text x="400" y="142" text-anchor="middle">carry unwind</text>
+    <text x="400" y="156" text-anchor="middle">TOPIX −12%</text>
+    <circle cx="490" cy="120" r="5" fill="#b8730a"/>
+    <text x="490" y="100" text-anchor="middle" font-weight="700">2025-01</text>
+    <text x="490" y="142" text-anchor="middle">加至 0.5%</text>
+    <circle cx="580" cy="120" r="5" fill="#d5342c"/>
+    <text x="580" y="100" text-anchor="middle" font-weight="700">2025-12</text>
+    <text x="580" y="142" text-anchor="middle">加至 0.75%</text>
+    <text x="580" y="156" text-anchor="middle">日元仍弱</text>
+  </g>
+  <text x="350" y="190" font-size="10.5" fill="#7c848f" font-family="sans-serif" text-anchor="middle">17 年后再加息（2007→2024）· 正常化是「慢药」，unwind 是「急效」</text>
+</svg>
+<h3>它在整个系统里的作用</h3>
+<p>时间轴说明：<strong>2024-08 震荡发生在 7/31 加息之后数天</strong>——延迟来自 positioning 与外部数据【分析·中证网】。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>激励</th>
+<th>对叙事的扭曲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>BoJ</strong></td>
+<td>信誉、2% 通胀锚、金融稳定</td>
+<td>强调「渐进」淡化对全球冲击责任</td>
+</tr>
+<tr>
+<td class="k"><strong>日本政府</strong></td>
+<td>低融资成本、增长</td>
+<td>希望弱日元助出口 vs BoJ 控通胀</td>
+</tr>
+<tr>
+<td class="k"><strong>全球 hedge fund</strong></td>
+<td>carry 收益、vol 销售</td>
+<td>understating 尾部风险</td>
+</tr>
+<tr>
+<td class="k"><strong>卖方 strategist</strong></td>
+<td>交易量</td>
+<td>「灰犀牛」「史诗平仓」标题</td>
+</tr>
+<tr>
+<td class="k"><strong>BIS</strong></td>
+<td>金融稳定</td>
+<td>系统性风险警告（2019 以来多次）</td>
+</tr>
+<tr>
+<td class="k"><strong>国内批评者</strong></td>
+<td>反对 YCC 扭曲</td>
+<td>指 BoJ 「养大」carry 再收网【分析·学术批评】</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>利益结构解释「为何同样 25bp 有不同故事」——以及为何 BoJ 措辞永远「数据依赖」。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>资源</th>
+<th>富方</th>
+<th>贫方</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>BoJ 声明原文</strong></td>
+<td>双语机构</td>
+<td>二手翻译</td>
+<td>误读「不排除继续加息」</td>
+</tr>
+<tr>
+<td class="k"><strong>东京分行资产数据</strong></td>
+<td>BoJ、BIS</td>
+<td>散户</td>
+<td>低估 carry 规模</td>
+</tr>
+<tr>
+<td class="k"><strong>CFTC 持仓</strong></td>
+<td>专业 FX desk</td>
+<td>个人</td>
+<td>不知 positioning 已翻转</td>
+</tr>
+<tr>
+<td class="k"><strong>margin 数据</strong></td>
+<td>prime broker</td>
+<td>公众</td>
+<td>不知杠杆触发线</td>
+</tr>
+<tr>
+<td class="k"><strong>JGB 市场深度</strong></td>
+<td>primary dealer</td>
+<td>—</td>
+<td>缩表冲击难量化</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><span class="tag t-fact">事实</span>BoJ 2024-12 发布「货币政策广视角回顾」——对 QQ E/YCC 自我评估【事实·BOJ Dec 2024】。</p>
+</blockquote>
+<h3>它在整个系统里的作用</h3>
+<p>资源地图把加息拉回政治经济学：<strong>看得见的是 25bp，看不见的是万亿杠杆</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>为什么是杠杆</th>
+<th>今天就能做</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>套息数学（工具 1）</strong></td>
+<td>一眼知加息是否已「吃掉」carry</td>
+<td>默认：利差 +3.75%、USD/JPY −5% → 总 <strong>−1.25%</strong></td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>美日利差（工具 2）</strong></td>
+<td>短端定价 carry 空间</td>
+<td>0.5% vs 4.25% → spread <strong>+3.75pp</strong></td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>实际利率（工具 4）</strong></td>
+<td>区分「名义加息」与「真收紧」</td>
+<td>0.75% − 2.5% = <strong>−1.75%</strong></td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>positioning（CFTC）</strong></td>
+<td>2025 净多 vs 2024 净空 → 完全不同价格反应</td>
+<td>查最新 CFTC JPY</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>外部触发（非农/VIX）</strong></td>
+<td>2024-08 弱非农才是第二脚</td>
+<td>日历标记 FOMC+非农+BoJ 周</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>缩表节奏</strong></td>
+<td>JGB 供给冲击→长端→全球 bond vol</td>
+<td>BoJ 季度购买计划</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>平仓规模（工具 3）</strong></td>
+<td>¥40 万亿 × 5% 升值 → 卖压代理 <strong>¥0.5 万亿</strong></td>
+<td>拖动升值幅度</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>日本海外债券存量</strong></td>
+<td>慢速回流改变美债边际需求</td>
+<td>读 MoF 国际投资头寸</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>财政叙事</strong></td>
+<td>解释 2025-12 加息后日元仍弱</td>
+<td>盯 10Y JGB &gt;2% 与财政担忧</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>对照基准</strong></td>
+<td>随机做多日股 20 日胜率基准 <strong>56.22%</strong>（μ=10%、σ=18%【假设·演示】）</td>
+<td>任何「策略胜率」须减 p_base</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>杠杆点是行动索引——对接 §16 与 §22。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>加息 = 日元必升值</summary><div class="dbody"><p>2025-12 加至 0.75% 后 USD/JPY 仍 <strong>157+</strong>——净多头 positioning、财政担忧、利差仍宽【分析·中证网】。加息抬升「应然」，positioning 决定「实然」。</p></div></details>
+<details><summary>7/31 加息当天就该全球暴跌</summary><div class="dbody"><p>7/31 决议后市场震荡；<strong>8/5</strong> TOPIX −12% 与 <strong>8/2</strong> 弱非农（+11.4 万 vs 预期 20.6 万【待验证·中证网】）叠加【分析·郭磊】——扳机有延迟。</p></div></details>
+<details><summary>25bp 太小，影响可忽略</summary><div class="dbody"><p>对 <strong>¥40 万亿</strong> 杠杆，融资成本 +25bp + 汇率 5% 变动 = 总回报从 +3.75% 到 <strong>−1.25%</strong>（工具 1 默认）——小利率 × 大杠杆 = 大损益。</p></div></details>
+<details><summary>套息已全部平仓</summary><div class="dbody"><p>BIS：<strong>仅部分 unwind</strong>，且头寸有重建迹象【事实·BIS Bulletin 90】。2025 JGB 10Y 升至 ~<strong>1.95%</strong> 但日元仍弱【待验证·Investing.com】——carry 或仍在。</p></div></details>
+<details><summary>名义利率上升 = 货币政策已紧</summary><div class="dbody"><p>实际利率 <strong>−1.75%</strong>（工具 4 默认）——金融条件仍宽松【事实·CNBC 2024-07 引 BoJ】。</p></div></details>
+<details><summary>日本加息只影响日本</summary><div class="dbody"><p>2024-08 全球 equity、VIX、部分 EM 与 crypto 共振【事实·BIS】——日元是全球 ** funding currency**。</p></div></details>
+<details><summary>看 BoJ 声明就够</summary><div class="dbody"><p>必须同时看 <strong>Fed 路径 + CFTC 持仓 + VIX</strong>——三因子模型比单因子可靠。</p></div></details>
+<details><summary>把 BIS ¥40 万亿当精确值</summary><div class="dbody"><p>BIS 明确：<strong>biased down due to data gaps</strong>【事实·BIS】——用中值作量级，勿当账本。</p></div></details>
+<details><summary>日本卖美债 → 美债必崩</summary><div class="dbody"><p>大公国际：短期因资本利得不会大规模撤离；<strong>增量需求</strong>结构性下降【分析·大公国际】——慢变量 vs 快变量。</p></div></details>
+<details><summary>用「胜率」推销 carry 策略</summary><div class="dbody"><p>股票 20 日随机做多基准 <strong>56.22%</strong>（μ=10%、σ=18%【假设·演示】）——65% 胜率超额仅 ~8.8pp，样本需 n&gt;数百才显著【推论·SKILL 公式】。</p></div></details>
+<details><summary>忽视缩表与利率的叠加</summary><div class="dbody"><p>7/31 同时加息 <strong>且</strong> 公布 JGB 购买从 <strong>5.7→2.9</strong> 万亿/月【事实·BOJ】——长端与短端双收紧。</p></div></details>
+<details><summary>把 2024-08 当一次性事件</summary><div class="dbody"><p>结构特征未变：低 vol 环境下杠杆仍易重建【事实·BIS】——「灰犀牛」可能再来【分析·财新】。</p></div></details>
+<h3>它在整个系统里的作用</h3>
+<p>陷阱清单是疫苗——配合 §25 工具当场验算。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 240" width="100%" style="max-width:680px">
+  <rect x="40" y="40" width="180" height="160" rx="10" fill="#eef2f7" stroke="#c9d0d9" stroke-width="1.4"/>
+  <text x="56" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">抽象层</text>
+  <text x="56" y="92" font-size="10.5" fill="#454c56" font-family="sans-serif">carry = 利差 + ΔFX</text>
+  <text x="56" y="112" font-size="10.5" fill="#454c56" font-family="sans-serif">UIP · 实际利率</text>
+  <text x="56" y="132" font-size="10.5" fill="#454c56" font-family="sans-serif">杠杆正反馈</text>
+  <rect x="250" y="40" width="180" height="160" rx="10" fill="#dceae0" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="266" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">机制层</text>
+  <text x="266" y="92" font-size="10.5" fill="#454c56" font-family="sans-serif">BoJ MPM 声明</text>
+  <text x="266" y="112" font-size="10.5" fill="#454c56" font-family="sans-serif">Tokyo 分行资产 · swap</text>
+  <text x="266" y="132" font-size="10.5" fill="#454c56" font-family="sans-serif">margin · vol targeting</text>
+  <rect x="460" y="40" width="180" height="160" rx="10" fill="#fdf2e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="476" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">操作层</text>
+  <text x="476" y="92" font-size="10.5" fill="#454c56" font-family="sans-serif">USD/JPY · TOPIX</text>
+  <text x="476" y="112" font-size="10.5" fill="#454c56" font-family="sans-serif">CFTC · 非农 · VIX</text>
+  <text x="476" y="132" font-size="10.5" fill="#454c56" font-family="sans-serif">10Y JGB · UST 10Y</text>
+  <text x="230" y="128" font-size="18" fill="#454c56" font-family="sans-serif">→</text>
+  <text x="440" y="128" font-size="18" fill="#454c56" font-family="sans-serif">→</text>
+</svg>
+<p><strong>现实锚点（2024–2026）</strong>：</p>
+<ul>
+<li>2024-03-19：−0.1% → 0–0.1%，取消 YCC【事实·BOJ】</li>
+<li>2024-07-31：→ <strong>0.25%</strong>，JGB 购买渐减计划【事实·BOJ/CNBC】</li>
+<li>2024-08-05：TOPIX <strong>−12%</strong>；USD/JPY 自 161 区 → 141 区（日元升值约 <strong>12.4%</strong> 自 161→141【推论·已验算】）</li>
+<li>2025-01-24：→ <strong>0.5%</strong>【待验证·OANDA/BOJ 日程】</li>
+<li>2025-12-19：→ <strong>0.75%</strong>；日经反而上涨 <strong>+2.7%</strong>（12/19–12/24【待验证·上海证券报】）</li>
+</ul>
+<h3>它在整个系统里的作用</h3>
+<p>三层映射防止「背时间线不知看哪」——每个日期都对应一组可观察报价。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>理论概念</th>
+<th>行动化问题</th>
+<th>观察指标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">carry 分解</td>
+<td>加息 25bp 后 carry 还剩多少？</td>
+<td>工具 1</td>
+</tr>
+<tr>
+<td class="k">利差传导</td>
+<td>美日 spread 压缩多少 implied FX？</td>
+<td>工具 2</td>
+</tr>
+<tr>
+<td class="k">unwind 规模</td>
+<td>5% 日元升值对应多少卖压？</td>
+<td>工具 3</td>
+</tr>
+<tr>
+<td class="k">实际利率</td>
+<td>「真收紧」了吗？</td>
+<td>工具 4</td>
+</tr>
+<tr>
+<td class="k">positioning</td>
+<td>市场已定价多少？</td>
+<td>CFTC 日元净持仓</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>决策框架（非投资建议）</strong>：</p>
+<ol>
+<li><strong>定性</strong>：正常化慢变量 vs unwind 快变量？</li>
+<li><strong>定量</strong>：四工具验算</li>
+<li><strong>交叉验证</strong>：BoJ 声明 vs USD/JPY vs VIX 同向吗？</li>
+<li><strong>预期差</strong>：OIS 已定价几次 25bp？与你的判断差在哪？</li>
+</ol>
+<h3>它在整个系统里的作用</h3>
+<p>理论到行动是手册的「执行接口」。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 政策识字</summary><div class="dbody"><p>能复述 2024–2025 四次加息节点与 YCC/负利率退出时间。</p></div></details>
+<details><summary>L2 · carry 算术</summary><div class="dbody"><p>能手算：利差 +3.75%、FX −5% → 总 <strong>−1.25%</strong>。</p></div></details>
+<details><summary>L3 · 双触发思维</summary><div class="dbody"><p>能解释 2024-08 为何不是 7/31 单日事件。</p></div></details>
+<details><summary>L4 · 全球传导地图</summary><div class="dbody"><p>能画 BoJ→carry→美股/日股/EM 链条。</p></div></details>
+<details><summary>L5 · positioning 解读</summary><div class="dbody"><p>能读 CFTC 并解释 2025「卖事实」。</p></div></details>
+<details><summary>L6 · 情景写作</summary><div class="dbody"><p>能写「下一次 BoJ 加息周」三情景备忘录。</p></div></details>
+<h3>它在整个系统里的作用</h3>
+<p>技能树给学习路径——配合 §21 四级能力路线。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>把日元加息当成 <strong>「全球杠杆塔防」</strong>：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>游戏元素</th>
+<th>对应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">主基地</td>
+<td>BoJ 政策利率</td>
+</tr>
+<tr>
+<td class="k">暗渠</td>
+<td>套息融资（¥40 万亿 HP）</td>
+</tr>
+<tr>
+<td class="k">Boss</td>
+<td>植田 MPM + 美国非农</td>
+</tr>
+<tr>
+<td class="k">Debuff</td>
+<td>日元急升、VIX 飙升</td>
+</tr>
+<tr>
+<td class="k">Buff</td>
+<td>美日利差仍宽、弱日元叙事</td>
+</tr>
+<tr>
+<td class="k">迷雾</td>
+<td>名义 vs 实际利率</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Boss 战</strong>：2024-08「双触发」；2025-12「卖事实」。</p>
+<h3>它在整个系统里的作用</h3>
+<p>游戏化降低畏难——加息是 <strong>抽水泵</strong>，不是单机事件。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务类型</th>
+<th>示例</th>
+<th>奖励（认知）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">日常</td>
+<td>记录 USD/JPY 与 TOPIX 同日方向</td>
+<td>carry 直觉 +1</td>
+</tr>
+<tr>
+<td class="k">周常</td>
+<td>跑工具 1 用最新 OIS 利率</td>
+<td>数学直觉 +1</td>
+</tr>
+<tr>
+<td class="k">主线</td>
+<td>跟踪一次 BoJ+非农 双事件周</td>
+<td>双触发地图</td>
+</tr>
+<tr>
+<td class="k">支线</td>
+<td>读 BIS Bulletin 90 摘要</td>
+<td>全球视角</td>
+</tr>
+<tr>
+<td class="k">成就</td>
+<td>第一次提前识别 positioning 翻转</td>
+<td>解锁「卖事实」</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>任务系统把 §23/§24 计划游戏化。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若 BoJ 2024-03 不退出负利率</button><button class="tab" data-pane="tb1-1">若 2024-08 没有弱非农</button><button class="tab" data-pane="tb1-2">若 Fed 2025-12 降息而 BoJ 加息</button></div>
+<div class="pane on" id="tb1-0"><p><span class="tag t-inf">推论</span>carry 继续膨胀，2024-08 式 unwind 或更晚但更剧烈——BoJ 自我评估亦指长期宽松扭曲市场功能【分析·BOJ 广视角回顾】。</p></div><div class="pane" id="tb1-1"><p><span class="tag t-inf">推论</span>日元或仍升但全球 equity 冲击或较小——郭磊指「双预期冲击叠加」【分析·华尔街见闻】；单因子模型会高估 BoJ 单独效应。</p></div><div class="pane" id="tb1-2"><p>【分析·财新】美日「背向而行」——利差收窄加速，carry 数学恶化；但 2025-12 市场反应平淡因已定价【分析·中证网】。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>反事实训练结构感——知道哪些是承重墙（杠杆规模），哪些是扳机（非农）。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>标志</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识别</td>
+<td>能说出四次加息与 2024-08 事件</td>
+<td>读完 §14 并举 3 个陷阱</td>
+</tr>
+<tr>
+<td class="k">L2 计算</td>
+<td>能手算 carry 分解</td>
+<td>完成 §22 工具 1–2</td>
+</tr>
+<tr>
+<td class="k">L3 建模</td>
+<td>能写「BoJ 会议周」三情景</td>
+<td>四工具 + CFTC</td>
+</tr>
+<tr>
+<td class="k">L4 直觉</td>
+<td>BoJ/非农发布时自动触发「carry+positioning+vol」</td>
+<td>持续跟踪 8 周</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>能力路线是进度条。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>目标</strong>：今天就能做、成本≈0、产出可验证。</p>
+<p><strong>① carry 分解（8 分钟）</strong>
+工具 1：日利率 <strong>0.50%</strong>、美 <strong>4.25%</strong>、USD/JPY <strong>−5.0%</strong>、<strong>12</strong> 月 → 利差 <strong>+3.75%</strong>、总回报 <strong>−1.25%</strong>。写下：<strong>加息后 carry 可为负</strong>。</p>
+<p><strong>② 利差传导（7 分钟）</strong>
+工具 2：日 <strong>0.50%</strong>、美 <strong>4.25%</strong>、<strong>12</strong> 月 → spread <strong>+3.75pp</strong>、隐含 USD/JPY <strong>−3.75%</strong>（日元升值）。把日利率调高 0.25pp，spread 降至 <strong>+3.50pp</strong>。</p>
+<p><strong>③ 平仓量级（8 分钟）</strong>
+工具 3：升值 <strong>5.0%</strong>、头寸 <strong>¥40</strong> 万亿 → 卖压约 <strong>¥0.50</strong> 万亿（≈ <strong>$333</strong> 亿代理，按 USD/JPY=150）。写下：BIS 中值的 <strong>1.25%</strong> 量级【推论·工具 3 公式】。</p>
+<p><strong>④ 实际利率（7 分钟）</strong>
+工具 4：政策 <strong>0.75%</strong>、CPI <strong>2.5%</strong> → 实际 <strong>−1.75%</strong>。写下：<strong>名义加息四次，实际仍深度为负</strong>。</p>
+<div class="note amber"><b>验收标准</b><p>你能向别人解释「为什么 2025-12 加息后日元还能走弱」——就算入门。</p></div>
+<h3>它在整个系统里的作用</h3>
+<p>§22 是交付验证点。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>时间线</td>
+<td>默写 2016→2024→2025 利率路径</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>carry 数学</td>
+<td>手算工具 1，验证 −1.25%</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>2024-08</td>
+<td>读 BIS Bulletin 90 一页摘要</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>positioning</td>
+<td>查 CFTC 日元 net，对比 2024 vs 2025</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>双触发</td>
+<td>整理 7/31 BoJ + 8/2 非农时间差</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>缩表</td>
+<td>画 JGB 购买 5.7→2.9 路径</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>整合</td>
+<td>300 字「下次 BoJ 加息周」三情景</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>7 天计划养成数据节奏。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>周次</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">打底</td>
+<td>1–2 周</td>
+<td>L1→L2：时间线 + 四工具</td>
+</tr>
+<tr>
+<td class="k">深耕</td>
+<td>第 3 周</td>
+<td>并行跟踪 USD/JPY、VIX、TOPIX</td>
+</tr>
+<tr>
+<td class="k">输出</td>
+<td>第 4 周</td>
+<td>「日元加息全球传导备忘录」一页纸</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它在整个系统里的作用</h3>
+<p>30 天计划通 L2→L3。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>跨域同构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>carry 分解</strong></td>
+<td>利差 + ΔFX = 总回报</td>
+<td>↔ 套利定价 ↔ 免费午餐边界</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>UIP 近似</strong></td>
+<td>利差→预期汇率变动</td>
+<td>↔ 重力模型</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>杠杆正反馈</strong></td>
+<td>vol↑→平仓→vol↑</td>
+<td>↔ 银行挤兑 ↔ 火灾逃生</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>实际利率</strong></td>
+<td>名义 − 通胀</td>
+<td>↔ 真实回报 ↔ 温控滞后</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>政策正常化</strong></td>
+<td>慢加息 vs 快 unwind</td>
+<td>↔ 戒断反应</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>positioning</strong></td>
+<td>净空头 vs 净多头</td>
+<td>↔ 弹簧压缩/释放</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>双触发</strong></td>
+<td>BoJ × 宏观 surprise</td>
+<td>↔ 与门电路</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>funding currency</strong></td>
+<td>日元作为全球暗渠</td>
+<td>↔ 平台货币 ↔ TCP/IP</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>缩表供给</strong></td>
+<td>JGB 购买↓→长端↑</td>
+<td>↔ 水库放闸</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>对照基准</strong></td>
+<td>超额需减 p_base</td>
+<td>↔ 多重检验 ↔ 假策略定理</td>
+</tr>
+</tbody>
+</table></div>
+<p>下面四个工具把 #1–#4 与 #7 变成可拖动验证。</p>
+<h4>套息收益分解器</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 1 · 套息收益分解器</h4></div>
+  <p class="tool-sub">总回报 ≈ (r<sub>US</sub> − r<sub>JP</sub>) × 月/12 + USD/JPY 变动%。负的 USD/JPY 变动 = 日元升值 = FX 损失。</p>
+  <div class="ctrl">
+    <label for="cy_rj">日本政策/短端利率（%）</label>
+    <input type="range" id="cy_rj" min="0" max="1.5" step="0.05" value="0.50">
+    <output id="cy_rjO">0.50%</output>
+  </div>
+  <div class="ctrl">
+    <label for="cy_rus">美国短端利率（%）</label>
+    <input type="range" id="cy_rus" min="2" max="6" step="0.05" value="4.25">
+    <output id="cy_rusO">4.25%</output>
+  </div>
+  <div class="ctrl">
+    <label for="cy_fx">USD/JPY 变动（%）</label>
+    <input type="range" id="cy_fx" min="-15" max="5" step="0.1" value="-5.0">
+    <output id="cy_fxO">-5.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="cy_mo">持有期限（月）</label>
+    <input type="range" id="cy_mo" min="1" max="12" step="1" value="12">
+    <output id="cy_moO">12 月</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">利差收益</div><div class="val" id="cy_carry">+3.75%</div><div class="hint" id="cy_carryh">借日元投美元端</div></div>
+    <div class="ro"><div class="lbl">汇率损益</div><div class="val" id="cy_fxpl">-5.00%</div><div class="hint" id="cy_fxplh">USD/JPY 变动</div></div>
+    <div class="ro"><div class="lbl">总回报</div><div class="val" id="cy_total">-1.25%</div><div class="hint" id="cy_totalh">简化 carry</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="cy_v" style="font-size:15px">套息转亏</div>
+      <div class="hint" id="cy_vh" style="margin-top:0">2024-08 典型区间</div>
+    </div>
+  </div>
+  <canvas id="cyChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h4>美日利差传导器</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 2 · 美日利差传导器</h4></div>
+  <p class="tool-sub">隐含 USD/JPY 变动 ≈ −(i<sub>US</sub> − i<sub>JP</sub>) × 月/12。线性 UIP 演示，忽略风险溢价。</p>
+  <div class="ctrl">
+    <label for="sp_jp">日本利率（%）</label>
+    <input type="range" id="sp_jp" min="0" max="1.5" step="0.05" value="0.50">
+    <output id="sp_jpO">0.50%</output>
+  </div>
+  <div class="ctrl">
+    <label for="sp_us">美国利率（%）</label>
+    <input type="range" id="sp_us" min="2" max="6" step="0.05" value="4.25">
+    <output id="sp_usO">4.25%</output>
+  </div>
+  <div class="ctrl">
+    <label for="sp_mo">持有期限（月）</label>
+    <input type="range" id="sp_mo" min="1" max="24" step="1" value="12">
+    <output id="sp_moO">12 月</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">美日利差</div><div class="val" id="sp_spr">+3.75 pp</div><div class="hint" id="sp_sprh">美 − 日</div></div>
+    <div class="ro"><div class="lbl">隐含 USD/JPY</div><div class="val" id="sp_impl">-3.75%</div><div class="hint" id="sp_implh">负值 = 日元升值</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="sp_v" style="font-size:15px">套息空间仍宽</div>
+      <div class="hint" id="sp_vh" style="margin-top:0">BoJ 加息压缩 spread</div>
+    </div>
+  </div>
+  <canvas id="spChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h4>平仓冲击估算器</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 3 · 平仓冲击估算器</h4></div>
+  <p class="tool-sub">被迫卖压 ≈ 套息头寸 × 日元升值% × 0.25（简化杠杆系数）。BIS 中值头寸 ¥40 万亿。</p>
+  <div class="ctrl">
+    <label for="uw_aprec">日元升值幅度（%）</label>
+    <input type="range" id="uw_aprec" min="1" max="15" step="0.1" value="5.0">
+    <output id="uw_aprecO">5.0%</output>
+  </div>
+  <div class="ctrl">
+    <label for="uw_pos">套息头寸（万亿日元）</label>
+    <input type="range" id="uw_pos" min="20" max="60" step="1" value="40">
+    <output id="uw_posO">¥40 万亿</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">估算卖压</div><div class="val" id="uw_sell">¥0.50 万亿</div><div class="hint" id="uw_sellh">BIS 中值 × 5% × 0.25</div></div>
+    <div class="ro"><div class="lbl">美元代理</div><div class="val" id="uw_usd">$333 亿</div><div class="hint" id="uw_usdh">¥0.50 万亿 ÷ 150</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="uw_v" style="font-size:15px">显著平仓</div>
+      <div class="hint" id="uw_vh" style="margin-top:0">跨资产去杠杆</div>
+    </div>
+  </div>
+  <canvas id="uwChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h4>实际利率仪表盘</h4>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 4 · 实际利率仪表盘</h4></div>
+  <p class="tool-sub">实际政策利率 ≈ BoJ 政策利率 − 核心 CPI。判断「名义加息」是否等于「真收紧」。</p>
+  <div class="ctrl">
+    <label for="rr_pol">BoJ 政策利率（%）</label>
+    <input type="range" id="rr_pol" min="0" max="1.5" step="0.05" value="0.75">
+    <output id="rr_polO">0.75%</output>
+  </div>
+  <div class="ctrl">
+    <label for="rr_cpi">核心 CPI（%）</label>
+    <input type="range" id="rr_cpi" min="1" max="4" step="0.1" value="2.5">
+    <output id="rr_cpiO">2.5%</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">实际利率</div><div class="val" id="rr_real">-1.75%</div><div class="hint" id="rr_realh">政策 − CPI</div></div>
+    <div class="ro"><div class="lbl">距 2% 目标缺口</div><div class="val" id="rr_gap">+1.25 pp</div><div class="hint" id="rr_gaph">2% − 政策利率</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="rr_v" style="font-size:15px">仍显著为负</div>
+      <div class="hint" id="rr_vh" style="margin-top:0">金融条件仍宽松</div>
+    </div>
+  </div>
+  <canvas id="rrChart" height="214" style="height:214px;margin-top:10px"></canvas>
+</div>
+<h3>它在整个系统里的作用</h3>
+<p>十个模型 + 四个工具构成可验证内核。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>这次加息，carry 数学还成立吗？</summary><div class="dbody"><p>跑工具 1——利差是否盖过 FX 风险。</p></div></details>
+<details><summary>实际利率转正了吗？</summary><div class="dbody"><p>工具 4：若仍深度为负，「紧缩」叙事需打折。</p></div></details>
+<details><summary>positioning 是净空还是净多？</summary><div class="dbody"><p>2024-07 净空 vs 2025-05 净多 → 完全相反的价格反应【分析·中证网】。</p></div></details>
+<details><summary>本周有没有「第二触发」？</summary><div class="dbody"><p>非农、CPI、FOMC 与 BoJ 是否叠加。</p></div></details>
+<details><summary>缩表是否同步收紧长端？</summary><div class="dbody"><p>看 JGB 购买计划，不只盯 25bp。</p></div></details>
+<details><summary>BIS 规模是上限还是中值？</summary><div class="dbody"><p>当作 <strong>量级</strong> 而非精确账本【事实·BIS】。</p></div></details>
+<details><summary>我的资产有多少「日元融资 beta」？</summary><div class="dbody"><p>高 beta、高杠杆、过去受益弱日元的资产更敏感。</p></div></details>
+<details><summary>日本会慢速卖美债吗？</summary><div class="dbody"><p>看 <strong>增量需求</strong> 而非存量一夜撤离【分析·大公国际】。</p></div></details>
+<details><summary>财政叙事是否压过利差？</summary><div class="dbody"><p>2025-12 案例：是【分析·上海证券报】。</p></div></details>
+<details><summary>我的结论依赖哪条【假设】？</summary><div class="dbody"><p>逐条标注，避免把待验证数字当事实。</p></div></details>
+<h3>它在整个系统里的作用</h3>
+<p>问题清单是 §27 之前的自检门。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>构建「BoJ 会议周」面板</strong>：USD/JPY、TOPIX、VIX、10Y JGB、CFTC 净持仓，五线同图。</li>
+<li><strong>精读 BIS Bulletin 90</strong> 全文，理解 procyclical deleveraging 机制。</li>
+<li><strong>读 BoJ「货币政策广视角回顾」</strong>（2024-12），对照官方自我批评。</li>
+<li><strong>交叉阅读</strong>《美元指数》《美债》手册——三角：DXY、carry、UST 需求。</li>
+<li><strong>跟踪</strong> MoF 日本海外证券投资统计——慢变量回流。</li>
+</ol>
+<h3>它在整个系统里的作用</h3>
+<p>探索清单防止「读完就忘」——手册是起点，不是终点。</p>
+<hr />
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2024-03/07 加息与缩表</td>
+<td>央行公告</td>
+<td>BOJ Statements 2024 / CNBC 2024-07-31</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2025-01/12 加息</td>
+<td>媒体/评级</td>
+<td>OANDA 日程 / 大公国际 2025-12 / 中证网</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">¥40 万亿 carry 中值</td>
+<td>国际组织</td>
+<td>BIS Bulletin 90, Aug 2024</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2024-08 市场动荡</td>
+<td>国际组织</td>
+<td>BIS Bulletin 90 / 日经中文网 2024-08</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">弱非农 +11.4 万</td>
+<td>媒体</td>
+<td>中证网 2025-12 / 华尔街见闻</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">positioning 翻转</td>
+<td>机构研究</td>
+<td>兴业研究 / 中证网</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">2025-12 日元仍弱</td>
+<td>媒体</td>
+<td>上海证券报 2025-12-25</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">日本持美债规模</td>
+<td>评级报告</td>
+<td>大公国际 2025-12</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">实际利率演示数</td>
+<td>本手册工具</td>
+<td>build 时 node 验算</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或一手；<span class="tag t-ana">分析</span>机构判断；<span class="tag t-inf">推论</span>本手册推导；<span class="tag t-hyp">假设</span>情景；<span class="tag t-chk">待验证</span>单一或二手链较长。</p>
+<hr />
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供学习与认知框架构建，<strong>不构成任何投资建议</strong>。外汇、债券、股票及衍生品杠杆高、波动大，可能导致本金重大损失。套息交易存在「捡硬币迎蒸汽机」式尾部风险——2024 年 8 月事件表明 unwind 可在数日内造成双位数回撤。文中利率路径、汇率水平、BIS 规模均为说明用，可能过时或不适用于你的情况。交互模型采用简化公式（线性 carry、固定杠杆系数 0.25），省略基差、税收、保证金与微观结构，<strong>不可直接用于交易决策</strong>。如需投资或对冲，请咨询持牌专业人士并阅读产品法律文件。</p>
+<hr />
+</section>
+<footer>  <p>《日元加息 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 2 分 55 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《日元加息》主题脚本
+   四个可调模型：
+     1. 套息收益分解器  — 利差 + 汇率变动 → 总回报
+     2. 美日利差传导器  — 政策利差 × 期限 → 隐含 USD/JPY
+     3. 平仓冲击估算器  — 日元升值 × 头寸 → 被迫卖压
+     4. 实际利率仪表盘  — 政策利率 − 核心 CPI
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', ink3: '#7c848f', ink2: '#454c56'
+  };
+
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function num(v) { return parseFloat(v); }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+
+  /* ══════════════════════════════════════════════════════════
+     工具 1 · 套息收益分解器
+     总回报 ≈ (r_US − r_JP) × 月/12 + USD/JPY 变动%
+     USD/JPY 下跌（负值）= 日元升值 = 套息者 FX 损失
+     ══════════════════════════════════════════════════════════ */
+  (function carryTool() {
+    var rjEl = $('cy_rj'), rusEl = $('cy_rus'), fxEl = $('cy_fx'), moEl = $('cy_mo');
+    if (!rjEl || !rusEl || !fxEl || !moEl) return;
+    var rjO = $('cy_rjO'), rusO = $('cy_rusO'), fxO = $('cy_fxO'), moO = $('cy_moO');
+    var carryEl = $('cy_carry'), fxEl2 = $('cy_fxpl'), totEl = $('cy_total');
+    var carryhEl = $('cy_carryh'), fxhEl = $('cy_fxplh'), tothEl = $('cy_totalh');
+    var vEl = $('cy_v'), vhEl = $('cy_vh');
+    var cv = $('cyChart');
+
+    function upd() {
+      var rj = num(rjEl.value), rus = num(rusEl.value);
+      var fx = num(fxEl.value), mo = num(moEl.value);
+      var carry = (rus - rj) * mo / 12;
+      var total = carry + fx;
+
+      txt(rjO, rj.toFixed(2) + '%');
+      txt(rusO, rus.toFixed(2) + '%');
+      txt(fxO, (fx >= 0 ? '+' : '') + fx.toFixed(1) + '%');
+      txt(moO, mo.toFixed(0) + ' 月');
+      txt(carryEl, (carry >= 0 ? '+' : '') + carry.toFixed(2) + '%');
+      txt(carryhEl, '借日元、投美元端的年化利差 × 持有月/12');
+      txt(fxEl2, (fx >= 0 ? '+' : '') + fx.toFixed(2) + '%');
+      txt(fxhEl, 'USD/JPY 变动；负值 = 日元升值 = 套息 FX 损');
+      txt(totEl, (total >= 0 ? '+' : '') + total.toFixed(2) + '%');
+      txt(tothEl, '利差收益 + 汇率损益（简化，忽略基差）');
+
+      var label, hint, col;
+      if (total >= 2) {
+        label = '套息仍有利'; hint = '利差盖过汇率逆风——但波动上升时杠杆会放大回撤';
+        col = 'var(--red)';
+      } else if (total >= 0) {
+        label = '勉强为正'; hint = '收益薄，margin 一点波动就可能触发平仓';
+        col = 'var(--amber)';
+      } else if (total >= -3) {
+        label = '套息转亏'; hint = '2024-08 典型区间：加息 + 日元急升 → 总回报转负';
+        col = 'var(--green)';
+      } else {
+        label = '大幅亏损'; hint = '类似 161→141（日元 +12.4%）叠加利差仍不够补';
+        col = 'var(--green)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(rj, rus, carry, fx, total);
+    }
+
+    function draw(rj, rus, carry, fx, total) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, h = g.h;
+      clear(g);
+      var pl = 56, pr = 20, y1 = h - 46, bw = W - pl - pr;
+      var mid = (y1 + 24) / 2;
+      var maxB = 8;
+      var bars = [
+        { n: '利差', v: carry, col: C.blue },
+        { n: '汇率', v: fx, col: fx >= 0 ? C.red : C.green },
+        { n: '合计', v: total, col: total >= 0 ? C.red : C.green }
+      ];
+      ctx.strokeStyle = C.grid;
+      for (var i = 0; i <= 4; i++) {
+        var yy = y1 - (y1 - 20) * i / 4;
+        ctx.beginPath(); ctx.moveTo(pl, yy); ctx.lineTo(pl + bw, yy); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText((maxB * i / 4 - maxB / 2).toFixed(0) + '%', pl - 4, yy + 3);
+      }
+      ctx.beginPath(); ctx.moveTo(pl, mid); ctx.lineTo(pl + bw, mid);
+      ctx.strokeStyle = C.ink2; ctx.lineWidth = 1; ctx.stroke(); ctx.lineWidth = 1;
+      var barW = bw / bars.length * 0.55;
+      bars.forEach(function (b, idx) {
+        var x = pl + idx * (bw / bars.length) + barW * 0.22;
+        var bh = Math.abs(b.v) / maxB * (mid - 24);
+        var y = b.v >= 0 ? mid - bh : mid;
+        ctx.fillStyle = b.col;
+        ctx.fillRect(x, y, barW, bh || 1);
+        ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(b.n, x + barW / 2, y1 + 13);
+      });
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('套息总回报分解（%）', pl + bw / 2, y1 + 31);
+    }
+
+    [rjEl, rusEl, fxEl, moEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 2 · 美日利差传导器
+     隐含 USD/JPY 变动 ≈ −(i_US − i_JP) × 月/12（演示 UIP 线性近似）
+     ══════════════════════════════════════════════════════════ */
+  (function spreadTool() {
+    var jpEl = $('sp_jp'), usEl = $('sp_us'), moEl = $('sp_mo');
+    if (!jpEl || !usEl || !moEl) return;
+    var jpO = $('sp_jpO'), usO = $('sp_usO'), moO = $('sp_moO');
+    var sprEl = $('sp_spr'), implEl = $('sp_impl');
+    var sprhEl = $('sp_sprh'), implhEl = $('sp_implh');
+    var vEl = $('sp_v'), vhEl = $('sp_vh');
+    var cv = $('spChart');
+
+    function upd() {
+      var jp = num(jpEl.value), us = num(usEl.value), mo = num(moEl.value);
+      var spr = us - jp;
+      var impl = -spr * mo / 12;
+
+      txt(jpO, jp.toFixed(2) + '%');
+      txt(usO, us.toFixed(2) + '%');
+      txt(moO, mo.toFixed(0) + ' 月');
+      txt(sprEl, (spr >= 0 ? '+' : '') + spr.toFixed(2) + ' pp');
+      txt(sprhEl, '美 − 日政策/短端代理');
+      txt(implEl, (impl >= 0 ? '+' : '') + impl.toFixed(2) + '%');
+      txt(implhEl, '负值 → USD/JPY 下行 → 日元升值');
+
+      var label, hint, col;
+      if (spr >= 3.5) {
+        label = '套息空间仍宽'; hint = '美日利差大——但 BOJ 加息路径会压缩 spread';
+        col = 'var(--red)';
+      } else if (spr >= 1.5) {
+        label = '利差收窄中'; hint = '2025–26 正常化中段：carry 吸引力下降';
+        col = 'var(--amber)';
+      } else {
+        label = '利差接近抹平'; hint = '日元融资优势消失——宏观套息难以为继';
+        col = 'var(--green)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(jp, us, mo, spr, impl);
+    }
+
+    function draw(jp, us, mo, spr, impl) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, h = g.h;
+      clear(g);
+      var pl = 52, pr = 16, y1 = h - 46, bw = W - pl - pr;
+      var pts = [];
+      var m;
+      for (m = 1; m <= 24; m++) {
+        pts.push({ m: m, v: -(us - jp) * m / 12 });
+      }
+      var T = Math.min(24, Math.max(12, Math.ceil((mo + 3) / 6) * 6));
+      pts = pts.filter(function (p) { return p.m <= T; });
+      var minV = Math.min.apply(null, pts.map(function (p) { return p.v; }));
+      var maxV = Math.max.apply(null, pts.map(function (p) { return p.v; }));
+      var pad = 0.5;
+      minV -= pad; maxV += pad;
+      var rng = maxV - minV || 1;
+      function sx(m) { return pl + (m / T) * bw; }
+      function sy(v) { return y1 - ((v - minV) / rng) * (y1 - 24); }
+      ctx.strokeStyle = C.grid;
+      for (var i = 0; i <= 4; i++) {
+        var yy = y1 - (y1 - 20) * i / 4;
+        ctx.beginPath(); ctx.moveTo(pl, yy); ctx.lineTo(pl + bw, yy); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText((minV + rng * i / 4).toFixed(1) + '%', pl - 4, yy + 3);
+      }
+      ctx.beginPath();
+      pts.forEach(function (p, idx) {
+        if (idx === 0) ctx.moveTo(sx(p.m), sy(p.v));
+        else ctx.lineTo(sx(p.m), sy(p.v));
+      });
+      ctx.strokeStyle = C.blue; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1;
+      var cur = -(us - jp) * mo / 12;
+      var cx = sx(mo), cy = sy(cur);
+      ctx.fillStyle = C.red;
+      ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+      ctx.fillText('UIP 线性近似 · 忽略风险溢价', pl + bw, 16);
+      ctx.textAlign = 'center';
+      ctx.fillText('持有月数 → 隐含 USD/JPY 变动（%）', pl + bw / 2, y1 + 31);
+    }
+
+    [jpEl, usEl, moEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 3 · 平仓冲击估算器
+     被迫卖压 ≈ 头寸 × 升值% × 0.25（简化杠杆系数）
+     ══════════════════════════════════════════════════════════ */
+  (function unwindTool() {
+    var apEl = $('uw_aprec'), posEl = $('uw_pos');
+    if (!apEl || !posEl) return;
+    var apO = $('uw_aprecO'), posO = $('uw_posO');
+    var sellEl = $('uw_sell'), usdEl = $('uw_usd');
+    var sellhEl = $('uw_sellh'), usdhEl = $('uw_usdh');
+    var vEl = $('uw_v'), vhEl = $('uw_vh');
+    var cv = $('uwChart');
+
+    function upd() {
+      var ap = num(apEl.value), pos = num(posEl.value);
+      var sell = pos * ap / 100 * 0.25;
+      var usdBn = sell * 1000 / 150;
+
+      txt(apO, ap.toFixed(1) + '%');
+      txt(posO, '¥' + pos.toFixed(0) + ' 万亿');
+      txt(sellEl, '¥' + sell.toFixed(2) + ' 万亿');
+      txt(sellhEl, 'BIS 中值 ¥40 万亿 × 5% × 0.25 = ¥0.5 万亿【推论】');
+      txt(usdEl, '$' + (usdBn * 10).toFixed(0) + ' 亿');
+      txt(usdhEl, '¥' + sell.toFixed(2) + ' 万亿 ÷ 150 ≈ $' + usdBn.toFixed(1) + ' 十亿');
+
+      var label, hint, col;
+      if (ap >= 8) {
+        label = '系统性 unwind 区'; hint = '接近 2024-08：TOPIX 单日 −12%、VIX 飙升';
+        col = 'var(--green)';
+      } else if (ap >= 4) {
+        label = '显著平仓'; hint = '跨资产去杠杆——美股、EM、crypto 同步承压';
+        col = 'var(--amber)';
+      } else {
+        label = '温和调整'; hint = '2025-12 加息后「卖事实」——头寸已部分出清';
+        col = 'var(--blue)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(ap, pos, sell);
+    }
+
+    function draw(ap, pos, sell) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, h = g.h;
+      clear(g);
+      var pl = 56, pr = 20, y1 = h - 46, bw = W - pl - pr;
+      var aps = [2, 5, 8, 12];
+      var sells = aps.map(function (a) { return pos * a / 100 * 0.25; });
+      var maxS = Math.max.apply(null, sells.concat([1]));
+      ctx.strokeStyle = C.grid;
+      for (var i = 0; i <= 4; i++) {
+        var yy = y1 - (y1 - 20) * i / 4;
+        ctx.beginPath(); ctx.moveTo(pl, yy); ctx.lineTo(pl + bw, yy); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText((maxS * i / 4).toFixed(1), pl - 4, yy + 3);
+      }
+      var barW = bw / aps.length * 0.55;
+      aps.forEach(function (a, idx) {
+        var s = pos * a / 100 * 0.25;
+        var x = pl + idx * (bw / aps.length) + barW * 0.22;
+        var bh = (s / maxS) * (y1 - 24);
+        var isCur = Math.abs(a - ap) < 0.6;
+        ctx.fillStyle = isCur ? C.green : C.amber;
+        ctx.globalAlpha = isCur ? 1 : 0.5;
+        ctx.fillRect(x, y1 - bh, barW, bh);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('+' + a + '%', x + barW / 2, y1 + 13);
+      });
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('日元升值幅度 → 估算被迫卖压（万亿日元）', pl + bw / 2, y1 + 31);
+    }
+
+    [apEl, posEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 4 · 实际利率仪表盘
+     实际政策利率 ≈ 政策利率 − 核心 CPI
+     ══════════════════════════════════════════════════════════ */
+  (function realRateTool() {
+    var polEl = $('rr_pol'), cpiEl = $('rr_cpi');
+    if (!polEl || !cpiEl) return;
+    var polO = $('rr_polO'), cpiO = $('rr_cpiO');
+    var realEl = $('rr_real'), gapEl = $('rr_gap');
+    var realhEl = $('rr_realh'), gaphEl = $('rr_gaph');
+    var vEl = $('rr_v'), vhEl = $('rr_vh');
+    var cv = $('rrChart');
+
+    function upd() {
+      var pol = num(polEl.value), cpi = num(cpiEl.value);
+      var real = pol - cpi;
+      var gap = 2.0 - pol;
+
+      txt(polO, pol.toFixed(2) + '%');
+      txt(cpiO, cpi.toFixed(1) + '%');
+      txt(realEl, (real >= 0 ? '+' : '') + real.toFixed(2) + '%');
+      txt(realhEl, '政策利率 − 核心 CPI（简化）');
+      txt(gapEl, (gap >= 0 ? '+' : '') + gap.toFixed(2) + ' pp');
+      txt(gaphEl, '距 BOJ 2% 目标的政策利率缺口');
+
+      var label, hint, col;
+      if (real >= 0) {
+        label = '实际利率转正'; hint = '金融条件真正收紧——carry 融资成本上升';
+        col = 'var(--red)';
+      } else if (real >= -1) {
+        label = '仍显著为负'; hint = '2025-12：0.75% − 2.5% = −1.75%【推论·已验算】';
+        col = 'var(--amber)';
+      } else {
+        label = '深度负实际利率'; hint = '2016–2024 负利率时代遗留——正常化路还长';
+        col = 'var(--green)';
+      }
+      txt(vEl, label); txt(vhEl, hint); tint(vEl, col);
+      draw(pol, cpi, real);
+    }
+
+    function draw(pol, cpi, real) {
+      if (!cv) return;
+      var g = fit(cv, 214); if (!g) return;
+      var ctx = g.ctx, W = g.w, h = g.h;
+      clear(g);
+      var pl = 56, pr = 20, y1 = h - 46, bw = W - pl - pr;
+      var mid = (y1 + 24) / 2;
+      var maxB = 4;
+      var bars = [
+        { n: '政策', v: pol, col: C.blue },
+        { n: 'CPI', v: cpi, col: C.amber },
+        { n: '实际', v: real, col: real >= 0 ? C.red : C.green }
+      ];
+      ctx.strokeStyle = C.grid;
+      for (var i = 0; i <= 4; i++) {
+        var yy = y1 - (y1 - 20) * i / 4;
+        ctx.beginPath(); ctx.moveTo(pl, yy); ctx.lineTo(pl + bw, yy); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText((maxB * i / 4).toFixed(0) + '%', pl - 4, yy + 3);
+      }
+      var barW = bw / bars.length * 0.55;
+      bars.forEach(function (b, idx) {
+        var x = pl + idx * (bw / bars.length) + barW * 0.22;
+        var bh = Math.abs(b.v) / maxB * (y1 - 24);
+        var y = b.v >= 0 ? y1 - bh : y1;
+        ctx.fillStyle = b.col;
+        ctx.fillRect(x, y, barW, bh || 1);
+        ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(b.n, x + barW / 2, y1 + 13);
+      });
+      ctx.fillStyle = C.ink2; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('日本政策利率 vs 通胀（%）', pl + bw / 2, y1 + 31);
+    }
+
+    [polEl, cpiEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
