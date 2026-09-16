@@ -25,7 +25,7 @@
 - [x] BTC-价格影响的“平方根定律”（Square Root Law）
 - [x] BTC-饼金比（BTC-to-Gold Ratio）与中枢位移
 - [ ] BTC-终极对决：四年周期理论 vs. 幂律通道下轨
-- [x] BTC-链上与周期技术指标
+- [ ] BTC-链上与周期技术指标
 - [ ] BTC-ahr999 定投指标
 - [ ] BTC-1-yr+ HODL Wave（钻石手占比）
 - [ ] BTC-URPD 已实现价格分布
