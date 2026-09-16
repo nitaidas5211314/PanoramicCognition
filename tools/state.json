@@ -100,11 +100,14 @@
     {
       "slug": "安同良团队拆解坟包收割",
       "title": "安同良团队拆解坟包收割",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-16 20:54:14",
+      "finished": "2026-09-16 20:58:16",
+      "duration_sec": 242,
+      "outputs": [
+        "reports/安同良团队拆解坟包收割.html",
+        "reports/安同良团队拆解坟包收割.md"
+      ],
       "error": null
     },
     {
@@ -186,7 +189,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-16 20:01",
+  "updated": "2026-09-16 20:58",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

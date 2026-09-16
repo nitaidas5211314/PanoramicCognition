@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>安同良团队拆解坟包收割 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>An Tongliang × Quant Harvesting</small></div>
+  <nav id="nav">
+    <div class="navgroup">正文</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">入口</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <div class="navgroup">实践</div>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索方向</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>安同良团队拆解坟包收割</h1>
+  <p class="sub">把量化「诱多—阴跌—回补」拆成可观测的三段式——<strong>它最锋利的是解释 K 线形态，最危险的是把叙事当成已证实的因果</strong></p>
+  <div class="meta">
+    <span class="chip b">27 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>坟包收割</strong>是南京大学商学院安同良教授团队对 A 股量化交易一种典型形态的命名：先用算法拉出「放量突破」诱散户追高，再以每日 1%–3% 的阴跌消磨耐心，最后在低位接回筹码——K 线呈<strong>尖顶、连阴、平底</strong>，形似坟包。<span class="tag t-ana">分析</span></p>
+<p>这份拆解的价值不在于给你一个「庄家名单」，而在于把一件散户体感极强、却难以言说的痛苦，翻译成<strong>可检验的三段式机制</strong>：选标的 → 造信号 → 慢出货。它的锋利之处是解释力；它的危险之处是<strong>把研究团队的归纳当成法庭判决</strong>——量化行业对此有强烈反驳，监管口径与学术建议也尚未完全落地。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>边界：研究什么、不研究什么</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>研究</th>
+<th>不研究</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">「坟包」形态的<strong>阶段划分</strong>与<strong>可观测特征</strong></td>
+<td>某只股票明天会不会涨</td>
+</tr>
+<tr>
+<td class="k">量化与散户之间的<strong>结构不对称</strong>（速度、工具、信息）</td>
+<td>某个具体机构是否「作恶」</td>
+</tr>
+<tr>
+<td class="k">安同良团队提出的<strong>监管建议</strong>及其与现行规则的差距</td>
+<td>消灭量化或全面禁止程序化交易</td>
+</tr>
+<tr>
+<td class="k">散户如何<strong>识别风险信号</strong>、设定退出规则</td>
+<td>保证你靠「反量化」稳定盈利</td>
+</tr>
+</tbody>
+</table></div>
+<h3>十五个问题：先建世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">研究什么</td>
+<td>量化机构如何利用微观结构优势，在特定标的上完成「高卖低买」闭环</td>
+</tr>
+<tr>
+<td class="k">边界在哪</td>
+<td>到「可观测的价量行为」为止；动机与合规性需另证</td>
+</tr>
+<tr>
+<td class="k">核心对象</td>
+<td>坟包形态（尖顶—阴跌—平底）、散户持仓结构、程序化订单流</td>
+</tr>
+<tr>
+<td class="k">参与者</td>
+<td>量化私募、券商自营、散户、做市商、交易所、监管层</td>
+</tr>
+<tr>
+<td class="k">核心变量</td>
+<td>散户持仓占比、日换手率、申报速率、融券余额、板块热度</td>
+</tr>
+<tr>
+<td class="k">可观察</td>
+<td>K 线形态、成交量放大、均线排列、每日涨跌幅分布、龙虎榜</td>
+</tr>
+<tr>
+<td class="k">不可观察但可推断</td>
+<td>算法参数、真实净头寸变化、多账户协同</td>
+</tr>
+<tr>
+<td class="k">谁影响谁</td>
+<td>订单流 → 价格 → 技术信号 → 散户行为 → 流动性 → 再影响价格</td>
+</tr>
+<tr>
+<td class="k">确定因果</td>
+<td>监管降频/限通道 → 申报速率下降 → 部分策略失效【事实·政策】</td>
+</tr>
+<tr>
+<td class="k">只是相关</td>
+<td>「突破后阴跌」与「量化主导」——形态可有多重解释</td>
+</tr>
+<tr>
+<td class="k">表层现象</td>
+<td>放量突破、均线多头、连阴不破新低</td>
+</tr>
+<tr>
+<td class="k">底层机制</td>
+<td>流动性供给/消耗的不对称 + 行为金融里的「处置效应」</td>
+</tr>
+<tr>
+<td class="k">反馈</td>
+<td>散户亏损 → 减少参与 → 量化转向其他标的（负反馈）；成功案例吸引模仿（正反馈）</td>
+</tr>
+<tr>
+<td class="k">时间延迟</td>
+<td>从造信号到出货完成，团队描述为<strong>二三十个交易日</strong>量级</td>
+</tr>
+<tr>
+<td class="k">正负反馈</td>
+<td>阴跌阶段：恐慌加深 → 更多割肉（正反馈）；监管介入 → 策略降温（负反馈）</td>
+</tr>
+</tbody>
+</table></div>
+<h3>与相邻概念的区别</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>问什么</th>
+<th>与坟包的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">威科夫派发</td>
+<td>大资金是否在出货？</td>
+<td>都描述「诱多后下跌」，威科夫更慢、更依赖区间与量价</td>
+</tr>
+<tr>
+<td class="k">技术分析突破</td>
+<td>突破前高是否有效？</td>
+<td>坟包叙事把「假突破」当成量化刻意制造</td>
+</tr>
+<tr>
+<td class="k">有效市场假说</td>
+<td>价格是否已反映信息？</td>
+<td>若坟包普遍存在，则技术信号含系统性可剥削成分</td>
+</tr>
+<tr>
+<td class="k">博弈论（凯尔模型）</td>
+<td>收益从谁手里来？</td>
+<td>坟包是「噪声交易者」被针对性收割的一种故事化版本</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>四个理由</h3>
+<div class="grid g2">
+<div class="card"><h4>它把「无形的手」翻译成可复盘的三段式</h4><p>散户常说「被量化收割了」，但说不清机制。安同良团队把过程拆成<strong>选流动性好的散户票 → 造突破信号 → 阴跌出货</strong>，让讨论从情绪进入结构。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它连接了微观行为与宏观公平议题</h4><p>2026 年证监会主席吴清提出「突出公平性，深化细化高频量化监管」<span class="tag t-fact">事实</span>——坟包叙事正好落在「速度优势是否构成不公平」这一监管主轴上。</p></div>
+<div class="card"><h4>它逼你对数字保持警惕</h4><p>团队引用的「45 家百亿量化 2025 年平均收益 37.6%、散户人均亏 2.1 万元」来自媒体报道与第三方平台汇总<span class="tag t-chk">待验证</span>——<strong>二手数字必须标待验证</strong>，否则你会把叙事里的震撼当成证据。</p></div>
+<div class="card"><h4>它给出可操作的散户防御框架</h4><p>即便不认同全部因果，你仍可学会：<strong>突破后不追、阴跌设时限止损、把「每日小跌」当成出货信号而非「洗盘」</strong>——这是零成本可验证的行为改变。</p></div>
+</div>
+<h3>也必须先说清楚：争议在哪里</h3>
+<ul>
+<li><strong>量化行业的反驳</strong>：许多策略是市场中性、提供流动性，不能把亏损简单归因于「收割」。<span class="tag t-ana">分析</span></li>
+<li><strong>因果识别困难</strong>：同样形态可能来自基本面恶化、板块轮动或散户踩踏，未必是单一主体「做局」。<span class="tag t-inf">推论</span></li>
+<li><strong>政策建议≠现行法律</strong>：「每秒 15 笔」高频门槛目前仍是<strong>建议</strong>，交易所现行标准为<strong>每秒 300 笔</strong><span class="tag t-fact">事实</span>。</li>
+</ul>
+<div class="note amber"><b>一句话定性</b><p>坟包收割是一套<strong>高质量的风险叙事 + 中等质量的因果证据</strong>。学它的方式，是学「怎么问对问题」，而不是学「怎么找坏人」。</p></div>
+<hr />
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>量化—散户—监管要在九个层级之间切换。<strong>把日线形态当成全部真相</strong>，是散户最常见的层级错配。</p>
+<svg viewBox="0 0 680 620" width="100%" style="max-width:680px">
+  <text x="12" y="18" font-size="12.5" font-weight="700" fill="#15181d" font-family="sans-serif">坟包收割分析的九层世界（自上而下：规则 → 结构 → 行为 → 自我）</text>
+  <rect x="12" y="32" width="656" height="52" rx="9" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="26" y="52" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">L1 · 监管与规则层</text>
+  <text x="26" y="70" font-size="10.5" fill="#454c56" font-family="sans-serif">程序化报告、高频认定（300 笔/秒）、差异化收费、通道清理 — 决定「速度武器」是否合法好用</text>
+  <rect x="12" y="92" width="656" height="52" rx="9" fill="#f2f7f4" stroke="#c6dcc9" stroke-width="1.3"/>
+  <text x="26" y="112" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">L2 · 市场结构层</text>
+  <text x="26" y="130" font-size="10.5" fill="#454c56" font-family="sans-serif">散户占比、T+1、涨跌停、融券可得性 — A 股「散户市」放大非对称</text>
+  <rect x="12" y="152" width="656" height="52" rx="9" fill="#f7f6f2" stroke="#ded8c4" stroke-width="1.3"/>
+  <text x="26" y="172" font-size="12" font-weight="700" fill="#8a6d1f" font-family="sans-serif">L3 · 资金生态层</text>
+  <text x="26" y="190" font-size="10.5" fill="#454c56" font-family="sans-serif">量化私募 ~1.8 万亿 AUM【待验证】、占成交 30%–40%、小盘超 50%【待验证】</text>
+  <rect x="12" y="212" width="656" height="52" rx="9" fill="#fdf3f2" stroke="#f0cdc9" stroke-width="1.3"/>
+  <text x="26" y="232" font-size="12" font-weight="700" fill="#d5342c" font-family="sans-serif">L4 · 板块与热点层</text>
+  <text x="26" y="250" font-size="10.5" fill="#454c56" font-family="sans-serif">题材轮动、抱团瓦解 — 「逐浪抱团」与坟包常在同一生态出现</text>
+  <rect x="12" y="272" width="656" height="52" rx="9" fill="#fdf3f2" stroke="#f0cdc9" stroke-width="1.3"/>
+  <text x="26" y="292" font-size="12" font-weight="700" fill="#d5342c" font-family="sans-serif">L5 · 个股选择层</text>
+  <text x="26" y="310" font-size="10.5" fill="#454c56" font-family="sans-serif">散户持仓多、流动性好、波动适中 — 团队描述的「理想收割标的」</text>
+  <rect x="12" y="332" width="656" height="52" rx="9" fill="#f6f2fb" stroke="#dccdf0" stroke-width="1.3"/>
+  <text x="26" y="352" font-size="12" font-weight="700" fill="#6b3fa0" font-family="sans-serif">L6 · 信号制造层（坟包第一段）</text>
+  <text x="26" y="370" font-size="10.5" fill="#454c56" font-family="sans-serif">放量突破、均线多头、突破前高 — 专门喂给技术分析规则</text>
+  <rect x="12" y="392" width="656" height="52" rx="9" fill="#f2f8fb" stroke="#c4dde9" stroke-width="1.3"/>
+  <text x="26" y="412" font-size="12" font-weight="700" fill="#1a6d8a" font-family="sans-serif">L7 · 出货执行层（坟包第二段）</text>
+  <text x="26" y="430" font-size="10.5" fill="#454c56" font-family="sans-serif">小单高频卖出、每日 -1%~-3%、二三十天 — 消磨而非吓跑</text>
+  <rect x="12" y="452" width="656" height="52" rx="9" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="26" y="472" font-size="12" font-weight="700" fill="#454c56" font-family="sans-serif">L8 · 订单与速度层</text>
+  <text x="26" y="490" font-size="10.5" fill="#454c56" font-family="sans-serif">申报速率、通道优先级、撤单率 — 2026 年上交所清理部分专属高速通道【事实】</text>
+  <rect x="12" y="512" width="656" height="60" rx="9" fill="#fff8ec" stroke="#f0dcb4" stroke-width="1.4"/>
+  <text x="26" y="532" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">L9 · 散户认知层（最常被忽略）</text>
+  <text x="26" y="550" font-size="10.5" fill="#454c56" font-family="sans-serif">把阴跌读成「洗盘」、把突破读成「主升浪」 — 叙事与仓位互相强化</text>
+  <text x="26" y="566" font-size="10.5" fill="#a06800" font-family="sans-serif">→ 即使 L6–L8 只是「市场合力」，L9 也会让你亏得比必要更多</text>
+  <text x="12" y="614" font-size="10.5" fill="#7c848f" font-family="sans-serif">上层约束下层：L1 改变 L8 的可行性；L9 决定你能不能执行 L5 的「不追」规则</text>
+</svg>
+<hr />
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>坟包三阶段</h3>
+<div class="grid g3">
+<div class="card"><h4>阶段一 · 造信号（尖顶）</h4><p>算法集中买入，拉出放量突破。散户熟悉的「均线多头排列」「突破前高」同时亮起。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>阶段二 · 阴跌出货（坟身）</h4><p>停止买入，小单高频卖出。每日跌 1%–3%，持续 20–30 天——<strong>不暴跌</strong>，避免触发恐慌性监管关注。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>阶段三 · 回补（平底）</h4><p>散户割肉后，量化在低位接回筹码，等待下一轮循环。<span class="tag t-ana">分析</span></p></div>
+</div>
+<h3>团队归纳的另外两套手法（对照用）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>手法</th>
+<th>核心机制</th>
+<th>与坟包的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">逐浪抱团</td>
+<td>同质化模型追逐同一热点，助涨后同步止损</td>
+<td>常出现在「造信号」之前，放大突破可信度</td>
+</tr>
+<tr>
+<td class="k">精准狙击</td>
+<td>涨停诱多 + 融券砸盘 + T+1 锁仓</td>
+<td>更短、更狠；坟包是「慢刀」版本</td>
+</tr>
+</tbody>
+</table></div>
+<h3>跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>本领域</th>
+<th>同构领域</th>
+<th>共享结构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">坟包阴跌</td>
+<td>挤兑/银行慢跑路</td>
+<td>每日小额流出，避免触发挤兑阈值</td>
+</tr>
+<tr>
+<td class="k">造突破信号</td>
+<td>广告漏斗 A/B 测试</td>
+<td>先制造可点击信号，再转化（这里是反向转化）</td>
+</tr>
+<tr>
+<td class="k">非对称收割</td>
+<td>捕食者—猎物模型</td>
+<td>速度差决定捕获率，而非绝对体量</td>
+</tr>
+<tr>
+<td class="k">监管降频</td>
+<td>限速/碳排放配额</td>
+<td>把外部性内部化，改变策略可行域</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>目标函数</th>
+<th>对坟包叙事的态度</th>
+<th>可观察痕迹</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">头部量化私募</td>
+<td>风险调整后收益、容量</td>
+<td>否认「收割」，强调做市与中性</td>
+<td>高频申报、龙虎榜机构席、融券余额</td>
+</tr>
+<tr>
+<td class="k">散户</td>
+<td>资本增值、叙事认同</td>
+<td>体感最强，易过度归因</td>
+<td>股东户数、融资买入、论坛热度</td>
+</tr>
+<tr>
+<td class="k">券商</td>
+<td>佣金、两融息差</td>
+<td>两面：服务量化也服务散户</td>
+<td>席位成交、融券出借</td>
+</tr>
+<tr>
+<td class="k">交易所</td>
+<td>流动性、公平、系统稳定</td>
+<td>2025–2026 强化程序化与高频细则<span class="tag t-fact">事实</span></td>
+<td>异常交易通报、通道政策</td>
+</tr>
+<tr>
+<td class="k">监管层</td>
+<td>市场稳定 + 投资者保护</td>
+<td>吴清 2026 年强调公平与高频监管<span class="tag t-fact">事实</span></td>
+<td>规则修订、差异化收费研究</td>
+</tr>
+<tr>
+<td class="k">学者（安同良团队）</td>
+<td>解释异化、提出政策建议</td>
+<td>命名并拆解手法</td>
+<td>论文/媒体报道、五维纠偏方案</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>坟包叙事中的角色</th>
+<th>数据来源性质</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">散户持仓占比</td>
+<td>流通股中散户持有比例</td>
+<td>高 → 更易被选为「收割标的」</td>
+<td><span class="tag t-chk">待验证</span>需股东户数/持股结构</td>
+</tr>
+<tr>
+<td class="k">日跌幅分布</td>
+<td>连续小阴线的均值与方差</td>
+<td>1%–3%/日 × 20–30 天为典型区间</td>
+<td><span class="tag t-ana">分析</span>形态描述</td>
+</tr>
+<tr>
+<td class="k">申报速率</td>
+<td>每秒申报+撤单笔数</td>
+<td>≥300 认定为高频<span class="tag t-fact">事实</span></td>
+<td>交易所《实施细则》</td>
+</tr>
+<tr>
+<td class="k">量化成交占比</td>
+<td>量化订单/全市场成交</td>
+<td>全市场 30%–40%，小盘超 50%<span class="tag t-chk">待验证</span></td>
+<td>第三方平台</td>
+</tr>
+<tr>
+<td class="k">融券余额</td>
+<td>可借券规模</td>
+<td>「精准狙击」依赖；坟包以现货为主</td>
+<td><span class="tag t-fact">事实</span>交易所披露</td>
+</tr>
+<tr>
+<td class="k">突破后 5 日收益</td>
+<td>追突破策略的短期表现</td>
+<td>检验「信号是否系统性吃亏」</td>
+<td><span class="tag t-inf">推论</span>需自建回测</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>坟包叙事的主因果链</h3>
+<svg viewBox="0 0 680 340" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fbA" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#454c56"/></marker>
+    <marker id="fbR" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="40" width="120" height="44" rx="8" fill="#f0f4fd" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="80" y="67" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">选标的</text>
+  <rect x="180" y="40" width="120" height="44" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.3"/>
+  <text x="240" y="67" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">造突破</text>
+  <rect x="340" y="40" width="120" height="44" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.3"/>
+  <text x="400" y="67" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">阴跌卖</text>
+  <rect x="500" y="40" width="120" height="44" rx="8" fill="#f7f6f2" stroke="#8a6d1f" stroke-width="1.3"/>
+  <text x="560" y="67" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">低位回补</text>
+  <line x1="140" y1="62" x2="178" y2="62" stroke="#454c56" stroke-width="1.5" marker-end="url(#fbA)"/>
+  <line x1="300" y1="62" x2="338" y2="62" stroke="#454c56" stroke-width="1.5" marker-end="url(#fbA)"/>
+  <line x1="460" y1="62" x2="498" y2="62" stroke="#454c56" stroke-width="1.5" marker-end="url(#fbA)"/>
+  <rect x="180" y="130" width="280" height="44" rx="8" fill="#fff8ec" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="320" y="157" text-anchor="middle" font-size="11" fill="#a06800" font-family="sans-serif">散户：追突破 → 阴跌不卖 → 割肉</text>
+  <line x1="240" y1="84" x2="240" y2="128" stroke="#454c56" stroke-width="1.2" marker-end="url(#fbA)"/>
+  <line x1="400" y1="84" x2="360" y2="128" stroke="#454c56" stroke-width="1.2" marker-end="url(#fbA)"/>
+  <path d="M 560 84 L 560 200 L 240 200 L 240 174" fill="none" stroke="#d5342c" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#fbR)"/>
+  <text x="400" y="218" text-anchor="middle" font-size="10.5" fill="#d5342c" font-family="sans-serif">反馈：割肉筹码回流量化（红虚线）</text>
+  <rect x="20" y="250" width="200" height="44" rx="8" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.3"/>
+  <text x="120" y="270" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">监管降频/清通道</text>
+  <text x="120" y="286" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">【事实·政策】</text>
+  <line x1="220" y1="272" x2="340" y2="120" stroke="#1d4ed8" stroke-width="1.2" marker-end="url(#fbA)"/>
+  <text x="12" y="22" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">坟包收割因果图（实线=叙事主链，虚线=筹码反馈）</text>
+</svg>
+<h3>确定因果 vs 只是相关</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>关系</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">高速通道清理 → 部分策略降速</td>
+<td>因果<span class="tag t-fact">事实</span></td>
+<td>2026 年上交所清理量化专属高速通道</td>
+</tr>
+<tr>
+<td class="k">突破形态 → 后续阴跌</td>
+<td>相关</td>
+<td>也可能是基本面恶化或板块退潮</td>
+</tr>
+<tr>
+<td class="k">量化盈利 ↑、散户亏损 ↑</td>
+<td>相关</td>
+<td>零和视角简化；忽略机构间互搏与β</td>
+</tr>
+<tr>
+<td class="k">阴跌幅度 × 天数 → 散户割肉概率</td>
+<td>推论</td>
+<td>行为金融支持「慢痛」更难扛</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ol>
+<li><strong>好公司也可能跌</strong>：团队指出，基本面未坏但散户持仓多的股票仍可能持续下跌——<strong>价格与价值短期脱钩</strong>。<span class="tag t-ana">分析</span></li>
+<li><strong>差公司可能被推涨</strong>：热点题材下，量化「逐浪」可把弱势股短期推高——与坟包「选标」逻辑同一生态。<span class="tag t-ana">分析</span></li>
+<li><strong>「洗盘」叙事是散户端的共谋</strong>：阴跌阶段最需要抵抗的不是量化，而是你自己脑中的故事生成器。</li>
+<li><strong>监管套利</strong>：现行高频门槛 300 笔/秒，机构可卡在 299 笔<span class="tag t-ana">分析</span>——规则边界即战场。</li>
+<li><strong>跨域同构：温水煮青蛙</strong>：每日 2% 跌 25 天累计约 <strong>39.7%</strong>（见下节计算器），远低于单日跌停的冲击，但结局一样。</li>
+</ol>
+<hr />
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>一段式描述</h3>
+<pre><code class="language-text">标的筛选（散户多、流动性好）
+    → 算法买入（放量、突破）
+    → 技术信号触发散户买盘
+    → 量化停止买、开始卖（小单高频）
+    → 价格阴跌（-1%~-3%/日 × 20~30 天）
+    → 散户处置效应：不愿认错、不断补仓
+    → 割肉完成 → 量化回补
+    → 等待下一轮
+</code></pre>
+<h3>可调模型 1 · 坟包阴跌计算器</h3>
+<div class="tool">
+<div class="ctrl"><label>每日跌幅</label><input type="range" id="fb_d" min="0.5" max="3" step="0.1" value="2"><output id="fb_dO">2.0%</output></div>
+<div class="ctrl"><label>阴跌天数</label><input type="range" id="fb_n" min="10" max="35" step="1" value="25"><output id="fb_nO">25 天</output></div>
+<div class="ctrl"><label>冲高幅度（追入前）</label><input type="range" id="fb_pump" min="3" max="15" step="1" value="8"><output id="fb_pumpO">8%</output></div>
+<canvas id="fbChart" height="214" style="width:100%;margin-top:12px"></canvas>
+<div class="readout">
+<div class="ro"><span class="k">相对追入点亏损</span><strong id="fb_loss" style="color:var(--green)">-39.7%</strong><small id="fb_lossh"></small></div>
+<div class="ro"><span class="k">全程净收益</span><strong id="fb_net">-34.8%</strong><small id="fb_neth"></small></div>
+<div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span class="k">判定</span><strong id="fb_v">典型坟包</strong><small id="fb_vh"></small></div>
+</div>
+</div>
+<p><strong>数字纪律</strong>：每日跌 <strong>2.0%</strong>、持续 <strong>25</strong> 天 → 相对追入点亏损 <strong>39.7%</strong>；若冲高 <strong>8%</strong> 后追入，相对启动前净收益 <strong>-34.8%</strong>。【推论·由模型计算】</p>
+<hr />
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>坟包形态时间轴</h3>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="80" cy="100" r="6" fill="#d5342c"/>
+  <text x="80" y="130" text-anchor="middle" font-size="10" fill="#454c56" font-family="sans-serif">T0 吸筹</text>
+  <circle cx="200" cy="100" r="6" fill="#d5342c"/>
+  <text x="200" y="75" text-anchor="middle" font-size="10" fill="#d5342c" font-family="sans-serif">T1 放量突破</text>
+  <text x="200" y="130" text-anchor="middle" font-size="9.5" fill="#7c848f" font-family="sans-serif">散户追高</text>
+  <circle cx="380" cy="100" r="6" fill="#0f8a4d"/>
+  <text x="380" y="75" text-anchor="middle" font-size="10" fill="#0f8a4d" font-family="sans-serif">T2–T25 阴跌</text>
+  <text x="380" y="130" text-anchor="middle" font-size="9.5" fill="#7c848f" font-family="sans-serif">每日 -1%~-3%</text>
+  <circle cx="520" cy="100" r="6" fill="#8a6d1f"/>
+  <text x="520" y="130" text-anchor="middle" font-size="10" fill="#454c56" font-family="sans-serif">T26 割肉高峰</text>
+  <circle cx="620" cy="100" r="6" fill="#1d4ed8"/>
+  <text x="620" y="75" text-anchor="middle" font-size="10" fill="#1d4ed8" font-family="sans-serif">T30+ 回补</text>
+  <text x="12" y="24" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">演化时间轴（团队描述的量级：约 1–2 个月完成一轮）</text>
+  <path d="M 200 60 Q 300 40 380 55" fill="none" stroke="#d5342c" stroke-width="2"/>
+  <path d="M 380 55 L 520 70 L 620 55" fill="none" stroke="#0f8a4d" stroke-width="2"/>
+</svg>
+<h3>监管演化（对照）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>时间</th>
+<th>事件</th>
+<th>与坟包的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2024-05</td>
+<td>证监会《程序化交易管理规定（试行）》</td>
+<td>框架性监管启动<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2025-04</td>
+<td>沪深北《程序化交易管理实施细则》</td>
+<td>高频认定 300 笔/秒或单日 2 万笔<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2025-07</td>
+<td>《实施细则》正式实施</td>
+<td>额外报告义务、异常交易标准<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2026-03</td>
+<td>吴清：深化细化高频量化监管</td>
+<td>政策方向<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2026-06</td>
+<td>上交所清理部分量化高速通道</td>
+<td>削弱速度优势<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">待定</td>
+<td>差异化流量费/撤单费</td>
+<td>安同良「一费归中」与交易所研究方向一致<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>激励</th>
+<th>行为倾向</th>
+<th>对散户的含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">量化机构</td>
+<td>管理费+业绩报酬</td>
+<td>追求稳定夏普、控制回撤</td>
+<td>阴跌比暴跌更「可持续」</td>
+</tr>
+<tr>
+<td class="k">散户</td>
+<td>回本、叙事认同</td>
+<td>补仓、等反弹</td>
+<td>延长坟包第二段</td>
+</tr>
+<tr>
+<td class="k">券商</td>
+<td>佣金、两融</td>
+<td>两边开户</td>
+<td>很少主动拆穿叙事</td>
+</tr>
+<tr>
+<td class="k">媒体</td>
+<td>流量</td>
+<td>放大「37.6% vs 2.1 万」对比</td>
+<td>易把<span class="tag t-chk">待验证</span>写成<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">学者</td>
+<td>政策影响、学术声誉</td>
+<td>提出可操作的监管框架</td>
+<td>需区分建议与现行法</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>资金流抽水图</h3>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fbP" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/></marker>
+    <marker id="fbG" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#0f8a4d"/></marker>
+  </defs>
+  <rect x="40" y="60" width="140" height="70" rx="10" fill="#fff8ec" stroke="#f0dcb4" stroke-width="1.4"/>
+  <text x="110" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">散户资金池</text>
+  <text x="110" y="112" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">人均亏 2.1 万【待验证】</text>
+  <rect x="270" y="40" width="140" height="70" rx="10" fill="#fdf3f2" stroke="#f0cdc9" stroke-width="1.4"/>
+  <text x="340" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#d5342c" font-family="sans-serif">交易摩擦</text>
+  <text x="340" y="92" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">佣金·印花税·冲击</text>
+  <rect x="270" y="150" width="140" height="70" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.4"/>
+  <text x="340" y="180" text-anchor="middle" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">量化利润池</text>
+  <text x="340" y="202" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">均值 +37.6%【待验证】</text>
+  <rect x="500" y="100" width="140" height="70" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.4"/>
+  <text x="570" y="130" text-anchor="middle" font-size="12" font-weight="700" fill="#454c56" font-family="sans-serif">机构互搏</text>
+  <text x="570" y="152" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">量化 vs 量化</text>
+  <line x1="180" y1="95" x2="268" y2="75" stroke="#d5342c" stroke-width="2" marker-end="url(#fbP)"/>
+  <line x1="180" y1="105" x2="268" y2="185" stroke="#d5342c" stroke-width="2" marker-end="url(#fbP)"/>
+  <line x1="410" y1="185" x2="498" y2="135" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#fbG)"/>
+  <text x="12" y="24" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">资源与信息流：散户池 → 摩擦 + 量化池（非严格零和，但方向清晰）</text>
+  <text x="40" y="280" font-size="10.5" fill="#7c848f" font-family="sans-serif">信息优势：速度、融券、算法黑箱 → 散户读 K 线，量化读订单流【分析】</text>
+</svg>
+<h3>可调模型 2 · 散户-量化账本（简化）</h3>
+<div class="tool">
+<div class="ctrl"><label>量化平均收益率</label><input type="range" id="fb_qret" min="10" max="70" step="0.1" value="37.6"><output id="fb_qretO">37.6%</output></div>
+<div class="ctrl"><label>散户人均亏损（¥）</label><input type="range" id="fb_rloss" min="5000" max="50000" step="1000" value="21000"><output id="fb_rlossO">¥21,000</output></div>
+<div class="ctrl"><label>散户样本（万人）</label><input type="range" id="fb_pop" min="100" max="2000" step="50" value="500"><output id="fb_popO">500 万</output></div>
+<div class="readout">
+<div class="ro"><span class="k">两侧差额（简化）</span><strong id="fb_gap">¥0 亿</strong><small id="fb_gaph"></small></div>
+<div class="ro"><span class="k">量化盈利 vs 散户亏损</span><strong id="fb_pool">—</strong><small id="fb_poolh"></small></div>
+<div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span class="k">判定</span><strong id="fb_lv">—</strong><small id="fb_lvh"></small></div>
+</div>
+</div>
+<p>默认参数下：量化 AUM 按 <strong>1.8 万亿</strong><span class="tag t-chk">待验证</span>、收益率 <strong>37.6%</strong> → 盈利约 <strong>6768 亿</strong>；散户 <strong>500 万</strong>人 × 人均亏 <strong>2.1 万</strong> → <strong>1.05 万亿</strong>亏损合计——<strong>两侧不可直接相减</strong>（人群重叠、β、机构互搏），此模型仅作<strong>数量级直觉</strong>。<span class="tag t-inf">推论</span></p>
+<hr />
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>为什么重要</th>
+<th>你能做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>突破后不追</strong></td>
+<td>切断坟包第一段</td>
+<td>规则化：突破后等 3 日回踩确认</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>阴跌时限止损</strong></td>
+<td>切断第二段</td>
+<td>连跌 N 日或累计 -X% 无条件减仓</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>对照基准思维</strong></td>
+<td>避免把漂移当 alpha</td>
+<td>用下面漂移剥离器</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>关注监管与通道政策</td>
+<td>改变 L8 速度层</td>
+<td>读交易所程序化细则</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>降低单票散户拥挤度暴露</td>
+<td>改变 L5 被选概率</td>
+<td>查股东户数、融资占比</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>识别「逐浪」板块退潮</td>
+<td>坟包常伴热点</td>
+<td>板块量能萎缩时减仓</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>融券余额异常</td>
+<td>精准狙击信号</td>
+<td>交易所融券披露</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>申报速率政策</td>
+<td>影响策略成本</td>
+<td>跟踪差异化收费进展</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>分散 + 低换手</td>
+<td>减少被针对表面</td>
+<td>指数化底仓</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>记录交易日志</td>
+<td>对抗叙事生成</td>
+<td>写下入场理由与证伪条件</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「突破就是主升浪」</summary><div class="dbody"><p>技术突破在 A 股被大量程序化监控。突破当日追入，相当于自愿进入博弈的<strong>第二阶段</strong>。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>2. 「每天只跌一点，是洗盘」</summary><div class="dbody"><p>团队描述的核心正是<strong>慢跌消磨</strong>。把 -2%/日读成洗盘，是坟包最需要的散户合作。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>3. 「量化赚了所以我亏的」</summary><div class="dbody"><p>盈亏零和是简化。你还可能输给β、行业、自己的换手。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>4. 把媒体报道数字当铁案</summary><div class="dbody"><p>37.6%、2.1 万、1.8 万亿均为二手汇总<span class="tag t-chk">待验证</span>，需查原始口径。</p></div></details>
+<details><summary>5. 「好公司不会阴跌」</summary><div class="dbody"><p>团队反例：基本面好但散户多的股票仍可能跌。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>6. 追求「抓量化反向」</summary><div class="dbody"><p>没有稳定公开信号证明「反做量化」长期有效。<span class="tag t-hyp">假设</span></p></div></details>
+<details><summary>7. 忽视交易成本</summary><div class="dbody"><p>即使方向对，高频换手也会让散户净收益更差。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>8. 把政策建议当已落地</summary><div class="dbody"><p>15 笔/秒目前非现行标准；300 笔/秒仍有效<span class="tag t-fact">事实</span>。</p></div></details>
+<details><summary>9. 幸存者偏差看量化收益</summary><div class="dbody"><p>报道的 45 家百亿私募全盈利，未包含清算机构。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>10. 仓位决定解读</summary><div class="dbody"><p>套牢后更容易把阴跌读成「暂时调整」——L9 层陷阱。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>11. 过度拟合历史坟包</summary><div class="dbody"><p>事后 K 线像坟包不等于当时可识别。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>12. 忽视 T+1 与涨停制度</summary><div class="dbody"><p>制度本身改变博弈结构，不能照搬美股微观结构结论。<span class="tag t-fact">事实</span></p></div></details>
+<hr />
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<h3>抽象 ↔ 机制 ↔ 操作 三层映射</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <rect x="20" y="50" width="180" height="180" rx="12" fill="#f6f2fb" stroke="#6b3fa0" stroke-width="1.4"/>
+  <text x="110" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#6b3fa0" font-family="sans-serif">抽象层</text>
+  <text x="110" y="110" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">非对称博弈</text>
+  <text x="110" y="130" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">负外部性</text>
+  <text x="110" y="150" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">信号操纵</text>
+  <rect x="250" y="50" width="180" height="180" rx="12" fill="#f0f4fd" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="340" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4ed8" font-family="sans-serif">机制层</text>
+  <text x="340" y="110" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">造突破→阴跌卖</text>
+  <text x="340" y="130" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">小单高频出货</text>
+  <text x="340" y="150" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">散户处置效应</text>
+  <rect x="480" y="50" width="180" height="180" rx="12" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="570" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作层</text>
+  <text x="570" y="110" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">不追突破</text>
+  <text x="570" y="130" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">阴跌 N 日减仓</text>
+  <text x="570" y="150" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">写证伪清单</text>
+  <text x="110" y="250" text-anchor="middle" font-size="18" fill="#c9d0d9" font-family="sans-serif">⇄</text>
+  <text x="340" y="250" text-anchor="middle" font-size="18" fill="#c9d0d9" font-family="sans-serif">⇄</text>
+  <text x="12" y="24" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">三层映射：理论不落地=空谈；操作无理论=乱拳</text>
+</svg>
+<h3>现实锚点案例（示意，非荐股）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>特征组合</th>
+<th>可能含义</th>
+<th>散户动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">突破 + 换手骤增 + 股东户数上升</td>
+<td>筹码从集中转向分散</td>
+<td>不追，观察 5 日</td>
+</tr>
+<tr>
+<td class="k">连阴 10 日、每日 -1%~-3%、量能不大</td>
+<td>符合坟包第二段描述</td>
+<td>触发时限止损</td>
+</tr>
+<tr>
+<td class="k">板块退潮 + 个股相对强度转负</td>
+<td>逐浪结束</td>
+<td>减仓而非补仓</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<h3>安同良「五维纠偏、一费归中」（政策面）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>建议要点</th>
+<th>现行状态【2026-09】</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">降频</td>
+<td>高频门槛降至约 <strong>15 笔/秒</strong></td>
+<td>仍为 <strong>300 笔/秒</strong><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">透明</td>
+<td>核心参数、因子权重、源代码备案</td>
+<td>一般程序化报告已实施<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">限空</td>
+<td>大幅限制量化融券做空</td>
+<td>融券规则持续修订<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">收费</td>
+<td>按报单额、撤单率、超频累进收费</td>
+<td>交易所研究差异化收费<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">一费归中</td>
+<td>让高频为负外部性买单</td>
+<td>尚未全面落地<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<h3>可调模型 3 · 高频门槛模拟</h3>
+<div class="tool">
+<div class="ctrl"><label>申报速率</label><input type="range" id="fb_fps" min="1" max="350" step="1" value="299"><output id="fb_fpsO">299 笔/秒</output></div>
+<div class="ctrl"><label>连续交易时长</label><input type="range" id="fb_hrs" min="0.5" max="4" step="0.5" value="4"><output id="fb_hrsO">4.0 小时</output></div>
+<div class="readout">
+<div class="ro"><span class="k">申报+撤单总量</span><strong id="fb_tot">—</strong><small id="fb_toth"></small></div>
+<div class="ro"><span class="k">监管分类</span><strong id="fb_cls">—</strong><small id="fb_clsh"></small></div>
+<div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span class="k">判定</span><strong id="fb_fv">—</strong><small id="fb_fvh"></small></div>
+</div>
+</div>
+<p><strong>299 笔/秒 × 4 小时 ≈ 430 万笔</strong>——卡在 <strong>300</strong> 红线下方 1 笔，是团队描述的「监管套利」故事。<span class="tag t-ana">分析</span></p>
+<hr />
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 识别者（1–2 周）</summary><div class="dbody"><p>能画出坟包三阶段；能在 K 线上标出「尖顶—连阴—平底」；知道 37.6% 等数字是<span class="tag t-chk">待验证</span>。</p></div></details>
+<details><summary>L2 · 量化者（1 月）</summary><div class="dbody"><p>会用阴跌计算器估算累计回撤；会查股东户数与融资数据；能读《程序化交易管理实施细则》摘要。</p></div></details>
+<details><summary>L3 · 规则设计者（3 月）</summary><div class="dbody"><p>理解 300 vs 15 笔/秒政策差距；能对照漂移剥离器评估「突破策略」超额；能写个人交易宪法。</p></div></details>
+<details><summary>L4 · 系统思考者（6 月+）</summary><div class="dbody"><p>能把坟包与博弈论、威科夫、监管经济学联读；能参与公共讨论而不陷入阴谋论。</p></div></details>
+<hr />
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>技能</th>
+<th>胜利条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">量化架构师</td>
+<td>造信号、控速、回补</td>
+<td>夏普高、监管不罚</td>
+</tr>
+<tr>
+<td class="k">散户旅人</td>
+<td>识别坟包、纪律止损</td>
+<td>存活并少亏</td>
+</tr>
+<tr>
+<td class="k">监管骑士</td>
+<td>降频、收费、透明</td>
+<td>市场波动下降、投诉减少</td>
+</tr>
+<tr>
+<td class="k">学者</td>
+<td>拆解、提建议</td>
+<td>政策采纳（长期）</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>副本机制</strong>：「阴跌迷宫」——每回合可选「补仓」「持有」「割肉」，连跌 2%/日 25 回合后看净值。【推论·教育游戏】</p>
+<hr />
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>触发条件</th>
+<th>奖励（认知）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日形态扫描</td>
+<td>收盘后 10 分钟</td>
+<td>积累坟包候选库</td>
+</tr>
+<tr>
+<td class="k">突破冷静期</td>
+<td>任何想买突破</td>
+<td>避免第一段陷阱</td>
+</tr>
+<tr>
+<td class="k">阴跌计数器</td>
+<td>持仓连阴</td>
+<td>强制决策点</td>
+</tr>
+<tr>
+<td class="k">监管简报</td>
+<td>每月 1 次</td>
+<td>更新 L1 规则认知</td>
+</tr>
+<tr>
+<td class="k">数字溯源</td>
+<td>看到震撼统计</td>
+<td>区分<span class="tag t-fact">事实</span>与<span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若 2026 年高频门槛降至 15 笔/秒</button><button class="tab" data-pane="tb1-1">若 散户全面指数化、几乎不追突破</button><button class="tab" data-pane="tb1-2">若 完全禁止程序化交易</button><button class="tab" data-pane="tb1-3">若 坟包只是事后叙事、并无系统操纵</button></div>
+<div class="pane on" id="tb1-0"><p>许多卡 299 笔的策略需重构或承担更高费用；坟包「小单高频卖」段成本上升，形态频率可能下降。<span class="tag t-inf">推论</span>但中低频策略仍可能存在。</p></div><div class="pane" id="tb1-1"><p>量化「造信号」段的对手盘减少，策略容量下降，可能转向其他市场或资产类别。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-2"><p>流动性下降、冲击成本上升；「一刀切」非监管层主张——吴清强调的是<strong>公平与细化</strong>，不是消灭。<span class="tag t-ana">分析</span>田轩等学者亦认为需规范发展<span class="tag t-ana">分析</span>。</p></div><div class="pane" id="tb1-3"><p>你的防御规则仍然有效：不追、阴跌止损、对照基准——<strong>好规则不依赖坏因果</strong>。<span class="tag t-inf">推论</span></p></div>
+<h3>可调模型 4 · 漂移剥离器（突破策略对照）</h3>
+<div class="tool">
+<div class="ctrl"><label>持有天数 T</label><input type="range" id="fb_T" min="5" max="40" step="1" value="25"><output id="fb_TO">25 日</output></div>
+<div class="ctrl"><label>策略胜率</label><input type="range" id="fb_ps" min="45" max="75" step="0.1" value="55"><output id="fb_psO">55.0%</output></div>
+<div class="ctrl"><label>年化漂移 μ</label><input type="range" id="fb_mu" min="0" max="25" step="0.5" value="10"><output id="fb_muO">10.0%</output></div>
+<div class="ctrl"><label>年化波动 σ</label><input type="range" id="fb_sg" min="10" max="35" step="1" value="18"><output id="fb_sgO">18%</output></div>
+<div class="readout">
+<div class="ro"><span class="k">随机做多基准胜率</span><strong id="fb_base">56.9%</strong><small id="fb_baseh"></small></div>
+<div class="ro"><span class="k">真实超额</span><strong id="fb_dp">-1.9 pp</strong><small id="fb_dph"></small></div>
+<div class="ro"><span class="k">证明超额所需样本</span><strong id="fb_nsamp">∞</strong><small id="fb_nsamph"></small></div>
+<div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span class="k">判定</span><strong id="fb_dv">无超额</strong><small id="fb_dvh"></small></div>
+</div>
+</div>
+<p>默认：<strong>T=25</strong>、μ=10%、σ=18% → 基准胜率 <strong>56.9%</strong>；若突破策略胜率仅 <strong>55%</strong>，超额 <strong>-1.9 pp</strong>——<strong>跑输「随机做多」</strong>。【推论·公式计算】</p>
+<hr />
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>检验标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 旁观者</td>
+<td>听懂坟包叙事</td>
+<td>能向朋友解释三阶段</td>
+</tr>
+<tr>
+<td class="k">L2 防守者</td>
+<td>个人规则</td>
+<td>30 天无追突破违规</td>
+</tr>
+<tr>
+<td class="k">L3 分析者</td>
+<td>数据与政策</td>
+<td>独立完成一份监管对照表</td>
+</tr>
+<tr>
+<td class="k">L4 建构者</td>
+<td>系统视角</td>
+<td>能写「机制+反证+行动」一页纸</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>目标</strong>：用真实自选（或最近关注的一只股），完成一份「坟包风险体检表」。</p>
+<ol>
+<li><strong>5 分钟</strong>：打开日 K，标最近 60 日是否出现「尖顶 + 连阴 ≥10 日 + 平底」组合。</li>
+<li><strong>5 分钟</strong>：查股东户数/融资余额变化（交易所或行情软件）。</li>
+<li><strong>5 分钟</strong>：用本手册阴跌计算器，输入你认为的日均跌幅与天数，看累计回撤是否超过你的承受力。</li>
+<li><strong>10 分钟</strong>：写下三条规则——(a) 何种突破不追；(b) 连阴几日必须减仓；(c) 什么证据出现则承认「读错了」。</li>
+<li><strong>5 分钟</strong>：把 37.6%、2.1 万等数字标成<span class="tag t-chk">待验证</span>，写一句「我还需要查的原始来源」。</li>
+</ol>
+<p><strong>产出</strong>：一张可拍照存档的体检表 + 三条可执行规则。<strong>成本 ≈ 0</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>行动</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>叙事与证据</td>
+<td>读上海证券报报道摘要，标来源性质</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>形态</td>
+<td>在 5 只股票上标坟包候选</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>数字</td>
+<td>跑漂移剥离器，理解基准胜率</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>政策</td>
+<td>读《实施细则》高频认定条款</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>阴跌数学</td>
+<td>改阴跌计算器参数，记 3 组结果</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>个人规则</td>
+<td>写「交易宪法」第一版</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘</td>
+<td>对照规则与本周实际操作</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>重点</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>识别</td>
+<td>建立 20 只「形态档案」</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>量化</td>
+<td>每周算一次基准超额</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>政策</td>
+<td>完成五维纠偏 vs 现行法对照表</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>整合</td>
+<td>模拟盘执行规则，统计违规次数</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>坟包三阶段</td>
+<td>造信号—阴跌—回补</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>非对称博弈</td>
+<td>速度/工具差决定分配</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>处置效应</td>
+<td>不愿止损延长亏损</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>漂移基准</td>
+<td>随机做多胜率 &gt;50%</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>零和近似</td>
+<td>有人赚必有人亏更多（含摩擦）</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>监管套利</td>
+<td>规则边界即策略参数</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>信号操纵</td>
+<td>可观测信号可被制造</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>温水煮青蛙</td>
+<td>小跌累积等于大亏</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>凯尔模型同构</td>
+<td>噪声交易者提供流动性溢价</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>五维纠偏</td>
+<td>降频·透明·限空·收费·归中</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>机制</summary><div class="dbody"><p>「坟包」形态有多少比例可独立归因于量化？有无学术实证？<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>数据</summary><div class="dbody"><p>37.6% 收益率的样本是否包含清算机构？2.1 万人均亏损口径是什么？<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>政策</summary><div class="dbody"><p>15 笔/秒建议的经济成本与流动性影响评估在哪里？<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>个人</summary><div class="dbody"><p>我的持仓是否集中在「散户拥挤」标的？【可自检】</p></div></details>
+<details><summary>反证</summary><div class="dbody"><p>哪些突破后连阴的案例最终被证明是基本面驱动？【需案例库】</p></div></details>
+<details><summary>行动</summary><div class="dbody"><p>我的阴跌止损线是几日或几 %？【必须具体】</p></div></details>
+<details><summary>伦理</summary><div class="dbody"><p>「收割」一词是否阻碍理性监管对话？<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>跨市场</summary><div class="dbody"><p>美股 T+0、无涨跌停下同类形态是否不同？<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>技术</summary><div class="dbody"><p>股东户数上升是否一定是坏事？【需分层】</p></div></details>
+<details><summary>未来</summary><div class="dbody"><p>差异化收费落地后，坟包形态频率会否下降？<span class="tag t-hyp">假设</span></p></div></details>
+<hr />
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索方向</h2>
+<ol>
+<li><strong>实证</strong>：用公开行情回测「突破后 25 日收益分布」，与全市场基准对比。</li>
+<li><strong>联读</strong>：与《威科夫操盘法》《量化交易与博弈论的关系》对照读 L6–L8 层。</li>
+<li><strong>跟踪监管</strong>：关注差异化流量费、撤单费出台进度。</li>
+<li><strong>社区辩论</strong>：同时阅读量化行业反驳观点，避免单边叙事。</li>
+<li><strong>工具化</strong>：把阴跌计数做成自选预警（条件单/表格即可）。</li>
+</ol>
+<hr />
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">坟包三阶段描述</td>
+<td>研究团队归纳</td>
+<td>安同良团队，上海证券报 2026-07【报道】</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">45 家百亿量化 2025 年平均收益 37.6%</td>
+<td>第三方平台汇总</td>
+<td>媒体报道引研究【二手】</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">散户人均亏损 2.1 万元</td>
+<td>不完全统计</td>
+<td>同上</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">量化 AUM 超 1.8 万亿、成交占比 30%–40%</td>
+<td>第三方平台</td>
+<td>同上</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">高频认定 300 笔/秒或单日 2 万笔</td>
+<td>监管规则</td>
+<td>沪深北《程序化交易管理实施细则》2025-04</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2026-06 上交所清理部分高速通道</td>
+<td>监管动态</td>
+<td>南京大学官网引报道 2026</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">吴清 2026 深化高频监管</td>
+<td>监管表态</td>
+<td>两会/新浪财经 2026-04</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">建议降频至 15 笔/秒</td>
+<td>政策建议</td>
+<td>安同良团队</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">阴跌 2%×25 天累计 -39.7%</td>
+<td>模型计算</td>
+<td>本手册 JS</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">T=25 基准胜率 56.9%（μ=10%,σ=18%）</td>
+<td>模型计算</td>
+<td>本手册 JS</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>标记说明</strong>：<span class="tag t-fact">事实</span>多方一致或一手规则；<span class="tag t-ana">分析</span>机构/学者判断；<span class="tag t-inf">推论</span>由模型或逻辑推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一或二手来源。</p>
+<hr />
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供认知与研究之用，<strong>不构成任何投资建议</strong>。证券市场有风险，坟包叙事存在争议，读者应独立判断并咨询持牌专业人士。</p>
+<p>手册中的收益率、亏损额、市场规模等数字可能来自媒体报道与第三方平台，<strong>未经笔者独立审计</strong>；交互模型采用简化假设，与真实交易存在显著差异。</p>
+<p>作者不对依据本手册做出的任何投资行为承担责任。量化交易亦承担流动性提供等功能，监管政策以有权机关最新公告为准。</p>
+</section>
+<footer>  <p>《安同良团队拆解坟包收割 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 4 分 2 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* 《安同良团队拆解坟包收割》主题脚本
+   四个可调模型：
+     1. 坟包阴跌计算器 — 追高后每日阴跌的累计回撤
+     2. 漂移剥离器 — 随机做多基准 vs 信号胜率
+     3. 散户-量化账本 — 非对称收益对照
+     4. 高频门槛模拟 — 申报频率与监管分类
+*/
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  /* ── 1. 坟包阴跌计算器 ── */
+  (function graveCalc() {
+    var dEl = $('fb_d'), nEl = $('fb_n'), pEl = $('fb_pump');
+    if (!dEl || !nEl || !pEl) return;
+    var dO = $('fb_dO'), nO = $('fb_nO'), pO = $('fb_pumpO');
+    var lossEl = $('fb_loss'), lossHEl = $('fb_lossh');
+    var netEl = $('fb_net'), netHEl = $('fb_neth');
+    var vEl = $('fb_v'), vhEl = $('fb_vh');
+    var cv = $('fbChart');
+    var ctx = cv ? cv.getContext('2d') : null;
+
+    function draw(prices) {
+      if (!ctx || !prices.length) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.clientWidth || 600, h = 214;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var pl = 44, pr = 16, pt = 18, y1 = h - 46, bw = w - pl - pr;
+      var bh = y1 - pt;
+      var lo = Math.min.apply(null, prices), hi = Math.max.apply(null, prices);
+      var pad = (hi - lo) * 0.08 || 0.02;
+      lo -= pad; hi += pad;
+      var sx = function (i) { return pl + i / (prices.length - 1) * bw; };
+      var sy = function (v) { return pt + (hi - v) / (hi - lo) * bh; };
+
+      ctx.strokeStyle = '#eef1f5';
+      ctx.lineWidth = 1;
+      for (var g = 0; g <= 4; g++) {
+        var y = pt + g / 4 * bh;
+        ctx.beginPath(); ctx.moveTo(pl, y); ctx.lineTo(w - pr, y); ctx.stroke();
+      }
+
+      var pumpEnd = Math.round(prices.length * 0.22);
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(prices[0]));
+      for (var i = 1; i < pumpEnd; i++) ctx.lineTo(sx(i), sy(prices[i]));
+      ctx.strokeStyle = '#d5342c';
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(sx(pumpEnd), sy(prices[pumpEnd]));
+      for (var j = pumpEnd + 1; j < prices.length; j++) ctx.lineTo(sx(j), sy(prices[j]));
+      ctx.strokeStyle = '#0f8a4d';
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+
+      ctx.setLineDash([4, 3]);
+      ctx.strokeStyle = '#8a6d1f';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(sx(pumpEnd), pt);
+      ctx.lineTo(sx(pumpEnd), y1);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '10.5px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('放量冲高', sx(pumpEnd * 0.5), y1 + 13);
+      ctx.fillText('阴跌出货', sx(pumpEnd + (prices.length - pumpEnd) * 0.5), y1 + 13);
+      ctx.fillText('交易日', w / 2, y1 + 31);
+    }
+
+    function upd() {
+      var d = parseFloat(dEl.value), n = parseInt(nEl.value, 10);
+      var pump = parseFloat(pEl.value) / 100;
+      txt(dO, d.toFixed(1) + '%');
+      txt(nO, n + ' 天');
+      txt(pO, (pump * 100).toFixed(0) + '%');
+
+      var lossFromEntry = (1 - Math.pow(1 - d / 100, n)) * 100;
+      var entry = 1 + pump;
+      var finalP = entry * Math.pow(1 - d / 100, n);
+      var netFromStart = (finalP - 1) * 100;
+
+      txt(lossEl, '-' + lossFromEntry.toFixed(1) + '%');
+      tint(lossEl, 'var(--green)');
+      txt(lossHEl, '相对追入高点 · 每日跌 ' + d.toFixed(1) + '% × ' + n + ' 天');
+
+      txt(netEl, (netFromStart >= 0 ? '+' : '') + netFromStart.toFixed(1) + '%');
+      tint(netEl, netFromStart >= 0 ? 'var(--red)' : 'var(--green)');
+      txt(netHEl, '若从启动前持有至阴跌结束（含冲高段）');
+
+      var label, hint, col;
+      if (lossFromEntry < 25) {
+        label = '轻度磨损'; hint = '阴跌尚浅，心理煎熬大于账面亏损';
+        col = 'var(--amber)';
+      } else if (lossFromEntry < 40) {
+        label = '典型坟包'; hint = '接近安同良团队描述的 1–3% × 20–30 天区间';
+        col = 'var(--green)';
+      } else {
+        label = '深度收割'; hint = '跌幅已迫近止损/清仓阈值，流动性陷阱成型';
+        col = '#6b3fa0';
+      }
+      txt(vEl, label); tint(vEl, col);
+      txt(vhEl, hint);
+
+      var totalDays = Math.max(8, Math.round(n * 1.35));
+      var pumpDays = Math.max(3, Math.round(totalDays * 0.22));
+      var prices = [];
+      for (var t = 0; t < pumpDays; t++) {
+        prices.push(1 + pump * (t + 1) / pumpDays);
+      }
+      var peak = prices[prices.length - 1];
+      for (var k = 1; k <= n; k++) {
+        prices.push(peak * Math.pow(1 - d / 100, k));
+      }
+      draw(prices);
+    }
+    dEl.addEventListener('input', upd);
+    nEl.addEventListener('input', upd);
+    pEl.addEventListener('input', upd);
+    upd();
+  })();
+
+  /* ── 2. 漂移剥离器 ── */
+  (function driftStrip() {
+    var TEl = $('fb_T'), psEl = $('fb_ps'), muEl = $('fb_mu'), sgEl = $('fb_sg');
+    if (!TEl || !psEl || !muEl || !sgEl) return;
+    var TO = $('fb_TO'), psO = $('fb_psO'), muO = $('fb_muO'), sgO = $('fb_sgO');
+    var baseEl = $('fb_base'), baseHEl = $('fb_baseh');
+    var dpEl = $('fb_dp'), dpHEl = $('fb_dph');
+    var nEl = $('fb_nsamp'), nHEl = $('fb_nsamph');
+    var vEl = $('fb_dv'), vhEl = $('fb_dvh');
+
+    function upd() {
+      var T = parseFloat(TEl.value);
+      var ps = parseFloat(psEl.value) / 100;
+      var mu = parseFloat(muEl.value) / 100;
+      var sg = parseFloat(sgEl.value) / 100;
+      txt(TO, T + ' 日');
+      txt(psO, (ps * 100).toFixed(1) + '%');
+      txt(muO, (mu * 100).toFixed(1) + '%');
+      txt(sgO, (sg * 100).toFixed(0) + '%');
+
+      var y = T / 252, drift = mu * y, sd = sg * Math.sqrt(y);
+      var pb = ncdf(drift / sd);
+      var dp = ps - pb;
+      var n = null;
+      if (dp > 1e-6) {
+        var num = 1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps));
+        n = Math.ceil(num * num / (dp * dp));
+      }
+
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(baseHEl, '随机做多 · 漂移 ' + (drift * 100).toFixed(2) + '%');
+      tint(baseEl, '#8a6d1f');
+
+      txt(dpEl, (dp >= 0 ? '+' : '') + (dp * 100).toFixed(1) + ' pp');
+      tint(dpEl, dp <= 0 ? 'var(--green)' : (dp < 0.05 ? 'var(--amber)' : 'var(--red)'));
+      txt(dpHEl, dp <= 0 ? '信号未跑赢「什么都不做」' : '扣除市场漂移后的净超额');
+
+      txt(nEl, n === null ? '∞' : n.toLocaleString('en-US'));
+      txt(nHEl, n === null ? '超额非正' : '单侧 5%、检验力 80%');
+
+      var label, hint, col;
+      if (dp <= 0) { label = '无超额'; hint = '突破追涨的「胜率」可能只是市场漂移'; col = 'var(--green)'; }
+      else if (dp < 0.05) { label = '超额可疑'; hint = '扣除漂移后优势很薄，易被交易成本吃掉'; col = 'var(--amber)'; }
+      else if (n > 500) { label = '需大样本'; hint = '优势存在但统计上需要数百次交易才站得住'; col = '#1d4ed8'; }
+      else { label = '超额可信'; hint = '相对基准有明显优势（仍不等于可交易）'; col = 'var(--red)'; }
+      txt(vEl, label); tint(vEl, col);
+      txt(vhEl, hint);
+    }
+    [TEl, psEl, muEl, sgEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ── 3. 散户-量化账本 ── */
+  (function ledger() {
+    var qEl = $('fb_qret'), rEl = $('fb_rloss'), popEl = $('fb_pop');
+    if (!qEl || !rEl || !popEl) return;
+    var qO = $('fb_qretO'), rO = $('fb_rlossO'), popO = $('fb_popO');
+    var gapEl = $('fb_gap'), gapHEl = $('fb_gaph');
+    var poolEl = $('fb_pool'), poolHEl = $('fb_poolh');
+    var vEl = $('fb_lv'), vhEl = $('fb_lvh');
+
+    function upd() {
+      var q = parseFloat(qEl.value) / 100;
+      var r = parseFloat(rEl.value);
+      var pop = parseInt(popEl.value, 10) * 1e4;
+      txt(qO, (q * 100).toFixed(1) + '%');
+      txt(rO, '¥' + r.toLocaleString('zh-CN'));
+      txt(popO, (pop / 1e4).toFixed(0) + ' 万');
+
+      var qAum = 1.8e12;
+      var qProfit = qAum * q;
+      var rTotal = pop * r;
+      var gap = qProfit + rTotal;
+
+      txt(gapEl, '¥' + Math.abs(gap / 1e8).toFixed(0) + ' 亿');
+      tint(gapEl, gap > 0 ? 'var(--red)' : 'var(--green)');
+      txt(gapHEl, '量化盈利 + 散户亏损（符号相反时为正）· 简化零和视角');
+
+      txt(poolEl, '¥' + (qProfit / 1e8).toFixed(0) + ' 亿 vs ¥' + (Math.abs(rTotal) / 1e8).toFixed(0) + ' 亿');
+      txt(poolHEl, '百亿量化均值收益 × 1.8 万亿 AUM vs 散户人均亏损 × 人数');
+
+      var label, hint, col;
+      if (Math.abs(gap) < 5e10) {
+        label = '数量级接近'; hint = '两侧转移在量级上可对得上（仍是【待验证】简化模型）'; col = 'var(--amber)';
+      } else if (gap > 0) {
+        label = '量化侧更大'; hint = '机构盈利规模超过散户亏损合计——中间有交易成本与机构间互搏'; col = 'var(--red)';
+      } else {
+        label = '散户侧更大'; hint = '人均亏损×人数超过量化盈利——需检查假设是否过宽'; col = '#1d4ed8';
+      }
+      txt(vEl, label); tint(vEl, col);
+      txt(vhEl, hint);
+    }
+    [qEl, rEl, popEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ── 4. 高频门槛模拟 ── */
+  (function freqSim() {
+    var fpsEl = $('fb_fps'), hrsEl = $('fb_hrs');
+    if (!fpsEl || !hrsEl) return;
+    var fpsO = $('fb_fpsO'), hrsO = $('fb_hrsO');
+    var totEl = $('fb_tot'), totHEl = $('fb_toth');
+    var clsEl = $('fb_cls'), clsHEl = $('fb_clsh');
+    var vEl = $('fb_fv'), vhEl = $('fb_fvh');
+    var TH = 300, TH_PROP = 15;
+
+    function upd() {
+      var fps = parseFloat(fpsEl.value);
+      var hrs = parseFloat(hrsEl.value);
+      txt(fpsO, fps.toFixed(0) + ' 笔/秒');
+      txt(hrsO, hrs.toFixed(1) + ' 小时');
+
+      var total = Math.round(fps * hrs * 3600);
+      var isHF = fps >= TH;
+      var wouldHF = fps >= TH_PROP;
+
+      txt(totEl, total.toLocaleString('en-US') + ' 笔');
+      txt(totHEl, hrs + ' 小时连续申报/撤单合计');
+
+      var cls, clsH, col;
+      if (isHF) {
+        cls = '现行高频（≥300 笔/秒）';
+        clsH = '需额外报告、异常交易从严、未来差异化收费';
+        col = 'var(--red)';
+      } else if (wouldHF) {
+        cls = '非高频，但 ≥ 安同良建议 15 笔/秒';
+        clsH = '现行规则下不算高频，政策建议区间';
+        col = 'var(--amber)';
+      } else {
+        cls = '中低频程序化';
+        clsH = '低于 15 笔/秒建议门槛 · 一般报告义务';
+        col = 'var(--green)';
+      }
+      txt(clsEl, cls); tint(clsEl, col);
+      txt(clsHEl, clsH);
+
+      var ratio = fps / TH;
+      var label = ratio >= 1 ? '卡线高频' : (ratio >= 0.9 ? '逼近红线' : '远离红线');
+      txt(vEl, label);
+      tint(vEl, ratio >= 1 ? 'var(--red)' : (ratio >= 0.9 ? 'var(--amber)' : 'var(--green)'));
+      txt(vhEl, '当前 ' + fps + ' / 300 = ' + (ratio * 100).toFixed(0) + '% · 建议门槛 15 笔/秒');
+    }
+    fpsEl.addEventListener('input', upd);
+    hrsEl.addEventListener('input', upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
