@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC-终极对决：四年周期理论 vs. 幂律通道下轨 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Bitcoin × Halving Cycle × Power Law Floor</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路径</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>BTC-终极对决：四年周期理论 vs. 幂律通道下轨</h1>
+  <p class="sub">2025-10 峰后 <strong>346 天</strong>，现货 ~$95K 仍高于幂律下轨 <strong>57%</strong>——四年周期说「底还在路上」，幂律说「地板在 $60.5K 等你」</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>四年周期理论</strong>用减半时钟解释牛熊：2025-10-06 峰在减半后 <strong>534 天</strong>、涨幅仅 <strong>+100.5%</strong><span class="tag t-chk">待验证</span>——时间对了，幅度塌了。<strong>幂律通道下轨</strong>用 <code>P = A·t^β</code> 给出上升地板：2026-09-17 下轨约 <strong>$60,520</strong>（−2σ，σ=0.200）<span class="tag t-inf">推论</span>，现货 ~<strong>$95,000</strong> 仍高出 <strong>57.0%</strong>。</p>
+<p>峰后 <strong>346 天</strong>、历史底窗 <strong>~365 天</strong>——对决进入读秒阶段：周期派押「还会回踩下轨」，幂律派押「地板从未被有效击穿」。<strong>两框架不互斥，但 2026 Q4 是第一次「机构化周期」对「物理地板」的正面碰撞。</strong></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话定位</h3>
+<p>「BTC-终极对决：四年周期理论 vs. 幂律通道下轨」研究的是：<strong>两条独立长线框架在 2025 峰后回撤阶段如何给出不同但可检验的底部预言，以及你如何用双框架仪表盘避免把叙事当信号。</strong></p>
+<ul>
+<li><strong>四年周期</strong>：减半 → 延时顶（518–546 天）→ 12–18 月回撤 → 底 → 下一轮。</li>
+<li><strong>幂律下轨</strong>：<code>floor = fair × 10^(−2σ)</code>，fair = <code>10^(−16.493) × t^5.688</code>，地板逐日上升、历史仅 <strong>~2.4%</strong> 交易日收盘低于下轨<span class="tag t-chk">待验证</span>。</li>
+</ul>
+<div class="note red"><b>先划清边界</b><p>本手册<strong>不提供</strong>「必到 $60K」或「底已现」指令。样本：周期 <strong>n=4</strong>、幂律外推 <strong>n=1</strong> 资产。2026-09 现货价为<span class="tag t-chk">待验证</span>聚合报价，非交易所实时价。</p></div>
+<h3>回答 15 个问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>峰后回撤深度、底窗时间、下轨距离、双框架 falsify 条件</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>不含日内交易；不预测监管；不替代仓位管理</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>减半相位、days_post_peak、floor/fair、drawdown%</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>周期分析师、Santostasi/PLT 派、ETF 机构、Wintermute、你</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>dsh=881、dsp=346、floor=$60.5K、fair=$152K、dd=−24.8%</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可观察的</td>
+<td>现货价、ETF 流量、减半日、创世日计数</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不可观察但可推断</td>
+<td>「真」周期底日、有效 σ、机构底仓意愿</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>ETF 流→回撤变浅；floor 上升→底位抬高；宏观→两框架同时失效</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果</td>
+<td>减半→flow↓=<span class="tag t-fact">事实</span>；floor 吸引买盘=<span class="tag t-inf">推论</span>；周期底窗=<span class="tag t-hyp">假设</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>顶到顶 4 年、log-log 直线、M2 周期</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>峰后 −25% 横盘、Wintermute「周期已死」</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>流动性周期 vs 采用率幂律缩放</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>反馈</td>
+<td>接近 floor→「历史性抄底」叙事→买盘</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>时间延迟</td>
+<td>顶→底 ~365 天；floor 每日上移 ~$8<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正负反馈</td>
+<td>正：双框架一致→信心；负：一方失手→信仰崩塌</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>理由一：2026 Q4 是「可检验对决窗口」</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>框架</th>
+<th>2026-09 读数</th>
+<th>下一步预言</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>四年周期</strong></td>
+<td>峰后 <strong>346 天</strong>；历史底窗 <strong>~365 天</strong>（2017→2018、2021→2022）</td>
+<td>2026-10 ~ 2027-03 寻底</td>
+</tr>
+<tr>
+<td class="k"><strong>幂律下轨</strong></td>
+<td>现货高出 floor <strong>57.0%</strong>；低于 fair <strong>37.5%</strong></td>
+<td>底或「触碰下轨」后反弹</td>
+</tr>
+<tr>
+<td class="k"><strong>实际</strong></td>
+<td>较峰回撤 <strong>−24.8%</strong>（前三次均 <strong>&gt;−77%</strong>）</td>
+<td><strong>机构化浅回撤</strong> vs <strong>地板测试</strong>——二选一或折中</td>
+</tr>
+</tbody>
+</table></div>
+<h3>理由二：第四次周期已给出「半胜半负」成绩单</h3>
+<ul>
+<li><strong>时间维度<span class="tag t-chk">待验证</span></strong>：峰在减半后 <strong>534 天</strong>（2016:518、2020:546）——周期时钟<strong>命中</strong>。</li>
+<li><strong>幅度维度<span class="tag t-chk">待验证</span></strong>：减半→峰 <strong>+100.5%</strong>（前三次 +541% ~ +7000%）——幅度模型<strong>崩塌</strong>。</li>
+<li><strong>回撤维度<span class="tag t-chk">待验证</span></strong>：峰后最大回撤约 <strong>−48%</strong>（2026-08 ~$65K） vs 历史 <strong>−77%~−84%</strong>——浅回撤是 ETF 还是底已现？</li>
+</ul>
+<p><strong>对决不是谁「永远对」，而是谁在哪个维度还有预测力。</strong></p>
+<h3>理由三：必须和对照基准比</h3>
+<p>BTC μ=50%/年、σ=65% 时：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>持有期</th>
+<th>随机持币基准</th>
+<th>「峰后 365 日抄底 82% 胜率」真实超额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">90 日</td>
+<td><strong>67.7%</strong></td>
+<td>若 82% → <strong>+14.3 pp</strong>，n≈<strong>89</strong></td>
+</tr>
+<tr>
+<td class="k">180 日</td>
+<td><strong>74.2%</strong></td>
+<td>若 85% → <strong>+10.8 pp</strong></td>
+</tr>
+<tr>
+<td class="k">365 日</td>
+<td><strong>82.3%</strong></td>
+<td>若 90% → <strong>+7.7 pp</strong>——长期持币基准极高</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>「历史峰后一年必涨」大半是 drift，不是框架 alpha。</strong></p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>九层结构：从协议减半，到双框架底窗</h3>
+<svg viewBox="0 0 680 560" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">四年周期 vs 幂律下轨 · 九层世界地图</text>
+  <text x="14" y="34" font-size="11" fill="#7c848f" font-family="sans-serif">上：硬约束/数学；下：行为/资金可选择</text>
+  <rect x="14" y="46" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="68" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">① 协议减半层</text>
+  <text x="148" y="68" font-size="11.5" fill="#454c56" font-family="sans-serif">210,000 区块/次 · 2024-04-19 第四次 · 下次 ~2028</text>
+  <text x="148" y="84" font-size="11" fill="#7c848f" font-family="sans-serif">供给冲击真实但边际递减【事实】</text>
+  <rect x="14" y="100" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="122" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">② 四年周期层</text>
+  <text x="148" y="122" font-size="11.5" fill="#454c56" font-family="sans-serif">减半→延时顶 518–546d → 峰后 12–18 月寻底</text>
+  <text x="148" y="138" font-size="11" fill="#7c848f" font-family="sans-serif">2025-10 峰：时间对、幅度错【待验证】</text>
+  <rect x="14" y="154" width="652" height="48" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="30" y="176" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">③ 幂律回归层</text>
+  <text x="148" y="176" font-size="11.5" fill="#454c56" font-family="sans-serif">log₁₀P = −16.493 + 5.688·log₁₀t · R²≈0.96</text>
+  <text x="148" y="192" font-size="11" fill="#7c848f" font-family="sans-serif">描述强、因果待证【分析】</text>
+  <rect x="14" y="208" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="230" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">④ 通道下轨层</text>
+  <text x="148" y="230" font-size="11.5" fill="#454c56" font-family="sans-serif">floor = fair×10^(−2σ) · σ=0.200 → ~$60.5K【推论】</text>
+  <text x="148" y="246" font-size="11" fill="#7c848f" font-family="sans-serif">每日上移 · 历史极少有效跌破【待验证】</text>
+  <rect x="14" y="262" width="652" height="48" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.4"/>
+  <text x="30" y="284" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑤ 机构流动层</text>
+  <text x="148" y="284" font-size="11.5" fill="#454c56" font-family="sans-serif">ETF 累计净流入 ~$55B【待验证】· 可逆转</text>
+  <text x="148" y="300" font-size="11" fill="#7c848f" font-family="sans-serif">Wintermute：流动性 > 减半【分析】</text>
+  <rect x="14" y="316" width="652" height="48" rx="10" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.4"/>
+  <text x="30" y="338" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑥ 回撤形态层</text>
+  <text x="148" y="338" font-size="11.5" fill="#454c56" font-family="sans-serif">Cycle4 最大回撤 ~−48% vs 历史 −77%~−84%</text>
+  <text x="148" y="354" font-size="11" fill="#7c848f" font-family="sans-serif">浅回撤 = 周期变形 or 底已现？</text>
+  <rect x="14" y="370" width="652" height="48" rx="10" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="392" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑦ 统计检验层</text>
+  <text x="148" y="392" font-size="11.5" fill="#454c56" font-family="sans-serif">周期 n=4 · 幂律 OOS R²≈0.55【分析】· 伪回归辩论</text>
+  <text x="148" y="408" font-size="11" fill="#7c848f" font-family="sans-serif">两框架均经不起「物理定律」宣称</text>
+  <rect x="14" y="424" width="652" height="48" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.4"/>
+  <text x="30" y="446" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑧ 叙事传播层</text>
+  <text x="148" y="446" font-size="11.5" fill="#454c56" font-family="sans-serif">「周期死了」vs「$60K 铁底」· 只展示命中维度</text>
+  <text x="148" y="462" font-size="11" fill="#7c848f" font-family="sans-serif">选择性记忆是最大敌人</text>
+  <rect x="14" y="478" width="652" height="48" rx="10" fill="#f4f6f9" stroke="#c9d0d9" stroke-width="1.2"/>
+  <text x="30" y="500" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">⑨ 决策层</text>
+  <text x="148" y="500" font-size="11.5" fill="#454c56" font-family="sans-serif">双框架仪表盘 · 区间底窗 · 漂移剥离 · falsify 日志</text>
+  <text x="148" y="516" font-size="11" fill="#7c848f" font-family="sans-serif">不对决下注，对区间下注</text>
+</svg>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>抽象 ↔ 机制 ↔ 操作</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">对决 · 三层映射</text>
+  <rect x="14" y="36" width="200" height="220" rx="10" fill="#f0f4fd" stroke="#c3d1f0" stroke-width="1.3"/>
+  <text x="28" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="28" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• 减半周期镜像</text>
+  <text x="28" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 幂律时间缩放</text>
+  <text x="28" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• 均值回归地板</text>
+  <text x="28" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• 机构化浅周期</text>
+  <rect x="240" y="36" width="200" height="220" rx="10" fill="#fff7e6" stroke="#f0dcb4" stroke-width="1.3"/>
+  <text x="254" y="58" font-size="12" font-weight="700" fill="#a06800" font-family="sans-serif">机制</text>
+  <text x="254" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• flow↓ + 流动性滞后</text>
+  <text x="254" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• 采用率 t^β 锚定</text>
+  <text x="254" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• ETF 吸收/赎回</text>
+  <text x="254" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• σ 逐周期衰减</text>
+  <rect x="466" y="36" width="200" height="220" rx="10" fill="#f2f7f4" stroke="#c6dcc9" stroke-width="1.3"/>
+  <text x="480" y="58" font-size="12" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="480" y="82" font-size="11" fill="#454c56" font-family="sans-serif">• §06 对决仪表盘</text>
+  <text x="480" y="102" font-size="11" fill="#454c56" font-family="sans-serif">• §09 回撤深度仪</text>
+  <text x="480" y="122" font-size="11" fill="#454c56" font-family="sans-serif">• §08 漂移剥离器</text>
+  <text x="480" y="142" font-size="11" fill="#454c56" font-family="sans-serif">• §12 底窗裁决器</text>
+  <defs><marker id="vsA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#454c56"/></marker></defs>
+  <line x1="214" y1="120" x2="238" y2="120" stroke="#454c56" stroke-width="1.2" marker-end="url(#vsA)"/>
+  <line x1="440" y1="120" x2="464" y2="120" stroke="#454c56" stroke-width="1.2" marker-end="url(#vsA)"/>
+</svg>
+<h3>跨域同构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>对决结构</th>
+<th>其他领域</th>
+<th>共同数学</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">周期顶→底延时</td>
+<td>产能周期、库存周期</td>
+<td>冲击后振荡衰减</td>
+</tr>
+<tr>
+<td class="k">上升地板</td>
+<td>股息贴现增长带、租金底线</td>
+<td>趋势 + 波动带</td>
+</tr>
+<tr>
+<td class="k">浅回撤</td>
+<td>成熟股市熊市（−20%~−30%）</td>
+<td>制度化降波</td>
+</tr>
+<tr>
+<td class="k">n=4 样本</td>
+<td>四次金融危机「规律」</td>
+<td>小样本过拟合</td>
+</tr>
+<tr>
+<td class="k">双框架裁决</td>
+<td>医学双盲、模型集成</td>
+<td>多假设竞争</td>
+</tr>
+<tr>
+<td class="k">伪回归 log-log</td>
+<td>全球 GDP vs 时间</td>
+<td>非平稳共趋势</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>立场</th>
+<th>激励扭曲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Rekt Capital / Fidelity</strong></td>
+<td>四年顶日历、518–546 天</td>
+<td>内容流量</td>
+</tr>
+<tr>
+<td class="k"><strong>Giovanni Santostasi</strong></td>
+<td>幂律 floor 是物理地板</td>
+<td>著作/声誉</td>
+</tr>
+<tr>
+<td class="k"><strong>Wintermute</strong></td>
+<td>「减半周期不再相关」</td>
+<td>做市商流动性叙事</td>
+</tr>
+<tr>
+<td class="k"><strong>Bitwise Hougan</strong></td>
+<td>周期压缩但未死</td>
+<td>ETF 发行</td>
+</tr>
+<tr>
+<td class="k"><strong>btcpowerlaw.nl</strong></td>
+<td>σ 衰减、floor 收敛</td>
+<td>开源研究声誉</td>
+</tr>
+<tr>
+<td class="k"><strong>Virtonen (2025)</strong></td>
+<td>2024 减半因果效应有限</td>
+<td>学术</td>
+</tr>
+<tr>
+<td class="k"><strong>Tim Stolte</strong></td>
+<td>幂律伪回归批评</td>
+<td>资管立场</td>
+</tr>
+<tr>
+<td class="k"><strong>你</strong></td>
+<td>读者</td>
+<td>确认偏误：持币者倾向 floor</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>2026-09-17<span class="tag t-chk">待验证</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>days_since_halving</strong></td>
+<td>距 2024-04-19</td>
+<td><strong>881</strong> 天</td>
+</tr>
+<tr>
+<td class="k"><strong>days_since_peak</strong></td>
+<td>距 2025-10-06</td>
+<td><strong>346</strong> 天</td>
+</tr>
+<tr>
+<td class="k"><strong>peak_price</strong></td>
+<td>第四次周期顶</td>
+<td><strong>$126,296</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>spot</strong></td>
+<td>现货聚合价</td>
+<td><strong>~$95,000</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>drawdown</strong></td>
+<td>较峰回撤</td>
+<td><strong>−24.8%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>fair</strong></td>
+<td>幂律公允</td>
+<td><strong>$152,018</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>floor</strong></td>
+<td>−2σ 下轨</td>
+<td><strong>$60,520</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>floor_gap</strong></td>
+<td>现货高出 floor</td>
+<td><strong>+57.0%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>fair_gap</strong></td>
+<td>现货低于 fair</td>
+<td><strong>−37.5%</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>halving_gain</strong></td>
+<td>减半→峰涨幅</td>
+<td><strong>+100.5%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool">
+<h3>工具 · 对决仪表盘</h3>
+<p>同时读<strong>周期相位</strong>（峰后天数）与<strong>幂律位置</strong>（距 floor/fair）。</p>
+<div class="ctrl"><label>峰后天数<input type="range" id="vs_dsp" min="30" max="600" step="1" value="346"><output id="vs_dspO">346 天</output></label></div>
+<div class="ctrl"><label>现货价（$K）<input type="range" id="vs_spot" min="40" max="140" step="0.5" value="95"><output id="vs_spotO">$95.0K</output></label></div>
+<div class="ctrl"><label>幂律 σ（dex）<input type="range" id="vs_sigma" min="0.15" max="0.35" step="0.01" value="0.20"><output id="vs_sigmaO">0.20</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">周期底窗</span><strong id="vs_cycle">2026-10 ~ 2027-03</strong><span id="vs_cycleh">—</span></div>
+<div class="ro"><span class="k">floor / fair</span><strong id="vs_ff">$60.5K / $152.0K</strong><span id="vs_ffh">—</span></div>
+<div class="ro"><span class="k">较峰回撤</span><strong id="vs_dd">−24.8%</strong><span id="vs_ddh">—</span></div>
+<canvas id="vsDashChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="vs_v">对决进行中</strong><span id="vs_vh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>主因果链：两框架并行</h3>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">对决 · 因果与反馈</text>
+  <text x="14" y="34" font-size="10" fill="#7c848f" font-family="sans-serif">实线=因果 · 红虚线=反馈</text>
+  <rect x="20" y="55" width="130" height="32" rx="6" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.2"/>
+  <text x="34" y="76" font-size="10" font-weight="700" fill="#1d4ed8" font-family="sans-serif">减半 flow↓</text>
+  <rect x="180" y="55" width="130" height="32" rx="6" fill="#fff7e6" stroke="#b8730a" stroke-width="1.2"/>
+  <text x="194" y="76" font-size="10" font-weight="700" fill="#a06800" font-family="sans-serif">延时顶 534d</text>
+  <rect x="340" y="55" width="130" height="32" rx="6" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.2"/>
+  <text x="354" y="76" font-size="10" font-weight="700" fill="#d5342c" font-family="sans-serif">峰后回撤</text>
+  <rect x="500" y="55" width="130" height="32" rx="6" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.2"/>
+  <text x="514" y="76" font-size="10" font-weight="700" fill="#0f8a4d" font-family="sans-serif">周期底窗</text>
+  <rect x="20" y="130" width="130" height="32" rx="6" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.2"/>
+  <text x="34" y="151" font-size="10" font-weight="700" fill="#1d4ed8" font-family="sans-serif">网络年龄 t</text>
+  <rect x="180" y="130" width="130" height="32" rx="6" fill="#fff7e6" stroke="#b8730a" stroke-width="1.2"/>
+  <text x="194" y="151" font-size="10" font-weight="700" fill="#a06800" font-family="sans-serif">fair ∝ t^5.688</text>
+  <rect x="340" y="130" width="130" height="32" rx="6" fill="#fff7e6" stroke="#b8730a" stroke-width="1.2"/>
+  <text x="354" y="151" font-size="10" font-weight="700" fill="#a06800" font-family="sans-serif">floor 上移</text>
+  <rect x="500" y="130" width="130" height="32" rx="6" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.2"/>
+  <text x="514" y="151" font-size="10" font-weight="700" fill="#0f8a4d" font-family="sans-serif">抄底买盘</text>
+  <rect x="260" y="210" width="160" height="36" rx="8" fill="#f0f4fd" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="274" y="234" font-size="11" font-weight="700" fill="#1d4ed8" font-family="sans-serif">ETF 流动（放大器）</text>
+  <defs>
+    <marker id="vsC" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#454c56"/></marker>
+    <marker id="vsR" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <line x1="150" y1="71" x2="178" y2="71" stroke="#454c56" stroke-width="1.2" marker-end="url(#vsC)"/>
+  <line x1="310" y1="71" x2="338" y2="71" stroke="#454c56" stroke-width="1.2" marker-end="url(#vsC)"/>
+  <line x1="470" y1="71" x2="498" y2="71" stroke="#454c56" stroke-width="1.2" marker-end="url(#vsC)"/>
+  <line x1="150" y1="146" x2="178" y2="146" stroke="#454c56" stroke-width="1.2" marker-end="url(#vsC)"/>
+  <line x1="310" y1="146" x2="338" y2="146" stroke="#454c56" stroke-width="1.2" marker-end="url(#vsC)"/>
+  <line x1="470" y1="146" x2="498" y2="146" stroke="#454c56" stroke-width="1.2" marker-end="url(#vsC)"/>
+  <line x1="340" y1="87" x2="300" y2="208" stroke="#454c56" stroke-width="1.2" marker-end="url(#vsC)"/>
+  <line x1="420" y1="208" x2="470" y2="87" stroke="#454c56" stroke-width="1.2" marker-end="url(#vsC)"/>
+  <path d="M565 87 Q600 150 565 210" fill="none" stroke="#d5342c" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#vsR)"/>
+  <text x="580" y="150" font-size="9" fill="#d5342c" font-family="sans-serif">浅回撤</text>
+  <path d="M500 162 Q400 280 200 162" fill="none" stroke="#d5342c" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#vsR)"/>
+  <text x="300" y="300" font-size="9" fill="#d5342c" font-family="sans-serif">接近 floor → 叙事买盘</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>链条</th>
+<th>框架</th>
+<th>类型</th>
+<th>2026 状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">减半→延时顶</td>
+<td>周期</td>
+<td><span class="tag t-inf">推论</span></td>
+<td><strong>命中</strong>（534d）</td>
+</tr>
+<tr>
+<td class="k">顶→深回撤</td>
+<td>周期</td>
+<td><span class="tag t-hyp">假设</span></td>
+<td><strong>部分失效</strong>（−25% vs −77%）</td>
+</tr>
+<tr>
+<td class="k">t→fair 上移</td>
+<td>幂律</td>
+<td><span class="tag t-inf">推论</span></td>
+<td>持续成立</td>
+</tr>
+<tr>
+<td class="k">价格→floor 回归</td>
+<td>幂律</td>
+<td><span class="tag t-hyp">假设</span></td>
+<td>尚未测试（距 floor +57%）</td>
+</tr>
+<tr>
+<td class="k">ETF→浅回撤</td>
+<td>制度</td>
+<td><span class="tag t-ana">分析</span></td>
+<td>待 2026 Q4 验证</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ol>
+<li><strong>周期底 ≠ 必须触 floor</strong>：2018 底 ~$3.2K 贴近 floor；2022 底 ~$15.5K <strong>高于</strong>当时 floor ~$12K<span class="tag t-chk">待验证</span>——浅触或「悬停」皆可能。</li>
+<li><strong>floor 每日上升 ~$8<span class="tag t-inf">推论</span></strong>：拖得越久，「触 floor」所需跌幅越大——时间站在幂律派这边。</li>
+<li><strong>周期时钟与幂律 fair 错位</strong>：峰在 fair <strong>下方</strong>（$126K vs fair ~$130K+），却在历史 <strong>+1σ 以下</strong>——顶未必「过热」。</li>
+<li><strong>Virtonen (2025)</strong>：2024 减半因果效应仅解释价格变动的 <strong>~20%</strong><span class="tag t-ana">分析</span>——余下 80% 是流动性/ETF。</li>
+<li><strong>ScienceDirect (2024)</strong>：LASSO 显示减半短期<strong>负向</strong>价格反应<span class="tag t-ana">分析</span>——与「供应危机」叙事相反。</li>
+<li><strong>同构陷阱</strong>：两框架历史底日常与 <strong>M2 拐点</strong>重合<span class="tag t-ana">分析</span>——对决可能是宏观的投影。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>三情景：2026 Q4 路径分叉</h3>
+<pre><code>情景 A · 周期派胜（深回撤触 floor）
+  峰后 365–450 天 · ETF 持续净流出 · 回撤扩至 −45%~−55%
+  → 现货逼近 $60–65K · floor 提供买盘 · 2027 反弹
+
+情景 B · 幂律派胜（浅底悬空）
+  回撤止步 −30%~−40% · 不触 floor · 2026-10 附近即周期底
+  → 周期「时间对、深度错」· floor 本轮失效为底锚
+
+情景 C · 双框架折中（最可能基线<span class="tag t-inf">推论</span>）
+  周期底窗命中（2026 Q4–2027 Q1）· 回撤 −35%~−45%
+  → 现货 $65–80K 区间 · 接近但不击穿 floor · 波动率收敛
+</code></pre>
+<div class="note blue"><b>如何裁决</b><p><strong>不要提前站队。</strong> 写下三条 falsify：(1) 2027-03 前未破 $70K → 周期浅回撤成立；(2) 收盘 &lt; floor 连续 7 日 → 幂律地板破；(3) 两者同时错 → 转纯宏观框架。</p></div>
+<div class="tool">
+<h3>工具 · 漂移剥离器</h3>
+<p>「峰后 X 日抄底胜率 Y%」必须减去<strong>随机持币基准</strong>（μ=50%/年, σ=65%）。</p>
+<div class="ctrl"><label>持有期（交易日）<input type="range" id="vs_win" min="30" max="365" step="1" value="180"><output id="vs_winO">180 日</output></label></div>
+<div class="ctrl"><label>策略胜率（%）<input type="range" id="vs_strat" min="50" max="95" step="0.1" value="85.0"><output id="vs_stratO">85.0%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">随机持币基准</span><strong id="vs_base">74.2%</strong><span id="vs_baseh">—</span></div>
+<div class="ro"><span class="k">真实超额</span><strong id="vs_ex">+10.8 pp</strong><span id="vs_exh">—</span></div>
+<div class="ro"><span class="k">显著性所需 n</span><strong id="vs_n">118</strong><span id="vs_nh">—</span></div>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="vs_dv">弱超额</strong><span id="vs_dvh">n=4 周期不够</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>四次周期：顶、底、回撤对照</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周期</th>
+<th>峰<span class="tag t-chk">待验证</span></th>
+<th>底<span class="tag t-chk">待验证</span></th>
+<th>峰→底天数</th>
+<th>回撤</th>
+<th>底 vs floor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2013</td>
+<td>~$1,150</td>
+<td>~$200</td>
+<td>~400</td>
+<td><strong>−83%</strong></td>
+<td>触 floor</td>
+</tr>
+<tr>
+<td class="k">2017</td>
+<td>~$19,800</td>
+<td>~$3,200</td>
+<td>~365</td>
+<td><strong>−84%</strong></td>
+<td>触 floor</td>
+</tr>
+<tr>
+<td class="k">2021</td>
+<td>~$69,000</td>
+<td>~$15,500</td>
+<td>~365</td>
+<td><strong>−77%</strong></td>
+<td>高于 floor</td>
+</tr>
+<tr>
+<td class="k">2024</td>
+<td><strong>$126,296</strong></td>
+<td><strong>?</strong></td>
+<td><strong>346+</strong></td>
+<td><strong>−24.8%</strong>（暂）</td>
+<td><strong>+57% vs floor</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>演化时间轴</h3>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">第四次周期 · 对决时间轴</text>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#c9d0d9" stroke-width="2"/>
+  <circle cx="100" cy="100" r="7" fill="#1d4ed8"/>
+  <text x="100" y="78" font-size="9" text-anchor="middle" fill="#1d4ed8" font-family="sans-serif">2024-04-19</text>
+  <text x="100" y="122" font-size="9" text-anchor="middle" fill="#1d4ed8" font-family="sans-serif">减半</text>
+  <circle cx="280" cy="100" r="8" fill="#d5342c"/>
+  <text x="280" y="72" font-size="10" text-anchor="middle" font-weight="700" fill="#d5342c" font-family="sans-serif">2025-10-06</text>
+  <text x="280" y="122" font-size="9" text-anchor="middle" fill="#d5342c" font-family="sans-serif">峰 $126K · +534d</text>
+  <circle cx="420" cy="100" r="7" fill="#b8730a"/>
+  <text x="420" y="78" font-size="9" text-anchor="middle" fill="#a06800" font-family="sans-serif">2026-09-17</text>
+  <text x="420" y="122" font-size="9" text-anchor="middle" fill="#a06800" font-family="sans-serif">NOW · 峰后 346d</text>
+  <rect x="480" y="88" width="100" height="24" rx="4" fill="rgba(15,138,77,0.15)" stroke="#0f8a4d" stroke-width="1"/>
+  <text x="530" y="104" font-size="9" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">底窗?</text>
+  <circle cx="600" cy="100" r="6" fill="#0f8a4d"/>
+  <text x="600" y="78" font-size="9" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">2027?</text>
+  <text x="600" y="122" font-size="9" text-anchor="middle" fill="#0f8a4d" font-family="sans-serif">floor ~$68K</text>
+  <line x1="100" y1="140" x2="280" y2="155" stroke="#7c848f" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="190" y="158" font-size="8" fill="#7c848f" font-family="sans-serif">幂律 fair 上移</text>
+  <line x1="420" y1="140" x2="600" y2="155" stroke="#0f8a4d" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="510" y="158" font-size="8" fill="#0f8a4d" font-family="sans-serif">floor 上移 ~$8/日</text>
+</svg>
+<div class="tool">
+<h3>工具 · 回撤深度仪</h3>
+<p>对比<strong>当前回撤</strong>与历史周期底深度、距幂律 floor 的空间。</p>
+<div class="ctrl"><label>较峰回撤（%）<input type="range" id="vs_ddsl" min="-70" max="0" step="0.5" value="-24.8"><output id="vs_ddslO">−24.8%</output></label></div>
+<div class="ctrl"><label>峰价（$K）<input type="range" id="vs_peak" min="80" max="150" step="0.5" value="126.3"><output id="vs_peakO">$126.3K</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">隐含现货</span><strong id="vs_implied">$95.0K</strong><span id="vs_impliedh">—</span></div>
+<div class="ro"><span class="k">vs 历史底均值</span><strong id="vs_hist">−81%</strong><span id="vs_histh">—</span></div>
+<div class="ro"><span class="k">触 floor 需再跌</span><strong id="vs_tofloor">−36.3%</strong><span id="vs_tofloorh">—</span></div>
+<canvas id="vsDdChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="vs_ddv">浅回撤区</strong><span id="vs_ddvh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>公开说法</th>
+<th>真实激励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">周期多头</td>
+<td>「底窗到了，最后一跌」</td>
+<td>加仓叙事</td>
+</tr>
+<tr>
+<td class="k">幂律多头</td>
+<td>「$60K 铁底，历史必触」</td>
+<td>长期持有合理化</td>
+</tr>
+<tr>
+<td class="k">Wintermute</td>
+<td>「周期死了，看流动性」</td>
+<td>做市商业绩</td>
+</tr>
+<tr>
+<td class="k">ETF 发行商</td>
+<td>「长期配置，忽略波动」</td>
+<td>规模费</td>
+</tr>
+<tr>
+<td class="k">空头</td>
+<td>「两框架都会破」</td>
+<td>做空或避险</td>
+</tr>
+<tr>
+<td class="k">你</td>
+<td>想「确定性」</td>
+<td>确认偏误</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <text x="14" y="18" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">对决生态 · 资源与信息流</text>
+  <rect x="260" y="40" width="160" height="44" rx="8" fill="#f0f4fd" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="278" y="58" font-size="12" font-weight="700" fill="#1d4ed8" font-family="sans-serif">BTC 定价池</text>
+  <text x="278" y="74" font-size="10" fill="#454c56" font-family="sans-serif">双框架在此交锋</text>
+  <rect x="40" y="120" width="130" height="40" rx="8" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.2"/>
+  <text x="52" y="138" font-size="11" font-weight="700" fill="#1d4ed8" font-family="sans-serif">周期叙事流</text>
+  <text x="52" y="152" font-size="9.5" fill="#454c56" font-family="sans-serif">减半/顶底日历</text>
+  <rect x="510" y="120" width="130" height="40" rx="8" fill="#fff7e6" stroke="#b8730a" stroke-width="1.2"/>
+  <text x="522" y="138" font-size="11" font-weight="700" fill="#a06800" font-family="sans-serif">幂律 floor 流</text>
+  <text x="522" y="152" font-size="9.5" fill="#454c56" font-family="sans-serif">抄底/定投叙事</text>
+  <rect x="40" y="220" width="130" height="40" rx="8" fill="#fdf3f2" stroke="#d5342c" stroke-width="1.2"/>
+  <text x="52" y="238" font-size="11" font-weight="700" fill="#d5342c" font-family="sans-serif">ETF 赎回流</text>
+  <text x="52" y="252" font-size="9.5" fill="#454c56" font-family="sans-serif">浅回撤推手</text>
+  <rect x="510" y="220" width="130" height="40" rx="8" fill="#f2f7f4" stroke="#0f8a4d" stroke-width="1.2"/>
+  <text x="522" y="238" font-size="11" font-weight="700" fill="#0f8a4d" font-family="sans-serif">宏观 M2 流</text>
+  <text x="522" y="252" font-size="9.5" fill="#454c56" font-family="sans-serif">共同隐藏驱动</text>
+  <defs>
+    <marker id="vsGF" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="vsRF2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <line x1="170" y1="140" x2="258" y2="62" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#vsGF)"/>
+  <line x1="510" y1="140" x2="422" y2="62" stroke="#b8730a" stroke-width="1.5" marker-end="url(#vsGF)"/>
+  <line x1="170" y1="240" x2="258" y2="82" stroke="#d5342c" stroke-width="1.5" marker-end="url(#vsRF2)"/>
+  <line x1="510" y1="240" x2="422" y2="82" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#vsGF)"/>
+  <text x="300" y="175" font-size="9" fill="#7c848f" font-family="sans-serif">抽水：叙事→定价→反馈→新叙事</text>
+</svg>
+<div class="tool">
+<h3>工具 · 底窗裁决器</h3>
+<p>给定<strong>峰后天数</strong>与<strong>回撤深度</strong>，判定哪条框架暂领先（启发式，非交易信号）。</p>
+<div class="ctrl"><label>峰后天数<input type="range" id="vs_bdays" min="100" max="500" step="1" value="346"><output id="vs_bdaysO">346 天</output></label></div>
+<div class="ctrl"><label>回撤（%）<input type="range" id="vs_bdd" min="-70" max="-10" step="0.5" value="-24.8"><output id="vs_bddO">−24.8%</output></label></div>
+<div class="readout">
+<div class="ro"><span class="k">周期得分</span><strong id="vs_cs">60</strong><span id="vs_csh">—</span></div>
+<div class="ro"><span class="k">幂律得分</span><strong id="vs_ps">43</strong><span id="vs_psh">—</span></div>
+<div class="ro"><span class="k">基线情景</span><strong id="vs_sc">折中浅底</strong><span id="vs_sch">—</span></div>
+<canvas id="vsVerdictChart" height="214" style="width:100%;grid-column:1/-1"></canvas>
+<div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><strong id="vs_bv">对决未分胜负</strong><span id="vs_bvh">—</span></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>作用</th>
+<th>你怎么用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>双框架表</strong></td>
+<td>避免单叙事</td>
+<td>每周更新 §06 四列</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>falsify 清单</strong></td>
+<td>强制诚实</td>
+<td>写下三条破戒条件</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>floor 日增速</strong></td>
+<td>时间价值</td>
+<td>fair/floor 每日重算</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>峰后天数</strong></td>
+<td>周期底窗</td>
+<td>365±60 天带</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>回撤分位</strong></td>
+<td>浅 vs 深</td>
+<td>§09 回撤深度仪</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>ETF 7 日流</strong></td>
+<td>浅回撤推手</td>
+<td>Farside 日更</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>漂移剥离</strong></td>
+<td>防假 alpha</td>
+<td>§08 必跑</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>σ 敏感性</strong></td>
+<td>floor 区间</td>
+<td>σ=0.20 vs 0.30 差 <strong>~40%</strong></td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>样本谦卑</strong></td>
+<td>n=4</td>
+<td>不对第五次做点预测</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>裁决日志</strong></td>
+<td>迭代</td>
+<td>每月记录谁更接近</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「周期时间对了，幅度也会对」</summary><div class="dbody"><p><strong>错。</strong> 2025 峰 534 天命中，但涨幅仅 +100.5%。时间≠幅度。</p></div></details>
+<details><summary>2. 「floor 从未破，所以必触」</summary><div class="dbody"><p><strong>幸存者叙事。</strong> 仅 1 资产、15 年样本。2022 底就未触 floor。</p></div></details>
+<details><summary>3. 「−25% 就是底」</summary><div class="dbody"><p><strong>历史对比。</strong> 前三次底均 &gt;−77%。−25% 可能是中途站。</p></div></details>
+<details><summary>4. 「两框架矛盾，必有一错」</summary><div class="dbody"><p><strong>可折中。</strong> 时间窗来自周期，价格带来自幂律——可拼接。</p></div></details>
+<details><summary>5. 「Wintermute 说周期死了」</summary><div class="dbody"><p><strong>一半对。</strong> 流动性主导边际定价，但顶底日历仍部分命中。</p></div></details>
+<details><summary>6. 「触 floor = 立刻暴涨」</summary><div class="dbody"><p><strong>均值回归非瞬时。</strong> 可在 floor 附近横盘数月。</p></div></details>
+<details><summary>7. 「fair $152K = 目标价」</summary><div class="dbody"><p><strong>走廊中轴。</strong> 可在 fair 下方运行数年（如 2026）。</p></div></details>
+<details><summary>8. 「学术证明减半无用」</summary><div class="dbody"><p><strong>过度解读。</strong> Virtonen：2024 效应存在但仅 ~20% 解释力。</p></div></details>
+<details><summary>9. 「幂律 R²=0.96 所以科学」</summary><div class="dbody"><p><strong>伪回归风险。</strong> OOS R²≈0.55<span class="tag t-ana">分析</span>。in-sample 会骗人。</p></div></details>
+<details><summary>10. 「峰后 365 天必到底」</summary><div class="dbody"><p><strong>n=2。</strong> 2017/2021 两次，置信度极低。</p></div></details>
+<details><summary>11. 「ETF 杀死深回撤」</summary><div class="dbody"><p><strong>待验证。</strong> 2026 赎回周可达 −25,000 BTC/周<span class="tag t-chk">待验证</span>。</p></div></details>
+<details><summary>12. 「对决有唯一赢家」</summary><div class="dbody"><p><strong>最可能：各对一半。</strong> 时间 vs 深度维度可拆分评分。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实操作</th>
+<th>频率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">周期底窗</td>
+<td>峰后天数 + 历史 365d 带</td>
+<td>周</td>
+</tr>
+<tr>
+<td class="k">floor 距离</td>
+<td>btcpowerlaw.nl / 手算</td>
+<td>日</td>
+</tr>
+<tr>
+<td class="k">回撤深度</td>
+<td>较峰 % + §09</td>
+<td>日</td>
+</tr>
+<tr>
+<td class="k">ETF 流向</td>
+<td>Farside / SoSoValue</td>
+<td>日</td>
+</tr>
+<tr>
+<td class="k">falsify</td>
+<td>三条破戒条件</td>
+<td>季</td>
+</tr>
+</tbody>
+</table></div>
+<h3>2026-09-17 快照<span class="tag t-chk">待验证</span></h3>
+<ul>
+<li>减半后 <strong>881</strong> 天；峰（2025-10-06）后 <strong>346</strong> 天</li>
+<li>现货 ~<strong>$95,000</strong>；较峰 <strong>−24.8%</strong></li>
+<li>幂律 fair <strong>$152,018</strong>；floor <strong>$60,520</strong>；高出 floor <strong>+57.0%</strong></li>
+<li>历史周期底窗：<strong>~365 天</strong>（±60）→ <strong>2026-09 ~ 2027-03</strong></li>
+<li>下一次减半 <strong>~2028-04</strong>——第五次是终极样本外测试</li>
+</ul>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<pre><code>① 建双列表：左列周期预言，右列幂律预言
+② 每周更新：峰后天数、回撤%、floor_gap
+③ 任何「抄底胜率」：§08 扣漂移
+④ 写下 falsify：何时承认哪条框架错
+⑤ 仓位 = f(区间, 置信度) — 不是 f(「对决赢家」)
+⑥ 2027 Q1 复盘：谁的时间对、谁的深度对
+</code></pre>
+<div class="note green"><b>正确用法</b><p>把本手册当作 <strong>对决裁判席</strong>——不是赌「周期 vs 幂律」谁赢，而是记录<strong>各维度</strong>的命中与失手。2026 Q4 的数据比 2017 年的图表值钱。</p></div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 观察者</summary><div class="dbody"><ul>
+<li>[ ] 说出 2025-10-06 峰与 534 天</li>
+<li>[ ] 解释 floor = fair × 10^(−2σ)</li>
+<li>[ ] 背出历史回撤 −77%~−84%</li>
+</ul></div></details>
+<details><summary>L2 · 分析师</summary><div class="dbody"><ul>
+<li>[ ] 手算 2026-09 floor ~$60.5K</li>
+<li>[ ] 用 §08 剥离 85% 胜率</li>
+<li>[ ] 解释 2022 底为何未触 floor</li>
+</ul></div></details>
+<details><summary>L3 · 建模者</summary><div class="dbody"><ul>
+<li>[ ] 建个人对决日志（周更）</li>
+<li>[ ] 对比 σ=0.20 vs 0.30 的 floor 带</li>
+<li>[ ] 写 2027 Q1 falsify 条件</li>
+</ul></div></details>
+<details><summary>L4 · 系统设计者</summary><div class="dbody"><ul>
+<li>[ ] 周期+幂律+宏观三表</li>
+<li>[ ] 禁止单点底预测</li>
+<li>[ ] 每季更新四次对照表</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>角色</strong>：对决裁判（Verdict Referee）。左手周期沙漏，右手幂律地板尺。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>等级</th>
+<th>任务</th>
+<th>奖励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Lv.1</td>
+<td>手算 floor_gap +57%</td>
+<td>解锁「周期层」</td>
+</tr>
+<tr>
+<td class="k">Lv.2</td>
+<td>向朋友解释「时间对、幅度错」</td>
+<td>解锁「回撤仪」</td>
+</tr>
+<tr>
+<td class="k">Lv.3</td>
+<td>记录 4 周 ETF 流与回撤</td>
+<td>解锁「裁决器」</td>
+</tr>
+<tr>
+<td class="k">Lv.4</td>
+<td>写反事实：若触 floor</td>
+<td>解锁「falsify 卡」</td>
+</tr>
+<tr>
+<td class="k">Lv.5</td>
+<td>一页「2027 Q1 复盘模板」</td>
+<td>通关</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>任务</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">每日</td>
+<td>记录现货 + 较峰回撤%</td>
+<td>7 日表</td>
+</tr>
+<tr>
+<td class="k">每周</td>
+<td>更新 §06 对决仪表盘</td>
+<td>截图</td>
+</tr>
+<tr>
+<td class="k">每月</td>
+<td>重算 floor/fair + 裁决分</td>
+<td>§12</td>
+</tr>
+<tr>
+<td class="k">每季</td>
+<td>对比预言 vs 实际</td>
+<td>偏差日志</td>
+</tr>
+<tr>
+<td class="k">2027 Q1</td>
+<td>宣布本轮对决结果</td>
+<td>公开笔记</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">情景 A · 若深回撤触 floor（$60K）</button><button class="tab" data-pane="tb1-1">情景 B · 若浅底悬空（$75–85K）</button><button class="tab" data-pane="tb1-2">情景 C · 若 2027 Q1 仍横盘 $90–100K</button><button class="tab" data-pane="tb1-3">情景 D · 若跌破 floor 并 sustained 7 日</button></div>
+<div class="pane on" id="tb1-0"><p>周期派「深度」得分满分；幂律派「地板」得分满分。ETF 大幅赎回、宏观紧缩。2027 反弹起点清晰。</p></div><div class="pane" id="tb1-1"><p>周期派「时间」可能对、「深度」错；幂律派「floor」本轮失效为底锚。机构买盘在 floor 之上托底。</p></div><div class="pane" id="tb1-2"><p>两框架均「部分错」——可能进入<strong>无趋势机构化</strong>新体制。应转向纯流量/宏观框架。</p></div><div class="pane" id="tb1-3"><p>幂律派 15 年叙事重大 falsify；需重新审视 σ 与 β。周期派或得「深熊延续」佐证。</p></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>时间</th>
+<th>目标</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 会读对决</strong></td>
+<td>3 天</td>
+<td>峰/底/floor 三数字</td>
+<td>口算 floor_gap</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 会跑工具</strong></td>
+<td>1 周</td>
+<td>四工具实操</td>
+<td>默认读数对齐</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 会写 falsify</strong></td>
+<td>2 周</td>
+<td>三条破戒条件</td>
+<td>文档化</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 会裁判</strong></td>
+<td>1 月+</td>
+<td>2027 Q1 复盘</td>
+<td>维度拆分评分</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>任务</strong>：「对决三联检 + 裁决」</p>
+<ol>
+<li><strong>8 分钟 · 对决盘</strong>：§06 默认（峰后 <strong>346</strong> 天、现货 <strong>$95K</strong>、σ=<strong>0.20</strong>）→ floor <strong>$60.5K</strong>，回撤 <strong>−24.8%</strong>，底窗 <strong>2026-10 ~ 2027-03</strong>。</li>
+<li><strong>7 分钟 · 回撤仪</strong>：§09 默认 → 触 floor 需再跌 <strong>−36.3%</strong>；历史底均值 <strong>−81%</strong>。</li>
+<li><strong>8 分钟 · 基准</strong>：§08 设 180 日、胜率 <strong>85%</strong> → 基准 <strong>74.2%</strong>，超额 <strong>+10.8 pp</strong>，n≈<strong>118</strong>。</li>
+<li><strong>7 分钟 · 裁决</strong>：§12 默认 → 周期分 <strong>60</strong>、幂律分 <strong>43</strong>，基线「<strong>折中浅底</strong>」。写三句话 falsify。</li>
+</ol>
+<p><strong>验证</strong>：四工具默认读数与上文误差 <strong>&lt;0.2 pp</strong> 或 <strong>&lt;$0.1K</strong>。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>框架</td>
+<td>读 BIT 第四次周期 + btcpowerlaw floor</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>周期</td>
+<td>518–546 与峰后 365d 底窗</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>幂律</td>
+<td>σ 选择与 floor 收敛论文</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>批评</td>
+<td>Stolte 伪回归 + Virtonen 因果</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>机构</td>
+<td>ETF 流量 7 日 + Wintermute 文</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>基准</td>
+<td>§08 多组 μ/σ</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>合成</td>
+<td>1 页对决裁判笔记 + falsify</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<p><strong>Week 1</strong>：双框架定义 + 2026 快照（L1）
+<strong>Week 2</strong>：四工具 + 漂移剥离（L2）
+<strong>Week 3</strong>：ETF/M2 + 历史四次对照（L3）
+<strong>Week 4</strong>：个人对决系统 + 2027 Q1 模板（L4）</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>最大坑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>518–546 峰窗</strong></td>
+<td>减半后延时顶</td>
+<td>幅度不保证</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>峰后 365d 底窗</strong></td>
+<td>顶→底 ~12 月</td>
+<td>n=2</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>P = A·t^β</strong></td>
+<td>幂律公允</td>
+<td>起点敏感</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>floor = fair×10^(−2σ)</strong></td>
+<td>上升地板</td>
+<td>σ 选择任意</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>浅回撤假说</strong></td>
+<td>ETF 降波</td>
+<td>仅一轮样本</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>对照基准</strong></td>
+<td>随机持币胜率</td>
+<td>μ,σ 敏感</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>falsify 三分法</strong></td>
+<td>强制诚实</td>
+<td>不愿写失败条件</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>维度拆分评分</strong></td>
+<td>时间 vs 深度</td>
+<td>合成单一赢家</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>Virtonen 20%</strong></td>
+<td>减半因果上限</td>
+<td>非零效应</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>OOS R²≈0.55</strong></td>
+<td>幂律预测力</td>
+<td>in-sample 骗人</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>周期维度</summary><div class="dbody"><ul>
+<li>峰后天数？是否在 365±60 底窗？</li>
+<li>回撤是否仍浅于 −50%？</li>
+<li>ETF 净流 7 日方向？</li>
+</ul></div></details>
+<details><summary>幂律维度</summary><div class="dbody"><ul>
+<li>floor_gap 多少？每日变化？</li>
+<li>σ 用 0.20 还是 0.30？</li>
+<li>现货在 fair 下方多少 dex？</li>
+</ul></div></details>
+<details><summary>对决裁决</summary><div class="dbody"><ul>
+<li>哪条框架本周更接近？</li>
+<li>falsify 条件是否触发？</li>
+<li>是否该转第三框架（纯宏观）？</li>
+</ul></div></details>
+<details><summary>决策纪律</summary><div class="dbody"><ul>
+<li>策略胜率是否扣过漂移？</li>
+<li>是否把区间当单点？</li>
+<li>样本 n 是否够？</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li><strong>2027 Q1 复盘</strong>：本轮对决的「时间/深度/floor」三维评分</li>
+<li><strong>σ 衰减监控</strong>：每减半周期更新 floor 带</li>
+<li><strong>ETF 赎回→回撤弹性</strong>：回归系数估计</li>
+<li><strong>M2 方差分解</strong>：周期 vs 宏观谁解释更多</li>
+<li><strong>第五次减半（~2028）</strong>：提前写双框架 falsify 2.0</li>
+</ol>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2024-04-19 第四次减半</td>
+<td>链上</td>
+<td>Bitcoin Core</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2025-10-06 峰 ~$126,296</td>
+<td>市场</td>
+<td>BIT / CoinGuan 2025</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">534 天减半→峰</td>
+<td>计算</td>
+<td>本手册</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">+100.5% 减半→峰涨幅</td>
+<td>计算</td>
+<td>halving ~$63K</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">β=5.688, logA=−16.493</td>
+<td>研究</td>
+<td>btcpowerlaw.nl 2026</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">σ=0.200, floor $60,520</td>
+<td>研究</td>
+<td>Observatory production</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">历史回撤 −77%~−84%</td>
+<td>市场</td>
+<td>前三次周期</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">ETF 累计 ~$55B</td>
+<td>行业</td>
+<td>Farside 2026</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Wintermute 周期论</td>
+<td>媒体</td>
+<td>CryptoSlate 2025</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">Virtonen 因果 20%</td>
+<td>学术</td>
+<td>arXiv:2511.05512</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">OOS R²≈0.546</td>
+<td>研究</td>
+<td>btcpowerlaw.nl 2026</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">ScienceDirect 减半负向</td>
+<td>学术</td>
+<td>S1544612324012273</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册仅供研究与学习，<strong>不构成任何投资建议</strong>。比特币极高波动，可能发生 &gt;50% 的回撤；四年周期与幂律下轨均基于<strong>有限历史样本</strong>（周期 n=4、幂律单资产外推），不保证未来有效。请勿依据「对决赢家」叙事进行杠杆交易或集中配置。中国大陆对虚拟货币相关业务有严格监管，请遵守当地法律法规。作者不对使用本手册造成的任何损失负责。</p>
+</section>
+<footer>  <p>《BTC-终极对决：四年周期理论 vs. 幂律通道下轨 · 全景认知与实践操作手册》 · 生成于 2026-09-17 · 耗时 5 分 14 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《BTC-终极对决：四年周期理论 vs. 幂律通道下轨》主题脚本
+   四个可调模型：
+     1. 对决仪表盘    — 峰后天数 + 现货 + σ → floor/fair/回撤/底窗
+     2. 漂移剥离器    — 策略胜率 vs 随机持币基准
+     3. 回撤深度仪    — 回撤% vs 历史底深度 vs floor 距离
+     4. 底窗裁决器    — 周期分 vs 幂律分启发式评分
+   默认参数：t=6466, β=5.688, logA=-16.493, peak=$126.3K, floor σ=0.20
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  var GENESIS_MS = Date.UTC(2009, 0, 3);
+  var PEAK_DATE = Date.UTC(2025, 9, 6);
+  var ASOF_MS = Date.UTC(2026, 8, 17);
+  var DEFAULT_BETA = 5.688;
+  var DEFAULT_LOGA = -16.493;
+  var DEFAULT_PEAK = 126.3;
+  var DEFAULT_SIGMA = 0.20;
+  var HIST_DD = -81;
+
+  function daysSinceGenesis(ms) {
+    return Math.round((ms - GENESIS_MS) / 86400000);
+  }
+
+  function fairPrice(days, beta, logA) {
+    if (days <= 0) return 0;
+    return Math.pow(10, logA + beta * Math.log10(days));
+  }
+
+  function floorPrice(days, sigma, beta, logA) {
+    return fairPrice(days, beta, logA) * Math.pow(10, -2 * sigma);
+  }
+
+  function fmtK(v) {
+    if (!isFinite(v)) return '—';
+    return '$' + v.toFixed(1) + 'K';
+  }
+
+  function fmtPct(v, digits) {
+    return (v >= 0 ? '+' : '') + v.toFixed(digits || 1) + '%';
+  }
+
+  function ncdf(x) {
+    var s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * z);
+    var y = 1 - (t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429))))) * Math.exp(-z * z);
+    return 0.5 * (1 + s * y);
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || cv.parentNode.clientWidth || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+
+  function addMonths(d, m) {
+    var r = new Date(d);
+    r.setUTCMonth(r.getUTCMonth() + m);
+    return r.getUTCFullYear() + '-' + String(r.getUTCMonth() + 1).padStart(2, '0');
+  }
+
+  /* ══ 工具 1 · 对决仪表盘 ══ */
+  (function dashModel() {
+    var dspEl = $('vs_dsp'), spotEl = $('vs_spot'), sigmaEl = $('vs_sigma');
+    if (!dspEl || !spotEl || !sigmaEl) return;
+    var dspO = $('vs_dspO'), spotO = $('vs_spotO'), sigmaO = $('vs_sigmaO');
+    var cycleEl = $('vs_cycle'), cycleHEl = $('vs_cycleh');
+    var ffEl = $('vs_ff'), ffHEl = $('vs_ffh');
+    var ddEl = $('vs_dd'), ddHEl = $('vs_ddh');
+    var vEl = $('vs_v'), vhEl = $('vs_vh');
+    var cv = $('vsDashChart');
+
+    function draw(dsp, spotK, sigma, floorK, fairK, dd) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 58, r: 18, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var minP = floorK * 0.85, maxP = fairK * 1.05;
+      var sy = function (p) {
+        return pad.t + (1 - (Math.log10(p) - Math.log10(minP)) / (Math.log10(maxP) - Math.log10(minP))) * ih;
+      };
+      var levels = [
+        { p: floorK, col: '#0f8a4d', lab: 'floor' },
+        { p: spotK, col: '#d5342c', lab: 'spot' },
+        { p: fairK, col: '#1d4ed8', lab: 'fair' },
+        { p: DEFAULT_PEAK, col: '#b8730a', lab: 'peak' }
+      ];
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      levels.forEach(function (lv) {
+        var y = sy(lv.p);
+        ctx.strokeStyle = lv.col;
+        ctx.lineWidth = lv.lab === 'spot' ? 2.2 : 1.2;
+        ctx.setLineDash(lv.lab === 'peak' ? [5, 4] : []);
+        ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = lv.col;
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(lv.lab + ' $' + lv.p.toFixed(0) + 'K', pad.l + 4, y - 4);
+      });
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('峰后 ' + dsp + ' 天 · 回撤 ' + fmtPct(dd), pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var dsp = +dspEl.value;
+      var spotK = +spotEl.value;
+      var sigma = +sigmaEl.value;
+      var days = daysSinceGenesis(ASOF_MS);
+      var fairK = fairPrice(days, DEFAULT_BETA, DEFAULT_LOGA) / 1000;
+      var floorK = floorPrice(days, sigma, DEFAULT_BETA, DEFAULT_LOGA) / 1000;
+      var dd = (spotK / DEFAULT_PEAK - 1) * 100;
+      var floorGap = (spotK / floorK - 1) * 100;
+      var winStart = addMonths(new Date(PEAK_DATE), 12);
+      var winEnd = addMonths(new Date(PEAK_DATE), 17);
+      txt(dspO, dsp + ' 天');
+      txt(spotO, fmtK(spotK));
+      txt(sigmaO, sigma.toFixed(2));
+      txt(cycleEl, winStart + ' ~ ' + winEnd);
+      txt(ffEl, fmtK(floorK) + ' / ' + fmtK(fairK));
+      txt(ddEl, fmtPct(dd));
+      if (dsp >= 300 && dsp <= 430) {
+        txt(cycleHEl, '历史底窗核心带');
+        tint(cycleHEl, '#0f8a4d');
+      } else if (dsp < 300) {
+        txt(cycleHEl, '底窗未到');
+        tint(cycleHEl, '#7c848f');
+      } else {
+        txt(cycleHEl, '超出历史底窗');
+        tint(cycleHEl, '#b8730a');
+      }
+      if (floorGap < 15) {
+        txt(ffHEl, '逼近 floor');
+        tint(ffHEl, '#d5342c');
+      } else if (floorGap < 40) {
+        txt(ffHEl, '中等距离');
+        tint(ffHEl, '#b8730a');
+      } else {
+        txt(ffHEl, '远高于 floor');
+        tint(ffHEl, '#0f8a4d');
+      }
+      if (dd > -35) {
+        txt(ddHEl, '浅回撤');
+        tint(ddHEl, '#b8730a');
+      } else if (dd > -55) {
+        txt(ddHEl, '中等回撤');
+        tint(ddHEl, '#454c56');
+      } else {
+        txt(ddHEl, '深回撤');
+        tint(ddHEl, '#d5342c');
+      }
+      if (dsp >= 300 && dsp <= 430 && dd > -45 && floorGap > 30) {
+        txt(vEl, '折中浅底情景');
+        txt(vhEl, '时间窗命中 · 深度偏浅 · floor 悬空');
+        tint(vEl, '#b8730a');
+      } else if (floorGap < 20) {
+        txt(vEl, '幂律地板测试');
+        txt(vhEl, '接近历史 capitulation 区');
+        tint(vEl, '#d5342c');
+      } else {
+        txt(vEl, '对决进行中');
+        txt(vhEl, '继续观察 falsify 条件');
+        tint(vEl, '#1d4ed8');
+      }
+      draw(dsp, spotK, sigma, floorK, fairK, dd);
+    }
+    dspEl.addEventListener('input', update);
+    spotEl.addEventListener('input', update);
+    sigmaEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 2 · 漂移剥离器 ══ */
+  (function driftStrip() {
+    var winEl = $('vs_win'), stratEl = $('vs_strat');
+    if (!winEl || !stratEl) return;
+    var winO = $('vs_winO'), stratO = $('vs_stratO');
+    var baseEl = $('vs_base'), baseHEl = $('vs_baseh');
+    var exEl = $('vs_ex'), exHEl = $('vs_exh');
+    var nEl = $('vs_n'), nHEl = $('vs_nh');
+    var vEl = $('vs_dv'), vhEl = $('vs_dvh');
+    var MU = 0.5, SIGMA = 0.65;
+
+    function update() {
+      var T = +winEl.value;
+      var ps = +stratEl.value / 100;
+      var pb = ncdf(MU * (T / 252) / (SIGMA * Math.sqrt(T / 252)));
+      var ex = ps - pb;
+      var n = Math.pow(1.96 * Math.sqrt(pb * (1 - pb)) + 0.84 * Math.sqrt(ps * (1 - ps)), 2) / (ex * ex);
+      txt(winO, T + ' 日');
+      txt(stratO, (+stratEl.value).toFixed(1) + '%');
+      txt(baseEl, (pb * 100).toFixed(1) + '%');
+      txt(exEl, (ex >= 0 ? '+' : '') + (ex * 100).toFixed(1) + ' pp');
+      txt(nEl, isFinite(n) ? String(Math.ceil(n)) : '∞');
+      if (ex < 0.05) {
+        txt(vEl, '无显著超额');
+        txt(vhEl, '策略≈持币');
+        tint(vEl, '#7c848f');
+      } else if (ex < 0.12) {
+        txt(vEl, '弱超额');
+        txt(vhEl, 'n=4 周期不够');
+        tint(vEl, '#b8730a');
+      } else {
+        txt(vEl, '可观超额');
+        txt(vhEl, '仍需多样本验证');
+        tint(vEl, '#0f8a4d');
+      }
+      txt(baseHEl, 'μ=50%, σ=65%');
+      txt(exHEl, ex > 0.1 ? '扣除后仍可观' : '接近噪声');
+      txt(nHEl, '双侧 α=0.05, β=0.20');
+    }
+    winEl.addEventListener('input', update);
+    stratEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 3 · 回撤深度仪 ══ */
+  (function ddModel() {
+    var ddEl = $('vs_ddsl'), peakEl = $('vs_peak');
+    if (!ddEl || !peakEl) return;
+    var ddO = $('vs_ddslO'), peakO = $('vs_peakO');
+    var impliedEl = $('vs_implied'), impliedHEl = $('vs_impliedh');
+    var histEl = $('vs_hist'), histHEl = $('vs_histh');
+    var tofloorEl = $('vs_tofloor'), tofloorHEl = $('vs_tofloorh');
+    var vEl = $('vs_ddv'), vhEl = $('vs_ddvh');
+    var cv = $('vsDdChart');
+
+    function draw(dd, spotK, floorK) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 18, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var minD = -90, maxD = 0;
+      var bars = [
+        { d: -83, col: '#c9d0d9', lab: '2013' },
+        { d: -84, col: '#c9d0d9', lab: '2017' },
+        { d: -77, col: '#c9d0d9', lab: '2021' },
+        { d: -48, col: '#b8730a', lab: 'C4 max' },
+        { d: dd, col: '#d5342c', lab: 'NOW' }
+      ];
+      var sx = function (i) { return pad.l + (i + 0.5) * iw / bars.length; };
+      var sy = function (d) { return pad.t + (1 - (d - minD) / (maxD - minD)) * ih; };
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      var bw = iw / bars.length * 0.55;
+      bars.forEach(function (b, i) {
+        var x = sx(i), y0 = sy(0), y1b = sy(b.d);
+        ctx.fillStyle = b.col;
+        ctx.fillRect(x - bw / 2, y1b, bw, y0 - y1b);
+        ctx.fillStyle = '#454c56';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(b.lab, x, y1 + 13);
+        ctx.fillText(b.d + '%', x, y1b - 4);
+      });
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('峰后回撤深度对比', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var dd = +ddEl.value;
+      var peakK = +peakEl.value;
+      var spotK = peakK * (1 + dd / 100);
+      var days = daysSinceGenesis(ASOF_MS);
+      var floorK = floorPrice(days, DEFAULT_SIGMA, DEFAULT_BETA, DEFAULT_LOGA) / 1000;
+      var toFloor = (spotK / floorK - 1) * 100;
+      var needDrop = spotK > floorK ? -((1 - floorK / spotK) * 100) : 0;
+      txt(ddO, fmtPct(dd));
+      txt(peakO, fmtK(peakK));
+      txt(impliedEl, fmtK(spotK));
+      txt(histEl, HIST_DD + '%');
+      txt(tofloorEl, fmtPct(needDrop));
+      if (dd > -40) {
+        txt(impliedHEl, '浅于历史底');
+        txt(vEl, '浅回撤区');
+        txt(vhEl, '周期深度维度待验证');
+        tint(vEl, '#b8730a');
+      } else if (dd > -60) {
+        txt(impliedHEl, '中等回撤');
+        txt(vEl, '中等回撤区');
+        txt(vhEl, '向历史底靠拢');
+        tint(vEl, '#454c56');
+      } else {
+        txt(impliedHEl, '接近历史底');
+        txt(vEl, '深回撤区');
+        txt(vhEl, '周期深度维度领先');
+        tint(vEl, '#d5342c');
+      }
+      txt(histHEl, '前三次均值');
+      txt(tofloorHEl, toFloor < 20 ? '逼近 floor' : 'floor 仍远');
+      draw(dd, spotK, floorK);
+    }
+    ddEl.addEventListener('input', update);
+    peakEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══ 工具 4 · 底窗裁决器 ══ */
+  (function verdictModel() {
+    var daysEl = $('vs_bdays'), ddEl = $('vs_bdd');
+    if (!daysEl || !ddEl) return;
+    var daysO = $('vs_bdaysO'), ddO = $('vs_bddO');
+    var csEl = $('vs_cs'), csHEl = $('vs_csh');
+    var psEl = $('vs_ps'), psHEl = $('vs_psh');
+    var scEl = $('vs_sc'), scHEl = $('vs_sch');
+    var vEl = $('vs_bv'), vhEl = $('vs_bvh');
+    var cv = $('vsVerdictChart');
+
+    function scoreCycle(dsp, dd) {
+      var timeScore = 0;
+      if (dsp >= 300 && dsp <= 430) timeScore = 40;
+      else if (dsp >= 250 && dsp <= 480) timeScore = 25;
+      else timeScore = 10;
+      var depthScore = 0;
+      if (dd <= -55) depthScore = 35;
+      else if (dd <= -40) depthScore = 25;
+      else if (dd <= -30) depthScore = 15;
+      else depthScore = 5;
+      return Math.min(100, timeScore + depthScore + 15);
+    }
+
+    function scorePlt(dd) {
+      var days = daysSinceGenesis(ASOF_MS);
+      var floorK = floorPrice(days, DEFAULT_SIGMA, DEFAULT_BETA, DEFAULT_LOGA) / 1000;
+      var spotK = DEFAULT_PEAK * (1 + dd / 100);
+      var gap = (spotK / floorK - 1) * 100;
+      var proxScore = 0;
+      if (gap < 10) proxScore = 45;
+      else if (gap < 25) proxScore = 35;
+      else if (gap < 45) proxScore = 20;
+      else proxScore = 8;
+      var holdScore = 25;
+      return Math.min(100, proxScore + holdScore + 10);
+    }
+
+    function draw(cs, ps) {
+      var s = fit(cv, 214);
+      if (!s) return;
+      var ctx = s.ctx, w = s.w, h = s.h;
+      ctx.clearRect(0, 0, w, h);
+      var pad = { l: 52, r: 18, t: 22, b: 46 };
+      var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+      var y1 = h - 46;
+      var bars = [{ v: cs, col: '#1d4ed8', lab: '周期' }, { v: ps, col: '#0f8a4d', lab: '幂律' }];
+      var bw = 80;
+      bars.forEach(function (b, i) {
+        var x = pad.l + iw * (0.3 + i * 0.4);
+        var bh = (b.v / 100) * ih;
+        ctx.fillStyle = b.col;
+        ctx.fillRect(x - bw / 2, pad.t + ih - bh, bw, bh);
+        ctx.fillStyle = '#454c56';
+        ctx.font = '12px -apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(b.lab, x, y1 + 13);
+        ctx.fillText(b.v, x, pad.t + ih - bh - 6);
+      });
+      ctx.strokeStyle = '#eef1f5';
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad.t + ih * gi / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+      }
+      ctx.fillStyle = '#7c848f';
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('框架启发式得分（0–100）', pad.l + iw / 2, y1 + 31);
+    }
+
+    function update() {
+      var dsp = +daysEl.value;
+      var dd = +ddEl.value;
+      var cs = scoreCycle(dsp, dd);
+      var ps = scorePlt(dd);
+      var scenario = '折中浅底';
+      if (cs > ps + 15 && dd <= -45) scenario = '深回撤触 floor';
+      else if (ps > cs + 15 && dd > -35) scenario = '浅底悬空';
+      else if (Math.abs(cs - ps) <= 10) scenario = '对决未分胜负';
+      txt(daysO, dsp + ' 天');
+      txt(ddO, fmtPct(dd));
+      txt(csEl, String(cs));
+      txt(psEl, String(ps));
+      txt(scEl, scenario);
+      txt(csHEl, '时间+深度维度');
+      txt(psHEl, 'floor 距离+历史');
+      txt(scHEl, '非交易信号');
+      if (scenario === '对决未分胜负') {
+        txt(vEl, '对决未分胜负');
+        txt(vhEl, '2027 Q1 再裁决');
+        tint(vEl, '#1d4ed8');
+      } else {
+        txt(vEl, '暂领先：' + (cs > ps ? '周期' : '幂律'));
+        txt(vhEl, '基线：' + scenario);
+        tint(vEl, cs > ps ? '#1d4ed8' : '#0f8a4d');
+      }
+      draw(cs, ps);
+    }
+    daysEl.addEventListener('input', update);
+    ddEl.addEventListener('input', update);
+    update();
+  })();
+})();
+</script>
+</body>
+</html>

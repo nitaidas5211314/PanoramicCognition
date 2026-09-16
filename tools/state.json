@@ -271,11 +271,14 @@
     {
       "slug": "BTC-终极对决：四年周期理论 vs. 幂律通道下轨",
       "title": "BTC-终极对决：四年周期理论 vs. 幂律通道下轨",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-17 00:10:22",
+      "finished": "2026-09-17 00:15:36",
+      "duration_sec": 314,
+      "outputs": [
+        "reports/BTC-终极对决：四年周期理论 vs. 幂律通道下轨.html",
+        "reports/BTC-终极对决：四年周期理论 vs. 幂律通道下轨.md"
+      ],
       "error": null
     },
     {
@@ -596,7 +599,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 00:10",
+  "updated": "2026-09-17 00:15",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
