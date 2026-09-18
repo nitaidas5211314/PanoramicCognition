@@ -479,11 +479,14 @@
     {
       "slug": "收益-支付（Payoff）：结果对每个参与人的效用值，博弈的本质是-收益矩阵-而非道德评价",
       "title": "收益/支付（Payoff）：结果对每个参与人的效用值，博弈的本质是\"收益矩阵\"而非道德评价",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 00:20:40",
+      "finished": "2026-09-19 00:29:12",
+      "duration_sec": 512,
+      "outputs": [
+        "reports/收益-支付（Payoff）：结果对每个参与人的效用值，博弈的本质是-收益矩阵-而非道德评价.html",
+        "reports/收益-支付（Payoff）：结果对每个参与人的效用值，博弈的本质是-收益矩阵-而非道德评价.md"
+      ],
       "error": null
     },
     {
@@ -1804,7 +1807,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 00:20",
+  "updated": "2026-09-19 00:29",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
