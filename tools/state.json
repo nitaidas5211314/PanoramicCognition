@@ -674,11 +674,14 @@
     {
       "slug": "信号传递（Signaling）：高质量方发出低质量方模仿代价过高的信号（学历、担保、自购股票）",
       "title": "信号传递（Signaling）：高质量方发出低质量方模仿代价过高的信号（学历、担保、自购股票）",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 02:27:44",
+      "finished": "2026-09-19 02:35:40",
+      "duration_sec": 476,
+      "outputs": [
+        "reports/信号传递（Signaling）：高质量方发出低质量方模仿代价过高的信号（学历、担保、自购股票）.html",
+        "reports/信号传递（Signaling）：高质量方发出低质量方模仿代价过高的信号（学历、担保、自购股票）.md"
+      ],
       "error": null
     },
     {
@@ -1849,7 +1852,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 02:27",
+  "updated": "2026-09-19 02:35",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

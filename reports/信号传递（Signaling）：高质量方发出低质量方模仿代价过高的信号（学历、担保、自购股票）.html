@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>信号传递（Signaling）：让模仿变贵 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Signaling × Asymmetric Information</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>信号传递（Signaling）：让模仿变贵</h1>
+  <p class="sub">高质量方发出<strong>低质量方模仿代价过高</strong>的信号——学历、质保、自购股票——把不可见的类型变成可观察的筛选。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>信号传递（Signaling）</strong>：在信息不对称下，知情的高质量方主动发出<strong>对低质量方模仿成本更高</strong>的可观察行动，使接收方能据信号更新信念并差异化对待——典型载体是学历、质保/担保、内部人自购与回购。<span class="tag t-fact">事实</span></p>
+<p>核心不是「说得多漂亮」，而是<strong>单交叉（single-crossing）</strong>：同一信号，高类型边际成本更低；于是存在<strong>分离均衡</strong>——只有高类型愿意付那笔信号成本。<span class="tag t-fact">事实</span></p>
+<p>经典出处：Michael Spence《Job Market Signaling》（QJE 1973）。与 Akerlof 柠檬市场、Stiglitz 筛选同属不对称信息三件套；三人共享 2001 年诺贝尔经济学奖。<span class="tag t-fact">事实</span></p>
+<p>下游：Cho–Kreps 直觉准则精炼混同/分离；生物学 Zahavi 高成本展示；金融里内部人买卖与回购公告的「押注可信度」。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「宣传话术」，而是：<strong>何种可观察行动能可信地揭示不可观察类型，以及信号均衡是否浪费资源</strong>。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：发送方选择信号强度、接收方贝叶斯更新、分离/混同/半分离、激励相容、信号浪费、筛选（screening）对照。</li>
+<li><strong>在界外</strong>：具体哪所大学值多少钱、某次回购是否该跟——除非压成「模仿成本是否覆盖溢价差」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>知情方如何用昂贵行动揭示类型</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「信号成本随类型单调 + 信念一致」可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>类型、信号、信念、工资/价格、激励相容</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>工人/卖方/内部人；雇主/买方/市场；监管与认证机构</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(y_H,y_L)、(c_H,c_L)、教育 (e)、失败率 (p)、押注额</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>学历、质保条款、公告、内部人申报、品牌广告</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实生产力、真实质量、真实意图</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>信号 → 信念 → 报价 → 谁愿意发信号（闭环）</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>差异化成本 ⇒ 分离 ⇒ 价格分化</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「高学历相关高收入」≠ 全是人力资本<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>羊皮纸效应、超长质保、高管增持</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>单交叉 + 激励相容 + 信念一致性</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。信号被模仿 → 溢价塌方 → 新信号军备</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。雇主学习、质保索赔、股价消化都有时滞</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>军备式学历通胀可正反馈浪费；认证标准可负反馈稳定</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>信号问的不是「你说了什么」，而是「低类型模仿你这句话，会不会亏到不愿意做」。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它解释「看起来浪费」的投资</h4><p>教育哪怕零生产力贡献，只要成本与能力负相关，就能支撑工资溢价——Spence 的颠覆性洞见。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它给「可信宣传」一把尺子</h4><p>质保、自购、回购：溢价能否覆盖低质方的期望索赔/自损？盖住 → 可信；盖不住 → 口嗨。<span class="tag t-inf">推论</span></p></div>
+<div class="card"><h4>它连接劳动、产品与金融市场</h4><p>同一数学结构：分离 IC、混同浪费、信号军备——换场景只换符号。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「我发了信号」当成「对方必须信」。若低类型模仿成本 ≤ 溢价，信号已被污染；市场只会付混同价，你的昂贵行动变成纯浪费。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层从「类型不可见」爬到「制度与军备」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="sgArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度与认证 · 学位认证 / 强制披露 / 短线交易规则</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 信号军备与通胀 · 学历军备 / 质保竞赛 / 羊皮纸效应</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 精炼与批评 · Cho–Kreps / Caplan 信号份额 / 雇主学习</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 跨域同构 · 质保 / 广告 / 生物高成本展示 / 自购回购</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 均衡菜单 · 分离 / 混同 / 半分离 · 最小成本分离</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 应用原型 · 学历工资 · 质保溢价 · 内部人增持</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 解概念 · 完美贝叶斯均衡 · 信念 off-path</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 单交叉与 IC · c′(e|H) &lt; c′(e|L) · 激励相容</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 问题原语 · 类型不可见 → 柠檬风险 → 需要可置信披露</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2</strong>：先会检验「模仿是否亏」；进阶卡在 <strong>L5→L8</strong>：最小成本分离仍浪费资源，军备战会把浪费推高。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到三层操作。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="160" y="16" width="360" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">差异化成本 → 分离信念 → 差异化待遇</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">类型披露装置</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">单交叉 · IC · PBE</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">学历·质保·自购</text>
+
+  <line x1="300" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="380" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="60" y="190" width="560" height="70" rx="8" fill="#f8fafc" stroke="#e2e6ec"/>
+  <text x="80" y="220" fill="#15181d" font-size="13" font-family="sans-serif">判别：c_H ≤ Δ收益 ≤ c_L？低类型模仿净收益是否为负？</text>
+  <text x="80" y="242" fill="#7c848f" font-size="12" font-family="sans-serif">三条件齐 → 可分离；缺一条 → 混同或无人发信号</text>
+
+  <rect x="60" y="290" width="260" height="60" rx="8" fill="#fef2f2" stroke="#d5342c"/>
+  <text x="190" y="316" text-anchor="middle" fill="#d5342c" font-size="12" font-weight="700" font-family="sans-serif">Cheap talk</text>
+  <text x="190" y="336" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">模仿成本≈0</text>
+  <rect x="360" y="290" width="260" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="490" y="316" text-anchor="middle" fill="#0f8a4d" font-size="12" font-weight="700" font-family="sans-serif">Costly signal</text>
+  <text x="490" y="336" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">模仿成本 &gt; 溢价</text>
+  <line x1="320" y1="320" x2="360" y2="320" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>在系统里做什么</th>
+<th>典型失败模式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">高类型发送方</td>
+<td>选信号强度、付真实成本</td>
+<td>信号过弱被模仿 / 过强纯浪费</td>
+</tr>
+<tr>
+<td class="k">低类型</td>
+<td>决定是否模仿</td>
+<td>模仿成本低估 → 污染信号</td>
+</tr>
+<tr>
+<td class="k">接收方（雇主/买方/市场）</td>
+<td>更新信念、出价</td>
+<td>信念僵化或过度解读噪音</td>
+</tr>
+<tr>
+<td class="k">认证/监管方</td>
+<td>标准化信号、惩罚虚假</td>
+<td>标准过松 → 信号通胀</td>
+</tr>
+<tr>
+<td class="k">竞争对手</td>
+<td>跟进军备</td>
+<td>集体浪费抬高门槛</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号直觉</th>
+<th>为何重要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">高/低产出</td>
+<td>(y_H &gt; y_L)</td>
+<td>溢价空间 (\Delta y=y_H-y_L)</td>
+</tr>
+<tr>
+<td class="k">信号成本</td>
+<td>(c_H &lt; c_L)</td>
+<td>单交叉；分离条件枢纽</td>
+</tr>
+<tr>
+<td class="k">教育水平</td>
+<td>(e)</td>
+<td>连续信号强度</td>
+</tr>
+<tr>
+<td class="k">类型参数</td>
+<td>(\theta_H &gt; \theta_L)</td>
+<td>(c=e/\theta) 时边际成本差</td>
+</tr>
+<tr>
+<td class="k">失败率</td>
+<td>(p_H &lt; p_L)</td>
+<td>质保期望成本差</td>
+</tr>
+<tr>
+<td class="k">自购押注</td>
+<td>(S\times d)</td>
+<td>假信号自损 vs 假信号收益</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cfA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cfB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="130" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="85" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">发信号</text>
+  <rect x="180" y="30" width="130" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="245" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">信念更新</text>
+  <rect x="340" y="30" width="130" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="405" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">差异化报价</text>
+  <rect x="500" y="30" width="150" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="575" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">IC 自洽闭环</text>
+  <line x1="150" y1="55" x2="180" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+  <line x1="310" y1="55" x2="340" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+  <line x1="470" y1="55" x2="500" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+
+  <rect x="80" y="140" width="200" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="180" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">廉价口号（可模仿）</text>
+  <rect x="360" y="140" width="240" height="50" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="480" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">信念不更新 → 混同价</text>
+  <line x1="280" y1="165" x2="360" y2="165" stroke="#d5342c" stroke-dasharray="5 4" marker-end="url(#cfB)"/>
+
+  <text x="340" y="240" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">实线：成本差异化信号因果链 · 红色虚线：cheap talk 被逆向归纳切断</text>
+  <text x="340" y="265" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">闭环：若 L 发现模仿仍划算，溢价塌方，高类型被迫加码或退出</text>
+</svg>
+<p>离散教学支付（Spence 0-1 教育）：(y_H=2,y_L=1,c_H=0.5,c_L=1.5)。分离条件 (y_H-c_H \ge y_L \ge y_H-c_L) ⇒ (1.5 \ge 1 \ge 0.5) 成立；H 净效用 <strong>1.5</strong>，L 模仿净效用 <strong>0.5</strong>。<span class="tag t-fact">事实</span>（教学约定）</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>表面</th>
+<th>底下</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">「名校涨薪」</td>
+<td>人力资本 vs 信号 vs 关系网——份额争议大<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">「超长质保=高质量」</td>
+<td>也可能是保险/价格歧视，未必信号<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">「公司回购=低估」</td>
+<td>可与内部人卖出并存 → 机会主义<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">「内部人买入」</td>
+<td>真信号还是合规窗口里的噪音？</td>
+</tr>
+<tr>
+<td class="k">「人人考研」</td>
+<td>信号通胀：门槛上移，分离所需 (e) 升高</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>时序（标准 Spence 劳动市场）：</p>
+<ol>
+<li>自然抽取类型 (\theta\in{H,L})（工人私知）。  </li>
+<li>工人选教育 (e)（公开）。  </li>
+<li>企业观测 (e)，形成后验，竞价工资 (w(e))。  </li>
+<li>工人得 (w-c(e|\theta))；企业期望利润零（竞争）。  </li>
+</ol>
+<p>均衡要求：<strong>策略最优 + 信念贝叶斯一致（路径上）+ 报价等于后验期望产出</strong>。<span class="tag t-fact">事实</span></p>
+<div class="note purple"><b>信号 vs 筛选</b><p><strong>信号</strong>：知情方先动（工人选学历）。<strong>筛选</strong>：不知情方先提菜单（合同菜单自选择）。数学对偶，操作谁先出招不同。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="3"/>
+  <circle cx="80" cy="110" r="10" fill="#1d4ed8"/><text x="80" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">1970</text><text x="80" y="78" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Akerlof 柠檬</text>
+  <circle cx="220" cy="110" r="10" fill="#1d4ed8"/><text x="220" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">1973</text><text x="220" y="78" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Spence 信号</text>
+  <circle cx="360" cy="110" r="10" fill="#1d4ed8"/><text x="360" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">1977</text><text x="360" y="78" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">质保/责任</text>
+  <circle cx="500" cy="110" r="10" fill="#1d4ed8"/><text x="500" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">1987</text><text x="500" y="78" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Cho–Kreps</text>
+  <circle cx="620" cy="110" r="10" fill="#0f8a4d"/><text x="620" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">2001+</text><text x="620" y="78" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">诺奖·实证</text>
+  <text x="340" y="160" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">理论成熟 → 精炼均衡 → 劳动/金融/营销实证拉锯（信号份额仍争议）</text>
+  <text x="340" y="185" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">2010s–：回购+内部人交易互补性；Caplan《教育的浪费案例》推高公众讨论</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>想要什么</th>
+<th>激励扭曲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">高类型</td>
+<td>被识别、拿溢价</td>
+<td>可能过度投资信号</td>
+</tr>
+<tr>
+<td class="k">低类型</td>
+<td>混进高价池</td>
+<td>模仿与造假</td>
+</tr>
+<tr>
+<td class="k">接收方</td>
+<td>降低误配成本</td>
+<td>过度依赖单一信号</td>
+</tr>
+<tr>
+<td class="k">学校/认证商</td>
+<td>出售「信号产能」</td>
+<td>放水稀释信号</td>
+</tr>
+<tr>
+<td class="k">政策制定者</td>
+<td>减少社会浪费</td>
+<td>补贴信号可能加剧军备</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<p>「抽水」发生在：高类型把真实资源（时间、保修准备金、个人仓位风险）泵进信号通道，换取信息租金；低类型若模仿失败则白白损耗。</p>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="flB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="30" y="40" width="140" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="100" y="65" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">高类型</text><text x="100" y="85" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">付信号成本 c_H</text>
+  <rect x="270" y="40" width="140" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="65" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">信号市场</text><text x="340" y="85" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">学历/质保/自购</text>
+  <rect x="510" y="40" width="140" height="60" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="580" y="65" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">接收方</text><text x="580" y="85" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">付溢价 w_H</text>
+  <line x1="170" y1="70" x2="270" y2="70" stroke="#1d4ed8" marker-end="url(#flA)"/>
+  <line x1="410" y1="70" x2="510" y2="70" stroke="#1d4ed8" marker-end="url(#flA)"/>
+
+  <rect x="150" y="160" width="380" height="70" rx="8" fill="#fef2f2" stroke="#d5342c"/>
+  <text x="340" y="190" text-anchor="middle" font-size="13" font-weight="700" fill="#d5342c" font-family="sans-serif">抽水层：信号成本本身不创造产出</text>
+  <text x="340" y="212" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">分离均衡里 H 仍付 c_H——这是信息租金的「税」；完备信息下本可为 0</text>
+  <line x1="340" y1="100" x2="340" y2="160" stroke="#d5342c" stroke-dasharray="4 3" marker-end="url(#flB)"/>
+</svg>
+<p>默认连续模型 (c=e/\theta)，(y_H=2,y_L=1,\theta_H=2,\theta_L=1)：最小分离 (e^<em>=1.00)，H 信号成本 </em><em>0.50</em>*（相对完备信息的纯浪费）。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何锋利</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>检验模仿净收益</td>
+<td>一招判别信号死活</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>拉大 (c_L-c_H)</td>
+<td>单交叉越陡越易分离</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>选最小成本分离</td>
+<td>同信息量下浪费最小</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>叠加互补信号</td>
+<td>回购+内部人买入互相背书<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>标准化与可验证</td>
+<td>降低噪音、抬高造假成本</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>缩短雇主学习时滞</td>
+<td>削弱纯 credential 租金</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>限制虚假质保</td>
+<td>索赔执行力=信号牙齿</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>披露内部人交易</td>
+<td>让「押注」可被观测</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>避免补贴信号军备</td>
+<td>补贴 (e) 可能推高门槛</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>换筛选菜单</td>
+<td>有时买方设计合同更省</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 把相关当信号因果</summary><div class="dbody"><p>高学历与高薪相关，可能是能力、网络、规制门槛——未必全是 Spence 信号。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. 以为「贵」就等于「可信」</summary><div class="dbody"><p>贵但两类成本相同 → 无单交叉 → 无法分离。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>3. 忽视混同均衡</summary><div class="dbody"><p>也可能大家都不发或都发同一水平；看到某人没信号≠低类型。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 质保=质量的单一解释</summary><div class="dbody"><p>实证上质保常更符合保险/筛选风险偏好，而非纯信号（服务器与汽车市场研究）。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>5. 回购公告本身当铁证</summary><div class="dbody"><p>公开市场回购可被用作误导；内部人方向不一致时可信度下降。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>6. 羊皮纸效应=百分之百信号</summary><div class="dbody"><p>学位断点也可能捕获结业技能包或筛选坚持；份额实证上难钉死。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>7. 忽略 off-path 信念</summary><div class="dbody"><p>均衡外「没人走到的教育水平」上，任意信念都能支撑奇怪均衡——需要精炼。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>8. 信号越多越好</summary><div class="dbody"><p>军备战提高所有人成本，信息未必增加。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>9. 把 cheap talk 当信号</summary><div class="dbody"><p>成本≈0 的声明在利益冲突下通常无信息。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>10. 忘记接收方也有策略</summary><div class="dbody"><p>雇主可投资测评、试用期——削弱对学历信号的依赖。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="grid g3">
+<div class="card"><h4>劳动市场</h4><p>学位、证书、名企履历：降低误雇成本；也制造「学历通胀」。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>产品市场</h4><p>质保、品牌广告、退货政策：用期望索赔成本筛质量；牙齿在执行。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>资本市场</h4><p>内部人增持、大股东自购、完成度高的回购：把「嘴上低估」换成「真金押注」。<span class="tag t-ana">分析</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="flow"><span>定义类型与 Δ 收益</span><i>→</i><span>估两边信号成本</span><i>→</i><span class="hi">算模仿净收益</span><i>→</i><span>定最小有效信号</span><i>→</i><span>监测污染与军备</span></div>
+<p>行动清单：</p>
+<ol>
+<li>写清「若对方是低类型，模仿我要付什么」。  </li>
+<li>用模型 1/3/4 做 IC 体检。  </li>
+<li>能分离则选<strong>最小</strong>足够信号（模型 2 的 (e^*)）。  </li>
+<li>定期复检：溢价变了、模仿成本变了，原信号可能失效。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>主干 A · 均衡语言</summary><div class="dbody"><p>分离 / 混同 / IC / 单交叉 / PBE / 直觉准则。</p></div></details>
+<details><summary>主干 B · 劳动信号</summary><div class="dbody"><p>Spence 经典、羊皮纸、雇主学习、人力资本对照。</p></div></details>
+<details><summary>主干 C · 产品与金融信号</summary><div class="dbody"><p>质保理论四假说、回购可信度、内部人互补。</p></div></details>
+<details><summary>主干 D · 设计与反制</summary><div class="dbody"><p>最小成本分离、筛选菜单、反军备制度。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是「信号炼金术士」：每回合选择信号强度；市场刷新信念与溢价；低类型 AI 会尝试模仿。目标：在信息租金与信号浪费之间存活——<strong>过度信号会死于成本，信号不足会死于混同</strong>。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">口算离散 IC</td>
+<td>复现默认 (1.5\ge1\ge0.5)</td>
+</tr>
+<tr>
+<td class="k">求 (e^*)</td>
+<td>(\theta_H=2,\theta_L=1,\Delta y=1) → (e^*=1)</td>
+</tr>
+<tr>
+<td class="k">质保分离</td>
+<td>(p=5\%/25\%,R=1000)，溢价 200 可分离</td>
+</tr>
+<tr>
+<td class="k">自购余量</td>
+<td>押注 100 万、下跌 30%、假利 20 万 → 可信</td>
+</tr>
+<tr>
+<td class="k">写案例卡</td>
+<td>一则真实信号的 IC 表</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若 c_L 从 1.5 降到 0.8</button><button class="tab" data-pane="tb1-1">若教育有生产力</button><button class="tab" data-pane="tb1-2">若质保索赔不执行</button><button class="tab" data-pane="tb1-3">若内部人公告后大额卖出</button></div>
+<div class="pane on" id="tb1-0"><p>离散模型：L 模仿净效用 2−0.8=1.2 &gt; 1 → 分离失败，信号污染。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-1"><p>信号与人力资本叠加；纯浪费下降，但学位仍可能带额外羊皮纸溢价。<span class="tag t-ana">分析</span></p></div><div class="pane" id="tb1-2"><p>期望成本差消失 → 质保退回 cheap talk。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-3"><p>「回购+买入」叙事被事后卖出削弱；机会主义假说抬头。<span class="tag t-ana">分析</span></p></div>
+<h3>可调模型 1 · 离散分离：IC 体检仪</h3>
+<p>默认 (y_H=2.00,y_L=1.00,c_H=0.50,c_L=1.50)。H 发信号净效用 <strong>1.50</strong>，L 不发得 <strong>1.00</strong>，L 模仿得 <strong>0.50</strong> → <strong>分离成立</strong>。</p>
+<div class="tool" id="tool_sep">
+  <div class="ctrl">
+    <label>高产出 yH <output id="sg_yHO">2.00</output></label>
+    <input type="range" id="sg_yH" min="1.2" max="4" step="0.05" value="2.00"/>
+    <label>低产出 yL <output id="sg_yLO">1.00</output></label>
+    <input type="range" id="sg_yL" min="0.2" max="2" step="0.05" value="1.00"/>
+    <label>高类型成本 cH <output id="sg_cHO">0.50</output></label>
+    <input type="range" id="sg_cH" min="0.1" max="2" step="0.05" value="0.50"/>
+    <label>低类型成本 cL <output id="sg_cLO">1.50</output></label>
+    <input type="range" id="sg_cL" min="0.3" max="3" step="0.05" value="1.50"/>
+  </div>
+  <div class="readout">
+    <div class="ro">H净效用<strong id="sg_uH">1.50</strong></div>
+    <div class="ro">L不发<strong id="sg_uL">1.00</strong></div>
+    <div class="ro">L模仿<strong id="sg_mim">0.50</strong></div>
+    <div class="ro">判定<strong id="sg_ok">分离成立</strong></div>
+    <div id="sg_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="sg_vh">IC 成立：cH=0.50 ≤ Δy=1.00 ≤ cL=1.50 → H 发信号得 1.50，L 模仿得 0.50 ≤ 1.00</span></div>
+  </div>
+  <canvas id="sgChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · 连续教育：最小成本分离 e*</h3>
+<p>成本 (c(e|\theta)=e/\theta)。激励相容给出 (e\in[\Delta y\cdot\theta_L,\ \Delta y\cdot\theta_H])；<strong>最小成本分离</strong>取下端。默认 (\Delta y=1,\theta_H=2,\theta_L=1) → (e^<em>=1.00)，H 浪费 </em><em>0.50</em><em>，净效用 </em><em>1.50</em>*。</p>
+<div class="tool" id="tool_edu">
+  <div class="ctrl">
+    <label>yH <output id="ed_yHO">2.00</output></label>
+    <input type="range" id="ed_yH" min="1.5" max="5" step="0.05" value="2.00"/>
+    <label>yL <output id="ed_yLO">1.00</output></label>
+    <input type="range" id="ed_yL" min="0.3" max="2.5" step="0.05" value="1.00"/>
+    <label>θH（高能力） <output id="ed_thHO">2.00</output></label>
+    <input type="range" id="ed_thH" min="1.2" max="5" step="0.05" value="2.00"/>
+    <label>θL（低能力） <output id="ed_thLO">1.00</output></label>
+    <input type="range" id="ed_thL" min="0.5" max="2.5" step="0.05" value="1.00"/>
+  </div>
+  <div class="readout">
+    <div class="ro">e*<strong id="ed_emin">1.00</strong></div>
+    <div class="ro">eMax<strong id="ed_emax">2.00</strong></div>
+    <div class="ro">H信号成本<strong id="ed_waste">0.50</strong></div>
+    <div class="ro">H净效用<strong id="ed_uH">1.50</strong></div>
+    <div id="ed_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ed_vh">最小成本分离 e*=1.00（∈[1.00,2.00]）；H 信号成本 0.50，净效用 1.50；相对完备信息浪费 0.50</span></div>
+  </div>
+  <canvas id="edChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 质保信号：索赔成本差</h3>
+<p>期望保修成本 (=p\cdot R)。默认 (p_H=5.0\%,p_L=25.0\%,R=¥1000)，质量溢价 <strong>¥200</strong>：H 净 <strong>¥150</strong>，L 净 <strong>−¥50</strong> → <strong>可分离</strong>。</p>
+<div class="tool" id="tool_war">
+  <div class="ctrl">
+    <label>高质失败率 pH <output id="wr_pHO">5.0%</output></label>
+    <input type="range" id="wr_pH" min="1" max="20" step="0.5" value="5.0"/>
+    <label>低质失败率 pL <output id="wr_pLO">25.0%</output></label>
+    <input type="range" id="wr_pL" min="10" max="60" step="0.5" value="25.0"/>
+    <label>单次索赔 R <output id="wr_RO">¥1000</output></label>
+    <input type="range" id="wr_R" min="200" max="3000" step="50" value="1000"/>
+    <label>质量溢价 <output id="wr_premO">¥200</output></label>
+    <input type="range" id="wr_prem" min="20" max="800" step="10" value="200"/>
+  </div>
+  <div class="readout">
+    <div class="ro">H成本<strong id="wr_cH">¥50</strong></div>
+    <div class="ro">L成本<strong id="wr_cL">¥250</strong></div>
+    <div class="ro">H净<strong id="wr_netH">¥150</strong></div>
+    <div class="ro">判定<strong id="wr_ok">可分离</strong></div>
+    <div id="wr_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="wr_vh">H 期望保修成本 ¥50 ≤ 溢价 ¥200，L 成本 ¥250 &gt; 溢价 → 低质方模仿亏钱，信号可信</span></div>
+  </div>
+  <canvas id="wrChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 自购押注：假信号自损</h3>
+<p>假信号可信条件：押注额 × 若假则下跌幅度 ≥ 假信号收益。默认押注 <strong>¥100 万</strong>、下跌 <strong>30%</strong>、假利 <strong>¥20 万</strong> → 自损 <strong>¥30.0 万</strong> ≥ 20 → <strong>可信</strong>（余量 ¥10.0 万）。</p>
+<div class="tool" id="tool_stake">
+  <div class="ctrl">
+    <label>自购押注（万元） <output id="st_amtO">¥100万</output></label>
+    <input type="range" id="st_amt" min="10" max="500" step="5" value="100"/>
+    <label>若假则跌幅 <output id="st_downO">30%</output></label>
+    <input type="range" id="st_down" min="5" max="80" step="1" value="30"/>
+    <label>假信号收益（万元） <output id="st_gainO">¥20万</output></label>
+    <input type="range" id="st_gain" min="5" max="200" step="5" value="20"/>
+  </div>
+  <div class="readout">
+    <div class="ro">自损成本<strong id="st_cost">¥30.0万</strong></div>
+    <div class="ro">可信余量<strong id="st_marg">¥10.0万</strong></div>
+    <div class="ro">判定<strong id="st_ok">可信</strong></div>
+    <div id="st_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="st_vh">假信号期望自损 ¥30.0万 ≥ 假信号收益 ¥20.0万 → 低质/虚假方不愿模仿，自购可加强信号</span></div>
+  </div>
+  <canvas id="stChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>说清单交叉与分离 IC</td>
+<td>口算默认 1.5/1.0/0.5</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>求 (e^*) 与浪费</td>
+<td>复现 e*=1、浪费 0.50</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>质保/自购迁移</td>
+<td>溢价 200、余量 10 万</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>设计反军备与筛选</td>
+<td>半页机制草案</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一条你正在用或准备用的「证明自己」行动（证书/质保/增持话术），列出两边成本（10 分钟）。  </li>
+<li>打开模型 1 或 3，调到你的数量级，看分离是否成立（8 分钟）。  </li>
+<li>若成立，用模型 2 思路问：能否把信号强度降到「刚好让低类型不想模仿」（6 分钟）。  </li>
+<li>写三行结论：模仿净收益 / 最小有效信号 / 监测指标（6 分钟）。  </li>
+</ol>
+<p>产出：一页 IC 体检表——成本接近 0，可验证。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>单交叉与 IC</td>
+<td>手算 3 组 (y,c)</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>连续 e*</td>
+<td>浪费曲线笔记</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>学历争论</td>
+<td>信号 vs 人力资本对照卡</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>质保四假说</td>
+<td>案例归类</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>回购+内部人</td>
+<td>一篇公告的方向一致性</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>军备与精炼</td>
+<td>直觉准则一页纸</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘</td>
+<td>技能树自测</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>成果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>经典 Spence</td>
+<td>离散+连续熟练</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>产品信号</td>
+<td>质保/品牌分析册</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>金融信号</td>
+<td>自购/回购体检模板</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>综合设计</td>
+<td>一份最小浪费信号方案</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>Spence 劳动信号</td>
+<td>教育可零生产力仍有工资价值</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>单交叉</td>
+<td>高类型边际信号成本更低</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>分离 IC</td>
+<td>(c_H\le\Delta y\le c_L)</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>最小成本分离</td>
+<td>取 L 的 IC 紧约束</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>混同均衡</td>
+<td>同信号同工资，信息量为零</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>质保成本差</td>
+<td>(pR) 充当类型相关成本</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>自购可信</td>
+<td>假信号自损 ≥ 假利</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>羊皮纸效应</td>
+<td>学位年份断点溢价</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>信号–筛选对偶</td>
+<td>谁先动决定合同形态</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>信号军备</td>
+<td>门槛上移，浪费上升</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 低类型模仿净收益是多少？</summary><div class="dbody"><p>&gt;0 → 信号已死或将死。</p></div></details>
+<details><summary>Q2 单交叉成立吗？</summary><div class="dbody"><p>(c_H&lt;c_L)（或 (p_H&lt;p_L)）否则无法分离。</p></div></details>
+<details><summary>Q3 是否最小成本分离？</summary><div class="dbody"><p>多付的每一分都是纯浪费。</p></div></details>
+<details><summary>Q4 有没有互补信号？</summary><div class="dbody"><p>回购看内部人方向；质保看索赔执行。</p></div></details>
+<details><summary>Q5 接收方能否廉价核实？</summary><div class="dbody"><p>能 → 信号租金下降，改做测评更划算。</p></div></details>
+<details><summary>Q6 是否陷入军备？</summary><div class="dbody"><p>人人加码但差距不变 → 集体受损。</p></div></details>
+<details><summary>Q7 off-path 信念合理吗？</summary><div class="dbody"><p>奇怪均衡靠恐吓信念支撑时，用直觉准则砍。</p></div></details>
+<details><summary>Q8 质保到底在信号还是保险？</summary><div class="dbody"><p>对照失败率与溢价；看实证假说。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q9 与柠檬市场关系？</summary><div class="dbody"><p>信号/担保/品牌是对抗逆向选择的制度响应。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q10 今天最小实践？</summary><div class="dbody"><p>一页 IC 体检——见第 22 节。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>Cho–Kreps 直觉准则与 divinity 精炼  </li>
+<li>雇主学习模型与信号衰减速度  </li>
+<li>广告作为耗散信号（Milgrom–Roberts）  </li>
+<li>生物学高成本展示与诚实信号  </li>
+<li>链上可验证质押 / 保证金作为数字信号  </li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">劳动市场信号模型</td>
+<td>原始论文</td>
+<td>Spence, <em>Job Market Signaling</em>, QJE 87(3), 1973</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">柠檬市场与担保制度</td>
+<td>原始论文</td>
+<td>Akerlof, <em>The Market for "Lemons"</em>, QJE 1970</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">不对称信息诺奖</td>
+<td>官方</td>
+<td>2001 年诺贝尔经济学奖（Akerlof / Spence / Stiglitz）</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">分离条件与单交叉教学</td>
+<td>教材讲义</td>
+<td>Acemoglu–Autor 等劳动讲义；MIT/Columbia 博弈论讲义</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">质保作为信号</td>
+<td>理论+综述</td>
+<td>Spence 1977 产品责任；Grossman 1981；汽车业动态研究</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">质保实证争议</td>
+<td>实证</td>
+<td>Chu–Chintagunta 等：保险/筛选假说更强于纯信号<span class="tag t-chk">待验证</span>份额</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">回购与内部人可信度</td>
+<td>实证</td>
+<td>Babenko et al. JFQA 2012；后续内部人–事件互补研究</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">回购机会主义</td>
+<td>实证</td>
+<td>越南市场等：公告前买、公告后卖的案例研究</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">羊皮纸 / 教育信号争论</td>
+<td>专著与评论</td>
+<td>Caplan <em>The Case Against Education</em>；Huntington-Klein 识别困难论</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">可调模型默认数值</td>
+<td>自算教学约定</td>
+<td>node 验算；非真实工资/股价</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或可核验原文；<span class="tag t-ana">分析</span>权威判断/主流解释；<span class="tag t-inf">推论</span>由模型推出；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或转载链过长。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与决策框架学习材料，<strong>不是</strong>投资建议、招聘决策、产品合规或法律意见。文中学历溢价、质保、回购与内部人交易的讨论仅为机制说明；数值多为教学约定。真实市场存在操纵、选择性披露与执行摩擦——依据本手册解读公告或配置仓位的风险自负。作者与引擎不对依据本手册采取的行动承担责任。</p>
+</section>
+<footer>  <p>《信号传递（Signaling）：让模仿变贵 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 7 分 56 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《信号传递（Signaling）》主题脚本
+   四个可调模型：
+     1. 离散分离均衡 IC 检验
+     2. 连续教育：最小成本分离 e*
+     3. 质保 / 担保信号
+     4. 自购股票：押注可信度
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, items, ymin, ymax) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    if (ymin == null || ymax == null) {
+      var vs = items.map(function (x) { return x.v; });
+      ymin = Math.min.apply(null, vs) - 0.2;
+      ymax = Math.max.apply(null, vs) + 0.2;
+      if (ymax <= ymin) { ymax = ymin + 1; }
+    }
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (items.length * 1.45);
+    var span = ymax - ymin || 1;
+    items.forEach(function (it, i) {
+      var x = pl + (i + 0.5) * (bw / items.length) - barW / 2;
+      var y = y1 - ((it.v - ymin) / span) * bh;
+      var zeroY = y1 - ((0 - ymin) / span) * bh;
+      var top = Math.min(y, zeroY), bot = Math.max(y, zeroY);
+      ctx.fillStyle = it.c;
+      ctx.fillRect(x, top, barW, Math.max(2, bot - top));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+      var lab = (typeof it.v === 'number' ? it.v.toFixed(2) : String(it.v));
+      var lw = ctx.measureText(lab).width;
+      var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 2), w - pr - lw / 2 - 2);
+      ctx.fillText(lab, lx, top - 6);
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('净效用 / 成本', pl + bw, y1 + 31);
+  }
+
+  /* ── 1. 离散分离 IC ── */
+  (function discrete() {
+    if (!$('sg_yH')) return;
+    var ids = ['sg_yH', 'sg_yL', 'sg_cH', 'sg_cL'];
+    var cv = $('sgChart');
+
+    function upd() {
+      var yH = parseFloat($('sg_yH').value);
+      var yL = parseFloat($('sg_yL').value);
+      var cH = parseFloat($('sg_cH').value);
+      var cL = parseFloat($('sg_cL').value);
+      txt($('sg_yHO'), yH.toFixed(2));
+      txt($('sg_yLO'), yL.toFixed(2));
+      txt($('sg_cHO'), cH.toFixed(2));
+      txt($('sg_cLO'), cL.toFixed(2));
+
+      var uH = yH - cH;
+      var uL = yL;
+      var mimic = yH - cL;
+      var icH = uH + 1e-12 >= uL;
+      var icL = uL + 1e-12 >= mimic;
+      var ok = icH && icL;
+      var gap = yH - yL;
+
+      txt($('sg_uH'), uH.toFixed(2));
+      txt($('sg_uL'), uL.toFixed(2));
+      txt($('sg_mim'), mimic.toFixed(2));
+      txt($('sg_ok'), ok ? '分离成立' : '分离失败');
+      tint($('sg_ok'), ok ? C.green : C.red);
+
+      var msg, col;
+      if (ok) {
+        msg = 'IC 成立：cH=' + cH.toFixed(2) + ' ≤ Δy=' + gap.toFixed(2) +
+          ' ≤ cL=' + cL.toFixed(2) + ' → H 发信号得 ' + uH.toFixed(2) +
+          '，L 模仿得 ' + mimic.toFixed(2) + ' ≤ ' + uL.toFixed(2);
+        col = C.green;
+      } else if (!icL) {
+        msg = 'L 愿模仿：yH−cL=' + mimic.toFixed(2) + ' > yL=' + uL.toFixed(2) +
+          ' → 信号被污染，分离崩溃';
+        col = C.red;
+      } else {
+        msg = 'H 不愿发信号：yH−cH=' + uH.toFixed(2) + ' < yL=' + uL.toFixed(2) +
+          ' → 高类型放弃分离';
+        col = C.amber;
+      }
+      txt($('sg_vh'), msg);
+      tint($('sg_vh'), col);
+
+      bars(cv, [
+        { lab: 'H发信号', v: uH, c: C.green },
+        { lab: 'L不发', v: uL, c: C.blue },
+        { lab: 'L模仿', v: mimic, c: C.red },
+        { lab: 'Δy', v: gap, c: C.amber }
+      ], Math.min(uH, uL, mimic, 0) - 0.3, Math.max(uH, uL, mimic, gap) + 0.3);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+
+  /* ── 2. 连续最小成本分离 ── */
+  (function continuous() {
+    if (!$('ed_yH')) return;
+    var ids = ['ed_yH', 'ed_yL', 'ed_thH', 'ed_thL'];
+    var cv = $('edChart');
+
+    function upd() {
+      var yH = parseFloat($('ed_yH').value);
+      var yL = parseFloat($('ed_yL').value);
+      var thH = parseFloat($('ed_thH').value);
+      var thL = parseFloat($('ed_thL').value);
+      txt($('ed_yHO'), yH.toFixed(2));
+      txt($('ed_yLO'), yL.toFixed(2));
+      txt($('ed_thHO'), thH.toFixed(2));
+      txt($('ed_thLO'), thL.toFixed(2));
+
+      var d = yH - yL;
+      var eMin = d * thL;
+      var eMax = d * thH;
+      var feas = eMin <= eMax + 1e-12 && thH > thL;
+      var eStar = feas ? eMin : NaN;
+      var costH = feas ? eStar / thH : NaN;
+      var uH = feas ? yH - costH : NaN;
+      var waste = feas ? costH : NaN;
+
+      txt($('ed_emin'), feas ? eStar.toFixed(2) : '—');
+      txt($('ed_emax'), feas ? eMax.toFixed(2) : '—');
+      txt($('ed_waste'), feas ? waste.toFixed(2) : '—');
+      txt($('ed_uH'), feas ? uH.toFixed(2) : '—');
+
+      var msg, col;
+      if (!(thH > thL)) {
+        msg = '单交叉失败：θH 必须 > θL（高类型边际教育成本更低）';
+        col = C.red;
+      } else if (!feas) {
+        msg = '区间空：eMin=' + eMin.toFixed(2) + ' > eMax=' + eMax.toFixed(2);
+        col = C.red;
+      } else {
+        msg = '最小成本分离 e*=' + eStar.toFixed(2) +
+          '（∈[' + eMin.toFixed(2) + ',' + eMax.toFixed(2) + ']）；H 信号成本 ' +
+          waste.toFixed(2) + '，净效用 ' + uH.toFixed(2) + '；相对完备信息浪费 ' + waste.toFixed(2);
+        col = C.green;
+      }
+      txt($('ed_vh'), msg);
+      tint($('ed_vh'), col);
+
+      if (feas) {
+        bars(cv, [
+          { lab: 'e*', v: eStar, c: C.blue },
+          { lab: 'eMax', v: eMax, c: C.amber },
+          { lab: 'H成本', v: waste, c: C.red },
+          { lab: 'H净效', v: uH, c: C.green },
+          { lab: 'L工资', v: yL, c: C.ink2 }
+        ], 0, Math.max(eMax, uH, yH) + 0.3);
+      } else {
+        bars(cv, [
+          { lab: 'eMin', v: eMin, c: C.red },
+          { lab: 'eMax', v: eMax, c: C.amber }
+        ], Math.min(0, eMin, eMax) - 0.2, Math.max(eMin, eMax, 1) + 0.2);
+      }
+    }
+    bind(ids, upd);
+    upd();
+  })();
+
+  /* ── 3. 质保信号 ── */
+  (function warranty() {
+    if (!$('wr_pH')) return;
+    var ids = ['wr_pH', 'wr_pL', 'wr_R', 'wr_prem'];
+    var cv = $('wrChart');
+
+    function upd() {
+      var pH = parseFloat($('wr_pH').value) / 100;
+      var pL = parseFloat($('wr_pL').value) / 100;
+      var R = parseFloat($('wr_R').value);
+      var prem = parseFloat($('wr_prem').value);
+      txt($('wr_pHO'), (pH * 100).toFixed(1) + '%');
+      txt($('wr_pLO'), (pL * 100).toFixed(1) + '%');
+      txt($('wr_RO'), '¥' + R.toFixed(0));
+      txt($('wr_premO'), '¥' + prem.toFixed(0));
+
+      var cH = pH * R;
+      var cL = pL * R;
+      var netH = prem - cH;
+      var netL = prem - cL;
+      var sep = netH >= -1e-9 && netL < -1e-9;
+
+      txt($('wr_cH'), '¥' + cH.toFixed(0));
+      txt($('wr_cL'), '¥' + cL.toFixed(0));
+      txt($('wr_netH'), '¥' + netH.toFixed(0));
+      txt($('wr_ok'), sep ? '可分离' : '不可分离');
+      tint($('wr_ok'), sep ? C.green : C.red);
+
+      var msg, col;
+      if (sep) {
+        msg = 'H 期望保修成本 ¥' + cH.toFixed(0) + ' ≤ 溢价 ¥' + prem.toFixed(0) +
+          '，L 成本 ¥' + cL.toFixed(0) + ' > 溢价 → 低质方模仿亏钱，信号可信';
+        col = C.green;
+      } else if (netL >= 0) {
+        msg = 'L 也能赚：溢价 ¥' + prem.toFixed(0) + ' ≥ L 成本 ¥' + cL.toFixed(0) +
+          ' → 质保被模仿，信号失效';
+        col = C.red;
+      } else {
+        msg = 'H 也不愿提供：溢价 ¥' + prem.toFixed(0) + ' < H 成本 ¥' + cH.toFixed(0) +
+          ' → 无人发信号';
+        col = C.amber;
+      }
+      txt($('wr_vh'), msg);
+      tint($('wr_vh'), col);
+
+      bars(cv, [
+        { lab: 'H成本', v: cH, c: C.green },
+        { lab: 'L成本', v: cL, c: C.red },
+        { lab: '溢价', v: prem, c: C.blue },
+        { lab: 'H净', v: netH, c: netH >= 0 ? C.green : C.amber },
+        { lab: 'L净', v: netL, c: netL >= 0 ? C.red : C.ink2 }
+      ], Math.min(0, cH, cL, prem, netH, netL) - 20, Math.max(cH, cL, prem, netH, netL) + 20);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+
+  /* ── 4. 自购押注 ── */
+  (function stake() {
+    if (!$('st_amt')) return;
+    var ids = ['st_amt', 'st_down', 'st_gain'];
+    var cv = $('stChart');
+
+    function upd() {
+      var amt = parseFloat($('st_amt').value);
+      var down = parseFloat($('st_down').value) / 100;
+      var gain = parseFloat($('st_gain').value);
+      txt($('st_amtO'), '¥' + amt.toFixed(0) + '万');
+      txt($('st_downO'), (down * 100).toFixed(0) + '%');
+      txt($('st_gainO'), '¥' + gain.toFixed(0) + '万');
+
+      var cost = amt * down;
+      var ok = cost + 1e-12 >= gain;
+      var margin = cost - gain;
+
+      txt($('st_cost'), '¥' + cost.toFixed(1) + '万');
+      txt($('st_marg'), '¥' + margin.toFixed(1) + '万');
+      txt($('st_ok'), ok ? '可信' : '不可信');
+      tint($('st_ok'), ok ? C.green : C.red);
+
+      var msg, col;
+      if (ok) {
+        msg = '假信号期望自损 ¥' + cost.toFixed(1) + '万 ≥ 假信号收益 ¥' +
+          gain.toFixed(1) + '万 → 低质/虚假方不愿模仿，自购可加强信号';
+        col = C.green;
+      } else {
+        msg = '假信号仍划算：自损 ¥' + cost.toFixed(1) + '万 < 收益 ¥' +
+          gain.toFixed(1) + '万 → 「口嗨回购+象征性买入」可被模仿';
+        col = C.red;
+      }
+      txt($('st_vh'), msg);
+      tint($('st_vh'), col);
+
+      bars(cv, [
+        { lab: '自损成本', v: cost, c: C.red },
+        { lab: '假信号利', v: gain, c: C.amber },
+        { lab: '可信余量', v: margin, c: ok ? C.green : C.red }
+      ], Math.min(0, cost, gain, margin) - 2, Math.max(cost, gain, margin, 1) + 2);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
