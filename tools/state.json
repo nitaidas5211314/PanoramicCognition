@@ -895,11 +895,14 @@
     {
       "slug": "相关均衡（Correlated Equilibrium）：引入公共信号协调行动，可达到优于纳什均衡的结果（红绿灯原理）",
       "title": "相关均衡（Correlated Equilibrium）：引入公共信号协调行动，可达到优于纳什均衡的结果（红绿灯原理）",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 04:56:53",
+      "finished": "2026-09-19 05:05:12",
+      "duration_sec": 499,
+      "outputs": [
+        "reports/相关均衡（Correlated Equilibrium）：引入公共信号协调行动，可达到优于纳什均衡的结果（红绿灯原理）.html",
+        "reports/相关均衡（Correlated Equilibrium）：引入公共信号协调行动，可达到优于纳什均衡的结果（红绿灯原理）.md"
+      ],
       "error": null
     },
     {
@@ -1900,7 +1903,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 04:56",
+  "updated": "2026-09-19 05:05",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

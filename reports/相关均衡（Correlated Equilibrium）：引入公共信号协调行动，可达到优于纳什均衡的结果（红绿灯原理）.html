@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>相关均衡（Correlated Equilibrium）：公共信号协调，可优于纳什（红绿灯原理） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Correlated Equilibrium × Mediation</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践路径</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>相关均衡（Correlated Equilibrium）：公共信号协调，可优于纳什（红绿灯原理）</h1>
+  <p class="sub">纳什要求各方<strong>独立</strong>随机化；相关均衡允许一台「红绿灯」式公共装置给出<strong>相关</strong>建议——建议可被理性遵守，且常比混合纳什更公平、更高效。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>相关均衡（Correlated Equilibrium, CE）</strong>：一个关于行动组合的联合分布；一台中介（红绿灯、抛硬币、算法协调器）按该分布抽签后，向每位参与人<strong>私下</strong>建议一个行动。若「给定自己收到的建议，遵守建议是最优反应」，则该分布是相关均衡。<span class="tag t-fact">事实</span></p>
+<p>Robert Aumann（1974）《Subjectivity and correlation in randomized strategies》把「相关随机化」引入非合作博弈；红绿灯是教科书原型：一人收到「行」、另一人收到「停」，双方都愿遵守——这不是任何独立混合策略能生成的联合分布。<span class="tag t-fact">事实</span></p>
+<p>关键对比：混合纳什要求各方<strong>独立</strong>掷骰子，交叉路口的混合均衡常给出极低期望收益（甚至接近 0）并保留正的对撞概率；公平红绿灯相关均衡把期望抬高，并把对撞概率压到 0。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「再算一个纳什」，而是：<strong>去掉独立随机化假设之后，理性还能稳定在哪些联合分布上</strong>；以及一台可信任的公共信号装置如何把协调从「碰运气」变成「可激励兼容的建议」。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：联合分布上的激励约束、中介/信号设计、粗相关均衡（coarse CE）、后悔匹配与可计算性、拍卖与机制中的协调中介。</li>
+<li><strong>在界外</strong>：具体交规条文、某一城市信号灯时序工程、某次牌局「暗号」八卦——除非压成「相关装置 + 激励相容」模型。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>带公共相关装置的均衡与激励相容建议</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「联合分布 + 条件最优反应」可操作化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>联合分布 (D)、建议、条件期望收益、中介</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>理性行动者 + 可被信任（或部分信任）的信号源</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>相关结构、建议精度、服从率、支付不对称、信息私密性</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>信号灯、公开随机源、平台推荐、行业公约时钟</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>对方是否真按建议、中介是否偏袒、私有信息</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>装置相关化行动 → 条件信念更新 → 服从/偏离 → 福利</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>相关建议 ⇒ 条件最优 ⇒ 可自我实施的协调</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「大家同时听广播」≠ CE；需激励约束成立<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>红绿灯、抛硬币分角色、撮合引擎的配对建议</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>联合分布上的线性激励不等式（可写成 LP）</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。服从沉淀为惯例；违约摧毁信号信誉</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。新装置要时间成为共同信任的相关源</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>高服从强化装置权威（正）；一次大规模闯红灯可负反馈瓦解</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>相关均衡回答的是：「若允许一台公共骰子把行动绑在一起，理性还能接受哪些绑法」——纳什只是其中「完全拆开绑」的特例。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它补上「独立混合」的缺口</h4><p>许多现实协调本来就靠公共时钟与信号，不是各自独立掷骰。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它往往严格优于混合纳什</h4><p>性别战抛硬币可得 (1.5, 1.5)，高于混合纳什的 (2/3, 2/3)；红绿灯把交叉口期望从 0 抬到正值。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它在计算上「更像能算」</h4><p>找一个 CE 可用线性规划，多项式时间；找纳什是 PPAD-完全。<span class="tag t-fact">事实</span>（Papadimitriou 等）</p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>以为「发了个公共信号」就自动是相关均衡。若建议在条件期望下不激励相容（空荡路口的红灯诱惑），理性会偏离，装置变成噪音。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看相关均衡如何从「联合分布」长成「可学习的中介制度」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ceArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 机制/信息设计 · 中介、BCE、拍卖协调器</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 学习动力学 · 后悔匹配 → 经验分布进 CE 集</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 计算结构 · CE∈P（LP）；Nash∈PPAD-完全</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 粗相关 · Coarse CE / Hannan 集（外部后悔）</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 激励边界 · 条件最优反应 vs 平均最优（粗）</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 经典装置 · 红绿灯 / 公平硬币 / 角色抽签</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 相关均衡 · 联合分布 + 条件激励约束</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 纳什特例 · 独立乘积分布 ⊂ CE</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 协调需求 · 相关行动可避免冲突、抬高福利</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2→L3→L4</strong>：先承认纳什是特例，再引入装置。进阶卡在 <strong>L5→L7</strong>：分清粗/细相关，并记住「CE 可算、Nash 难算」。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到可操作判别。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="180" y="16" width="320" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">联合分布 D（行动组合上）</text>
+
+  <rect x="40" y="100" width="180" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">中介抽签</text><text x="130" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">给出私有建议</text>
+  <rect x="250" y="100" width="180" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">条件信念</text><text x="340" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">见建议后更新</text>
+  <rect x="460" y="100" width="180" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="550" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">激励约束</text><text x="550" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">遵守 ≥ 偏离</text>
+
+  <line x1="280" y1="60" x2="130" y2="100" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="100" y="200" width="200" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="200" y="230" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象：CE 定义</text>
+  <rect x="380" y="200" width="200" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="480" y="230" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制：线性不等式</text>
+  <rect x="240" y="280" width="200" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="310" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作：造信号 / 验服从</text>
+
+  <line x1="200" y1="248" x2="300" y2="280" stroke="#7c848f" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="480" y1="248" x2="380" y2="280" stroke="#7c848f" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="200" y1="152" x2="200" y2="200" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="550" y1="152" x2="480" y2="200" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>在系统里做什么</th>
+<th>典型失败模式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">行动者</td>
+<td>收到建议后决定服从或偏离</td>
+<td>把「平均划算」当成「条件划算」</td>
+</tr>
+<tr>
+<td class="k">中介 / 相关装置</td>
+<td>按 (D) 抽签并发私有建议</td>
+<td>偏袒、可被操纵、信誉破产</td>
+</tr>
+<tr>
+<td class="k">机制设计者</td>
+<td>选择 (D) 与信息结构以抬高福利</td>
+<td>只优化效率忘了激励约束</td>
+</tr>
+<tr>
+<td class="k">学习算法</td>
+<td>用后悔最小化逼近 CE 集</td>
+<td>只消外部后悔 → 停在粗 CE</td>
+</tr>
+<tr>
+<td class="k">监管 / 公约</td>
+<td>提供可验证的公共随机源</td>
+<td>信号被俘获或不可审计</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号直觉</th>
+<th>杠杆方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">联合分布</td>
+<td>(D) over (A)</td>
+<td>决定可达福利与激励松紧</td>
+</tr>
+<tr>
+<td class="k">建议</td>
+<td>(a_i) 私有</td>
+<td>信息越多约束越细，也越易操纵</td>
+</tr>
+<tr>
+<td class="k">服从率</td>
+<td>(f)</td>
+<td>(f!&lt;!1) 时有效相关被稀释</td>
+</tr>
+<tr>
+<td class="k">冲突成本</td>
+<td>(C)（对撞）</td>
+<td>(C) 大 → 红灯更易自我实施</td>
+</tr>
+<tr>
+<td class="k">通行收益</td>
+<td>(G)</td>
+<td>抬高 CE 期望，也抬高闯灯诱惑</td>
+</tr>
+<tr>
+<td class="k">相关强度</td>
+<td>离乘积分布的距离</td>
+<td>越强越能躲开「双开」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="caA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="caB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="40" width="140" height="50" rx="8" fill="#15181d"/><text x="90" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">公共相关源</text>
+  <rect x="200" y="40" width="140" height="50" rx="8" fill="#1d4ed8"/><text x="270" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">私有建议</text>
+  <rect x="380" y="40" width="140" height="50" rx="8" fill="#0f8a4d"/><text x="450" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">条件最优</text>
+  <rect x="520" y="40" width="140" height="50" rx="8" fill="#b8730a"/><text x="590" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">稳定联合行动</text>
+
+  <line x1="160" y1="65" x2="200" y2="65" stroke="#1d4ed8" stroke-width="2" marker-end="url(#caA)"/>
+  <line x1="340" y1="65" x2="380" y2="65" stroke="#1d4ed8" stroke-width="2" marker-end="url(#caA)"/>
+  <line x1="520" y1="65" x2="520" y2="65" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="520" y1="65" x2="520" y2="65"></line>
+  <line x1="520" y1="65" x2="560" y2="65" stroke="#1d4ed8" stroke-width="2" marker-end="url(#caA)"/>
+
+  <path d="M590,90 C590,160 90,160 90,90" fill="none" stroke="#d5342c" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#caB)"/>
+  <text x="340" y="175" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">负反馈：大规模偏离 → 装置信誉崩 → 退回混合纳什式混乱</text>
+
+  <rect x="80" y="210" width="520" height="60" rx="8" fill="#f8fafc" stroke="#e2e6ec"/>
+  <text x="340" y="235" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">实线＝因果推进：相关源 → 建议 → 激励相容服从 → 协调结果</text>
+  <text x="340" y="255" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">红虚线＝反馈：结果反噬装置信任（闯红灯传染）</text>
+</svg>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>CE ⊃ NE</strong>：每个纳什（含混合）对应一个乘积联合分布，自动满足 CE 约束；反之不成立——红绿灯分布无法因子分解。<span class="tag t-fact">事实</span></li>
+<li><strong>CE ≠「合作博弈」</strong>：不要求可转移支付或绑定合同；只要求建议在条件期望下不被单方面偏离。<span class="tag t-ana">分析</span></li>
+<li><strong>零和不可「靠相关发财」</strong>：二人零和里，CE 期望无法超过纳什值（Aumann 已指出）。<span class="tag t-fact">事实</span></li>
+<li><strong>粗 CE 更大</strong>：只要求「事先承诺永远偏离」无利可图；允许「见建议再偏」的 CE 更紧。后悔匹配对内部/交换后悔 → CE；仅外部后悔 → 粗 CE。<span class="tag t-fact">事实</span></li>
+<li><strong>谢林点 vs 相关装置</strong>：焦点是认知显著性；CE 是激励相容的显式（或可模拟的）随机源。焦点可作「廉价相关」，但不保证激励。<span class="tag t-ana">分析</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>标准定义（直条件形式）：(D) 是 CE，当且仅当对每个参与人 (i)、每个被建议行动 (\hat a_i)、每个替代 (a_i^*)：</p>
+<p>[
+\mathbb{E}<em D="D" a_sim="a\sim">{a\sim D}\big[u_i(a)\mid a_i=\hat a_i\big]\;\ge\;
+\mathbb{E}</em>)\mid a_i=\hat a_i\big].
+]}\big[u_i(a_i^*,a_{-i</p>
+<p>等价说法：没有任何「交换规则」(F_i)（把建议映射成实际行动）能提高期望收益——这与「无交换后悔（swap regret）」对齐。<span class="tag t-fact">事实</span></p>
+<p>红绿灯运行机制：</p>
+<ol>
+<li>装置以 1/2 抽 (行,停)，以 1/2 抽 (停,行)，从不抽 (行,行)。</li>
+<li>收到「行」：推断对方「停」→ 行是最优。</li>
+<li>收到「停」：推断对方「行」→ 停优于硬闯（对撞成本 (C)）。</li>
+<li>故服从是条件最优；期望通行收益为 (G/2)，对撞概率 0。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="3"/>
+  <circle cx="80" cy="110" r="10" fill="#15181d"/><text x="80" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">1974</text><text x="80" y="150" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">Aumann</text><text x="80" y="166" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">相关策略</text>
+  <circle cx="220" cy="110" r="10" fill="#1d4ed8"/><text x="220" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">1997</text><text x="220" y="150" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">Foster–Vohra</text><text x="220" y="166" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">校准→CE</text>
+  <circle cx="360" cy="110" r="10" fill="#0f8a4d"/><text x="360" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">2000</text><text x="360" y="150" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">Hart–Mas-Colell</text><text x="360" y="166" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">后悔匹配</text>
+  <circle cx="500" cy="110" r="10" fill="#b8730a"/><text x="500" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">2006+</text><text x="500" y="150" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">Nash=PPAD</text><text x="500" y="166" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">CE∈P 对照</text>
+  <circle cx="620" cy="110" r="10" fill="#d5342c"/><text x="620" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">2024</text><text x="620" y="150" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">中介/线性CE</text><text x="620" y="166" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">扩展式学习</text>
+  <line x1="90" y1="110" x2="210" y2="110" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="230" y1="110" x2="350" y2="110" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="370" y1="110" x2="490" y2="110" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="510" y1="110" x2="610" y2="110" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+</svg>
+<p>从「存在性思想」→「学习达到」→「计算复杂度对照」→「扩展式与中介算法」——CE 从教科书概念变成多智能体学习的目标解概念。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>想要什么</th>
+<th>与 CE 的张力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">弱势方</td>
+<td>公平抽签（50–50 通行）</td>
+<td>强势方想把质量偏向自己</td>
+</tr>
+<tr>
+<td class="k">强势方</td>
+<td>更多「行」建议</td>
+<td>过度偏斜使对方激励破裂</td>
+</tr>
+<tr>
+<td class="k">中介平台</td>
+<td>抽成 / 流量 / 合规</td>
+<td>优化目标可能偏离社会剩余</td>
+</tr>
+<tr>
+<td class="k">社会规划者</td>
+<td>零对撞 + 高通行</td>
+<td>需维持装置可信与激励松弛</td>
+</tr>
+</tbody>
+</table></div>
+<p>激励相容的核心不是「平均大家都更好」，而是<strong>每个建议实现值上</strong>没有人想单方面换行动。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<p>信号与信任如何「抽水」：中介消耗公信力，产出相关行动；偏离回流摧毁库存。</p>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="flB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="40" y="30" width="160" height="70" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/><text x="120" y="60" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">公信力库存</text><text x="120" y="80" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">可验证随机源</text>
+  <rect x="260" y="30" width="160" height="70" rx="10" fill="#15181d"/><text x="340" y="60" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">中介抽水</text><text x="340" y="80" text-anchor="middle" fill="#c5cdd8" font-size="11" font-family="sans-serif">发私有建议</text>
+  <rect x="480" y="30" width="160" height="70" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/><text x="560" y="60" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">协调剩余</text><text x="560" y="80" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">少冲突·高匹配</text>
+
+  <line x1="200" y1="65" x2="260" y2="65" stroke="#1d4ed8" stroke-width="2" marker-end="url(#flA)"/>
+  <line x1="420" y1="65" x2="480" y2="65" stroke="#0f8a4d" stroke-width="2" marker-end="url(#flA)"/>
+
+  <rect x="160" y="160" width="360" height="70" rx="10" fill="#fff5f5" stroke="#d5342c"/><text x="340" y="190" text-anchor="middle" fill="#d5342c" font-size="13" font-weight="700" font-family="sans-serif">泄漏：条件激励破裂 / 偏袒曝光 / 不可审计</text><text x="340" y="210" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">剩余回流为混乱；公信力被抽干</text>
+
+  <path d="M560,100 C560,140 500,160 520,160" fill="none" stroke="#d5342c" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#flB)"/>
+  <path d="M160,195 C80,195 80,100 120,100" fill="none" stroke="#d5342c" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#flB)"/>
+</svg>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>序</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+<th>操作成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>引入可验证公共随机源</td>
+<td>立刻打开 CE 可达集</td>
+<td>低：公开抛币/哈希承诺</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>把质量放在激励松弛内</td>
+<td>偏斜过度则装置崩</td>
+<td>中：要算条件期望</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>抬高冲突成本的可观测性</td>
+<td>(C) 越大红灯越稳</td>
+<td>中：执法/保证金</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>用交换后悔学习替代「猜纳什」</td>
+<td>经验玩法收敛 CE</td>
+<td>中：要日志与更新</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>区分粗 CE 与 CE</td>
+<td>避免「平均不亏」自欺</td>
+<td>低：概念澄清</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>私有建议而非公开广播</td>
+<td>减少可利用的共同偏离</td>
+<td>中：信道设计</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>审计中介无偏</td>
+<td>维持服从率 (f)</td>
+<td>高：治理</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>默认焦点作廉价相关</td>
+<td>无装置时的次优</td>
+<td>低：谢林锚</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>零和场景别幻想相关红利</td>
+<td>省下错误优化</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>扩展式用中介协议</td>
+<td>线性 CE 等可学松弛</td>
+<td>高：算法</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「相关均衡 = 大家商量好合作」</summary><div class="dbody"><p>CE 不需要可执行合同，只需要激励相容建议。合作博弈的绑定协议是另一条线。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. 「有公共信号就自动是 CE」</summary><div class="dbody"><p>广播天气、股价、名人推文都是公共信号；若条件激励不成立，它只是噪音相关。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>3. 「CE 总比所有纳什都好」</summary><div class="dbody"><p>CE 集包含纳什；改进针对的是<strong>某些</strong>低效纳什（尤其混合）。零和里甚至没有超出纳什值的空间。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 「混合纳什的 50% 对撞直觉」</summary><div class="dbody"><p>交叉口混合均衡里双方以小概率同时「行」，对撞概率是 (q^2)（默认 (q=1/6) 时约 <strong>2.78%</strong>），不是 50%；但期望收益仍常远低于红绿灯。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>5. 「公平抽签一定激励相容」</summary><div class="dbody"><p>在「停-停」质量过大、对撞成本不够大时，收到「停」可能想闯——模型 3 可演示破裂。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>6. 「LP 能算 = 现实能执行」</summary><div class="dbody"><p>计算一个 CE 容易；让人类/机构信任中介并服从是治理问题。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>7. 「无后悔 = 一定到 CE」</summary><div class="dbody"><p>外部后悔 → 粗 CE；到 CE 需要内部/交换后悔最小化。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>8. 「相关就是串谋」</summary><div class="dbody"><p>激励相容的红绿灯降低事故；非法价格串谋是另一类相关——合法性与福利方向不同。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>9. 「把 CE 收益写进商业计划当保证」</summary><div class="dbody"><p>服从率 (f&lt;1)、装置偏斜、信息泄露都会侵蚀纸面增益。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>10. 「扩展式里普通 CE 定义随便用」</summary><div class="dbody"><p>序贯博弈有多种相关/通信均衡概念；2024 年工作强调中介查询与线性交换后悔等精细化。<span class="tag t-chk">待验证</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 240" width="100%" style="max-width:680px">
+  <rect x="20" y="30" width="200" height="180" rx="12" fill="#f8fdfa" stroke="#0f8a4d"/>
+  <text x="120" y="60" text-anchor="middle" fill="#0f8a4d" font-size="14" font-weight="700" font-family="sans-serif">抽象</text>
+  <text x="120" y="95" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">联合分布 D</text>
+  <text x="120" y="120" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">条件激励不等式</text>
+  <text x="120" y="145" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">CE ⊃ NE</text>
+  <text x="120" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">粗 CE ⊃ CE</text>
+
+  <rect x="240" y="30" width="200" height="180" rx="12" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="340" y="60" text-anchor="middle" fill="#1d4ed8" font-size="14" font-weight="700" font-family="sans-serif">机制</text>
+  <text x="340" y="95" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">中介抽签</text>
+  <text x="340" y="120" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">私有建议信道</text>
+  <text x="340" y="145" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">后悔匹配动态</text>
+  <text x="340" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">LP / 学习算法</text>
+
+  <rect x="460" y="30" width="200" height="180" rx="12" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="560" y="60" text-anchor="middle" fill="#b8730a" font-size="14" font-weight="700" font-family="sans-serif">操作</text>
+  <text x="560" y="95" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">角色抛硬币</text>
+  <text x="560" y="120" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">轮值/信号灯规则</text>
+  <text x="560" y="145" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">撮合推荐+审计</text>
+  <text x="560" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">验条件不偏离</text>
+</svg>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>先画支付矩阵</strong>，标出纯 NE / 混合 NE 期望。</li>
+<li><strong>设计一个相关装置</strong>（公平硬币、轮值表、公开随机种子）。</li>
+<li><strong>逐条检查条件激励</strong>：每个建议实现值上，遵守 ≥ 最佳偏离。</li>
+<li><strong>压力测试偏斜</strong>：把概率从 50–50 挪到 70–30，看谁先想叛逃。</li>
+<li><strong>测量服从率</strong>；若 (f) 低，先修信任与惩罚，再谈优化 (D)。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>基础 · 会讲红绿灯故事</summary><div class="dbody"><p>能用 (行,停)/(停,行) 解释为何服从是条件最优，并对比混合纳什期望。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>基础 · 会写 CE 不等式</summary><div class="dbody"><p>对 2×2 矩阵列出全部条件激励约束，判断候选 (D) 是否 CE。</p></div></details>
+<details><summary>进阶 · 分清 CE / 粗 CE / NE</summary><div class="dbody"><p>能指出：乘积分布→NE；外部后悔→粗 CE；交换后悔→CE。</p></div></details>
+<details><summary>进阶 · 会算性别战抛硬币增益</summary><div class="dbody"><p>混合纳什每人 (2/3)；公平相关每人 (1.5)；增益 (5/6)。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>专家 · 用后悔匹配做小仿真</summary><div class="dbody"><p>实现 Hart–Mas-Colell 风格更新，观察经验联合分布进入 CE 集。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>专家 · 中介与信息设计</summary><div class="dbody"><p>在不完全信息下讨论 Bayes CE / 通信均衡，并意识到样本与计算代价。<span class="tag t-chk">待验证</span></p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是一座城的「信号官」：矩阵是路口，装置是你的灯控。目标不是让某辆车永远绿灯，而是维持<strong>激励相容的相关</strong>——一旦有人发现「红灯时闯更划算」，系统从 CE 掉回混合混乱。经验值来自：对撞↓、通行期望↑、审计通过。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>做什么</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 矩阵</td>
+<td>写出一个交叉口/会议室抢占的 2×2 支付</td>
+<td>有 (G,C,S)</td>
+</tr>
+<tr>
+<td class="k">T2 混合</td>
+<td>算出混合 NE 的 (q) 与期望</td>
+<td>与公式一致</td>
+</tr>
+<tr>
+<td class="k">T3 灯控</td>
+<td>设计 50–50 相关并验激励</td>
+<td>证明是 CE</td>
+</tr>
+<tr>
+<td class="k">T4 偏斜</td>
+<td>把概率调到破裂点</td>
+<td>找到临界</td>
+</tr>
+<tr>
+<td class="k">T5 对照</td>
+<td>用模型 1–2 读出增益数字</td>
+<td>与手算一致</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>四个可调模型：红绿灯 vs 混合纳什、性别战抛硬币、激励相容检验、服从率稀释。正文默认值已与脚本对齐。</p>
+<h3>可调模型 1 · 红绿灯 vs 混合纳什</h3>
+<p>懦夫/交叉口支付：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>停</th>
+<th>行</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>停</strong></td>
+<td>(S,S)</td>
+<td>(0,G)</td>
+</tr>
+<tr>
+<td class="k"><strong>行</strong></td>
+<td>(G,0)</td>
+<td>(-C,-C)</td>
+</tr>
+</tbody>
+</table></div>
+<p>混合纳什：对方「行」的概率 (q^<em>=(G-S)/(G-S+C))，期望收益 (S(1-q^</em>))。公平相关均衡：质量仅在 (行,停) 与 (停,行) 上各 1/2，期望 (G/2)，对撞概率 0。默认 (G=5,S=0,C=25) → (q^<em>=1/6)，混合期望 </em><em>0</em><em>，CE 期望 </em><em>2.5</em><em>，混合对撞概率 </em><em>2.78%</em>*。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool_tl">
+  <div class="ctrl">
+    <label>通行收益 G <output id="tl_GO">5.0</output></label>
+    <input type="range" id="tl_G" min="1" max="10" step="0.1" value="5.0"/>
+    <label>双停收益 S <output id="tl_SO">0.0</output></label>
+    <input type="range" id="tl_S" min="-1" max="3" step="0.1" value="0.0"/>
+    <label>对撞成本 C <output id="tl_CO">25</output></label>
+    <input type="range" id="tl_C" min="2" max="50" step="1" value="25"/>
+  </div>
+  <div class="readout">
+    <div class="ro">混合 q*<strong id="tl_q">0.167</strong></div>
+    <div class="ro">混合期望<strong id="tl_mix">0.00</strong></div>
+    <div class="ro">CE 期望<strong id="tl_ce">2.50</strong></div>
+    <div class="ro">增益<strong id="tl_gain">+2.50</strong></div>
+    <div id="tl_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="tl_vh">G=5,S=0,C=25 → 混合 EU=0，公平灯控 EU=2.50；对撞从 2.78% 降到 0</span></div>
+  </div>
+  <canvas id="tlChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · 性别战：混合纳什 vs 公平硬币 CE</h3>
+<p>同选歌剧 ((a,1))，同选球赛 ((1,b))，错配 0。混合纳什每人期望 (a/(1+a)) 与 (b/(1+b))（对称时 (a=b=2) → <strong>2/3</strong>）。公平硬币在两纯 NE 间相关，每人 ((a+1)/2)（对称时 <strong>1.5</strong>）。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="tool_bos">
+  <div class="ctrl">
+    <label>行偏好 a <output id="bos_aO">2.0</output></label>
+    <input type="range" id="bos_a" min="1.1" max="6" step="0.1" value="2.0"/>
+    <label>列偏好 b <output id="bos_bO">2.0</output></label>
+    <input type="range" id="bos_b" min="1.1" max="6" step="0.1" value="2.0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">混合 EU(行)<strong id="bos_mixR">0.667</strong></div>
+    <div class="ro">CE EU(行)<strong id="bos_ceR">1.500</strong></div>
+    <div class="ro">行增益<strong id="bos_gainR">+0.833</strong></div>
+    <div class="ro">列增益<strong id="bos_gainC">+0.833</strong></div>
+    <div id="bos_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="bos_vh">a=b=2：混合各 0.667 → 公平硬币各 1.500（Aumann 经典）</span></div>
+  </div>
+  <canvas id="bosChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 激励相容检验（会不会闯红灯）</h3>
+<p>装置质量：(\alpha) 在 (行,停)，(\beta) 在 (停,行)，(\gamma) 在 (停,停)，(行,行)=0。收到「行」时需 (G\ge S)；收到「停」时，在条件分布下遵守停 ≥ 改行。默认 (\alpha=\beta=0.5,\gamma=0,G=5,S=0,C=25) → <strong>是 CE</strong>。把 (\gamma) 抬高、(C) 降低，可看到约束破裂。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool_ic">
+  <div class="ctrl">
+    <label>α (行,停) <output id="ic_aO">0.50</output></label>
+    <input type="range" id="ic_a" min="0" max="1" step="0.01" value="0.50"/>
+    <label>β (停,行) <output id="ic_bO">0.50</output></label>
+    <input type="range" id="ic_b" min="0" max="1" step="0.01" value="0.50"/>
+    <label>γ (停,停) <output id="ic_gO">0.00</output></label>
+    <input type="range" id="ic_g" min="0" max="1" step="0.01" value="0.00"/>
+    <label>G <output id="ic_GO">5.0</output></label>
+    <input type="range" id="ic_G" min="1" max="10" step="0.1" value="5.0"/>
+    <label>S <output id="ic_SO">0.0</output></label>
+    <input type="range" id="ic_S" min="-1" max="3" step="0.1" value="0.0"/>
+    <label>C <output id="ic_CO">25</output></label>
+    <input type="range" id="ic_C" min="1" max="50" step="1" value="25"/>
+  </div>
+  <div class="readout">
+    <div class="ro">归一后期望<strong id="ic_eu">2.50</strong></div>
+    <div class="ro">停时遵守 EU<strong id="ic_euF">0.00</strong></div>
+    <div class="ro">停时偏离 EU<strong id="ic_euD">-25.00</strong></div>
+    <div class="ro">判定<strong id="ic_lab">是 CE</strong></div>
+    <div id="ic_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ic_vh">质量仅在反对角线上 → 条件激励成立，是 CE</span></div>
+  </div>
+  <canvas id="icChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 服从率稀释相关红利</h3>
+<p>纸面 CE 期望为 (U_{\mathrm{ce}})，混合底线为 (U_{\mathrm{mix}})。若只有比例 (f) 的人服从装置、其余按混合纳什行为，有效期望近似 (f\,U_{\mathrm{ce}}+(1-f)\,U_{\mathrm{mix}})（一阶示意）。默认取模型 1 的 2.50 vs 0，(f=0.80) → 有效 <strong>2.00</strong>。<span class="tag t-hyp">假设</span></p>
+<div class="tool" id="tool_f">
+  <div class="ctrl">
+    <label>服从率 f <output id="f_fO">0.80</output></label>
+    <input type="range" id="f_f" min="0" max="1" step="0.01" value="0.80"/>
+    <label>纸面 CE 期望 <output id="f_ceO">2.50</output></label>
+    <input type="range" id="f_ce" min="0" max="5" step="0.05" value="2.50"/>
+    <label>混合底线 <output id="f_mixO">0.00</output></label>
+    <input type="range" id="f_mix" min="-1" max="2" step="0.05" value="0.00"/>
+  </div>
+  <div class="readout">
+    <div class="ro">有效期望<strong id="f_eff">2.00</strong></div>
+    <div class="ro">红利保留<strong id="f_keep">80%</strong></div>
+    <div class="ro">相对纸面缺口<strong id="f_gap">0.50</strong></div>
+    <div id="f_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="f_vh">f=0.80 时有效 EU≈2.00；装置设计必须同时抓服从，不只优化纸面 D</span></div>
+  </div>
+  <canvas id="fChart" height="214"></canvas>
+</div>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">装灯</button><button class="tab" data-pane="tb1-1">抛硬币</button><button class="tab" data-pane="tb1-2">压破裂</button></div>
+<div class="pane on" id="tb1-0"><p>模型 1：看 CE 相对混合的增益；把 C 加大，混合对撞↓但 CE 增益结构仍在。</p></div><div class="pane" id="tb1-1"><p>模型 2：复现 Aumann (2,1)/(1,2) 上的 (1.5,1.5)。</p></div><div class="pane" id="tb1-2"><p>模型 3：抬高 γ、降低 C，直到判定变成「非 CE」——这就是空城红灯诱惑。</p></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识图</td>
+<td>能解释红绿灯为何是 CE 而非混合纳什</td>
+</tr>
+<tr>
+<td class="k">L2 验算</td>
+<td>能列出 2×2 的条件激励并判定</td>
+</tr>
+<tr>
+<td class="k">L3 设计</td>
+<td>能在激励松弛内偏斜质量并估服从率</td>
+</tr>
+<tr>
+<td class="k">L4 系统</td>
+<td>能把后悔学习 / 中介协议接到多代理系统</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>画一个「会议室投影仪抢占」2×2（抢/让）。</li>
+<li>算混合纳什期望。</li>
+<li>设计「抛硬币决定谁先用」并检查双方是否愿遵守。</li>
+<li>写下：若败者常强行开讲，装置哪些参数先坏（对应 γ↑ 或 C↓）。</li>
+</ol>
+<p>成本≈0；产出是一张填完的矩阵 + 一句「是否 CE」判定。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>行动</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>精读 Aumann 红绿灯/硬币例子（或教材转述）</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>手算本手册模型 1–2 默认值</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>找生活中一个「轮值/抛签」并验激励</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>读懂「CE∈P vs Nash PPAD」一句话含义</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>区分外部后悔与交换后悔</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>用模型 3 找到一个非 CE 的相关方案</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>写 200 字：你的团队缺的是焦点还是相关装置</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>定义与经典例子</td>
+<td>笔记 + 手算</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>学习动态</td>
+<td>迷你仿真或伪代码</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>机制/中介</td>
+<td>一个激励相容轮值规则</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>复盘</td>
+<td>对照清单自测 10 题</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<ol>
+<li><strong>条件激励 CE</strong>：见建议后的最优反应约束。</li>
+<li><strong>红绿灯相关</strong>：反对角线支撑的联合分布。</li>
+<li><strong>Aumann 硬币</strong>：纯 NE 凸组合的可实施化。</li>
+<li><strong>乘积嵌入</strong>：NE ⊂ CE。</li>
+<li><strong>粗相关均衡</strong>：仅抗「无条件偏离」。</li>
+<li><strong>交换后悔 ↔ CE</strong>：学习侧刻画。</li>
+<li><strong>LP 可计算性</strong>：变量=行动组合概率。</li>
+<li><strong>零和无超额</strong>：相关不能超越纳什值。</li>
+<li><strong>服从稀释</strong>：(f U_{\mathrm{ce}}+(1-f)U_{\mathrm{mix}})。</li>
+<li><strong>中介信息设计</strong>：私有建议 + 激励松弛。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 这个相关方案，在每个建议实现值上还最优吗？</summary><div class="dbody"><p>逐建议算条件期望，不要只看事前平均。</p></div></details>
+<details><summary>Q2 联合分布能写成独立混合的乘积吗？</summary><div class="dbody"><p>能 → 其实是纳什；不能 → 才真正用到相关。</p></div></details>
+<details><summary>Q3 中介可被谁操纵？</summary><div class="dbody"><p>种子、算法、运营——公信力库存是否可审计？</p></div></details>
+<details><summary>Q4 偏斜到多少激励会破？</summary><div class="dbody"><p>用模型 3 扫边界，不要拍脑袋 70–30。</p></div></details>
+<details><summary>Q5 冲突成本被双方同样感知吗？</summary><div class="dbody"><p>不对称感知 ≈ 不同 (C)，CE 可能单边破裂。</p></div></details>
+<details><summary>Q6 我们消的是外部后悔还是交换后悔？</summary><div class="dbody"><p>决定收敛到粗 CE 还是 CE。</p></div></details>
+<details><summary>Q7 公开广播是否泄露可协调的共同偏离？</summary><div class="dbody"><p>有时私有建议更稳。</p></div></details>
+<details><summary>Q8 零和/近零和里还在追相关红利吗？</summary><div class="dbody"><p>先检查有没有理论空间。</p></div></details>
+<details><summary>Q9 服从率实测多少？</summary><div class="dbody"><p>纸面增益 × (f) 才是运营现实。</p></div></details>
+<details><summary>Q10 这是谢林焦点还是显式装置？</summary><div class="dbody"><p>焦点便宜但不保证激励；装置贵但可设计。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>Bayes 相关均衡与拍卖中的协调中介（样本复杂度方向）。<span class="tag t-chk">待验证</span></li>
+<li>扩展式博弈的线性相关均衡与中介查询解释（ICLR 2024 脉络）。<span class="tag t-ana">分析</span></li>
+<li>与机制设计显示原理、信息设计（Bayesian persuasion）的接口。</li>
+<li>多智能体 RL 里以 CE / 粗 CE 为解目标的实践取舍。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">CE 定义与硬币/相关思想</td>
+<td>经典论文</td>
+<td>Aumann, 1974, J. Math. Econ.</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">术语「correlated equilibrium」早期用法</td>
+<td>学术史</td>
+<td>Rosenthal 1974；2024 JME 回顾文</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">后悔匹配 → CE</td>
+<td>经典论文</td>
+<td>Hart &amp; Mas-Colell, Econometrica 2000</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">校准学习与 CE</td>
+<td>经典论文</td>
+<td>Foster &amp; Vohra, 1997</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Nash 为 PPAD-完全；CE 可用 LP</td>
+<td>复杂度综述</td>
+<td>Daskalakis–Goldberg–Papadimitriou 等；教材/综述</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">红绿灯/交叉口数值例子</td>
+<td>教材推演</td>
+<td>UPenn AGT 讲义等；本手册参数自洽推演</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">扩展式线性 CE / 中介</td>
+<td>近期会议</td>
+<td>ICLR 2024 等</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">拍卖中学习 BCE</td>
+<td>预印本</td>
+<td>2020s 学习理论工作</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或经典原文；<span class="tag t-ana">分析</span>权威推断；<span class="tag t-inf">推论</span>由模型导出；<span class="tag t-hyp">假设</span>简化；<span class="tag t-chk">待验证</span>单一或过新来源。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与决策框架说明，用于理解博弈论中的相关均衡概念与激励约束。不构成投资、法律、工程安全或交通管理建议。文中数值由示意支付矩阵推导，不代表任何真实路口、市场或平台的统计保证。涉及多代理人系统部署时，须另行做安全、合规与激励审计。</p>
+</section>
+<footer>  <p>《相关均衡（Correlated Equilibrium）：公共信号协调，可优于纳什（红绿灯原理） · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 8 分 19 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《相关均衡（Correlated Equilibrium）》主题脚本
+   四个可调模型：
+     1. 红绿灯 vs 混合纳什
+     2. 性别战：混合 vs 公平硬币 CE
+     3. 激励相容检验
+     4. 服从率稀释
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
+
+  function chicken(G, S, Ccost) {
+    var den = G - S + Ccost;
+    if (den <= 1e-12) den = 1e-12;
+    var q = clamp((G - S) / den, 0, 1);
+    var euMix = S * (1 - q);
+    var euCE = G / 2;
+    var crashMix = q * q;
+    return { q: q, euMix: euMix, euCE: euCE, gain: euCE - euMix, crashMix: crashMix };
+  }
+
+  function bos(a, b) {
+    var mixR = a / (1 + a);
+    var mixC = b / (1 + b);
+    var ceR = (a + 1) / 2;
+    var ceC = (1 + b) / 2;
+    return { mixR: mixR, mixC: mixC, ceR: ceR, ceC: ceC, gainR: ceR - mixR, gainC: ceC - mixC };
+  }
+
+  function icCheck(G, S, Ccost, a, b, g) {
+    var sum = a + b + g;
+    if (sum <= 1e-12) sum = 1e-12;
+    a /= sum; b /= sum; g /= sum;
+    var okGo = G >= S - 1e-9;
+    var denom = b + g;
+    var euF = 0, euD = 0, okStop = true;
+    if (denom > 1e-12) {
+      var pGo = b / denom, pStop = g / denom;
+      euF = S * pStop;
+      euD = G * pStop - Ccost * pGo;
+      okStop = euF >= euD - 1e-9;
+    } else {
+      okStop = true;
+      euF = 0;
+      euD = -Ccost;
+    }
+    var eu = a * G + b * 0 + g * S;
+    return {
+      a: a, b: b, g: g,
+      okGo: okGo, okStop: okStop, isCE: okGo && okStop,
+      eu: eu, euF: euF, euD: euD
+    };
+  }
+
+  /* ── 1. Traffic light ── */
+  (function tlTool() {
+    var gEl = $('tl_G'), sEl = $('tl_S'), cEl = $('tl_C');
+    if (!gEl || !sEl || !cEl) return;
+    var cv = $('tlChart');
+
+    function upd() {
+      var G = parseFloat(gEl.value), S = parseFloat(sEl.value), Cc = parseFloat(cEl.value);
+      var r = chicken(G, S, Cc);
+      var col = r.gain > 0.05 ? C.green : (r.gain >= 0 ? C.amber : C.red);
+
+      txt($('tl_GO'), G.toFixed(1));
+      txt($('tl_SO'), S.toFixed(1));
+      txt($('tl_CO'), String(Cc));
+      txt($('tl_q'), r.q.toFixed(3));
+      txt($('tl_mix'), r.euMix.toFixed(2));
+      txt($('tl_ce'), r.euCE.toFixed(2));
+      txt($('tl_gain'), (r.gain >= 0 ? '+' : '') + r.gain.toFixed(2));
+      txt($('tl_vh'),
+        'G=' + G.toFixed(1) + ',S=' + S.toFixed(1) + ',C=' + Cc +
+        ' → 混合 EU=' + r.euMix.toFixed(2) + '，公平灯控 EU=' + r.euCE.toFixed(2) +
+        '；对撞从 ' + (r.crashMix * 100).toFixed(2) + '% 降到 0');
+      tint($('tl_vh'), col);
+      tint($('tl_gain'), col);
+      tint($('tl_ce'), C.green);
+      tint($('tl_mix'), C.amber);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var vals = [r.euMix, r.euCE];
+      var labels = ['混合纳什', '公平 CE'];
+      var colors = [C.amber, C.green];
+      var vmax = Math.max(0.5, Math.max(vals[0], vals[1]) * 1.25);
+      var vmin = Math.min(0, Math.min(vals[0], vals[1]) * 1.25);
+      function sy(v) { return y1 - ((v - vmin) / (vmax - vmin || 1)) * bh; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var i = 0; i <= 4; i++) {
+        var vv = vmin + (vmax - vmin) * i / 4;
+        var y = sy(vv);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(vv.toFixed(1), pl - 6, y + 4);
+      }
+      if (vmin < 0 && vmax > 0) {
+        ctx.strokeStyle = C.axis;
+        ctx.beginPath();
+        ctx.moveTo(pl, sy(0));
+        ctx.lineTo(w - pr, sy(0));
+        ctx.stroke();
+      }
+
+      var barW = bw / 5;
+      for (var j = 0; j < 2; j++) {
+        var x0 = pl + bw * (j + 1) / 3 - barW / 2;
+        var y0 = sy(Math.max(0, vals[j]));
+        var yb = sy(Math.min(0, vals[j]));
+        ctx.fillStyle = colors[j];
+        ctx.fillRect(x0, Math.min(y0, yb), barW, Math.abs(y0 - yb) || 2);
+        ctx.fillStyle = C.ink;
+        ctx.textAlign = 'center';
+        ctx.font = '12px sans-serif';
+        var lab = vals[j].toFixed(2);
+        var lw = ctx.measureText(lab).width;
+        var tx = x0 + barW / 2;
+        var ty = vals[j] >= 0 ? y0 - 8 : yb + 14;
+        ctx.fillText(lab, tx, ty);
+        ctx.fillStyle = C.ink2;
+        ctx.fillText(labels[j], tx, y1 + 13);
+        void lw;
+      }
+      ctx.fillStyle = C.ink2;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('期望收益对照（对撞：混合 ' + (r.crashMix * 100).toFixed(2) + '% → CE 0）', pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillText('解概念', pl + bw / 2, y1 + 31);
+    }
+    bind(['tl_G', 'tl_S', 'tl_C'], upd);
+    upd();
+  })();
+
+  /* ── 2. Battle of Sexes ── */
+  (function bosTool() {
+    var aEl = $('bos_a'), bEl = $('bos_b');
+    if (!aEl || !bEl) return;
+    var cv = $('bosChart');
+
+    function upd() {
+      var a = parseFloat(aEl.value), b = parseFloat(bEl.value);
+      var r = bos(a, b);
+      var col = r.gainR > 0.05 ? C.green : C.amber;
+
+      txt($('bos_aO'), a.toFixed(1));
+      txt($('bos_bO'), b.toFixed(1));
+      txt($('bos_mixR'), r.mixR.toFixed(3));
+      txt($('bos_ceR'), r.ceR.toFixed(3));
+      txt($('bos_gainR'), (r.gainR >= 0 ? '+' : '') + r.gainR.toFixed(3));
+      txt($('bos_gainC'), (r.gainC >= 0 ? '+' : '') + r.gainC.toFixed(3));
+      txt($('bos_vh'),
+        'a=' + a.toFixed(1) + ', b=' + b.toFixed(1) +
+        '：混合行 ' + r.mixR.toFixed(3) + ' / 列 ' + r.mixC.toFixed(3) +
+        ' → 公平硬币行 ' + r.ceR.toFixed(3) + ' / 列 ' + r.ceC.toFixed(3));
+      tint($('bos_vh'), col);
+      tint($('bos_ceR'), C.green);
+      tint($('bos_gainR'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var series = [
+        { lab: '混合·行', v: r.mixR, c: C.amber },
+        { lab: 'CE·行', v: r.ceR, c: C.green },
+        { lab: '混合·列', v: r.mixC, c: C.amber },
+        { lab: 'CE·列', v: r.ceC, c: C.blue }
+      ];
+      var vmax = Math.max(1, Math.max(r.mixR, r.mixC, r.ceR, r.ceC) * 1.15);
+      function sy(v) { return y1 - (v / vmax) * bh; }
+      function sx(i) { return pl + (i + 0.5) * bw / 4; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var t = 0; t <= 4; t++) {
+        var vv = vmax * t / 4;
+        var y = sy(vv);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(vv.toFixed(1), pl - 6, y + 4);
+      }
+
+      var barW = bw / 7;
+      series.forEach(function (s, i) {
+        var x = sx(i) - barW / 2;
+        var y = sy(s.v);
+        ctx.fillStyle = s.c;
+        ctx.fillRect(x, y, barW, y1 - y);
+        ctx.fillStyle = C.ink;
+        ctx.textAlign = 'center';
+        ctx.font = '11px sans-serif';
+        var lab = s.v.toFixed(2);
+        var tw = ctx.measureText(lab).width;
+        var tx = clamp(sx(i), pl + tw / 2 + 2, w - pr - tw / 2 - 2);
+        ctx.fillText(lab, tx, y - 6);
+        ctx.fillStyle = C.ink2;
+        ctx.fillText(s.lab, sx(i), y1 + 13);
+      });
+      ctx.fillStyle = C.ink2;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('Aumann 硬币：相关实施纯 NE 凸组合', pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillText('参与人 × 解概念', pl + bw / 2, y1 + 31);
+    }
+    bind(['bos_a', 'bos_b'], upd);
+    upd();
+  })();
+
+  /* ── 3. Incentive check ── */
+  (function icTool() {
+    var aEl = $('ic_a'), bEl = $('ic_b'), gEl = $('ic_g');
+    var GEl = $('ic_G'), SEl = $('ic_S'), CEl = $('ic_C');
+    if (!aEl || !bEl || !gEl || !GEl || !SEl || !CEl) return;
+    var cv = $('icChart');
+
+    function upd() {
+      var a = parseFloat(aEl.value), b = parseFloat(bEl.value), g0 = parseFloat(gEl.value);
+      var G = parseFloat(GEl.value), S = parseFloat(SEl.value), Cc = parseFloat(CEl.value);
+      var r = icCheck(G, S, Cc, a, b, g0);
+      var col = r.isCE ? C.green : C.red;
+      var lab = r.isCE ? '是 CE' : '非 CE';
+      if (!r.okGo && !r.okStop) lab = '非 CE（双破）';
+      else if (!r.okGo) lab = '非 CE（行建议破）';
+      else if (!r.okStop) lab = '非 CE（停建议破）';
+
+      txt($('ic_aO'), a.toFixed(2));
+      txt($('ic_bO'), b.toFixed(2));
+      txt($('ic_gO'), g0.toFixed(2));
+      txt($('ic_GO'), G.toFixed(1));
+      txt($('ic_SO'), S.toFixed(1));
+      txt($('ic_CO'), String(Cc));
+      txt($('ic_eu'), r.eu.toFixed(2));
+      txt($('ic_euF'), r.euF.toFixed(2));
+      txt($('ic_euD'), r.euD.toFixed(2));
+      txt($('ic_lab'), lab);
+      txt($('ic_vh'),
+        '归一 (α,β,γ)=(' + r.a.toFixed(2) + ',' + r.b.toFixed(2) + ',' + r.g.toFixed(2) +
+        ')；停时遵守 ' + r.euF.toFixed(2) + ' vs 偏离 ' + r.euD.toFixed(2) + ' → ' + lab);
+      tint($('ic_vh'), col);
+      tint($('ic_lab'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var vals = [r.euF, r.euD];
+      var labels = ['遵守·停', '偏离·行'];
+      var colors = [C.blue, r.euD > r.euF + 1e-9 ? C.red : C.green];
+      var vmax = Math.max(1, Math.max(Math.abs(vals[0]), Math.abs(vals[1]), 0.5) * 1.25);
+      var vmin = -vmax;
+      if (vals[0] >= 0 && vals[1] >= 0) { vmin = 0; vmax = Math.max(1, Math.max(vals[0], vals[1]) * 1.25); }
+      function sy(v) { return y1 - ((v - vmin) / (vmax - vmin || 1)) * bh; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var i = 0; i <= 4; i++) {
+        var vv = vmin + (vmax - vmin) * i / 4;
+        var y = sy(vv);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(vv.toFixed(1), pl - 6, y + 4);
+      }
+      if (vmin < 0 && vmax > 0) {
+        ctx.strokeStyle = C.axis;
+        ctx.beginPath();
+        ctx.moveTo(pl, sy(0));
+        ctx.lineTo(w - pr, sy(0));
+        ctx.stroke();
+      }
+
+      var barW = bw / 5;
+      for (var j = 0; j < 2; j++) {
+        var x0 = pl + bw * (j + 1) / 3 - barW / 2;
+        var yTop = sy(Math.max(0, vals[j]));
+        var yBot = sy(Math.min(0, vals[j]));
+        ctx.fillStyle = colors[j];
+        ctx.fillRect(x0, Math.min(yTop, yBot), barW, Math.max(2, Math.abs(yTop - yBot)));
+        ctx.fillStyle = C.ink;
+        ctx.textAlign = 'center';
+        ctx.font = '12px sans-serif';
+        var labn = vals[j].toFixed(2);
+        var tw = ctx.measureText(labn).width;
+        var tx = clamp(x0 + barW / 2, pl + tw / 2, w - pr - tw / 2);
+        ctx.fillText(labn, tx, vals[j] >= 0 ? yTop - 8 : yBot + 14);
+        ctx.fillStyle = C.ink2;
+        ctx.fillText(labels[j], x0 + barW / 2, y1 + 13);
+      }
+      ctx.fillStyle = C.ink2;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('收到「停」时的条件期望对照 · ' + lab, pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillText('策略修改', pl + bw / 2, y1 + 31);
+    }
+    bind(['ic_a', 'ic_b', 'ic_g', 'ic_G', 'ic_S', 'ic_C'], upd);
+    upd();
+  })();
+
+  /* ── 4. Follow rate dilution ── */
+  (function fTool() {
+    var fEl = $('f_f'), ceEl = $('f_ce'), mixEl = $('f_mix');
+    if (!fEl || !ceEl || !mixEl) return;
+    var cv = $('fChart');
+
+    function upd() {
+      var f = parseFloat(fEl.value);
+      var uce = parseFloat(ceEl.value);
+      var umix = parseFloat(mixEl.value);
+      var eff = f * uce + (1 - f) * umix;
+      var keep = (Math.abs(uce - umix) < 1e-12) ? 100 : (100 * (eff - umix) / (uce - umix));
+      var gap = uce - eff;
+      var col = f >= 0.75 ? C.green : (f >= 0.4 ? C.amber : C.red);
+
+      txt($('f_fO'), f.toFixed(2));
+      txt($('f_ceO'), uce.toFixed(2));
+      txt($('f_mixO'), umix.toFixed(2));
+      txt($('f_eff'), eff.toFixed(2));
+      txt($('f_keep'), keep.toFixed(0) + '%');
+      txt($('f_gap'), gap.toFixed(2));
+      txt($('f_vh'),
+        'f=' + f.toFixed(2) + ' 时有效 EU≈' + eff.toFixed(2) +
+        '；装置设计必须同时抓服从，不只优化纸面 D');
+      tint($('f_vh'), col);
+      tint($('f_eff'), col);
+      tint($('f_keep'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var ymax = Math.max(uce, umix, eff, 0.5) * 1.15;
+      var ymin = Math.min(uce, umix, eff, 0) - 0.1;
+      function sy(v) { return y1 - ((v - ymin) / (ymax - ymin || 1)) * bh; }
+      function sx(t) { return pl + t * bw; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var i = 0; i <= 4; i++) {
+        var vv = ymin + (ymax - ymin) * i / 4;
+        var y = sy(vv);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(vv.toFixed(1), pl - 6, y + 4);
+      }
+
+      ctx.setLineDash([4, 3]);
+      ctx.strokeStyle = C.amber;
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(umix));
+      ctx.lineTo(w - pr, sy(umix));
+      ctx.stroke();
+      ctx.strokeStyle = C.green;
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(uce));
+      ctx.lineTo(w - pr, sy(uce));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = C.blue;
+      ctx.beginPath();
+      for (var k = 0; k <= 100; k++) {
+        var ff = k / 100;
+        var ee = ff * uce + (1 - ff) * umix;
+        var x = sx(ff), yy = sy(ee);
+        if (k === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = C.red;
+      ctx.beginPath();
+      ctx.arc(sx(f), sy(eff), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink2;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('蓝=有效EU(f)  绿虚=纸面CE  琥珀虚=混合底线', pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillText('服从率 f', pl + bw / 2, y1 + 31);
+      ctx.fillStyle = C.ink3;
+      ['0', '0.5', '1'].forEach(function (lab, idx) {
+        ctx.fillText(lab, sx(idx / 2), y1 + 13);
+      });
+    }
+    bind(['f_f', 'f_ce', 'f_mix'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
