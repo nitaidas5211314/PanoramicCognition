@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>策略（Strategy）：参与人在每种情形下的完整行动方案；分纯策略与混合策略（按概率随机化） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Strategy × Pure &amp; Mixed</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践系统</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>策略（Strategy）：参与人在每种情形下的完整行动方案；分纯策略与混合策略（按概率随机化）</h1>
+  <p class="sub">策略不是「招数清单」，而是<strong>每种情形下的完整行动方案</strong>。纯策略确定性选一条路；混合策略按概率随机化——在猜硬币、点球、价格战里，随机化往往不是软弱，而是让对手无法剥削你的唯一稳定解。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>策略（Strategy）</strong> 是参与人在<strong>每一种可能情形</strong>下「我会怎么做」的完整说明书：纯策略把某一行动钉死为概率 1；混合策略给行动集上的概率分布，按分布随机抽签。</p>
+<p>三层含义：</p>
+<ol>
+<li><strong>完整性</strong>：策略必须覆盖信息集上的每一个决策点——不是只写「开场出石头」，而是「若对方上轮出布则……」。<span class="tag t-fact">事实</span></li>
+<li><strong>纯 vs 混合</strong>：纯策略是混合策略的退化特例（某行动概率 1，其余 0）。<span class="tag t-fact">事实</span></li>
+<li><strong>均衡语言</strong>：有限策略型博弈<strong>至少存在一个</strong>纳什均衡（可能必须是混合的）——Nash (1950)。猜硬币没有纯策略均衡，却有唯一的 (½,½) 混合均衡。<span class="tag t-fact">事实</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>这里研究的不是「商业计划书写法」，而是博弈模型里的<strong>选择对象</strong>：参与人到底在选什么、随机化意味着什么、何时必须随机。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：策略型 / 展开型表述、纯策略与混合策略、支集（support）、行为策略、最优反应、混合纳什的无差异条件。</li>
+<li><strong>在界外</strong>：具体行业战术细节、脑科学里的「随机数如何生成」——除非压缩成可写入模型的混合或纯化故事。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>策略如何形式化，以及纯/混合如何支撑预测与设计</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「行动×信息上的（随机）规则可写入」为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>行动集、策略集、混合单纯形、支集、期望支付</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>需要选完整计划的人/组织/算法</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>行动数、支付不对称、可观测历史、私有冲击、重复次数</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>实际行动频率、胜率、报价分布</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>「心里是否真在掷骰子」、层级信念、私有类型</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>他人混合 → 我的期望支付 → 我的最优反应 → 他人无差异条件</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>改变支付矩阵 → 混合频率跳变；信息公开 → 策略空间变大</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「看起来在随机」也可能是私有信息下的纯策略（纯化）<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>点球左右、价格战促销频率、竞价抖动</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>无差异条件 + 支集外行动不被使用</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。被读懂的「伪随机」会被剥削 → 频率被拉回</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。学习混合、建立不可预测声誉都要时间</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>「大家都盯同一招」是正反馈崩盘；套利式最优反应是负反馈</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>策略回答的是「<strong>在模型允许的每一种情形下，你承诺怎么选</strong>」；混合策略回答的是「<strong>当你无法用纯策略稳住对手时，如何让对方对剥削你无利可图</strong>」。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>没有策略，均衡无处安放</h4><p>纳什、占优、子博弈精炼，比较的都是<strong>策略剖面</strong>，不是单次行动。把「出石头」当成策略，展开型博弈会立刻说不清。</p></div>
+<div class="card"><h4>它解释「为什么理性人要掷硬币」</h4><p>猜硬币、剪刀石头布、点球：纯策略均衡不存在或极不稳定；混合让对手对你支集内行动<strong>无差异</strong>。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它直接接到市场、谈判、AI</h4><p>做市抖动、A/B 流量分配、多智能体策略网络的随机策略（stochastic policy），都是混合策略的工程孪生。</p></div>
+</div>
+<div class="note amber"><b>一个必须先吞下的区分</b><p>「混合」在数学上是概率分布；在解释上至少有三条路：（1）真随机；（2）人群中纯策略的比例；（3）Harsanyi 纯化——私有支付扰动下各自选纯策略，外人只看到频率。<span class="tag t-ana">分析</span>别把三条路当成互相否定，它们回答的是不同问题。</p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看「策略」如何从行动清单长成可计算对象。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="sArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 机制设计 · 改写策略空间与信息本身</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 均衡精炼 · 颤抖手 / 恰当均衡 / 稳定集</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 解释层 · 真随机 / 人群比例 / Harsanyi 纯化</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 展开型 · 行为策略 vs 混合策略（Kuhn）</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 混合纳什 · 无差异条件 + 支集外不被用</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 最优反应对应 · BRᵢ(σ₋ᵢ) 可多值</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 混合单纯形 Δ(Sᵢ) · 概率分布</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 纯策略集 Sᵢ · 完整行动方案</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 行动与信息集 · 情形如何被切开</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门最常卡在 <strong>L2→L3</strong>：以为策略=行动。猜硬币里「出正面」是行动；策略是「以概率 p 出正面」或展开型里每个信息集的完整规定。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="220" y="16" width="240" height="48" rx="10" fill="#15181d"/><text x="340" y="46" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="sans-serif">策略 Strategy</text>
+
+  <rect x="30" y="100" width="180" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="120" y="132" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">纯策略 sᵢ ∈ Sᵢ</text>
+  <rect x="250" y="100" width="180" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="132" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">混合 σᵢ ∈ Δ(Sᵢ)</text>
+  <rect x="470" y="100" width="180" height="52" rx="8" fill="#fce8e8" stroke="#d5342c"/><text x="560" y="132" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">支集 support(σᵢ)</text>
+
+  <line x1="300" y1="64" x2="120" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="340" y1="64" x2="340" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="380" y1="64" x2="560" y2="100" stroke="#d5342c" stroke-width="1.5" marker-end="url(#cB)"/>
+
+  <rect x="80" y="200" width="520" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="340" y="232" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">无差异条件：支集内纯策略期望支付相等且 ≥ 支集外</text>
+  <line x1="120" y1="152" x2="200" y2="200" stroke="#7c848f" stroke-width="1.2"/>
+  <line x1="340" y1="152" x2="340" y2="200" stroke="#7c848f" stroke-width="1.2"/>
+  <line x1="560" y1="152" x2="480" y2="200" stroke="#7c848f" stroke-width="1.2"/>
+
+  <rect x="140" y="290" width="400" height="48" rx="8" fill="#f3f4f6"/><text x="340" y="320" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">混合纳什 = 每人的 σᵢ 都是对 σ₋ᵢ 的最优反应</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>在系统里的作用</th>
+<th>常见误读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">纯策略</td>
+<td>确定性完整方案</td>
+<td>「等于行动」——展开型中策略远多于行动</td>
+</tr>
+<tr>
+<td class="k">混合策略</td>
+<td>纯策略上的概率分布</td>
+<td>「随便乱选」——均衡混合有精确频率</td>
+</tr>
+<tr>
+<td class="k">支集</td>
+<td>正概率行动集合</td>
+<td>支集外行动可以「更差」但不能「更好」</td>
+</tr>
+<tr>
+<td class="k">无差异</td>
+<td>混合均衡的充要枢纽</td>
+<td>「无所谓所以乱选」——频率由<strong>让对手无差异</strong>决定</td>
+</tr>
+<tr>
+<td class="k">行为策略</td>
+<td>每个信息集独立随机</td>
+<td>与混合策略在完美回忆下等价（Kuhn）<span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="grid g2">
+<div class="card"><h4>理论建模者</h4><p>写 Sᵢ 与支付矩阵的人。漏写信息集上的 contingency，策略空间就假。</p></div>
+<div class="card"><h4>现场决策者</h4><p>点球主罚、交易员、谈判代表。他们可能「感觉在随机」，也可能按私有状态选纯策略——外人看到的是频率。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>对手与剥削者</h4><p>任何能读你模式的人。你的「伪随机」（如总是 R→P→S 循环）会被最优反应吃掉。</p></div>
+<div class="card"><h4>算法策略</h4><p>强化学习的 stochastic policy、做市随机抖动：工程上显式混合，理论上就是 Δ(A)。</p></div>
+</div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号直觉</th>
+<th>杠杆作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">纯策略数</td>
+<td>|Sᵢ|</td>
+<td>指数膨胀（展开型）；计算与学习成本↑</td>
+</tr>
+<tr>
+<td class="k">混合概率</td>
+<td>p, q, …</td>
+<td>均衡频率；错 0.1 就可能被系统性剥削</td>
+</tr>
+<tr>
+<td class="k">支付不对称</td>
+<td>a, b, L</td>
+<td>直接决定 p<em>（性别战 q</em>=1/(a+1)；懦夫 Dare*=1/L）<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">支集大小</td>
+<td>|supp|</td>
+<td>完全混合 vs 半混合；精炼常筛掉弱劣支集</td>
+</tr>
+<tr>
+<td class="k">可预测性</td>
+<td>自相关</td>
+<td>序列相关 → 偏离独立混合 → 被读懂</td>
+</tr>
+<tr>
+<td class="k">私有冲击</td>
+<td>εᵢ</td>
+<td>纯化：外人眼里的「混合」来自未见类型</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note green"><b>数字锚点（先算后写）</b><p>标准猜硬币（匹配得 +1）：均衡 q<em>=½，EU</em>=0。若对手出正面概率 q=0.60，则 EU(H)=+0.20、EU(T)=−0.20——<strong>必须</strong>改打纯正面，继续 50-50 只会把优势丢光。<span class="tag t-inf">推论</span>
+性别战 OO=(2,1)、BB=(1,2)：混合纳什行方 Opera p<em>=⅔、列方 Opera q</em>=⅓，各方 EU<em>=⅔（小于协调成功时的 2 或 1）。<span class="tag t-inf">推论</span>
+懦夫博弈碰撞损失 L：Dare 概率 =1/L；L=10 → Dare</em>=0.10，EU*=−0.10。<span class="tag t-inf">推论</span></p></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ca1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#15181d"/></marker>
+    <marker id="ca2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="140" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="90" y="57" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">支付矩阵</text>
+  <rect x="190" y="30" width="140" height="44" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="260" y="57" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">无差异方程</text>
+  <rect x="360" y="30" width="140" height="44" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="430" y="57" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">均衡混合 σ*</text>
+  <rect x="530" y="30" width="130" height="44" rx="8" fill="#fce8e8" stroke="#d5342c"/><text x="595" y="57" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">频率被观察</text>
+  <line x1="160" y1="52" x2="188" y2="52" stroke="#15181d" stroke-width="1.5" marker-end="url(#ca1)"/>
+  <line x1="330" y1="52" x2="358" y2="52" stroke="#15181d" stroke-width="1.5" marker-end="url(#ca1)"/>
+  <line x1="500" y1="52" x2="528" y2="52" stroke="#15181d" stroke-width="1.5" marker-end="url(#ca1)"/>
+
+  <path d="M595,74 C595,160 90,160 90,74" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ca2)"/>
+  <text x="340" y="175" text-anchor="middle" font-size="12" fill="#d5342c" font-family="sans-serif">反馈：偏离频率 → 对手改最优反应 → 把你拉回（或崩到纯均衡）</text>
+
+  <rect x="80" y="210" width="520" height="70" rx="10" fill="#f3f4f6"/>
+  <text x="340" y="240" text-anchor="middle" font-size="13" font-weight="600" fill="#15181d" font-family="sans-serif">因果（实线）vs 误读</text>
+  <text x="340" y="262" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">「我随机是因为无所谓」← 错；均衡里你随机是为了让**对手**无所谓【分析】</text>
+</svg>
+<p>关键因果链：</p>
+<ol>
+<li><strong>支付 → 无差异 → 频率</strong>：你选 p 是为了让对手对她的支集内行动无差异；不是「自我表达」。</li>
+<li><strong>可预测 → 被剥削</strong>：序列相关破坏独立混合假设。</li>
+<li><strong>信息结构 → 策略空间</strong>：完美回忆下行为策略够用；不完美回忆则混合与行为策略可能分叉。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="grid g2">
+<div class="card"><h4>混合 ↔ 信道加密</h4><p>不可预测性 = 不给对手信息。同构于「别让窃听者从密文推断明文」。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>混合 ↔ 投资组合分散</h4><p>支集上的概率类似仓位权重；无差异条件类似「边际贡献被拉平」。但博弈里权重由<strong>对手支付</strong>决定，不是由你的方差厌恶单独决定。<span class="tag t-inf">推论</span></p></div>
+<div class="card"><h4>纯化 ↔ 隐变量</h4><p>Harsanyi (1973)：小的独立私有支付扰动下，几乎所有混合均衡可被纯策略贝叶斯均衡逼近。<span class="tag t-fact">事实</span>外人看见的「掷骰子」可能是未见类型。</p></div>
+<div class="card"><h4>人群解释 ↔ 演化稳定</h4><p>随机抽对手时，混合可解读为人群中纯类型比例；与 ESS 叙事相连。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note purple"><b>跨域同构（本手册高光）</b><p><strong>让对手无差异</strong> ≈ 定价里让边际客户在买/不买间无差异 ≈ 安全检查里让攻击者对「攻哪扇门」无差异。同一数学：最优混合把对手的最优反应对应「撑满」。</p></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>标准求解流水线（2×2）：</p>
+<pre><code>支付矩阵 → 找纯策略纳什（互为最优反应）
+         → 若无（或不唯一想要混合）→ 设支集
+         → 写无差异方程解 p*,q*
+         → 检查支集外行动不更好
+         → 解释：真随机 / 人群 / 纯化
+</code></pre>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#15181d"/></marker>
+  </defs>
+  <rect x="20" y="40" width="110" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="75" y="70" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">写矩阵</text>
+  <rect x="160" y="40" width="110" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="215" y="70" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">查纯均衡</text>
+  <rect x="300" y="40" width="110" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="355" y="70" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">无差异</text>
+  <rect x="440" y="40" width="110" height="50" rx="8" fill="#fce8e8" stroke="#d5342c"/><text x="495" y="70" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">得 σ*</text>
+  <rect x="580" y="40" width="80" height="50" rx="8" fill="#15181d"/><text x="620" y="70" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#fff">验证</text>
+  <line x1="130" y1="65" x2="158" y2="65" stroke="#15181d" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="270" y1="65" x2="298" y2="65" stroke="#15181d" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="410" y1="65" x2="438" y2="65" stroke="#15181d" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="550" y1="65" x2="578" y2="65" stroke="#15181d" stroke-width="1.5" marker-end="url(#flA)"/>
+  <text x="340" y="140" text-anchor="middle" font-size="13" fill="#454c56" font-family="sans-serif">猜硬币：无纯均衡 → q*=½ → EU*=0 → 任何偏离可被对手剥削</text>
+  <text x="340" y="170" text-anchor="middle" font-size="13" fill="#454c56" font-family="sans-serif">性别战：两纯均衡 + 一混合；混合 EU*=⅔ &lt; 协调成功时的支付</text>
+  <text x="340" y="200" text-anchor="middle" font-size="12" fill="#7c848f" font-family="sans-serif">资金/注意力流：可预测模式 → 被收割；不可预测性是「防御性资源」</text>
+</svg>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#e2e6ec" stroke-width="3"/>
+  <circle cx="80" cy="100" r="8" fill="#1d4ed8"/><text x="80" y="60" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">1944</text><text x="80" y="140" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">von Neumann</text><text x="80" y="156" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">混合最小最大</text>
+  <circle cx="220" cy="100" r="8" fill="#1d4ed8"/><text x="220" y="60" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">1950</text><text x="220" y="140" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">Nash 存在性</text><text x="220" y="156" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">有限博弈</text>
+  <circle cx="360" cy="100" r="8" fill="#b8730a"/><text x="360" y="60" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">1973</text><text x="360" y="140" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">Harsanyi</text><text x="360" y="156" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">纯化定理</text>
+  <circle cx="500" cy="100" r="8" fill="#0f8a4d"/><text x="500" y="60" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">2002</text><text x="500" y="140" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">点球实证</text><text x="500" y="156" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">Chiappori 等</text>
+  <circle cx="620" cy="100" r="8" fill="#d5342c"/><text x="620" y="60" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">今</text><text x="620" y="140" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">多智能体</text><text x="620" y="156" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">随机策略</text>
+</svg>
+<p>学习动态：虚构博弈（fictitious play）、强化学习都会把频率推向（或环绕）混合纳什；有限样本噪声使「看起来未均衡」很常见。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>想要什么</th>
+<th>策略上的含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">你</td>
+<td>提高自己 EU、降低被剥削</td>
+<td>不可预测 + 对冲对手最优反应</td>
+</tr>
+<tr>
+<td class="k">对手</td>
+<td>读你的模式</td>
+<td>逼你暴露序列相关</td>
+</tr>
+<tr>
+<td class="k">协调博弈中的双方</td>
+<td>落到「好」的纯均衡</td>
+<td>混合往往是<strong>差</strong>的折中（性别战 EU*=⅔）</td>
+</tr>
+<tr>
+<td class="k">机制设计者</td>
+<td>诱导想要的行动分布</td>
+<td>改支付或信息，而不是喊「请随机」</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note red"><b>激励扭曲</b><p>在性别战里，混合纳什的期望支付低于成功协调的纯均衡——若有廉价谈话或惯例，参与人有激励<strong>逃离混合</strong>。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 240" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="resA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+    <marker id="resB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0f8a4d"/></marker>
+  </defs>
+  <rect x="40" y="30" width="160" height="70" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/><text x="120" y="60" text-anchor="middle" font-size="13" font-weight="600" font-family="sans-serif" fill="#15181d">你的行动流</text><text x="120" y="80" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">频率 / 序列</text>
+  <rect x="260" y="30" width="160" height="70" rx="10" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="60" text-anchor="middle" font-size="13" font-weight="600" font-family="sans-serif" fill="#15181d">对手推断</text><text x="340" y="80" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">估计 p̂</text>
+  <rect x="480" y="30" width="160" height="70" rx="10" fill="#fce8e8" stroke="#d5342c"/><text x="560" y="60" text-anchor="middle" font-size="13" font-weight="600" font-family="sans-serif" fill="#15181d">剥削 / 收割</text><text x="560" y="80" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#454c56">选 BR(p̂)</text>
+  <line x1="200" y1="65" x2="258" y2="65" stroke="#d5342c" stroke-width="1.5" marker-end="url(#resA)"/>
+  <line x1="420" y1="65" x2="478" y2="65" stroke="#d5342c" stroke-width="1.5" marker-end="url(#resA)"/>
+
+  <rect x="160" y="150" width="360" height="60" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="340" y="175" text-anchor="middle" font-size="13" font-weight="600" font-family="sans-serif" fill="#15181d">防御资源：熵 / 不可预测性</text>
+  <text x="340" y="195" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">独立混合把信息「抽干」；模式化则把优势泵给对手</text>
+  <line x1="560" y1="100" x2="400" y2="150" stroke="#0f8a4d" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#resB)"/>
+</svg>
+<p>信息流方向：你的历史 → 对手信念 → 对手策略 → 你的支付。混合策略是在这条管道上装「噪声源」。</p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 重要性×杠杆率×可操作性÷学习成本 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>为何高杠杆</th>
+<th>上手成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>先写清策略空间（含 contingency）</td>
+<td>空间错则一切解错</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>无差异方程（让对手无差异）</td>
+<td>直接给出 p*</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>检查序列相关</td>
+<td>现实里最常见的「假混合」</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>支付校准（a,b,L）</td>
+<td>频率对支付极度敏感</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>选择解释（真随机/人群/纯化）</td>
+<td>决定你要改行为还是改信息</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>惯例与廉价谈话（逃离坏混合）</td>
+<td>性别战类协调</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>支集外检验</td>
+<td>防止假均衡</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>展开型用行为策略</td>
+<td>降维、可学习</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>精炼（剔弱劣混合）</td>
+<td>多均衡筛选</td>
+<td>高</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>机制改写策略集</td>
+<td>从根上改游戏</td>
+<td>高</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 把行动当成策略</summary><div class="dbody"><p>展开型里策略是「每个信息集的规定」。只说「开局攻击」会漏掉后手 contingency。</p></div></details>
+<details><summary>2. 「混合=随便」</summary><div class="dbody"><p>均衡混合频率由无差异精确决定。猜硬币必须 ≈½；偏到 0.6 就被打。</p></div></details>
+<details><summary>3. 「我无差异所以掷硬币」← 因果说反了</summary><div class="dbody"><p>你无差异是均衡的<strong>结果</strong>；你选择的频率是为了让<strong>对手</strong>无差异。</p></div></details>
+<details><summary>4. 忽略纯策略均衡的存在</summary><div class="dbody"><p>性别战有两个纯均衡；只算混合会漏掉「惯例协调」这条路。</p></div></details>
+<details><summary>5. 把实验室偏离当成「人不懂混合」</summary><div class="dbody"><p>也可能是社会偏好、风险态度、或学习未收敛。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>6. 伪随机循环</summary><div class="dbody"><p>R→P→S 循环熵看起来高，但对懂模式的对手可预测。要独立同分布或密码学级 RNG。</p></div></details>
+<details><summary>7. 纯化与真随机互斥论</summary><div class="dbody"><p>Harsanyi 纯化说明「可以不必真随机」；不证明「现实中从不随机」。点球等高激励对抗中，真混合证据更强。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>8. 零和直觉滥用于协调博弈</summary><div class="dbody"><p>零和里混合常是「唯一稳定解」；协调博弈里混合常是「糟糕折中」。</p></div></details>
+<details><summary>9. 忘记支集外条件</summary><div class="dbody"><p>只解无差异、不检查「不用的行动是否其实更好」→ 假均衡。</p></div></details>
+<details><summary>10. 把混合纳什的 EU 当成「你该满足的收益」</summary><div class="dbody"><p>性别战混合 EU*=⅔，但若能协调到 OO，行方得 2。混合是冲突下的稳定点，不是理想点。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <rect x="30" y="30" width="180" height="200" rx="12" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="120" y="60" text-anchor="middle" font-size="14" font-weight="700" font-family="sans-serif" fill="#15181d">抽象</text>
+  <text x="120" y="100" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">σ ∈ Δ(S)</text>
+  <text x="120" y="125" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">无差异</text>
+  <text x="120" y="150" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">Nash 存在</text>
+  <text x="120" y="175" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">纯化</text>
+
+  <rect x="250" y="30" width="180" height="200" rx="12" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="340" y="60" text-anchor="middle" font-size="14" font-weight="700" font-family="sans-serif" fill="#15181d">机制</text>
+  <text x="340" y="100" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">期望支付线性</text>
+  <text x="340" y="125" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">BR 对应</text>
+  <text x="340" y="150" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">学习动态</text>
+  <text x="340" y="175" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">信息反馈</text>
+
+  <rect x="470" y="30" width="180" height="200" rx="12" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="560" y="60" text-anchor="middle" font-size="14" font-weight="700" font-family="sans-serif" fill="#15181d">操作</text>
+  <text x="560" y="100" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">算 p*</text>
+  <text x="560" y="125" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">查自相关</text>
+  <text x="560" y="150" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">设 RNG</text>
+  <text x="560" y="175" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#454c56">建惯例</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>现实场景</th>
+<th>抽象对象</th>
+<th>操作抓手</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">足球点球</td>
+<td>匹配型零和混合</td>
+<td>左右频率≈均衡；避免踢法惯性<span class="tag t-fact">事实</span>Chiappori–Levitt–Groseclose (2002) 等实证与混合预测一致</td>
+</tr>
+<tr>
+<td class="k">价格促销</td>
+<td>混合「促/不促」</td>
+<td>用支付校准频率，防被对手盯死</td>
+</tr>
+<tr>
+<td class="k">安全巡检</td>
+<td>混合巡查路线</td>
+<td>让攻击者对入口无差异</td>
+</tr>
+<tr>
+<td class="k">产品 A/B</td>
+<td>流量混合</td>
+<td>注意：这是实验设计，不是纳什混合——别混用解释</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>画 2×2</strong>：先写清你的两个行动、对手两个行动、支付。</li>
+<li><strong>找纯均衡</strong>：互为最优反应的格子。</li>
+<li><strong>需要混合时</strong>：列无差异方程，解 p*；用本页工具验算。</li>
+<li><strong>落地</strong>：若真对抗，用独立随机源；若协调，优先惯例而非混合。</li>
+<li><strong>复盘</strong>：统计频率与自相关，对比 p*。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>基础 · 识别与翻译</summary><div class="dbody"><ul>
+<li>区分行动 / 纯策略 / 混合策略 / 行为策略</li>
+<li>会画策略型矩阵与简单展开型</li>
+<li>能指出猜硬币为何无纯均衡</li>
+</ul></div></details>
+<details><summary>中级 · 计算</summary><div class="dbody"><ul>
+<li>手算 2×2 混合纳什（无差异）</li>
+<li>检查支集条件</li>
+<li>计算偏离后的最优反应与后悔</li>
+</ul></div></details>
+<details><summary>高级 · 解释与设计</summary><div class="dbody"><ul>
+<li>纯化 / 人群 / 真随机三解释切换</li>
+<li>Kuhn 定理适用边界（完美回忆）</li>
+<li>用惯例、信息、支付改写「坏混合」</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>把学习策略想象成一张地图：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>区域</th>
+<th>怪物</th>
+<th>通关条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">纯策略平原</td>
+<td>「只会一种开局」怪</td>
+<td>写出含 contingency 的完整策略</td>
+</tr>
+<tr>
+<td class="k">无差异沼泽</td>
+<td>「随便选」迷雾</td>
+<td>解出正确 p* 并解释「为谁无差异」</td>
+</tr>
+<tr>
+<td class="k">伪随机丛林</td>
+<td>循环模式蛇</td>
+<td>用独立抽样通过自相关检验</td>
+</tr>
+<tr>
+<td class="k">协调双峰山</td>
+<td>两纯一混合</td>
+<td>选惯例登上高峰，不困在混合谷底</td>
+</tr>
+<tr>
+<td class="k">纯化迷雾</td>
+<td>「到底掷没掷骰子」</td>
+<td>能用私有类型故事重述同一频率</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>难度</th>
+<th>产出</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 默写猜硬币均衡</td>
+<td>★</td>
+<td>卡片</td>
+<td>q<em>=½, EU</em>=0</td>
+</tr>
+<tr>
+<td class="k">T2 手算性别战混合</td>
+<td>★★</td>
+<td>草稿</td>
+<td>p<em>=⅔, q</em>=⅓, EU*=⅔</td>
+</tr>
+<tr>
+<td class="k">T3 懦夫 L=10</td>
+<td>★★</td>
+<td>数字</td>
+<td>Dare*=0.10</td>
+</tr>
+<tr>
+<td class="k">T4 用工具把对手 q 调到 0.6</td>
+<td>★</td>
+<td>截图</td>
+<td>显示最优纯 H</td>
+</tr>
+<tr>
+<td class="k">T5 统计自己 30 次 RPS</td>
+<td>★★</td>
+<td>表</td>
+<td>频率+自相关</td>
+</tr>
+<tr>
+<td class="k">T6 找一个「该协调不该混合」案例</td>
+<td>★★★</td>
+<td>短文</td>
+<td>对比混合 EU vs 协调支付</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若对手固定出正面 60%</button><button class="tab" data-pane="tb1-1">若性别战能廉价谈话</button><button class="tab" data-pane="tb1-2">若碰撞损失 L→∞</button><button class="tab" data-pane="tb1-3">若只有纯化、禁止真随机</button></div>
+<div class="pane on" id="tb1-0"><p>猜硬币中你应 100% 出正面，EU=+0.20；继续 50-50 则 EU=0，把免费优势扔掉。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-1"><p>双方可协调到某一纯均衡，EU 升至 2 或 1，严格优于混合的 ⅔。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-2"><p>懦夫博弈中 Dare*→0，近似「几乎总是躲闪」——极端风险压扁冒险激励。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-3"><p>均衡频率仍可出现，但来自私有冲击阈值；设计者应关心类型分布，而不是 RNG。<span class="tag t-ana">分析</span></p></div>
+<h3>可调模型 1 · 猜硬币：你的混合 × 对手混合</h3>
+<p>匹配得 +1、不匹配 −1。看对手 q 如何决定你该不该坚持 50-50。</p>
+<div class="tool" id="tool_mp">
+  <div class="ctrl">
+    <label>你出正面概率 p <output id="mp_pO">0.50</output></label>
+    <input type="range" id="mp_p" min="0" max="1" step="0.01" value="0.50"/>
+    <label>对手出正面概率 q <output id="mp_qO">0.50</output></label>
+    <input type="range" id="mp_q" min="0" max="1" step="0.01" value="0.50"/>
+  </div>
+  <div class="readout">
+    <div class="ro">EU(H)<strong id="mp_h">0.00</strong></div>
+    <div class="ro">EU(T)<strong id="mp_t">0.00</strong></div>
+    <div class="ro">你的期望<strong id="mp_eu">0.00</strong></div>
+    <div id="mp_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="mp_vh">无差异：任意混合均为最优反应（均衡要求 q*=0.50）</span></div>
+  </div>
+  <canvas id="mpChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · 性别战：支付不对称 → 混合纳什</h3>
+<p>OO=(a,1)，BB=(1,b)。默认 a=2,b=2 → p<em>=⅔, q</em>=⅓, 行方 EU*=⅔。</p>
+<div class="tool" id="tool_bos">
+  <div class="ctrl">
+    <label>行方偏好强度 a（OO 支付） <output id="bos_aO">2.0</output></label>
+    <input type="range" id="bos_a" min="1.1" max="5" step="0.1" value="2.0"/>
+    <label>列方偏好强度 b（BB 支付） <output id="bos_bO">2.0</output></label>
+    <input type="range" id="bos_b" min="1.1" max="5" step="0.1" value="2.0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">行方 Opera p*<strong id="bos_p">0.667</strong></div>
+    <div class="ro">列方 Opera q*<strong id="bos_q">0.333</strong></div>
+    <div class="ro">行方 EU*<strong id="bos_eu">0.667</strong></div>
+    <div id="bos_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="bos_vh">混合纳什：行方 Opera p*=0.667，列方 Opera q*=0.333；行方 EU=0.667（纯协调 OO 可得 2.0）</span></div>
+  </div>
+  <canvas id="bosChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 懦夫博弈：碰撞损失 L</h3>
+<p>支付：双方躲闪 (0,0)；一方 Dare 得 +1 / 对方 −1；双 Dare 得 (−L,−L)。Dare*=1/L。</p>
+<div class="tool" id="tool_ch">
+  <div class="ctrl">
+    <label>碰撞损失 L <output id="ch_LO">10.0</output></label>
+    <input type="range" id="ch_L" min="2" max="20" step="0.1" value="10.0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">Swerve 概率<strong id="ch_sw">0.900</strong></div>
+    <div class="ro">Dare 概率<strong id="ch_dr">0.100</strong></div>
+    <div class="ro">期望支付<strong id="ch_eu">-0.100</strong></div>
+    <div id="ch_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ch_vh">混合纳什：各方 Dare 概率 = 1/L = 0.100；期望支付 = −1/L = −0.100（L↑ → 更少冒险）</span></div>
+  </div>
+  <canvas id="chChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 剪刀石头布：混合对混合</h3>
+<p>零和 RPS。对手均匀 (⅓,⅓,⅓) 时你任意策略 EU=0；对手偏科时，支集外最优纯策略立刻出现。</p>
+<div class="tool" id="tool_rps">
+  <div class="ctrl">
+    <label>你 · 石头 <output id="rps_rO">0.333</output></label>
+    <input type="range" id="rps_r" min="0" max="1" step="0.001" value="0.333"/>
+    <label>你 · 布 <output id="rps_pO">0.333</output></label>
+    <input type="range" id="rps_p" min="0" max="1" step="0.001" value="0.333"/>
+    <label>对手 · 石头 <output id="rps_orO">0.333</output></label>
+    <input type="range" id="rps_or" min="0" max="1" step="0.001" value="0.333"/>
+    <label>对手 · 布 <output id="rps_opO">0.333</output></label>
+    <input type="range" id="rps_op" min="0" max="1" step="0.001" value="0.333"/>
+  </div>
+  <div class="readout">
+    <div class="ro">你的剪刀<strong id="rps_sO">0.334</strong></div>
+    <div class="ro">对手剪刀<strong id="rps_osO">0.334</strong></div>
+    <div class="ro">你的 EU<strong id="rps_eu">0.000</strong></div>
+    <div class="ro">最优纯策略<strong id="rps_br">任意（无差异）</strong></div>
+    <div id="rps_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="rps_vh">对当前对手：EU(R/P/S)≈(0,0,0)；最优=任意（无差异） · 对手≈均匀混合 → 你任意策略 EU≈0（纳什）</span></div>
+  </div>
+  <canvas id="rpsChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>标志性产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识别</td>
+<td>区分行动/策略/混合；指出有无纯均衡</td>
+<td>一页策略空间图</td>
+</tr>
+<tr>
+<td class="k">L2 计算</td>
+<td>独立解 2×2 混合纳什</td>
+<td>与工具误差 &lt; 0.01</td>
+</tr>
+<tr>
+<td class="k">L3 诊断</td>
+<td>用频率与自相关检验「假混合」</td>
+<td>复盘表</td>
+</tr>
+<tr>
+<td class="k">L4 设计</td>
+<td>用惯例/信息/支付逃离坏混合或稳定好混合</td>
+<td>机制备选方案</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<p><strong>今天就能做（成本≈0）：</strong></p>
+<ol>
+<li>用硬币做 20 次「猜硬币」对战（或单人模拟对手固定 50%）。</li>
+<li>记录自己出正面的次数与「连续同面」次数。</li>
+<li>对照：均衡应约 10/20；若连续同面过多，说明你有惯性。</li>
+<li>打开本页工具 1，把 q 调到 0.60，确认最优反应变为纯 H。</li>
+<li>写一句：<strong>「我随机是为了让对手无差异，不是因为我无所谓。」</strong></li>
+</ol>
+<p>验收：能口头推导 q*=½，并能解释 q=0.6 时为何必须改纯策略。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>纯 vs 混合定义 + 猜硬币</td>
+<td>卡片</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>无差异方程手算</td>
+<td>性别战草稿</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>懦夫博弈与 L</td>
+<td>对照工具 3</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>RPS 30 次自检</td>
+<td>频率表</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>读点球实证摘要</td>
+<td>5 条笔记</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>纯化 vs 真随机</td>
+<td>对比段</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>找生活中的协调 vs 对抗</td>
+<td>案例页</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>焦点</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>计算肌肉</td>
+<td>5 个 2×2 全手算+工具复核</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>实证直觉</td>
+<td>点球/网球发球文献笔记</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>展开型</td>
+<td>一棵树：纯策略枚举 vs 行为策略</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>设计</td>
+<td>为一个协调问题设计「惯例」、为一个对抗问题设计「混合规程」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>策略型博弈</td>
+<td>同时选策略，支付由剖面决定</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>纯策略纳什</td>
+<td>互为最优反应的行动剖面</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>混合策略纳什</td>
+<td>概率剖面互为最优反应</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>无差异条件</td>
+<td>支集内 EU 相等</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>最小最大（零和）</td>
+<td>混合保证安全水平</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>性别战</td>
+<td>协调 + 冲突偏好 → 两纯一混合</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>懦夫博弈</td>
+<td>Brinkmanship；Dare*=1/L</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>Harsanyi 纯化</td>
+<td>混合≈未见私有冲击下的纯选择极限</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>Kuhn 行为策略</td>
+<td>完美回忆下等价于混合</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>学习动态</td>
+<td>频率调整趋向/环绕均衡</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 策略和行动差在哪？</summary><div class="dbody"><p>行动是某一信息集上的选择；策略是<strong>所有</strong>信息集上的完整规定（或混合）。</p></div></details>
+<details><summary>Q2 为什么要混合？</summary><div class="dbody"><p>没有纯策略均衡，或纯均衡不稳定/可被剥削；混合让对手无法通过偏离获益。</p></div></details>
+<details><summary>Q3 混合时我真的对行动无差异吗？</summary><div class="dbody"><p>在均衡上是的——这是数学性质。你仍必须按正确频率混合，否则对手会偏离剥削你。</p></div></details>
+<details><summary>Q4 频率由谁决定？</summary><div class="dbody"><p>主要由<strong>对手的支付</strong>通过无差异方程决定，不是由你的「性格」。</p></div></details>
+<details><summary>Q5 性别战该不该玩混合？</summary><div class="dbody"><p>若能协调，不应满足于混合；混合是无法协调时的稳定点，EU 更差。</p></div></details>
+<details><summary>Q6 纯化是不是否定了随机？</summary><div class="dbody"><p>否。它提供另一种微观基础；高激励对抗中仍有真混合证据。</p></div></details>
+<details><summary>Q7 如何检验自己在混合？</summary><div class="dbody"><p>频率接近 p*，且选择近似序列无关（无惯性、无严格交替）。</p></div></details>
+<details><summary>Q8 多人博弈混合怎么算？</summary><div class="dbody"><p>原理相同但方程维数上升；常用算法（支撑枚举、Lemke–Howson 等）。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q9 算法里的 softmax 策略算混合吗？</summary><div class="dbody"><p>是随机策略；是否为纳什混合要另验最优反应条件。</p></div></details>
+<details><summary>Q10 下一步学什么？</summary><div class="dbody"><p>纳什均衡精炼、展开型与 SPNE、贝叶斯纳什——队列后续主题正覆盖。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li><strong>收益/支付（Payoff）</strong>：策略比较的尺子——矩阵里的数字从哪来。</li>
+<li><strong>纳什均衡</strong>：策略剖面何时互为最优反应。</li>
+<li><strong>占优策略</strong>：不依赖对手时仍成立的策略。</li>
+<li><strong>信息集与共同知识</strong>：策略空间如何被信息切开。</li>
+</ul>
+<p>本手册把「选什么」的对象钉死了；下一本把「值多少」钉死。</p>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">纯/混合策略定义、支集、混合纳什</td>
+<td>教材/讲义</td>
+<td>MIT 17.810 讲义；IISc 博弈论讲义；标准教材定义</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">有限博弈混合纳什存在性</td>
+<td>经典论文</td>
+<td>Nash (1950)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">无差异充要条件</td>
+<td>教材</td>
+<td>混合扩展标准定理</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Harsanyi 纯化</td>
+<td>论文</td>
+<td>Harsanyi (1973)；百科与综述转述</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">纯化条件与局限</td>
+<td>综述</td>
+<td>Reny–Robson 等讨论；弱劣策略纯化困难</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">点球混合实证</td>
+<td>期刊</td>
+<td>Chiappori, Levitt, Groseclose, AER 2002（法意联赛点球样本）</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">猜硬币/性别战/懦夫数值</td>
+<td>自算</td>
+<td>无差异方程；node 验算</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">跨域同构（加密/组合/巡检）</td>
+<td>类比</td>
+<td>作者归纳</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">行为实验对混合的偏离</td>
+<td>文献印象</td>
+<td>学习/噪声/社会偏好等多解释</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或经典定理；<span class="tag t-ana">分析</span>权威判断或稳健推论框架；<span class="tag t-inf">推论</span>由模型推导的数字；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或转述链长。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是博弈论概念的认知与实践框架，用于理解策略形式化、混合均衡与相关解释，<strong>不是</strong>投资建议、赌博必胜法或任何对抗性场景的操作保证。文中数值来自标准教学例子与公开学术文献，现实支付矩阵、对手类型与制度约束会导致结论变化。体育与市场案例仅作机制说明；请勿将均衡频率误当成「保证收益」。决策后果由读者自行承担。</p>
+</section>
+<footer>  <p>《策略（Strategy）：参与人在每种情形下的完整行动方案；分纯策略与混合策略（按概率随机化） · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 10 分 28 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《策略（Strategy）：纯策略与混合策略》主题脚本
+   四个可调模型（全部真实参与计算）：
+     1. 猜硬币：己方 p × 对手 q → EU 与最优反应
+     2. 性别战：支付 a,b → 混合纳什 (p*,q*) 与期望支付
+     3. 懦夫博弈：碰撞损失 L → 混合 Dare 概率与 EU
+     4. 剪刀石头布：己方/对手混合 → 期望支付与最优纯策略
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+
+  /* ── 1. 猜硬币 Matching Pennies ── */
+  (function mp() {
+    var pEl = $('mp_p'), qEl = $('mp_q');
+    if (!pEl || !qEl) return;
+    var cv = $('mpChart');
+
+    function upd() {
+      var p = parseFloat(pEl.value);
+      var q = parseFloat(qEl.value);
+      var euH = 2 * q - 1;
+      var euT = 1 - 2 * q;
+      var eu = p * euH + (1 - p) * euT;
+      var best = '双方无差异，可任意混合';
+      var col = C.blue;
+      if (euH > euT + 1e-9) { best = '最优纯策略：正面 H（EU=' + euH.toFixed(2) + '）'; col = C.red; }
+      else if (euT > euH + 1e-9) { best = '最优纯策略：反面 T（EU=' + euT.toFixed(2) + '）'; col = C.green; }
+      else { best = '无差异：任意混合均为最优反应（均衡要求 q*=0.50）'; col = C.blue; }
+
+      txt($('mp_pO'), p.toFixed(2));
+      txt($('mp_qO'), q.toFixed(2));
+      txt($('mp_h'), euH.toFixed(2));
+      txt($('mp_t'), euT.toFixed(2));
+      txt($('mp_eu'), eu.toFixed(2));
+      txt($('mp_vh'), best);
+      tint($('mp_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var ymin = -1.05, ymax = 1.05;
+      function sy(v) { return y1 - ((v - ymin) / (ymax - ymin)) * bh; }
+      function sx(t) { return pl + t * bw; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var v = -1; v <= 1; v += 0.5) {
+        var y = sy(v);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(v.toFixed(1), pl - 6, y + 4);
+      }
+      // zero line
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(0));
+      ctx.lineTo(w - pr, sy(0));
+      ctx.stroke();
+
+      // EU(H) vs q
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = C.red;
+      ctx.beginPath();
+      for (var i = 0; i <= 100; i++) {
+        var qq = i / 100;
+        var x = sx(qq), yy = sy(2 * qq - 1);
+        if (i === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      }
+      ctx.stroke();
+      // EU(T)
+      ctx.strokeStyle = C.green;
+      ctx.beginPath();
+      for (i = 0; i <= 100; i++) {
+        qq = i / 100;
+        x = sx(qq); yy = sy(1 - 2 * qq);
+        if (i === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      }
+      ctx.stroke();
+
+      // current q marker
+      ctx.strokeStyle = C.amber;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(sx(q), pt);
+      ctx.lineTo(sx(q), y1);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // your mix EU point
+      ctx.fillStyle = C.blue;
+      ctx.beginPath();
+      ctx.arc(sx(q), sy(eu), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink2;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('红=EU(H)  绿=EU(T)', pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillText('对手出正面概率 q', pl + bw / 2, y1 + 31);
+      // ticks
+      ctx.fillStyle = C.ink3;
+      ['0', '0.5', '1'].forEach(function (lab, idx) {
+        var t = idx / 2;
+        ctx.fillText(lab, sx(t), y1 + 13);
+      });
+    }
+    bind(['mp_p', 'mp_q'], upd);
+    upd();
+  })();
+
+  /* ── 2. 性别战 Battle of Sexes ── */
+  (function bos() {
+    var aEl = $('bos_a'), bEl = $('bos_b');
+    if (!aEl || !bEl) return;
+    var cv = $('bosChart');
+
+    function upd() {
+      // OO=(a,1), BB=(1,b)；无差异 → q*=1/(a+1), p*=b/(b+1), EU1*=a/(a+1)
+      var hi = parseFloat(aEl.value);
+      var lo = 1;
+      var hib = parseFloat(bEl.value);
+      // Row indifferent: hi*q + 0*(1-q) = 0*q + lo*(1-q) => a*q = 1*(1-q) => q = 1/(a+1)
+      // Col indifferent: lo*p + 0 = 0*p + hib*(1-p) => 1*p = b*(1-p) => p = b/(b+1)
+      var qStar = 1 / (hi + 1);
+      var pStar = hib / (hib + 1);
+      var eu1 = hi * qStar; // = a/(a+1)
+      var eu2 = lo * pStar; // = pStar = b/(b+1)  when col plays Opera... wait
+      // Col EU at eq when playing Opera: 1*pStar = pStar
+      // Col EU when Ballet: b*(1-pStar) = same
+      eu2 = pStar; // since lo=1
+
+      txt($('bos_aO'), hi.toFixed(1));
+      txt($('bos_bO'), hib.toFixed(1));
+      txt($('bos_p'), pStar.toFixed(3));
+      txt($('bos_q'), qStar.toFixed(3));
+      txt($('bos_eu'), eu1.toFixed(3));
+      txt($('bos_vh'), '混合纳什：行方 Opera p*=' + pStar.toFixed(3) + '，列方 Opera q*=' + qStar.toFixed(3) + '；行方 EU=' + eu1.toFixed(3) + '（纯协调 OO 可得 ' + hi.toFixed(1) + '）');
+      tint($('bos_vh'), eu1 < hi * 0.6 ? C.amber : C.blue);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var ymax = Math.max(3, hi, hib) + 0.5;
+      function sy(v) { return y1 - (v / ymax) * bh; }
+      function sx(t) { return pl + t * bw; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var v = 0; v <= ymax; v++) {
+        var y = sy(v);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(String(v), pl - 6, y + 4);
+      }
+
+      // EU(Opera) and EU(Ballet) for row vs q
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = C.red;
+      ctx.beginPath();
+      for (var i = 0; i <= 100; i++) {
+        var qq = i / 100;
+        var x = sx(qq), yy = sy(hi * qq);
+        if (i === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      }
+      ctx.stroke();
+      ctx.strokeStyle = C.green;
+      ctx.beginPath();
+      for (i = 0; i <= 100; i++) {
+        qq = i / 100;
+        x = sx(qq); yy = sy(lo * (1 - qq));
+        if (i === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = C.amber;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(sx(qStar), pt);
+      ctx.lineTo(sx(qStar), y1);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = C.blue;
+      ctx.beginPath();
+      ctx.arc(sx(qStar), sy(eu1), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink2;
+      ctx.textAlign = 'left';
+      ctx.fillText('红=EU(Opera)  绿=EU(Ballet)  黄线=q*', pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = C.ink3;
+      ctx.fillText('列方选 Opera 的概率 q', pl + bw / 2, y1 + 31);
+      ['0', '0.5', '1'].forEach(function (lab, idx) {
+        ctx.fillText(lab, sx(idx / 2), y1 + 13);
+      });
+    }
+    bind(['bos_a', 'bos_b'], upd);
+    upd();
+  })();
+
+  /* ── 3. 懦夫博弈 Chicken ── */
+  (function ch() {
+    var lEl = $('ch_L');
+    if (!lEl) return;
+    var cv = $('chChart');
+
+    function upd() {
+      var L = parseFloat(lEl.value);
+      if (L < 1.01) L = 1.01;
+      var pSwerve = (L - 1) / L;
+      var pDare = 1 / L;
+      var eu = pSwerve - 1; // = -1/L
+      txt($('ch_LO'), L.toFixed(1));
+      txt($('ch_sw'), pSwerve.toFixed(3));
+      txt($('ch_dr'), pDare.toFixed(3));
+      txt($('ch_eu'), eu.toFixed(3));
+      txt($('ch_vh'), '混合纳什：各方 Dare 概率 = 1/L = ' + pDare.toFixed(3) + '；期望支付 = −1/L = ' + eu.toFixed(3) + '（L↑ → 更少冒险）');
+      tint($('ch_vh'), L >= 8 ? C.green : C.amber);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var Lmax = 20;
+      function sy(v) { return y1 - (v / 1) * bh; } // dare prob 0..1
+      function sx(Lv) { return pl + ((Lv - 2) / (Lmax - 2)) * bw; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var v = 0; v <= 1.001; v += 0.25) {
+        var y = sy(v);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(v.toFixed(2), pl - 6, y + 4);
+      }
+
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = C.red;
+      ctx.beginPath();
+      for (var i = 0; i <= 100; i++) {
+        var Lv = 2 + (i / 100) * (Lmax - 2);
+        var pd = 1 / Lv;
+        var x = sx(Lv), yy = sy(pd);
+        if (i === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = C.blue;
+      ctx.beginPath();
+      ctx.arc(sx(Math.min(L, Lmax)), sy(pDare), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink2;
+      ctx.textAlign = 'left';
+      ctx.fillText('Dare 概率 = 1/L', pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = C.ink3;
+      ctx.fillText('碰撞损失 L', pl + bw / 2, y1 + 31);
+      [2, 8, 14, 20].forEach(function (Lv) {
+        ctx.fillText(String(Lv), sx(Lv), y1 + 13);
+      });
+    }
+    bind(['ch_L'], upd);
+    upd();
+  })();
+
+  /* ── 4. 剪刀石头布 RPS ── */
+  (function rps() {
+    var ids = ['rps_r', 'rps_p', 'rps_or', 'rps_op'];
+    if (!$('rps_r')) return;
+    var cv = $('rpsChart');
+
+    function norm3(a, b) {
+      var c = 1 - a - b;
+      if (c < 0) {
+        // clamp: keep a,b proportional on simplex edge
+        var s = a + b;
+        if (s <= 0) return [1 / 3, 1 / 3, 1 / 3];
+        return [a / s, b / s, 0];
+      }
+      return [a, b, c];
+    }
+
+    function upd() {
+      var you = norm3(parseFloat($('rps_r').value), parseFloat($('rps_p').value));
+      var opp = norm3(parseFloat($('rps_or').value), parseFloat($('rps_op').value));
+      // Payoff: Rock beats Scissors +1, loses to Paper -1, tie 0
+      // EU(Rock)= 0*oppR + (-1)*oppP + (+1)*oppS
+      var euR = -opp[1] + opp[2];
+      var euP = opp[0] - opp[2];
+      var euS = -opp[0] + opp[1];
+      var eu = you[0] * euR + you[1] * euP + you[2] * euS;
+      var bestV = Math.max(euR, euP, euS);
+      var worstV = Math.min(euR, euP, euS);
+      var best = 'R';
+      if (euP >= euR && euP >= euS) best = 'P';
+      if (euS >= euR && euS >= euP) best = 'S';
+      if (bestV - worstV < 0.02) best = '任意（无差异）';
+
+      txt($('rps_rO'), you[0].toFixed(3));
+      txt($('rps_pO'), you[1].toFixed(3));
+      txt($('rps_sO'), you[2].toFixed(3));
+      txt($('rps_orO'), opp[0].toFixed(3));
+      txt($('rps_opO'), opp[1].toFixed(3));
+      txt($('rps_osO'), opp[2].toFixed(3));
+      txt($('rps_eu'), eu.toFixed(3));
+      txt($('rps_br'), best);
+      var msg = '对当前对手：EU(R/P/S)=(' + euR.toFixed(2) + ',' + euP.toFixed(2) + ',' + euS.toFixed(2) + ')；最优=' + best;
+      if (Math.abs(opp[0] - 1 / 3) < 0.02 && Math.abs(opp[1] - 1 / 3) < 0.02) {
+        msg += ' · 对手≈均匀混合 → 你任意策略 EU≈0（纳什）';
+      }
+      txt($('rps_vh'), msg);
+      tint($('rps_vh'), Math.abs(eu) < 0.05 ? C.blue : (eu > 0 ? C.red : C.green));
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 56, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var vals = [euR, euP, euS];
+      var labs = ['R', 'P', 'S'];
+      var cols = [C.red, C.blue, C.green];
+      var ymax = 1.2, ymin = -1.2;
+      function sy(v) { return y1 - ((v - ymin) / (ymax - ymin)) * bh; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var v = -1; v <= 1; v++) {
+        var y = sy(v);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(String(v), pl - 6, y + 4);
+      }
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(0));
+      ctx.lineTo(w - pr, sy(0));
+      ctx.stroke();
+
+      var barW = bw / 5;
+      for (var i = 0; i < 3; i++) {
+        var cx = pl + (i + 1) * (bw / 4);
+        var v0 = vals[i];
+        var y0 = sy(0), yv = sy(v0);
+        ctx.fillStyle = cols[i];
+        ctx.fillRect(cx - barW / 2, Math.min(y0, yv), barW, Math.abs(yv - y0));
+        ctx.fillStyle = C.ink;
+        ctx.textAlign = 'center';
+        ctx.font = '12px sans-serif';
+        var lab = labs[i] + ' ' + v0.toFixed(2);
+        var lw = ctx.measureText(lab).width;
+        var lx = cx;
+        // label above/below bar
+        ctx.fillText(lab, lx, v0 >= 0 ? yv - 6 : yv + 14);
+        ctx.fillStyle = C.ink3;
+        ctx.fillText(labs[i], cx, y1 + 13);
+      }
+      ctx.fillStyle = C.ink2;
+      ctx.textAlign = 'left';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('各纯策略对当前对手的期望支付', pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = C.ink3;
+      ctx.fillText('你的混合 EU = ' + eu.toFixed(3), pl + bw / 2, y1 + 31);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>

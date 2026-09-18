@@ -466,11 +466,14 @@
     {
       "slug": "策略（Strategy）：参与人在每种情形下的完整行动方案；分纯策略与混合策略（按概率随机化）",
       "title": "策略（Strategy）：参与人在每种情形下的完整行动方案；分纯策略与混合策略（按概率随机化）",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 00:09:36",
+      "finished": "2026-09-19 00:20:04",
+      "duration_sec": 628,
+      "outputs": [
+        "reports/策略（Strategy）：参与人在每种情形下的完整行动方案；分纯策略与混合策略（按概率随机化）.html",
+        "reports/策略（Strategy）：参与人在每种情形下的完整行动方案；分纯策略与混合策略（按概率随机化）.md"
+      ],
       "error": null
     },
     {
@@ -1801,7 +1804,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 00:09",
+  "updated": "2026-09-19 00:20",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
