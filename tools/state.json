@@ -765,11 +765,14 @@
     {
       "slug": "零和 vs 非零和：零和下合作无空间，非零和下存在正和交易，判断博弈类型是第一步",
       "title": "零和 vs 非零和：零和下合作无空间，非零和下存在正和交易，判断博弈类型是第一步",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 03:34:59",
+      "finished": "2026-09-19 03:41:38",
+      "duration_sec": 399,
+      "outputs": [
+        "reports/零和 vs 非零和：零和下合作无空间，非零和下存在正和交易，判断博弈类型是第一步.html",
+        "reports/零和 vs 非零和：零和下合作无空间，非零和下存在正和交易，判断博弈类型是第一步.md"
+      ],
       "error": null
     },
     {
@@ -1870,7 +1873,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 03:34",
+  "updated": "2026-09-19 03:41",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

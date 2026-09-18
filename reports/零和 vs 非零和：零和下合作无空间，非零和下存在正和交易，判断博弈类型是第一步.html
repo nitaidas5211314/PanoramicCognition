@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>零和 vs 非零和：先判类型，再谈合作 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Zero-Sum × Variable-Sum × First Discriminant</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践路径</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>零和 vs 非零和：先判类型，再谈合作</h1>
+  <p class="sub">二人零和下「帮对方」=「伤害自己」；非零和下存在<strong>正和交易</strong>——把可变的饼当成固定的饼，是最贵的建模错误。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>零和（zero-sum）</strong>：每个结果上各方支付之和恒为 0（或恒为常数 (C)，称常数和；策略上与零和等价）。一人多得，另一人必少得——<strong>合作没有增量空间</strong>，理性目标等价于「最小化对方」。<span class="tag t-fact">事实</span></p>
+<p><strong>非零和 / 可变和（non-zero-sum / variable-sum）</strong>：不同结果上的联合支付可变。其中<strong>正和结果</strong>（联合支付上升）使「对你有利的安排」可以同时对对方有利——<strong>正和交易</strong>存在；囚徒困境、贸易、整合谈判都属于这一族。<span class="tag t-fact">事实</span></p>
+<p>因此：判断博弈类型是第一步。类型错了，后面的「该不该合作、怎么谈判、如何竞争」全会偏航。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是口号「双赢 / 你死我活」，而是<strong>支付结构的可加性</strong>：联合支付是否随策略组合变化，以及这种变化如何决定「合作有没有数学空间」。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：二人零和与常数和、极小极大定理、可变和分类（正和/负和）、贸易剩余、整合式 vs 分配式谈判、零和思维（BZSG）作为认知偏差、与 PD/协调/鸡博弈的嵌套关系。</li>
+<li><strong>在界外</strong>：具体牌局绝招、某只股票买卖点、某次外交密谈话术——除非压成「联合支付是否可变 / 误判代价多大」。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>何时合作无空间、何时存在正和交易，以及如何先判别</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「支付矩阵 + 联合支付函数」可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>联合支付 (S(s)=u_1+u_2)、常数和、可变和、剩余、均衡概念切换</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>双方玩家、谈判者、规则设计者、旁观市场</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(S) 的方差/极差、交易估值差 (V-C)、议题偏好互补度、误判率</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>价格、份额、比分、合同条款、公开支付</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>对方真实估值、是否把互动当零和、隐藏议题</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>支付结构 → 解概念（极小极大 vs 纳什）→ 行为空间</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>(S) 恒定 ⇒ 无帕累托改进空间；(S) 可变 ⇒ 可搜正和结果</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「竞争激烈」≠ 零和；市场份额战可近似常数和，但品类扩张不是</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>价格战、配额争夺、贸易双赢、议题交换、零和话术</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>资源是否创造/销毁；偏好是否互补；合同是否可扩大饼</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。零和心态压缩信息交换 → 更难发现正和</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。信任与互补偏好发现常滞后于首轮对抗</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>误判零和 → 隐瞒信息 → 证实「果然是对抗」为正反馈</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>零和下合作无空间，不是道德失败，是<strong>联合支付不可变</strong>；非零和下存在正和交易，第一步是<strong>先算 (S) 会不会变</strong>。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它是策略工具箱的「类型开关」</h4><p>零和用极小极大；可变和用纳什、帕累托、谈判理论。开关打错，解法整套错位。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它解释「好心办坏事」与「冷酷却共赢」</h4><p>零和里帮对方=害自己；正和里自利可兼容他利——道德直觉必须服从结构。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它连接数学与日常误判</h4><p>体育、选举局部像零和；贸易、知识、多数谈判常是可变和。把后者当前者，系统性毁剩余。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「估值 (V&gt;C) 的潜在交易」当成零和砍价：信息全藏、极端开价、拒绝议题交换——联合剩余 (V-C) 整块蒸发。哈佛谈判项目强调：多数谈判并非纯分配，整合空间常被零和迷思堵死。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看「和」如何从一条定义长成谈判与心态。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="zsL9" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 机制设计 · 改规则创造正和（托管、补贴、侧支付）</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 零和思维 BZSG · 跨文化信念如何压缩合作</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 整合谈判 · 议题交换把饼做大</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 经典可变和 · PD / 协调 / 鸡博弈嵌套</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 纳什存在性 · 可变和的解概念切换</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 贸易与剩余 · V−C&gt;0 即正和交易空间</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 极小极大定理 · 二人零和的「值」</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 常数和 ≡ 零和（仿射变换）</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 定义 · 联合支付 S 是否恒定</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L1→L2</strong>：会算 (S)、会把「份额合计 100%」还原成零和；进阶卡在 <strong>L4→L7</strong>（发现剩余）与 <strong>L8</strong>（别让心态把结构锁死）。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到可操作判别。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="160" y="16" width="360" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">联合支付 S(s)=u₁(s)+u₂(s)</text>
+
+  <rect x="40" y="100" width="180" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象：恒定 vs 可变</text>
+  <rect x="250" y="100" width="180" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制：极小极大 / 纳什</text>
+  <rect x="460" y="100" width="180" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作：搜正和 / 防误判</text>
+
+  <line x1="280" y1="60" x2="130" y2="100" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="190" width="180" height="64" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="218" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">问：所有结果 S 相同？</text><text x="130" y="238" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">是 → 零和/常数和</text>
+  <rect x="250" y="190" width="180" height="64" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="218" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">问：是否存在 S 更大？</text><text x="340" y="238" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">是 → 正和空间</text>
+  <rect x="460" y="190" width="180" height="64" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="218" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">问：我是否在当零和打？</text><text x="550" y="238" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">查信息是否被藏起</text>
+
+  <line x1="130" y1="152" x2="130" y2="190" stroke="#0f8a4d" stroke-width="1.2" marker-end="url(#cmA)"/>
+  <line x1="340" y1="152" x2="340" y2="190" stroke="#1d4ed8" stroke-width="1.2" marker-end="url(#cmA)"/>
+  <line x1="550" y1="152" x2="550" y2="190" stroke="#b8730a" stroke-width="1.2" marker-end="url(#cmA)"/>
+
+  <path d="M220,222 Q340,280 460,222" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <text x="340" y="300" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">反馈：误判零和 → 藏信息 → 更难发现正和</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>激励</th>
+<th>在「和」结构里做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">玩家 A / B</td>
+<td>最大化自身 (u_i)</td>
+<td>在零和中对立；在正和中可协调</td>
+</tr>
+<tr>
+<td class="k">谈判者</td>
+<td>扩大己方份额 +（可选）扩大饼</td>
+<td>分配式砍价 vs 整合式交换</td>
+</tr>
+<tr>
+<td class="k">规则设计者</td>
+<td>诱导合意结果</td>
+<td>引入侧支付、托管、补贴改变 (S)</td>
+</tr>
+<tr>
+<td class="k">市场 / 旁观者</td>
+<td>价格发现</td>
+<td>把双边剩余外化为可观测交易</td>
+</tr>
+<tr>
+<td class="k">心态持有者</td>
+<td>认知节约</td>
+<td>BZSG 高者更倾向把一切当对抗</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">联合支付</td>
+<td>(S(s))</td>
+<td>类型判别的核心；恒定⇔零和/常数和</td>
+</tr>
+<tr>
+<td class="k">常数</td>
+<td>(C)</td>
+<td>常数和水平；减 (C/2) 可化零和</td>
+</tr>
+<tr>
+<td class="k">买方估值 / 卖方成本</td>
+<td>(V,C)</td>
+<td>贸易剩余 (V-C)；(&gt;0) 即正和空间</td>
+</tr>
+<tr>
+<td class="k">成交价</td>
+<td>(P)</td>
+<td>分配剩余：买方 (V-P)，卖方 (P-C)</td>
+</tr>
+<tr>
+<td class="k">议题估值矩阵</td>
+<td>(v_{i,j})</td>
+<td>互补偏好驱动整合增益</td>
+</tr>
+<tr>
+<td class="k">误判率</td>
+<td>(p_{\mathrm{mis}})</td>
+<td>把正和当零和的概率；期望损失 (p\cdot S)</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note green"><b>判定口诀</b><p><strong>先算每个结果的 (S)</strong>：全相同 → 零和/常数和（合作无增量）；有高有低 → 可变和，去找 (\max S) 那一格是不是可达。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<div class="flow"><span>支付矩阵</span><i>→</i><span class="hi">算联合 S</span><i>→</i><span class="hi">恒定？</span><i>→</i><span>是：极小极大 / 否：搜正和</span><i>→</i><span>策略与话术</span></div>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cfA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cfB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="120" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="80" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">列出 u₁,u₂</text>
+  <rect x="180" y="30" width="120" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="240" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">计算各格 S</text>
+  <rect x="340" y="30" width="120" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="400" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">恒定？</text>
+  <rect x="500" y="20" width="160" height="70" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="580" y="48" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">是→零和·无增量</text><text x="580" y="68" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">否→可变和·可正和</text>
+  <line x1="140" y1="55" x2="180" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <line x1="300" y1="55" x2="340" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <line x1="460" y1="55" x2="500" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <rect x="180" y="130" width="280" height="50" rx="8" fill="#15181d"/><text x="320" y="160" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">误判反馈：当零和打 → 藏信息 → 正和不可达</text>
+  <path d="M580,90 Q580,120 460,140" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cfB)"/>
+  <text x="500" y="125" fill="#d5342c" font-size="11" font-family="sans-serif">心态回路</text>
+</svg>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>常数和 ≡ 零和</strong>：(u_1+u_2=C) 时，令 (u_1'=u_1-C/2) 即得零和；策略最优反应不变。<span class="tag t-fact">事实</span></li>
+<li><strong>可变和里仍可有局部对抗</strong>：PD 中 ((D,C)) 对背叛者更好，但社会总支付可低于 ((C,C))——「非零和 ≠ 自动和谐」。<span class="tag t-fact">事实</span></li>
+<li><strong>n 人非零和可嵌入 n+1 人零和</strong>：冯·诺依曼–摩根斯特恩引入「虚拟玩家」吸收总盈亏——技术上有用，日常诊断仍应直接看真实 (S)。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></li>
+<li><strong>股票市场常被误标零和</strong>：二级市场交易在忽略创造价值与时间时像转移，但上市公司现金流增长使整体可正和——「股市=赌场」是典型零和谬误。<span class="tag t-ana">分析</span></li>
+<li><strong>跨域同构</strong>：零和 ↔ 份额争夺 ↔ 选举座位；正和 ↔ 贸易 ↔ 知识复制 ↔ 议题互补谈判。<span class="tag t-inf">推论</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p><strong>零和运行</strong>：</p>
+<ol>
+<li>写出矩阵；验证每格 (u_1=-u_2)（或 (S=C)）  </li>
+<li>求极小极大值 (v)；均衡策略使期望支付为 (v)  </li>
+<li>「合作」不能抬高双方期望之和——只能重新分配谁更接近 (v)</li>
+</ol>
+<p><strong>可变和运行</strong>：</p>
+<ol>
+<li>写出各结果 (S)；标出 (\max S) 与 (\min S)  </li>
+<li>问：(\max S) 对应的结果是否是纳什？若否，缺口来自激励还是协调  </li>
+<li>若存在 (V&gt;C) 类剩余，谈判/交易是把剩余从 0 抬到 (V-C) 的过程</li>
+</ol>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <text x="340" y="24" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">资金/价值流：正和交易如何「抽水造饼」</text>
+  <rect x="40" y="50" width="140" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="110" y="75" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">卖方成本 C</text><text x="110" y="95" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">机会成本</text>
+  <rect x="250" y="50" width="180" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="75" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">成交 · 剩余 V−C</text><text x="340" y="95" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">按 P 分配</text>
+  <rect x="500" y="50" width="140" height="60" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="570" y="75" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">买方估值 V</text><text x="570" y="95" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">愿付上限</text>
+  <line x1="180" y1="80" x2="250" y2="80" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="430" y1="80" x2="500" y2="80" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <text x="340" y="150" text-anchor="middle" fill="#0f8a4d" font-size="12" font-family="sans-serif">默认例：V=100, C=40, P=70 → 买方+30 · 卖方+30 · 联合+60</text>
+  <text x="340" y="175" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">若当零和拒谈：联合剩余归零（损失 60）</text>
+</svg>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 160" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="80" x2="640" y2="80" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="80" cy="80" r="10" fill="#0f8a4d"/><text x="80" y="50" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1928</text><text x="80" y="115" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">von Neumann</text><text x="80" y="130" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">极小极大</text>
+  <circle cx="220" cy="80" r="10" fill="#1d4ed8"/><text x="220" y="50" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1944</text><text x="220" y="115" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">TGEB</text><text x="220" y="130" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">合作扩展</text>
+  <circle cx="360" cy="80" r="10" fill="#b8730a"/><text x="360" y="50" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1950</text><text x="360" y="115" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">Nash</text><text x="360" y="130" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">可变和均衡</text>
+  <circle cx="500" cy="80" r="10" fill="#3b6ef5"/><text x="500" y="50" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1980s</text><text x="500" y="115" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">Axelrod</text><text x="500" y="130" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">IPD 合作</text>
+  <circle cx="620" cy="80" r="10" fill="#d5342c"/><text x="620" y="50" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">2015+</text><text x="620" y="115" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">BZSG</text><text x="620" y="130" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">心态测量</text>
+</svg>
+<p>1928 极小极大锁住二人零和；1944《博弈论与经济行为》把故事推向 n 人与合作；1950 纳什为可变和提供非合作解；1980 年代 Axelrod 展示非零和重复互动中合作可演化；2015 起 BZSG 量表把「把人生当零和」测成可跨文化比较的信念。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>个体激励</th>
+<th>集体含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">严格零和</td>
+<td>提高己方=压低对方</td>
+<td>无帕累托改进；旁观者福利也不变（转移）</td>
+</tr>
+<tr>
+<td class="k">正和可达</td>
+<td>可同时抬高双方（若激励相容）</td>
+<td>剩余可创造；关键是可达性与分配</td>
+</tr>
+<tr>
+<td class="k">负和陷阱</td>
+<td>冲突升级双方都亏</td>
+<td>战争、恶性价格战、报复螺旋</td>
+</tr>
+<tr>
+<td class="k">可变和+占优背叛</td>
+<td>个体仍可能选毁饼策略</td>
+<td>典型 PD：非零和但均衡次优</td>
+</tr>
+</tbody>
+</table></div>
+<p>激励设计的杠杆：不是劝人「别零和」，而是<strong>改变 (S) 的形状</strong>或<strong>改变可达 (\max S) 的激励</strong>。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 210" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rsA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="rsB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="30" y="30" width="160" height="70" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="110" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">私有估值 V,C</text><text x="110" y="80" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">信息源</text>
+  <rect x="260" y="30" width="160" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">披露 / 报价</text><text x="340" y="80" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">信息通道</text>
+  <rect x="490" y="30" width="160" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="570" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">成交剩余</text><text x="570" y="80" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">资源创造</text>
+  <line x1="190" y1="65" x2="260" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#rsA)"/>
+  <line x1="420" y1="65" x2="490" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#rsA)"/>
+  <rect x="160" y="130" width="360" height="50" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="340" y="160" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">零和心态切断披露 → 通道堵塞 → 剩余无法显化</text>
+  <path d="M340,100 Q340,120 340,130" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#rsB)"/>
+</svg>
+<p>资源流：在正和交易里，价值从「未实现偏好」变成「已实现剩余」；信息流是催化剂。零和竞争里，信息多用于欺骗与隐瞒，因披露常削弱己方份额。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>先算联合支付表</strong></td>
+<td>30 秒可排除整类错误策略</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>区分「份额战」与「品类战」</strong></td>
+<td>份额近似常数和；品类扩张可变和</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>写出 V 与 C（或等价估值）</strong></td>
+<td>直接暴露正和空间是否存在</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>议题拆分与交换</strong></td>
+<td>偏好互补时整合增益立现（例：10+10 vs 12）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>BATNA 准备</strong></td>
+<td>谈不成时的最佳替代，防止被迫接受负和</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>侧支付 / 托管</strong></td>
+<td>把激励不相容变成可转移效用</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>重复与声誉</strong></td>
+<td>可变和中把一次性背叛变贵</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>降低 BZSG 话术</strong></td>
+<td>改变团队默认叙事，恢复信息披露</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>改规则而非改性格</strong></td>
+<td>机制设计直接重塑 (S)</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>明确何时该零和打</strong></td>
+<td>决赛、配额、固定预算——该硬就硬</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「竞争激烈 = 零和」</summary><div class="dbody"><p>假。两家外卖可同时因品类增长而增收；激烈≠联合支付恒定。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. 「非零和 = 双赢自动发生」</summary><div class="dbody"><p>假。PD 是非零和，均衡仍可双输相对合作。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>3. 「谈判一定是分固定饼」</summary><div class="dbody"><p>分配式谈判假设饼固定；整合式谈判先造饼。多数真实谈判是混合物。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>4. 「股市是零和」</summary><div class="dbody"><p>忽略企业创造现金流与长期增长时的典型谬误。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>5. 「帮对方就是软弱」</summary><div class="dbody"><p>仅在零和成立；正和里帮助对方扩大饼可提高己方绝对收益。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>6. 「常数和不是零和，所以有合作空间」</summary><div class="dbody"><p>策略上等价；(C) 只是标度，不创造帕累托改进。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>7. 「道德劝说能把零和变正和」</summary><div class="dbody"><p>不能。要变 (S)，得改技术、合同或偏好定义，不是改口号。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>8. 「我感到被占便宜 ⇒ 一定是零和」</summary><div class="dbody"><p>嫉妒与相对效用会把正和交互体验成零和（Axelrod：「不要嫉妒」）。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>9. 「国际政治全是零和」</summary><div class="dbody"><p>安全困境局部像；贸易与气候减缓常有正和/负和混合层。<span class="tag t-ana">分析</span><span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>10. 「先合作再判断类型」</summary><div class="dbody"><p>顺序反了。类型未明时的无条件合作，在真零和里是单向输血。<span class="tag t-inf">推论</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="abA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="20" y="40" width="180" height="100" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/><text x="110" y="75" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">抽象</text><text x="110" y="100" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">S 恒定？</text><text x="110" y="120" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">max S 可达？</text>
+  <rect x="250" y="40" width="180" height="100" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="75" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">机制</text><text x="340" y="100" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">极小极大 / 纳什</text><text x="340" y="120" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">整合交换</text>
+  <rect x="480" y="40" width="180" height="100" rx="10" fill="#fff7e6" stroke="#b8730a"/><text x="570" y="75" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">操作</text><text x="570" y="100" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">列矩阵·估 V,C</text><text x="570" y="120" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">拆议题·备 BATNA</text>
+  <line x1="200" y1="90" x2="250" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#abA)"/>
+  <line x1="430" y1="90" x2="480" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#abA)"/>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>现实场景</th>
+<th>更像哪种</th>
+<th>操作含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">足球决赛晋级</td>
+<td>零和（名额）</td>
+<td>不谈「双赢晋级」</td>
+</tr>
+<tr>
+<td class="k">跨境苹果换香蕉</td>
+<td>正和贸易</td>
+<td>先确认比较优势</td>
+</tr>
+<tr>
+<td class="k">部门抢同一预算包</td>
+<td>近似常数和</td>
+<td>先争总量扩张再分配</td>
+</tr>
+<tr>
+<td class="k">薪资+远程+职级套餐</td>
+<td>可变和谈判</td>
+<td>用低成本高价值项交换</td>
+</tr>
+<tr>
+<td class="k">价格战打到亏损</td>
+<td>负和</td>
+<td>停损或行业协调（注意反垄断）</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>列结果</strong>：至少 4 个可能结局，估双方支付（粗估即可）。  </li>
+<li><strong>算 (S)</strong>：看是否恒定；若不恒定，标出最大 (S)。  </li>
+<li><strong>判激励</strong>：最大 (S) 是否个人理性可达；若否，找侧支付/重复/改规则。  </li>
+<li><strong>选话术</strong>：真零和 → 清晰对抗、保密；真正和 → 披露互补偏好、交换议题。  </li>
+<li><strong>写 BATNA</strong>：防止在负和里硬耗。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>① 辨识（L1）</summary><div class="dbody"><p>能对 2×2 矩阵手算四格 (S)，口答「零和 / 常数和 / 可变和」。</p></div></details>
+<details><summary>② 变换（L2）</summary><div class="dbody"><p>能把市场份额（合计 100）改写成零和支付并解释为何策略等价。</p></div></details>
+<details><summary>③ 剩余（L3）</summary><div class="dbody"><p>给定 (V,C,P)，能算买方/卖方/联合剩余并判断交易是否可行。</p></div></details>
+<details><summary>④ 嵌套（L4）</summary><div class="dbody"><p>能指出 PD 为何是非零和却仍可能均衡次优。</p></div></details>
+<details><summary>⑤ 整合（L5）</summary><div class="dbody"><p>能设计两个议题的交换方案，算出相对「各切一半」的增益。</p></div></details>
+<details><summary>⑥ 心态（L6）</summary><div class="dbody"><p>能识别团队 BZSG 话术，并改写成「先查 (S)」流程。</p></div></details>
+<details><summary>⑦ 设计（L7）</summary><div class="dbody"><p>能提出一条改 (S) 的规则（托管、保证金、补贴）并预测均衡移动。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你进入「类型峡谷」：每扇门后是一场互动。门楣不写答案，只给你支付表。选错类型，技能卡（合作/欺骗/交换）会灰掉。Boss 是「零和幻影」——它把所有门刷成红黑对决皮肤，你必须用 (S) 验算破隐身。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>难度</th>
+<th>完成标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">手算猜硬币矩阵 (S)</td>
+<td>★</td>
+<td>四格皆 0</td>
+</tr>
+<tr>
+<td class="k">手算经典 PD 的 (S)</td>
+<td>★★</td>
+<td>得到 6,5,5,2</td>
+</tr>
+<tr>
+<td class="k">编一笔 (V&gt;C) 交易</td>
+<td>★★</td>
+<td>写出剩余分配</td>
+</tr>
+<tr>
+<td class="k">找一则「零和话术」新闻</td>
+<td>★★★</td>
+<td>给出替代可变和模型</td>
+</tr>
+<tr>
+<td class="k">双议题整合练习</td>
+<td>★★★</td>
+<td>增益 (\ge 20\%) 相对均分</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若把贸易当零和</button><button class="tab" data-pane="tb1-1">若把决赛当正和</button><button class="tab" data-pane="tb1-2">若只改心态不改矩阵</button><button class="tab" data-pane="tb1-3">若引入侧支付</button></div>
+<div class="pane on" id="tb1-0"><p>双方隐瞒估值、极端开价。(V=100,C=40) 的潜在剩余 60 可能整块消失；期望损失 (\approx p_{\mathrm{mis}}\times 60)。</p></div><div class="pane" id="tb1-1"><p>劝两队「一起晋级」——规则不允许。浪费沟通预算，该用的竞争资源被稀释。</p></div><div class="pane" id="tb1-2"><p>团队喊双赢，但预算包固定且无扩张项——常数和仍在，冲突改头换面回来。</p></div><div class="pane" id="tb1-3"><p>PD 中若背叛者需向合作者支付足够转移，可把 ((C,C)) 变成激励相容——结构从「可变和但坏均衡」被推近「正和可达」。</p></div>
+<div class="tool" id="tool-sum">
+  <h3>模型 1 · 联合支付类型判定</h3>
+  <p class="hint">输入 2×2 四个结果的联合支付 S。看是否常数和，以及正和空间（max−min）。默认对照：猜硬币全 0；也可改成 PD 的 6/5/5/2。</p>
+  <div class="ctrl">
+    <label>S₁₁（行1列1）<input type="range" id="sm_s11" min="-20" max="40" step="0.5" value="0"><output id="sm_s11O">0</output></label>
+    <label>S₁₂<input type="range" id="sm_s12" min="-20" max="40" step="0.5" value="0"><output id="sm_s12O">0</output></label>
+    <label>S₂₁<input type="range" id="sm_s21" min="-20" max="40" step="0.5" value="0"><output id="sm_s21O">0</output></label>
+    <label>S₂₂<input type="range" id="sm_s22" min="-20" max="40" step="0.5" value="0"><output id="sm_s22O">0</output></label>
+  </div>
+  <div class="readout">
+    <div class="ro">类型 <b id="sm_kind">零和（常数=0）</b></div>
+    <div class="ro">max S <b id="sm_max">0</b></div>
+    <div class="ro">min S <b id="sm_min">0</b></div>
+    <div class="ro">正和空间 <b id="sm_span">0</b></div>
+    <div id="sm_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">拖动滑块观察类型切换</div>
+  </div>
+  <canvas id="smChart" height="214"></canvas>
+</div>
+<div class="tool" id="tool-trade">
+  <h3>模型 2 · 正和交易剩余（V−C）</h3>
+  <p class="hint">买方估值 V、卖方成本 C、成交价 P。联合剩余 = V−C；买方 V−P，卖方 P−C。默认 V=100, C=40, P=70 → 各 +30，联合 +60。</p>
+  <div class="ctrl">
+    <label>买方估值 V<input type="range" id="tr_v" min="20" max="200" step="1" value="100"><output id="tr_vO">100</output></label>
+    <label>卖方成本 C<input type="range" id="tr_c" min="0" max="180" step="1" value="40"><output id="tr_cO">40</output></label>
+    <label>成交价 P<input type="range" id="tr_p" min="0" max="200" step="1" value="70"><output id="tr_pO">70</output></label>
+  </div>
+  <div class="readout">
+    <div class="ro">联合剩余 <b id="tr_joint">60</b></div>
+    <div class="ro">买方 <b id="tr_buy">30</b></div>
+    <div class="ro">卖方 <b id="tr_sell">30</b></div>
+    <div class="ro">可行？ <b id="tr_ok">是</b></div>
+    <div id="tr_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">正和交易成立：双方剩余皆 ≥ 0</div>
+  </div>
+  <canvas id="trChart" height="214"></canvas>
+</div>
+<div class="tool" id="tool-mis">
+  <h3>模型 3 · 零和误判的期望损失</h3>
+  <p class="hint">若把一笔潜在正和交易当成零和而拒谈，损失整块剩余。期望损失 = p_mis × 剩余。默认 p=35%, S=60 → 期望损失 21。</p>
+  <div class="ctrl">
+    <label>误判为零和的概率 p<input type="range" id="ms_p" min="0" max="100" step="1" value="35"><output id="ms_pO">35%</output></label>
+    <label>潜在联合剩余 S<input type="range" id="ms_s" min="0" max="200" step="1" value="60"><output id="ms_sO">60</output></label>
+  </div>
+  <div class="readout">
+    <div class="ro">期望损失 <b id="ms_loss">21</b></div>
+    <div class="ro">达成时剩余 <b id="ms_keep">39</b></div>
+    <div id="ms_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">每 100 次同类机会，约 35 次整块蒸发</div>
+  </div>
+  <canvas id="msChart" height="214"></canvas>
+</div>
+<div class="tool" id="tool-integ">
+  <h3>模型 4 · 整合谈判 vs 各议题均分</h3>
+  <p class="hint">两人两项议题的估值。整合：每项给估值更高者；均分基准：每项按双方估值之和的一半计。默认 (10,2)×(2,10) → 整合 20 vs 均分 12，增益 +8。</p>
+  <div class="ctrl">
+    <label>甲对 A<input type="range" id="ig_a1" min="0" max="20" step="0.5" value="10"><output id="ig_a1O">10</output></label>
+    <label>甲对 B<input type="range" id="ig_b1" min="0" max="20" step="0.5" value="2"><output id="ig_b1O">2</output></label>
+    <label>乙对 A<input type="range" id="ig_a2" min="0" max="20" step="0.5" value="2"><output id="ig_a2O">2</output></label>
+    <label>乙对 B<input type="range" id="ig_b2" min="0" max="20" step="0.5" value="10"><output id="ig_b2O">10</output></label>
+  </div>
+  <div class="readout">
+    <div class="ro">整合总价值 <b id="ig_int">20</b></div>
+    <div class="ro">均分基准 <b id="ig_dist">12</b></div>
+    <div class="ro">增益 <b id="ig_gain">+8</b></div>
+    <div class="ro">分配 <b id="ig_who">A→甲 · B→乙</b></div>
+    <div id="ig_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">偏好互补越强，零和式「逐项硬切」越亏</div>
+  </div>
+  <canvas id="igChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 辨识</td>
+<td>会算 (S)、分类型</td>
+<td>3 个矩阵 5 分钟内判对</td>
+</tr>
+<tr>
+<td class="k">L2 应用</td>
+<td>贸易剩余与误判代价</td>
+<td>手算与模型 2/3 一致</td>
+</tr>
+<tr>
+<td class="k">L3 整合</td>
+<td>议题交换设计</td>
+<td>增益可解释</td>
+</tr>
+<tr>
+<td class="k">L4 设计</td>
+<td>改规则创造正和</td>
+<td>写出一条可执行机制</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一件本周真实互动（谈薪、分工、采购），列出 ≥3 个可能结局（8 分钟）。  </li>
+<li>粗估各方支付，算 (S)，写下类型判定一句话（7 分钟）。  </li>
+<li>若可变和：估一个 (V,C) 或两个议题估值，用手算模型 2 或 4（10 分钟）。  </li>
+<li>对照：若我默认当零和打，会丢掉哪块剩余？（5 分钟）  </li>
+</ol>
+<p>产出：一张手写支付草表 + 一句类型判定——成本接近 0。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>定义与 (S)</td>
+<td>3 个手算矩阵</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>常数和变换</td>
+<td>份额→零和一例</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>贸易剩余</td>
+<td>2 笔 V,C,P</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>PD 嵌套</td>
+<td>说明「非零和仍可坏」</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>整合谈判</td>
+<td>双议题增益表</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>误判代价</td>
+<td>估 p_mis</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘</td>
+<td>技能树自测</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>成果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>类型判别熟练</td>
+<td>15 个场景速判卡</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>剩余与谈判</td>
+<td>3 次真实小谈判复盘</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>可变和族谱</td>
+<td>PD/协调/鸡博弈对照</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>心态与机制</td>
+<td>团队话术审计 + 一条改规则提案</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>零和定义</td>
+<td>每结果 (u_1+u_2=0)</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>常数和等价</td>
+<td>(S=C) ≡ 零和（仿射）</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>极小极大</td>
+<td>二人零和有值 (v)</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>可变和</td>
+<td>(S) 随结果变</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>正和交易</td>
+<td>(V&gt;C) ⇒ 剩余可创造</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>分配 vs 整合</td>
+<td>切饼 vs 做饼</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>PD 嵌套</td>
+<td>非零和仍可均衡次优</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>误判期望损失</td>
+<td>(p_{\mathrm{mis}}\times S)</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>BZSG</td>
+<td>把社会关系当零和的信念</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>侧支付改 (S)</td>
+<td>转移效用扩大可达集</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 我面对的是不是零和？</summary><div class="dbody"><p>列出主要结果的联合支付；全相同才是（或常数和）。</p></div></details>
+<details><summary>Q2 常数和有没有合作空间？</summary><div class="dbody"><p>策略上没有帕累托增量；只能谈分配与外部把饼做大。</p></div></details>
+<details><summary>Q3 非零和是否该无条件合作？</summary><div class="dbody"><p>先看最大 (S) 是否激励相容；PD 提醒：结构允许双赢不等于均衡双赢。</p></div></details>
+<details><summary>Q4 如何发现正和？</summary><div class="dbody"><p>问「有没有一方廉价、另一方高价的议题？」→ 交换。</p></div></details>
+<details><summary>Q5 信息该不该披露？</summary><div class="dbody"><p>真零和：谨慎；真正和且需匹配偏好：有策略地披露互补项。</p></div></details>
+<details><summary>Q6 BATNA 怎么用？</summary><div class="dbody"><p>谈不成时的最佳替代定底线，避免在负和里硬耗。</p></div></details>
+<details><summary>Q7 团队总说「抢资源」怎么办？</summary><div class="dbody"><p>先验证预算包是否真固定；若固定，把扩张项（增收、提效）单列成新议题。</p></div></details>
+<details><summary>Q8 何时该残酷竞争？</summary><div class="dbody"><p>名额固定、规则零和、无法侧支付——用极小极大思维，别自我感动。</p></div></details>
+<details><summary>Q9 如何测自己有没有 BZSG？</summary><div class="dbody"><p>回顾上周三次冲突：有几次没算 (S) 就进入你死我活叙事？</p></div></details>
+<details><summary>Q10 成功指标是什么？</summary><div class="dbody"><p>不是「对方输了」，而是：该零和时接近值 (v)，该正和时实现的剩余占比。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>精读 von Neumann–Morgenstern <em>Theory of Games and Economic Behavior</em> 中零和与特征函数章节。  </li>
+<li>对照本引擎《囚徒困境》《纳什均衡》《帕累托最优》：把「和」的类型嵌进解概念。  </li>
+<li>谈判：Harvard Negotiation Project / BATNA 与整合谈判案例（含戴维营式「主权 vs 安全」互补）。  </li>
+<li>心理学：Różycka-Tran 等 BZSG 跨文化研究（37 国量表）。  </li>
+<li>进阶：可转移效用合作博弈、核与沙普利值——正和如何在联盟内分配。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">零和/常数和定义与等价</td>
+<td>教材标准</td>
+<td>博弈论讲义；LibreTexts 二人零和导论</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">极小极大定理（1928）</td>
+<td>经典定理</td>
+<td>von Neumann；TGEB 传统</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">纳什将理论扩展到非零和</td>
+<td>经典论文</td>
+<td>Nash 1950/1951；Crawford 综述讲义</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">囚徒困境为非零和经典</td>
+<td>教材/百科</td>
+<td>支付可加且非常数；Wikipedia Zero-sum game</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">贸易与正和直觉</td>
+<td>论述</td>
+<td>Pinker Edge.org「Positive-Sum Games」等</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">谈判零和迷思与 BATNA</td>
+<td>管理实践</td>
+<td>《哈佛商业评论》谈判迷思整理（HBR 台湾等）</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">整合谈判 / 戴维营互补议题</td>
+<td>谈判史转述</td>
+<td>哈佛谈判项目传统案例转述</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">BZSG 量表与跨文化</td>
+<td>同行评议</td>
+<td>Różycka-Tran et al., JCCP 2015；后续不变性/幸福感研究</td>
+<td><span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">IPD 中合作演化</td>
+<td>经典+新研</td>
+<td>Axelrod 1984；Harper et al. PLOS Comp Biol 2024</td>
+<td><span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">「股市零和」批评</td>
+<td>百科/评论</td>
+<td>Wikipedia Zero-sum fallacy 条目</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或标准定理；<span class="tag t-ana">分析</span>权威推断；<span class="tag t-inf">推论</span>本手册推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或转述链长。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与决策框架学习材料，不构成法律、投资、外交、谈判代理或商业建议。博弈模型是对激励结构的简化；现实含不完全信息、制度约束、伦理与执法风险。将手册结论直接用于高风险决策前，应咨询相应领域专业人士并核对一手数据。页脚「耗时」由流水线自动写入，不代表研究完备性保证。</p>
+</section>
+<footer>  <p>《零和 vs 非零和：先判类型，再谈合作 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 6 分 39 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《零和 vs 非零和》主题脚本
+   四个可调模型：
+     1. 联合支付类型判定
+     2. 正和交易剩余 V−C
+     3. 零和误判期望损失
+     4. 整合谈判 vs 均分
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function clampLabel(ctx, lab, x, y, align, pl, w) {
+    var lw = ctx.measureText(lab).width;
+    ctx.textAlign = align;
+    var lx = align === 'left' ? Math.min(x, w - lw - 6) : Math.max(x, pl + 6);
+    ctx.fillText(lab, lx, y);
+  }
+
+  /* ── 1. Sum-type classifier ── */
+  (function sumType() {
+    var ids = ['sm_s11', 'sm_s12', 'sm_s21', 'sm_s22'];
+    if (!$('sm_s11')) return;
+    var cv = $('smChart');
+
+    function upd() {
+      var vals = ids.map(function (id) { return parseFloat($(id).value); });
+      ids.forEach(function (id, i) { txt($(id + 'O'), vals[i].toFixed(1)); });
+      var mx = Math.max.apply(null, vals);
+      var mn = Math.min.apply(null, vals);
+      var span = mx - mn;
+      var uniq = {};
+      vals.forEach(function (v) { uniq[v.toFixed(6)] = true; });
+      var nUniq = Object.keys(uniq).length;
+      var isConst = nUniq === 1;
+      var kind, col;
+      if (isConst && Math.abs(vals[0]) < 1e-9) {
+        kind = '零和（常数=0）';
+        col = C.red;
+      } else if (isConst) {
+        kind = '常数和（≡零和）';
+        col = C.amber;
+      } else if (mn >= 0) {
+        kind = '可变和 · 全程非负';
+        col = C.green;
+      } else if (mx <= 0) {
+        kind = '可变和 · 全程非正';
+        col = C.amber;
+      } else {
+        kind = '可变和 · 可正可负';
+        col = C.blue;
+      }
+
+      txt($('sm_kind'), kind);
+      txt($('sm_max'), mx.toFixed(1));
+      txt($('sm_min'), mn.toFixed(1));
+      txt($('sm_span'), span.toFixed(1));
+      tint($('sm_kind'), col);
+
+      var msg;
+      if (isConst && Math.abs(vals[0]) < 1e-9) {
+        msg = '四格联合支付皆 0 → 严格零和：合作无增量空间，适用极小极大。';
+      } else if (isConst) {
+        msg = '联合支付恒为 ' + vals[0].toFixed(1) + ' → 常数和，策略上等价于零和（平移即可）。';
+      } else {
+        msg = '联合支付随结果变化（极差 ' + span.toFixed(1) + '）。正和空间 = max−min；去检查 max 格是否激励可达。';
+      }
+      txt($('sm_vh'), msg);
+      tint($('sm_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var labs = ['S₁₁', 'S₁₂', 'S₂₁', 'S₂₂'];
+      var maxAbs = Math.max(1, Math.abs(mx), Math.abs(mn));
+      function sx(v) { return pl + bw / 2 + (v / maxAbs) * (bw / 2 - 8); }
+      function sy(i) { return pt + (i + 0.5) * (bh / 4); }
+
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), pt);
+      ctx.lineTo(sx(0), y1);
+      ctx.stroke();
+
+      vals.forEach(function (v, i) {
+        var y = sy(i), x0 = sx(0), x1 = sx(v);
+        var barC = Math.abs(v - mx) < 1e-9 && span > 0 ? C.green : (v < 0 ? C.red : C.blue);
+        ctx.fillStyle = barC;
+        ctx.fillRect(Math.min(x0, x1), y - 10, Math.abs(x1 - x0) || 2, 20);
+        ctx.fillStyle = C.ink2;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(labs[i], pl, y - 14);
+        ctx.fillStyle = C.ink;
+        clampLabel(ctx, v.toFixed(1), v >= 0 ? x1 + 8 : x1 - 8, y + 4,
+          v >= 0 ? 'left' : 'right', pl, w);
+      });
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('联合支付 S（相对 0）', pl + bw / 2, y1 + 31);
+    }
+
+    bind(ids, upd);
+    upd();
+  })();
+
+  /* ── 2. Trade surplus ── */
+  (function trade() {
+    if (!$('tr_v')) return;
+    var cv = $('trChart');
+
+    function upd() {
+      var V = parseFloat($('tr_v').value);
+      var Cc = parseFloat($('tr_c').value);
+      var P = parseFloat($('tr_p').value);
+      txt($('tr_vO'), V.toFixed(0));
+      txt($('tr_cO'), Cc.toFixed(0));
+      txt($('tr_pO'), P.toFixed(0));
+
+      var joint = V - Cc;
+      var buy = V - P;
+      var sell = P - Cc;
+      var feasible = V >= Cc && P >= Cc && P <= V;
+      var pos = joint > 0;
+
+      txt($('tr_joint'), joint.toFixed(0));
+      txt($('tr_buy'), buy.toFixed(0));
+      txt($('tr_sell'), sell.toFixed(0));
+      txt($('tr_ok'), feasible ? '是' : '否');
+
+      var col = feasible && pos ? C.green : (feasible ? C.amber : C.red);
+      tint($('tr_ok'), col);
+      tint($('tr_joint'), pos ? C.green : C.red);
+
+      var msg;
+      if (!pos) {
+        msg = 'V≤C → 无正和空间（联合剩余 ' + joint.toFixed(0) + '）。强行成交是负和或零创造。';
+      } else if (!feasible) {
+        msg = '存在正和空间 ' + joint.toFixed(0) + '，但 P 落在 [C,V]=[' + Cc + ',' + V + '] 之外 → 至少一方拒绝。';
+      } else {
+        msg = '正和交易成立：联合 +' + joint.toFixed(0) + '，买方 +' + buy.toFixed(0) + '，卖方 +' + sell.toFixed(0) + '。若当零和拒谈，这整块蒸发。';
+      }
+      txt($('tr_vh'), msg);
+      tint($('tr_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 56, pr = 24, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var items = [
+        { lab: '联合 V−C', v: joint, c: pos ? C.green : C.red },
+        { lab: '买方 V−P', v: buy, c: buy >= 0 ? C.blue : C.red },
+        { lab: '卖方 P−C', v: sell, c: sell >= 0 ? C.amber : C.red }
+      ];
+      var maxAbs = Math.max(1, Math.abs(joint), Math.abs(buy), Math.abs(sell));
+      function sx(v) { return pl + bw / 2 + (v / maxAbs) * (bw / 2 - 8); }
+      function sy(i) { return pt + (i + 0.5) * (bh / 3); }
+
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), pt);
+      ctx.lineTo(sx(0), y1);
+      ctx.stroke();
+
+      items.forEach(function (item, i) {
+        var y = sy(i), x0 = sx(0), x1 = sx(item.v);
+        ctx.fillStyle = item.c;
+        ctx.fillRect(Math.min(x0, x1), y - 12, Math.abs(x1 - x0) || 2, 24);
+        ctx.fillStyle = C.ink2;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(item.lab, pl, y - 16);
+        ctx.fillStyle = C.ink;
+        clampLabel(ctx, item.v.toFixed(0), item.v >= 0 ? x1 + 8 : x1 - 8, y + 4,
+          item.v >= 0 ? 'left' : 'right', pl, w);
+      });
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('剩余分配（元）', pl + bw / 2, y1 + 31);
+    }
+
+    bind(['tr_v', 'tr_c', 'tr_p'], upd);
+    upd();
+  })();
+
+  /* ── 3. Mislabel cost ── */
+  (function mis() {
+    if (!$('ms_p')) return;
+    var cv = $('msChart');
+
+    function upd() {
+      var p = parseFloat($('ms_p').value) / 100;
+      var S = parseFloat($('ms_s').value);
+      txt($('ms_pO'), (p * 100).toFixed(0) + '%');
+      txt($('ms_sO'), S.toFixed(0));
+
+      var loss = p * S;
+      var keep = (1 - p) * S;
+      txt($('ms_loss'), loss.toFixed(1));
+      txt($('ms_keep'), keep.toFixed(1));
+      tint($('ms_loss'), C.red);
+      tint($('ms_keep'), C.green);
+
+      var msg = '期望损失 = ' + (p * 100).toFixed(0) + '% × ' + S.toFixed(0) + ' = ' +
+        loss.toFixed(1) + '。每 100 次同类机会，约 ' + Math.round(p * 100) +
+        ' 次因「当零和拒谈」整块蒸发。';
+      txt($('ms_vh'), msg);
+      tint($('ms_vh'), loss > keep ? C.red : C.amber);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 56, pr = 24, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var items = [
+        { lab: '期望损失 p·S', v: loss, c: C.red },
+        { lab: '期望保留 (1−p)·S', v: keep, c: C.green }
+      ];
+      var maxV = Math.max(1, S);
+      function sx(v) { return pl + (v / maxV) * (bw - 8); }
+      function sy(i) { return pt + (i + 0.5) * (bh / 2); }
+
+      items.forEach(function (item, i) {
+        var y = sy(i), x1 = sx(item.v);
+        ctx.fillStyle = item.c;
+        ctx.fillRect(pl, y - 14, Math.max(2, x1 - pl), 28);
+        ctx.fillStyle = C.ink2;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(item.lab, pl, y - 18);
+        ctx.fillStyle = C.ink;
+        clampLabel(ctx, item.v.toFixed(1), x1 + 8, y + 4, 'left', pl, w);
+      });
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('相对潜在剩余 S=' + S.toFixed(0), pl + bw / 2, y1 + 31);
+    }
+
+    bind(['ms_p', 'ms_s'], upd);
+    upd();
+  })();
+
+  /* ── 4. Integrative negotiation ── */
+  (function integ() {
+    if (!$('ig_a1')) return;
+    var cv = $('igChart');
+
+    function upd() {
+      var a1 = parseFloat($('ig_a1').value);
+      var b1 = parseFloat($('ig_b1').value);
+      var a2 = parseFloat($('ig_a2').value);
+      var b2 = parseFloat($('ig_b2').value);
+      txt($('ig_a1O'), a1.toFixed(1));
+      txt($('ig_b1O'), b1.toFixed(1));
+      txt($('ig_a2O'), a2.toFixed(1));
+      txt($('ig_b2O'), b2.toFixed(1));
+
+      var aTo1 = a1 >= a2;
+      var bTo1 = b1 >= b2;
+      var integTotal = (aTo1 ? a1 : a2) + (bTo1 ? b1 : b2);
+      var dist = 0.5 * (a1 + a2) + 0.5 * (b1 + b2);
+      var gain = integTotal - dist;
+      var who = 'A→' + (aTo1 ? '甲' : '乙') + ' · B→' + (bTo1 ? '甲' : '乙');
+
+      txt($('ig_int'), integTotal.toFixed(1));
+      txt($('ig_dist'), dist.toFixed(1));
+      txt($('ig_gain'), (gain >= 0 ? '+' : '') + gain.toFixed(1));
+      txt($('ig_who'), who);
+      tint($('ig_gain'), gain > 0 ? C.green : (gain < 0 ? C.red : C.ink));
+
+      var msg;
+      if (gain > 0.05) {
+        msg = '偏好互补：整合 ' + integTotal.toFixed(1) + ' vs 均分基准 ' + dist.toFixed(1) +
+          '，增益 ' + gain.toFixed(1) + '。零和式逐项硬切会丢掉这块。';
+      } else if (gain < -0.05) {
+        msg = '当前估值下「给高估值者」未优于均分基准（少见，检查估值对称）。';
+      } else {
+        msg = '增益接近 0：两项偏好不够互补，整合空间有限。';
+      }
+      txt($('ig_vh'), msg);
+      tint($('ig_vh'), gain > 0 ? C.green : C.amber);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 56, pr = 24, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var items = [
+        { lab: '整合总价值', v: integTotal, c: C.green },
+        { lab: '均分基准', v: dist, c: C.amber },
+        { lab: '增益', v: gain, c: gain >= 0 ? C.blue : C.red }
+      ];
+      var maxAbs = Math.max(1, Math.abs(integTotal), Math.abs(dist), Math.abs(gain));
+      function sx(v) { return pl + bw / 2 + (v / maxAbs) * (bw / 2 - 8); }
+      function sy(i) { return pt + (i + 0.5) * (bh / 3); }
+
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), pt);
+      ctx.lineTo(sx(0), y1);
+      ctx.stroke();
+
+      items.forEach(function (item, i) {
+        var y = sy(i), x0 = sx(0), x1 = sx(item.v);
+        ctx.fillStyle = item.c;
+        ctx.fillRect(Math.min(x0, x1), y - 12, Math.abs(x1 - x0) || 2, 24);
+        ctx.fillStyle = C.ink2;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(item.lab, pl, y - 16);
+        ctx.fillStyle = C.ink;
+        clampLabel(ctx, item.v.toFixed(1), item.v >= 0 ? x1 + 8 : x1 - 8, y + 4,
+          item.v >= 0 ? 'left' : 'right', pl, w);
+      });
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('价值（相对 0）', pl + bw / 2, y1 + 31);
+    }
+
+    bind(['ig_a1', 'ig_b1', 'ig_a2', 'ig_b2'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
