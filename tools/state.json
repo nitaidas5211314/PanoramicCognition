@@ -557,11 +557,14 @@
     {
       "slug": "帕累托最优（Pareto Optimality）：无法在不损害任何人的前提下改善任何人；与纳什均衡经常不重合",
       "title": "帕累托最优（Pareto Optimality）：无法在不损害任何人的前提下改善任何人；与纳什均衡经常不重合",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 01:11:51",
+      "finished": "2026-09-19 01:21:45",
+      "duration_sec": 594,
+      "outputs": [
+        "reports/帕累托最优（Pareto Optimality）：无法在不损害任何人的前提下改善任何人；与纳什均衡经常不重合.html",
+        "reports/帕累托最优（Pareto Optimality）：无法在不损害任何人的前提下改善任何人；与纳什均衡经常不重合.md"
+      ],
       "error": null
     },
     {
@@ -1822,7 +1825,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 01:11",
+  "updated": "2026-09-19 01:21",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

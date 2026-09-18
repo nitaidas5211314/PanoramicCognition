@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>帕累托最优：无人受损前提下无法再改善任何人；与纳什经常不重合 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Pareto Optimality × Welfare Theorems × Mechanism Design</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践系统</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>帕累托最优：无人受损前提下无法再改善任何人；与纳什经常不重合</h1>
+  <p class="sub">效率标准<strong>不是公平标准</strong>：一人独占一切可以是帕累托最优；囚徒困境的纳什均衡又可以严格帕累托劣于可行合作。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>帕累托最优（Pareto Optimality / Pareto Efficiency）</strong>：给定可行配置集合，若不存在另一种可行配置，能让至少一人严格更好且无人更差，则当前配置为帕累托最优。<span class="tag t-fact">事实</span></p>
+<p>与之成对的是<strong>帕累托改进（Pareto Improvement）</strong>：至少一人受益、无人受损的再配置。最优 =「改进空间已耗尽」。<span class="tag t-fact">事实</span></p>
+<p>锋利处有两刀：</p>
+<ol>
+<li><strong>它不谈公平</strong>：一人拿走全部、其余人一无所有，往往仍是帕累托最优——要帮后者必须伤害前者。<span class="tag t-fact">事实</span></li>
+<li><strong>它与纳什均衡经常不重合</strong>：囚徒困境里唯一 NE 是相互背叛，却被相互合作严格帕累托占优——稳定 ≠ 有效。<span class="tag t-fact">事实</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「怎样让人人满意」，而是一套<strong>效率语言</strong>：在不动人际比较与公平公理的前提下，如何判定「是否还留着互利空间」。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：帕累托改进/最优/前沿、埃奇沃思盒与合同曲线、核、福利经济学两定理、外部性与公共品下的失效、帕累托 vs 纳什、卡尔多–希克斯（潜在补偿）及其批评。</li>
+<li><strong>在界外</strong>：具体税制细节、某次谈判话术、单只证券买卖点——除非压成「是否还存在帕累托改进 / 如何选前沿上的点」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>何时配置「无浪费的互利空间」，以及与均衡、公平的关系</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「可行集 + 偏好/效用」可形式化为止；公平需另加公理</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>配置、帕累托支配、前沿、合同曲线、核、竞争均衡</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>消费者、企业、政府/机制设计者、博弈中的策略主体</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>禀赋、偏好（MRS）、价格、外部性强度、公共品贡献、福利权重 λ</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>交易量、价格、排放、贡献额、合同条款</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实效用、保留效用、私下信息、公平权重</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>禀赋+偏好 → 透镜与核；市场完备性 → 是否达前沿；博弈规则 → NE 是否在前沿</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>无外部性+竞争+凸性 ⇒ 竞争均衡 ⊆ 帕累托集（第一定理）</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「市场结果」≠「帕累托」；有外部性时相关破裂<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>贸易双赢、价格战内耗、公共品供给不足、监管僵局</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>无互利再交易 / 或有互利但激励不相容（NE 偏离前沿）</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。再分配改变禀赋 → 核移动；制度改变可行集</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。谈判、诉讼、补偿落实都有时滞</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>互利贸易是负反馈（逼近前沿）；报复螺旋可正反馈偏离</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>帕累托问的是「还能不能在不伤害任何人的前提下变好」；纳什问的是「单方面偏离还划不划算」——两把尺子，经常量出不同答案。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它是效率辩论的最小公约数</h4><p>几乎所有福利与机制设计讨论都以「先有没有帕累托浪费」为起点；连批评者也必须先站在这个坐标上。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它暴露「均衡≠最优」</h4><p>囚徒困境、公地悲剧、公共品自愿供给：NE 可稳定地停在前沿内部——制度必要性由此来。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它防止把效率伪装成正义</h4><p>「已经帕累托最优」常被误读成「不必再动」；其实只是说互利交易做完了，分配仍可极不公。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「卡尔多–希克斯潜在补偿」当成已经发生的帕累托改进：赢家可补偿 ≠ 赢家已补偿。机场、关税、城市更新里，未补偿的输家否决权与政治反弹，往往被净现值话术抹掉。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看帕累托标准如何从「两人两物」长成「福利定理与政策争论」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="poL9" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 机制设计 · 改可行集/信息/激励，让均衡落在前沿</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 政策标准之争 · 帕累托 vs 卡尔多–希克斯 vs 公平公理</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 市场失灵 · 外部性 / 公共品 / 不完全竞争 → NE∉前沿</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 福利第二定理 · 再分配禀赋 + 市场 → 可达任一前沿点</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 福利第一定理 · 竞争均衡 ⊆ 帕累托集（看不见的手）</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 核与合同曲线 · 禀赋透镜内自愿可达的有效段</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 埃奇沃思盒 · MRS 相切 = 交换最优</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 帕累托前沿 · 多点并存，标准不排序</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 定义 · 改进 / 最优 / 支配关系</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L1→L3</strong>（会判定改进、会画合同曲线）；进阶卡在 <strong>L5→L7</strong>（定理假设何时破）与 <strong>L8</strong>（别把 KH 说成帕累托）。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到可操作判别。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="160" y="16" width="360" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">可行配置 + 偏好（效用）</text>
+
+  <rect x="40" y="100" width="180" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象：改进 / 最优 / 前沿</text>
+  <rect x="250" y="100" width="180" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制：MRS / 价格 / 激励</text>
+  <rect x="460" y="100" width="180" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作：核内交易 / 再分配</text>
+
+  <line x1="300" y1="60" x2="130" y2="100" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="380" y1="60" x2="550" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="190" width="180" height="64" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="218" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">问：还有无人受损的</text><text x="130" y="238" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">改进吗？无 → 已最优</text>
+  <rect x="250" y="190" width="180" height="64" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="218" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">问：NE 是否在前沿？</text><text x="340" y="238" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">否 → 制度缺口</text>
+  <rect x="460" y="190" width="180" height="64" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="218" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">问：要前沿哪一点？</text><text x="550" y="238" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">需 λ 或公平公理</text>
+
+  <line x1="130" y1="152" x2="130" y2="190" stroke="#0f8a4d" stroke-width="1.2" marker-end="url(#cmA)"/>
+  <line x1="340" y1="152" x2="340" y2="190" stroke="#1d4ed8" stroke-width="1.2" marker-end="url(#cmA)"/>
+  <line x1="550" y1="152" x2="550" y2="190" stroke="#b8730a" stroke-width="1.2" marker-end="url(#cmA)"/>
+
+  <path d="M220,222 Q340,280 460,222" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <text x="340" y="300" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">反馈：选点争议 → 再分配政治 → 禀赋变 → 核移动</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>激励</th>
+<th>在帕累托问题里做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">消费者 / 交易方</td>
+<td>提高自身效用</td>
+<td>寻找透镜内互利贸易</td>
+</tr>
+<tr>
+<td class="k">企业</td>
+<td>利润</td>
+<td>生产/定价；可能制造外部性</td>
+</tr>
+<tr>
+<td class="k">机制设计者 / 政府</td>
+<td>效率+（常隐含）公平</td>
+<td>改规则、征税、一次性转移</td>
+</tr>
+<tr>
+<td class="k">博弈参与人</td>
+<td>最大化支付</td>
+<td>选策略；可能锁死非有效 NE</td>
+</tr>
+<tr>
+<td class="k">输家 / 否决者</td>
+<td>避免受损</td>
+<td>否决未补偿的「潜在改进」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">配置</td>
+<td>(x)</td>
+<td>每人每物的分配；可行集上的点</td>
+</tr>
+<tr>
+<td class="k">效用 / 偏好</td>
+<td>(u_i)</td>
+<td>判定「更好/更差」；人际不可比时只做序数比较</td>
+</tr>
+<tr>
+<td class="k">边际替代率</td>
+<td>(\mathrm{MRS})</td>
+<td>交换最优条件：(\mathrm{MRS}_A=\mathrm{MRS}_B)</td>
+</tr>
+<tr>
+<td class="k">禀赋</td>
+<td>(\omega)</td>
+<td>决定透镜与核；第二定理的操作手柄</td>
+</tr>
+<tr>
+<td class="k">价格</td>
+<td>(p)</td>
+<td>支撑竞争均衡；分离超平面</td>
+</tr>
+<tr>
+<td class="k">福利权重</td>
+<td>(\lambda)</td>
+<td>在前沿上选点；不创造新的帕累托改进</td>
+</tr>
+<tr>
+<td class="k">赢家/输家盈余</td>
+<td>(W,L)</td>
+<td>KH 检验：(W\ge L) 为潜在改进</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note green"><b>判定口诀</b><p><strong>帕累托最优 ⇔ 不存在帕累托改进</strong>。交换经济里（光滑凸偏好）：<strong>合同曲线 ≈ (\mathrm{MRS}) 相切轨迹</strong>。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<div class="flow"><span>禀赋+偏好</span><i>→</i><span>贸易透镜</span><i>→</i><span class="hi">核/合同曲线</span><i>→</i><span>竞争均衡?</span><i>→</i><span class="hi">是否在前沿</span></div>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cfA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cfB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="120" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="80" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">可行配置</text>
+  <rect x="180" y="30" width="120" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="240" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">帕累托检验</text>
+  <rect x="340" y="30" width="120" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="400" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">前沿/核</text>
+  <rect x="500" y="30" width="160" height="50" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="580" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">NE 可能在内点</text>
+  <line x1="140" y1="55" x2="180" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <line x1="300" y1="55" x2="340" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <line x1="460" y1="55" x2="500" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <rect x="180" y="130" width="320" height="50" rx="8" fill="#15181d"/><text x="340" y="160" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">改激励 / 改禀赋 → 把均衡推回前沿</text>
+  <path d="M580,80 Q580,110 420,130" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cfB)"/>
+  <text x="500" y="120" fill="#d5342c" font-size="11" font-family="sans-serif">反馈：制度</text>
+</svg>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>帕累托集很大</strong>：前沿上的点彼此不可比；标准本身不挑「哪一个更好」。<span class="tag t-fact">事实</span></li>
+<li><strong>一人独占也可最优</strong>：极端不平等与帕累托最优兼容——这是最常被忽略的教学点。<span class="tag t-fact">事实</span></li>
+<li><strong>NE ⊈ 帕累托集</strong>：PD 是最小反例；公共品自愿供给亦然（纳什供给低于萨缪尔森条件）。<span class="tag t-fact">事实</span></li>
+<li><strong>第二定理的政治难度</strong>：一次性总额转移在信息与激励上很难；真实再分配常扭曲价格。<span class="tag t-ana">分析</span></li>
+<li><strong>跨域同构</strong>：帕累托前沿 ↔ 生产可能性边界上的有效点 ↔ 多目标优化的非支配解集 ↔ 强化学习里「无人受损的策略改进」。<span class="tag t-inf">推论</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>交换经济的运行极简：</p>
+<ol>
+<li>给定总资源与偏好，画出所有可行配置（埃奇沃思盒）。  </li>
+<li>从禀赋出发，无差异曲线围成<strong>透镜</strong>：透镜内每一点相对禀赋都是帕累托改进。  </li>
+<li>贸易持续到 (\mathrm{MRS}) 相切（合同曲线）且落在透镜内（核）。  </li>
+<li>若存在竞争价格支撑该点，则第一定理说：均衡已在帕累托集上。  </li>
+</ol>
+<p>博弈情形多一步：<strong>每人只考虑单边偏离</strong>，集体可改进却无人愿单方面迈出——于是停在前沿内部。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="20" y="40" width="100" height="70" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="70" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">t0 禀赋</text><text x="70" y="90" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">常非有效</text>
+  <rect x="150" y="40" width="100" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="200" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">t1 议价</text><text x="200" y="90" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">透镜收缩</text>
+  <rect x="280" y="40" width="100" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="330" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">t2 核内点</text><text x="330" y="90" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">或卡在 NE</text>
+  <rect x="410" y="40" width="100" height="70" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="460" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">t3 政策</text><text x="460" y="90" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">KH/再分配</text>
+  <rect x="540" y="40" width="120" height="70" rx="8" fill="#15181d"/><text x="600" y="70" text-anchor="middle" fill="#fff" font-size="11" font-weight="600" font-family="sans-serif">t4 新禀赋</text><text x="600" y="90" text-anchor="middle" fill="#c7ccd4" font-size="10" font-family="sans-serif">核再定位</text>
+  <line x1="120" y1="75" x2="150" y2="75" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tmA)"/>
+  <line x1="250" y1="75" x2="280" y2="75" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tmA)"/>
+  <line x1="380" y1="75" x2="410" y2="75" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tmA)"/>
+  <line x1="510" y1="75" x2="540" y2="75" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tmA)"/>
+  <text x="340" y="160" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">时间轴：从浪费互利空间 → 有效或被激励锁死 → 政治再选点</text>
+</svg>
+<p>历史线索（压缩）：帕累托本人用序数偏好讨论效率；埃奇沃思给出盒式图；阿罗–德布鲁把竞争均衡与帕累托联系起来；博弈论则系统展示「均衡可无效」。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<p>谁喜欢「只谈帕累托」？</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>立场</th>
+<th>激励</th>
+<th>典型话术</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">现状受益者</td>
+<td>否决再分配</td>
+<td>「已经有效，别折腾」</td>
+</tr>
+<tr>
+<td class="k">改革推动者</td>
+<td>用 KH 绕过否决</td>
+<td>「总蛋糕变大，可补偿」</td>
+</tr>
+<tr>
+<td class="k">未获补偿输家</td>
+<td>坚持严格帕累托</td>
+<td>「可补偿≠已补偿」</td>
+</tr>
+<tr>
+<td class="k">机制设计者</td>
+<td>改游戏使 NE∈前沿</td>
+<td>「别劝善，改支付」</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note red"><b>激励扭曲</b><p>严格帕累托把<strong>否决权</strong>交给每一位潜在输家——政策几乎寸步难行；于是实践转向 KH，又把<strong>未补偿伤害</strong>合法化。两极都有利益结构，不是纯技术选择。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 240" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0f8a4d"/></marker>
+    <marker id="flB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="40" y="30" width="140" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="110" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">商品/权利 ω</text>
+  <rect x="270" y="30" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">价格/合同 p</text>
+  <rect x="500" y="30" width="140" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="570" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">最终配置 x*</text>
+  <line x1="180" y1="55" x2="270" y2="55" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="410" y1="55" x2="500" y2="55" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#flA)"/>
+  <rect x="150" y="130" width="380" height="70" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="340" y="160" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽水阀：外部性、市场势力、信息不对称</text><text x="340" y="182" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">使交易流偏离合同曲线 / 使 NE 停在前沿内</text>
+  <path d="M340,80 L340,130" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#flB)"/>
+</svg>
+<p>信息流关键点：偏好与成本常是私有信息——「找出帕累托改进」本身需要机制（显示原理），不是黑板上一画就完成。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+<th>操作入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>先判定「还有没有帕累托改进」</td>
+<td>避免在已有效处空转，也避免忽视浪费</td>
+<td>两人两物草图 / 支付矩阵</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>区分 NE 与帕累托</td>
+<td>决定是「劝善」还是「改规则」</td>
+<td>PD 检验 (T&gt;R&gt;P&gt;S)</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>禀赋/初始权利</td>
+<td>第二定理：选前沿点靠转移，不靠扭曲价格</td>
+<td>一次性转移、产权清晰</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>把外部性价格化</td>
+<td>让私人成本含社会成本，推回前沿</td>
+<td>税/配额/可交易许可</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>实际补偿而非潜在补偿</td>
+<td>把 KH 变回帕累托</td>
+<td>合同写明补偿条款</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>降低交易成本</td>
+<td>科斯：产权清晰+低成本 → 互利交易可达</td>
+<td>标准化合同、仲裁</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>福利权重 λ 显式化</td>
+<td>强迫「选哪一个有效点」公开</td>
+<td>SWF / 投票规则透明</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>信息显示机制</td>
+<td>私有信息下才能识别改进</td>
+<td>拍卖、VCG 类思路</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>重复互动与贴现</td>
+<td>把无效 NE 扩展为有效 SPE</td>
+<td>关系契约、声誉</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>否决权设计</td>
+<td>帕累托过严、KH 过松之间的制度折中</td>
+<td>超级多数、补偿基金</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱 1 · 「帕累托最优 = 最好 / 最公平」</summary><div class="dbody"><p>否。它只说互利空间耗尽；一人独占也可以最优。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 2 · 「市场结果一定帕累托」</summary><div class="dbody"><p>第一定理要竞争、完备市场、无外部性等；缺一则不必。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 3 · 「纳什均衡就是有效率」</summary><div class="dbody"><p>PD 反例：NE 支付 2，合作 6，效率仅 33%（(R=3,P=1)）。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 4 · 「能补偿 = 已补偿」（KH 冒充帕累托）</summary><div class="dbody"><p>潜在补偿通过 KH；实际无人受损才是帕累托改进。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 5 · 「前沿上只有一个点」</summary><div class="dbody"><p>通常是一条曲线/集合；需要公平公理或 λ 才能挑选。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 6 · 「反对某政策 = 不懂效率」</summary><div class="dbody"><p>可能是输家在行使帕累托否决；或质疑 WTP 被财富扭曲。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱 7 · 「再分配必然损害效率」</summary><div class="dbody"><p>第二定理：在凸性等条件下，可先转移禀赋再靠市场达任一有效点——扭曲来自工具而非目标本身。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱 8 · 「帕累托改进必须人人严格更好」</summary><div class="dbody"><p>标准定义允许部分人不变、至少一人严格更好（弱改进）。严格/弱版本教材有时混用，读定义。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 9 · 「合同曲线 = 全部帕累托集」</summary><div class="dbody"><p>有的作者把合同曲线限为「相对禀赋无人受损的有效段」（核）；有的指整个有效轨迹。用词前先对齐。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 10 · 「公共品多了就帕累托」</summary><div class="dbody"><p>自愿供给的 NE 常低于萨缪尔森条件 ( \sum MRS = MRT )；「多」不等于「对」。<span class="tag t-fact">事实</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <rect x="30" y="40" width="180" height="120" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/><text x="120" y="80" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">抽象</text><text x="120" y="110" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">支配、前沿、MRS</text><text x="120" y="135" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">福利两定理</text>
+  <rect x="250" y="40" width="180" height="120" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="80" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">机制</text><text x="340" y="110" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">透镜→核；NE 缺口</text><text x="340" y="135" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">KH 潜在补偿</text>
+  <rect x="470" y="40" width="180" height="120" rx="10" fill="#fff7e6" stroke="#b8730a"/><text x="560" y="80" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">操作</text><text x="560" y="110" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">画盒 / 改支付</text><text x="560" y="135" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">写清补偿条款</text>
+</svg>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>画清可行集</strong>：谁有什么、偏好大致如何。  </li>
+<li><strong>找透镜</strong>：相对现状，谁还能双赢。  </li>
+<li><strong>查激励</strong>：双赢是否不是 NE（会不会被单边偏离毁掉）。  </li>
+<li><strong>选标准</strong>：若必须伤人，显式用 KH + 实际补偿，或公平公理——不要口头「效率」一笔带过。  </li>
+<li><strong>落地工具</strong>：产权、税、合同、重复博弈规则。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>枝 1 · 定义与反例</summary><div class="dbody"><p>会写改进/最优；能举「一人独占仍最优」与「PD 中 NE 非最优」。</p></div></details>
+<details><summary>枝 2 · 埃奇沃思与核</summary><div class="dbody"><p>会标禀赋、透镜、合同曲线；默认 CD 偏好下核段 (x\in[4,6])（总额 10、禀赋效用 4）。</p></div></details>
+<details><summary>枝 3 · 福利两定理</summary><div class="dbody"><p>能陈述假设与政策含义：效率与公平可分离（理论上）。</p></div></details>
+<details><summary>枝 4 · 失灵与 KH</summary><div class="dbody"><p>能指出外部性/公共品如何让 NE 离前沿；能拆穿「可补偿」话术。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是<strong>效率审计员</strong>：每关给一个现状配置或支付矩阵。任务不是「让所有人幸福」，而是：(1) 标出是否还存在帕累托改进；(2) 若均衡无效，设计最小规则改动；(3) Boss 关是把 KH 方案改成带实际补偿的帕累托改进。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>完成标准</th>
+<th>奖励（能力）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 定义卡</td>
+<td>30 秒口述改进 vs 最优</td>
+<td>入场券</td>
+</tr>
+<tr>
+<td class="k">T2 画盒</td>
+<td>标出禀赋 (8,2) 与核段 [4,6]</td>
+<td>几何直觉</td>
+</tr>
+<tr>
+<td class="k">T3 拆 PD</td>
+<td>算出效率 33%</td>
+<td>均衡≠有效</td>
+</tr>
+<tr>
+<td class="k">T4 KH 审计</td>
+<td>W=170,L=100,C=0 判 KH 是/帕累托否</td>
+<td>话术免疫</td>
+</tr>
+<tr>
+<td class="k">T5 选点</td>
+<td>λ=0.7 → x=7.0</td>
+<td>公平显式化</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若坚持严格帕累托</button><button class="tab" data-pane="tb1-1">若只认卡尔多–希克斯</button><button class="tab" data-pane="tb1-2">若 NE 被改到前沿上</button><button class="tab" data-pane="tb1-3">若第二定理「理想转移」可用</button></div>
+<div class="pane on" id="tb1-0"><p>几乎所有伤及任一方的改革被否决；互利交易仍可发生，但再分配与多数基建停摆。代价是僵局；收益是无人被强迫受损。</p></div><div class="pane" id="tb1-1"><p>净收益项目推进快；未补偿输家累积政治债务。WTP 被财富加权，穷者偏好系统性低估。<span class="tag t-ana">分析</span></p></div><div class="pane" id="tb1-2"><p>通过税、配额、重复惩罚或侧面支付，使合作/有效供给成为均衡。关键是信息与执行成本，不是口号。</p></div><div class="pane" id="tb1-3"><p>先一次性调禀赋，再让市场竞争——效率与公平分离。现实摩擦：识别谁该得多少、防隐藏信息与寻租。</p></div>
+<h3>可调模型 1 · 埃奇沃思盒：是否帕累托 / 是否在核</h3>
+<p>设定：两人两物，总量 (X=Y=10)，柯布–道格拉斯 (u=\sqrt{x_1 x_2})（对称）。合同曲线为对角线 (x_2=x_1)。默认禀赋 A 持 ((8,2))（则 B 持 ((2,8))），双方效用均为 <strong>4.00</strong>；核（自愿可达有效段）约为 (x\in[4.0,6.0])。<span class="tag t-fact">事实</span></p>
+<p>默认当前点 ((5.0,5.0))：帕累托<strong>是</strong>、在核内<strong>是</strong>。拖到 ((8.0,2.0))：帕累托<strong>否</strong>（(\mathrm{MRS}_A=0.25\neq\mathrm{MRS}_B=4)）。</p>
+<div class="tool" id="tool_edge">
+  <div class="ctrl">
+    <label>A 的商品1 x <output id="ed_xO">5.0</output></label>
+    <input type="range" id="ed_x" min="0.5" max="9.5" step="0.1" value="5.0"/>
+    <label>A 的商品2 y <output id="ed_yO">5.0</output></label>
+    <input type="range" id="ed_y" min="0.5" max="9.5" step="0.1" value="5.0"/>
+    <label>禀赋 ex <output id="ed_exO">8.0</output></label>
+    <input type="range" id="ed_ex" min="0.5" max="9.5" step="0.1" value="8.0"/>
+    <label>禀赋 ey <output id="ed_eyO">2.0</output></label>
+    <input type="range" id="ed_ey" min="0.5" max="9.5" step="0.1" value="2.0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">uA<strong id="ed_ua">5.00</strong></div>
+    <div class="ro">uB<strong id="ed_ub">5.00</strong></div>
+    <div class="ro">帕累托？<strong id="ed_po">是</strong></div>
+    <div class="ro">在核内？<strong id="ed_core">是</strong></div>
+    <div id="ed_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ed_vh">帕累托有效且相对禀赋无人受损：uA=5.00≥4.00，uB=5.00≥4.00 → 落在核（合同曲线段）内</span></div>
+  </div>
+  <canvas id="edChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · 囚徒困境：纳什 vs 帕累托缺口</h3>
+<p>经典 (R=3,T=5,P=1,S=0)：唯一 NE 总支付 <strong>2.0</strong>，帕累托改进 ((C,C)) 总支付 <strong>6.0</strong>，浪费 <strong>4.0</strong>，效率 <strong>33%</strong>。这是「与纳什均衡经常不重合」的最小算术。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="tool_gap">
+  <div class="ctrl">
+    <label>合作奖励 R <output id="gp_rO">3.0</output></label>
+    <input type="range" id="gp_r" min="1" max="6" step="0.1" value="3.0"/>
+    <label>背叛诱惑 T <output id="gp_tO">5.0</output></label>
+    <input type="range" id="gp_t" min="1" max="8" step="0.1" value="5.0"/>
+    <label>惩罚 P <output id="gp_pO">1.0</output></label>
+    <input type="range" id="gp_p" min="0" max="4" step="0.1" value="1.0"/>
+    <label>傻瓜支付 S <output id="gp_sO">0.0</output></label>
+    <input type="range" id="gp_s" min="-2" max="3" step="0.1" value="0.0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">NE 总支付<strong id="gp_ne">2.0</strong></div>
+    <div class="ro">帕累托 2R<strong id="gp_po">6.0</strong></div>
+    <div class="ro">效率<strong id="gp_eff">33%</strong></div>
+    <div id="gp_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="gp_vh">严格 PD：唯一 NE 总支付 2.0，帕累托改进 (C,C) 总支付 6.0，浪费 4.0（效率 33%）——NE 与帕累托经常不重合</span></div>
+  </div>
+  <canvas id="gpChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 卡尔多–希克斯 vs 帕累托</h3>
+<p>教学机场例：赢家增益 (W=170)，输家损失 (L=100)，实际补偿 (C=0)。净值 <strong>+70</strong> → KH <strong>是</strong>；因输家未获补 → 帕累托改进 <strong>否</strong>。把 C 拖到 ≥100 且 ≤170，判定翻转为实际帕累托改进。<span class="tag t-ana">分析</span><span class="tag t-chk">待验证</span>（数字为教学示意，非某真实项目审计。）</p>
+<div class="tool" id="tool_kh">
+  <div class="ctrl">
+    <label>赢家增益 W <output id="kh_wO">170</output></label>
+    <input type="range" id="kh_w" min="0" max="300" step="5" value="170"/>
+    <label>输家损失 L <output id="kh_lO">100</output></label>
+    <input type="range" id="kh_l" min="0" max="300" step="5" value="100"/>
+    <label>实际补偿 C <output id="kh_cO">0</output></label>
+    <input type="range" id="kh_c" min="0" max="300" step="5" value="0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">净值 W−L<strong id="kh_net">70</strong></div>
+    <div class="ro">KH 潜在？<strong id="kh_pot">是</strong></div>
+    <div class="ro">实际帕累托？<strong id="kh_act">否</strong></div>
+    <div id="kh_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="kh_vh">卡尔多–希克斯潜在改进：赢家可补偿输家（W≥L，净值 70），但实际 C=0 不足/未付 → 仍有人受损，非帕累托改进</span></div>
+  </div>
+  <canvas id="khChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 加权社会福利：在前沿上选点</h3>
+<p>对角合同曲线 + 对数效用：(\max_\lambda\ \lambda\ln x+(1-\lambda)\ln(10-x)) ⇒ (x^<em>=10\lambda)。默认 λ=0.50 → (x=5.00)；λ=0.70 → (x=7.00)。这是</em><em>挑选</em>*有效点，不是制造新的帕累托改进。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="tool_swf">
+  <div class="ctrl">
+    <label>福利权重 λ（A） <output id="sw_lamO">0.50</output></label>
+    <input type="range" id="sw_lam" min="0.10" max="0.90" step="0.01" value="0.50"/>
+  </div>
+  <div class="readout">
+    <div class="ro">A 份额 x<strong id="sw_x">5.00</strong></div>
+    <div class="ro">uA=ln x<strong id="sw_ua">1.609</strong></div>
+    <div class="ro">uB<strong id="sw_ub">1.609</strong></div>
+    <div class="ro">W(λ)<strong id="sw_w">1.609</strong></div>
+    <div id="sw_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="sw_vh">λ=0.50 → 前沿上取 A 的份额 x₁=x₂=5.00（对数效用合同曲线）。λ↑ 把点推向 A；λ=0.5 为功利主义中点；这只选前沿上的点，不创造帕累托改进。</span></div>
+  </div>
+  <canvas id="swChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>区分改进/最优/公平</td>
+<td>举一人独占反例</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>画盒并判断核</td>
+<td>与模型 1 读数一致</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>算 NE–帕累托缺口</td>
+<td>PD 效率 33%</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>拆 KH 话术并设计补偿</td>
+<td>模型 3 翻转条件</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>纸上画总量 10×10 的盒，标禀赋 (8,2)，目测透镜（8 分钟）。  </li>
+<li>打开模型 1：从 (8,2) 拖到 (5,5)，看「帕累托/核」翻转（8 分钟）。  </li>
+<li>模型 2 确认效率 33%；改 R=4 手算新效率 (2P/2R=1/4=25\%)？（7 分钟）。  </li>
+<li>模型 3 把 C 从 0 拖到 100，写一句「KH≠帕累托」（7 分钟）。  </li>
+</ol>
+<p>产出：一张手绘盒 + 一句 KH 审计——成本接近 0，可验证。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>定义与反例</td>
+<td>卡片 10 张</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>埃奇沃思</td>
+<td>手绘核段</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>福利两定理</td>
+<td>假设清单</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>PD 缺口</td>
+<td>与本队列「囚徒困境」手册对读</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>公共品萨缪尔森</td>
+<td>对比 (G_N) vs (G_P)</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>KH 案例剪报</td>
+<td>标「是否真补偿」</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘</td>
+<td>30 分钟实践重跑</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<ul>
+<li><strong>周 1</strong>：定义、盒、核——几何基本功。  </li>
+<li><strong>周 2</strong>：福利定理 + 市场失灵——知道第一定理何时失效。  </li>
+<li><strong>周 3</strong>：博弈缺口（PD/公共品）+ 机制杠杆。  </li>
+<li><strong>周 4</strong>：选一个真实争议（基建/关税/平台规则），用「帕累托 / KH / 公平」三栏写一页审计。</li>
+</ul>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>帕累托改进/最优</td>
+<td>无人受损的改进是否耗尽</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>帕累托前沿</td>
+<td>有效点的集合，本身不排序</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>埃奇沃思盒</td>
+<td>两人两物交换的几何</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>合同曲线 / 核</td>
+<td>MRS 相切；相对禀赋自愿段</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>福利第一定理</td>
+<td>竞争均衡 ⊆ 帕累托集</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>福利第二定理</td>
+<td>调禀赋可达任一有效点</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>纳什–帕累托缺口</td>
+<td>稳定配置可严格无效</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>萨缪尔森条件</td>
+<td>公共品 (\sum MRS=MRT)</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>卡尔多–希克斯</td>
+<td>潜在补偿检验</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>加权 SWF</td>
+<td>(\lambda) 在前沿上选点</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 帕累托最优是否唯一？</summary><div class="dbody"><p>通常不唯一；是一整条前沿。</p></div></details>
+<details><summary>Q2 为什么一人独占可以最优？</summary><div class="dbody"><p>帮任何人必须拿走独占者的资源 → 无人能在不伤害他的前提下变好。</p></div></details>
+<details><summary>Q3 纳什与帕累托何时重合？</summary><div class="dbody"><p>无外部性的竞争均衡是一例；一般博弈不必重合。</p></div></details>
+<details><summary>Q4 第一定理要哪些假设？</summary><div class="dbody"><p>常述：偏好局部非饱和、竞争、完备市场、无外部性等（教材表述略有出入）。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q5 第二定理政策含义？</summary><div class="dbody"><p>效率与分配可分离：先转移、再市场——理想条件下。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q6 KH 与帕累托差在哪？</summary><div class="dbody"><p>KH 允许输家存在（只要赢家可补偿）；帕累托要求补偿后（或原本）无人受损。</p></div></details>
+<details><summary>Q7 合同曲线和核是一回事吗？</summary><div class="dbody"><p>有的文本等同；严格时核=相对禀赋的有效自愿段。</p></div></details>
+<details><summary>Q8 如何在前沿上选点？</summary><div class="dbody"><p>福利权重、罗尔斯最大最小、谈判解、投票——皆外加伦理/政治，非帕累托本身。</p></div></details>
+<details><summary>Q9 公共品为何供给不足？</summary><div class="dbody"><p>私人只顾自身 MRS，忽略他人；NE 低于萨缪尔森总和条件。</p></div></details>
+<details><summary>Q10 实务上第一刀问什么？</summary><div class="dbody"><p>「还有没有帕累托改进？若无，争议在公平/选点；若有却未发生，卡在激励、信息还是权力？」</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>深入：阿罗不可能定理与社会福利函数；显示偏好与可检验性。  </li>
+<li>并行：本队列《囚徒困境》《纳什均衡》手册——专攻缺口机制。  </li>
+<li>扩展：多目标优化的 Pareto front、机制设计中的帕累托效率约束。  </li>
+<li>批评文献：KH 的财富偏误、再分配扭曲成本（Hendren 等不平等贴现讨论）。<span class="tag t-ana">分析</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">帕累托改进/最优定义</td>
+<td>标准教材/百科</td>
+<td>福利经济学通行定义；中文维基「帕累托效率」</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">福利两定理</td>
+<td>教材/讲义</td>
+<td>武大刘岩《市场与政府》讲义；知经 KNOWECON</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">NE vs 帕累托（PD）</td>
+<td>经典博弈</td>
+<td>Stanford Encyclopedia「Prisoner's Dilemma」；教学支付 R=3,T=5,P=1,S=0</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">埃奇沃思盒/合同曲线</td>
+<td>教材</td>
+<td>MIT 14.03 Lecture Notes；Wikipedia Edgeworth box</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">卡尔多–希克斯</td>
+<td>百科/法经</td>
+<td>Wikipedia Kaldor–Hicks；Economics Help 机场示意</td>
+<td><span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">KH 与不平等批评</td>
+<td>论文/政策评论</td>
+<td>Equitable Growth 对补偿原则的讨论；法学大纲对 WTP 财富偏误</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">公共品纳什不足</td>
+<td>讲义</td>
+<td>Berkeley Saez 公共品笔记（MRS 加总 vs 纳什 FOC）</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">教学用 W/L 数字</td>
+<td>示意</td>
+<td>非真实项目审计</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或定义性；<span class="tag t-ana">分析</span>权威推断；<span class="tag t-inf">推论</span>本手册推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或教学假数。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与决策框架训练材料，不构成投资、法律、公共政策或工程可行性建议。文中数值多为可复算的教学参数；涉及真实项目的成本收益须以一手审计与法定程序为准。帕累托与卡尔多–希克斯标准也不能替代民主审议与权利保护。</p>
+</section>
+<footer>  <p>《帕累托最优：无人受损前提下无法再改善任何人；与纳什经常不重合 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 9 分 54 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《帕累托最优 / Pareto Optimality》主题脚本
+   四个可调模型：
+     1. 埃奇沃思配置：是否帕累托 / 是否在核内
+     2. PD 中 NE vs 帕累托缺口
+     3. 卡尔多–希克斯 vs 帕累托
+     4. 加权社会福利在前沿上选点
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function clampLabel(ctx, lab, x, y, align, pl, w) {
+    var lw = ctx.measureText(lab).width;
+    ctx.textAlign = align;
+    var lx = align === 'left' ? Math.min(x, w - lw - 6) : Math.max(x, pl + 6);
+    ctx.fillText(lab, lx, y);
+  }
+
+  /* ── 1. Edgeworth: Cobb-Douglas a=b=0.5, totals X=Y=10 ── */
+  (function edge() {
+    var xEl = $('ed_x'), yEl = $('ed_y'), exEl = $('ed_ex'), eyEl = $('ed_ey');
+    if (!xEl || !yEl || !exEl || !eyEl) return;
+    var cv = $('edChart');
+    var X = 10, Y = 10;
+
+    function uA(x, y) { return Math.sqrt(Math.max(1e-9, x) * Math.max(1e-9, y)); }
+    function uB(x, y) { return Math.sqrt(Math.max(1e-9, X - x) * Math.max(1e-9, Y - y)); }
+    function mrsA(x, y) { return y / Math.max(1e-9, x); }
+    function mrsB(x, y) { return (Y - y) / Math.max(1e-9, X - x); }
+
+    function upd() {
+      var x = parseFloat(xEl.value), y = parseFloat(yEl.value);
+      var ex = parseFloat(exEl.value), ey = parseFloat(eyEl.value);
+      var ua = uA(x, y), ub = uB(x, y);
+      var ua0 = uA(ex, ey), ub0 = uB(ex, ey);
+      var ma = mrsA(x, y), mb = mrsB(x, y);
+      // Equal Cobb-Douglas: interior PO ≈ diagonal y≈x
+      var isPO = Math.abs(y - x) < 0.15 || x <= 0.02 || x >= X - 0.02;
+      var inCore = isPO && ua + 1e-9 >= ua0 && ub + 1e-9 >= ub0;
+      var gapMRS = ma - mb;
+      var col = isPO ? (inCore ? C.green : C.amber) : C.red;
+
+      txt($('ed_xO'), x.toFixed(1));
+      txt($('ed_yO'), y.toFixed(1));
+      txt($('ed_exO'), ex.toFixed(1));
+      txt($('ed_eyO'), ey.toFixed(1));
+      txt($('ed_ua'), ua.toFixed(2));
+      txt($('ed_ub'), ub.toFixed(2));
+      txt($('ed_po'), isPO ? '是' : '否');
+      txt($('ed_core'), inCore ? '是' : '否');
+      tint($('ed_po'), isPO ? C.green : C.red);
+      tint($('ed_core'), inCore ? C.green : C.amber);
+
+      var msg;
+      if (!isPO) {
+        msg = '当前不在合同曲线：MRS_A=' + ma.toFixed(2) + ' ≠ MRS_B=' + mb.toFixed(2) +
+          '（差 ' + gapMRS.toFixed(2) + '）→ 存在互利贸易透镜';
+      } else if (inCore) {
+        msg = '帕累托有效且相对禀赋无人受损：uA=' + ua.toFixed(2) + '≥' + ua0.toFixed(2) +
+          '，uB=' + ub.toFixed(2) + '≥' + ub0.toFixed(2) + ' → 落在核（合同曲线段）内';
+      } else {
+        msg = '帕累托有效，但相对禀赋有人受损：uA ' + ua.toFixed(2) + ' vs 禀赋 ' + ua0.toFixed(2) +
+          '；uB ' + ub.toFixed(2) + ' vs ' + ub0.toFixed(2) + ' → 有效但未必自愿可达';
+      }
+      txt($('ed_vh'), msg);
+      tint($('ed_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 40, pr = 16, pt = 20, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      function sx(v) { return pl + (v / X) * bw; }
+      function sy(v) { return y1 - (v / Y) * bh; }
+
+      ctx.strokeStyle = C.axis;
+      ctx.strokeRect(pl, pt, bw, bh);
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(0));
+      ctx.lineTo(sx(X), sy(Y));
+      ctx.stroke();
+      ctx.lineWidth = 1;
+      var xLo = ua0, xHi = X - ub0;
+      if (xHi > xLo) {
+        ctx.strokeStyle = C.green;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(sx(xLo), sy(xLo));
+        ctx.lineTo(sx(xHi), sy(xHi));
+        ctx.stroke();
+        ctx.lineWidth = 1;
+      }
+      ctx.fillStyle = C.amber;
+      ctx.beginPath();
+      ctx.arc(sx(ex), sy(ey), 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.arc(sx(x), sy(y), 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('A 的 x₁（商品1）', pl + bw / 2, y1 + 31);
+      ctx.save();
+      ctx.translate(14, pt + bh / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('A 的 x₂', 0, 0);
+      ctx.restore();
+      ctx.textAlign = 'left';
+      ctx.fillStyle = C.ink2;
+      ctx.fillText('蓝=合同曲线 · 绿粗=核 · 琥珀点=禀赋 · 色点=当前配置', pl, pt + 12);
+    }
+    bind(['ed_x', 'ed_y', 'ed_ex', 'ed_ey'], upd);
+    upd();
+  })();
+
+  /* ── 2. NE vs Pareto gap in PD ── */
+  (function gap() {
+    var rEl = $('gp_r'), tEl = $('gp_t'), pEl = $('gp_p'), sEl = $('gp_s');
+    if (!rEl || !tEl || !pEl || !sEl) return;
+    var cv = $('gpChart');
+
+    function upd() {
+      var R = parseFloat(rEl.value), T = parseFloat(tEl.value);
+      var P = parseFloat(pEl.value), S = parseFloat(sEl.value);
+      var isPD = T > R && R > P && P > S;
+      var neSum = 2 * P, poSum = 2 * R, waste = poSum - neSum;
+      var eff = poSum > 0 ? (neSum / poSum) * 100 : 0;
+      var col = isPD ? C.red : C.amber;
+
+      txt($('gp_rO'), R.toFixed(1));
+      txt($('gp_tO'), T.toFixed(1));
+      txt($('gp_pO'), P.toFixed(1));
+      txt($('gp_sO'), S.toFixed(1));
+      txt($('gp_ne'), neSum.toFixed(1));
+      txt($('gp_po'), poSum.toFixed(1));
+      txt($('gp_eff'), isPD ? (eff.toFixed(0) + '%') : '—');
+      tint($('gp_eff'), col);
+
+      var msg = isPD
+        ? '严格 PD：唯一 NE 总支付 ' + neSum.toFixed(1) + '，帕累托改进 (C,C) 总支付 ' + poSum.toFixed(1) +
+          '，浪费 ' + waste.toFixed(1) + '（效率 ' + eff.toFixed(0) + '%）——NE 与帕累托经常不重合'
+        : '不等式未齐，未必是 PD；帕累托–纳什缺口公式仅在 T>R>P>S 时如此解读';
+      txt($('gp_vh'), msg);
+      tint($('gp_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var vals = [
+        { lab: 'NE 总支付 2P', v: neSum, c: C.red },
+        { lab: '帕累托 (C,C) 2R', v: poSum, c: C.green },
+        { lab: '浪费 2(R−P)', v: waste, c: C.amber }
+      ];
+      var vmax = Math.max(1, poSum, neSum, Math.abs(waste));
+      vals.forEach(function (item, i) {
+        var y = pt + (i + 0.5) * (bh / 3);
+        var bar = (Math.max(0, item.v) / vmax) * (bw - 8);
+        ctx.fillStyle = item.c;
+        ctx.fillRect(pl, y - 12, bar, 24);
+        ctx.fillStyle = C.ink2;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(item.lab, pl, y - 16);
+        ctx.fillStyle = C.ink;
+        clampLabel(ctx, item.v.toFixed(1), pl + bar + 8, y + 4, 'left', pl, w);
+      });
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('社会总支付对比（默认 2 vs 6，效率 33%）', pl + bw / 2, y1 + 31);
+    }
+    bind(['gp_r', 'gp_t', 'gp_p', 'gp_s'], upd);
+    upd();
+  })();
+
+  /* ── 3. Kaldor-Hicks vs Pareto ── */
+  (function kh() {
+    var wEl = $('kh_w'), lEl = $('kh_l'), cEl = $('kh_c');
+    if (!wEl || !lEl || !cEl) return;
+    var cv = $('khChart');
+
+    function upd() {
+      var W = parseFloat(wEl.value), L = parseFloat(lEl.value), Cpay = parseFloat(cEl.value);
+      var net = W - L;
+      var potential = W >= L;
+      var winOK = (W - Cpay) >= -1e-9;
+      var loseOK = (-L + Cpay) >= -1e-9;
+      var actualPI = winOK && loseOK && Cpay + 1e-9 >= L && Cpay - 1e-9 <= W && (W > 0 || L === 0);
+      var col = actualPI ? C.green : (potential ? C.amber : C.red);
+
+      txt($('kh_wO'), W.toFixed(0));
+      txt($('kh_lO'), L.toFixed(0));
+      txt($('kh_cO'), Cpay.toFixed(0));
+      txt($('kh_net'), net.toFixed(0));
+      txt($('kh_pot'), potential ? '是' : '否');
+      txt($('kh_act'), actualPI ? '是' : '否');
+      tint($('kh_pot'), potential ? C.amber : C.red);
+      tint($('kh_act'), actualPI ? C.green : C.red);
+
+      var msg;
+      if (L <= 0 && W > 0) {
+        msg = '无人受损且有人受益 → 本身就是帕累托改进（不必谈补偿）';
+        col = C.green;
+      } else if (actualPI) {
+        msg = '已支付补偿 C=' + Cpay.toFixed(0) + ' ≥ L=' + L.toFixed(0) + ' 且 ≤ W=' + W.toFixed(0) +
+          ' → 事后变为帕累托改进；赢家净剩 ' + (W - Cpay).toFixed(0);
+      } else if (potential) {
+        msg = '卡尔多–希克斯潜在改进：赢家可补偿输家（W≥L，净值 ' + net.toFixed(0) +
+          '），但实际 C=' + Cpay.toFixed(0) + ' 不足/未付 → 仍有人受损，非帕累托改进';
+      } else {
+        msg = '连潜在补偿都不够：W=' + W.toFixed(0) + ' < L=' + L.toFixed(0) + ' → KH 与帕累托皆否决';
+      }
+      txt($('kh_vh'), msg);
+      tint($('kh_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var vals = [
+        { lab: '赢家增益 W', v: W, c: C.green },
+        { lab: '输家损失 L', v: L, c: C.red },
+        { lab: '实际补偿 C', v: Cpay, c: C.blue },
+        { lab: '社会净值 W−L', v: net, c: net >= 0 ? C.amber : C.red }
+      ];
+      var maxAbs = Math.max(1, Math.abs(W), Math.abs(L), Math.abs(Cpay), Math.abs(net));
+      function sx(v) { return pl + bw / 2 + (v / maxAbs) * (bw / 2 - 8); }
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), pt);
+      ctx.lineTo(sx(0), y1);
+      ctx.stroke();
+      vals.forEach(function (item, i) {
+        var y = pt + (i + 0.5) * (bh / 4);
+        var x0 = sx(0), x1 = sx(item.v);
+        ctx.fillStyle = item.c;
+        ctx.fillRect(Math.min(x0, x1), y - 10, Math.abs(x1 - x0), 20);
+        ctx.fillStyle = C.ink2;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(item.lab, pl, y - 14);
+        ctx.fillStyle = C.ink;
+        clampLabel(ctx, item.v.toFixed(0), item.v >= 0 ? x1 + 8 : x1 - 8, y + 4,
+          item.v >= 0 ? 'left' : 'right', pl, w);
+      });
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('默认机场例：W=170 L=100 C=0 → KH 是、帕累托否', pl + bw / 2, y1 + 31);
+    }
+    bind(['kh_w', 'kh_l', 'kh_c'], upd);
+    upd();
+  })();
+
+  /* ── 4. Weighted SWF on frontier ── */
+  (function swf() {
+    var lEl = $('sw_lam');
+    if (!lEl) return;
+    var cv = $('swChart');
+    var X = 10;
+
+    function upd() {
+      var lam = parseFloat(lEl.value);
+      var x = Math.min(X - 0.05, Math.max(0.05, X * lam));
+      var uA = Math.log(x), uB = Math.log(X - x);
+      var W = lam * uA + (1 - lam) * uB;
+      var col = C.blue;
+
+      txt($('sw_lamO'), lam.toFixed(2));
+      txt($('sw_x'), x.toFixed(2));
+      txt($('sw_ua'), uA.toFixed(3));
+      txt($('sw_ub'), uB.toFixed(3));
+      txt($('sw_w'), W.toFixed(3));
+
+      var msg = 'λ=' + lam.toFixed(2) + ' → 前沿上取 A 的份额 x₁=x₂=' + x.toFixed(2) +
+        '（对数效用合同曲线）。λ↑ 把点推向 A；λ=0.5 为功利主义中点；这只选前沿上的点，不创造帕累托改进。';
+      txt($('sw_vh'), msg);
+      tint($('sw_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 24, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var pts = [];
+      for (var i = 1; i < 100; i++) {
+        var t = i / 10;
+        pts.push({ ua: Math.log(t), ub: Math.log(X - t), t: t });
+      }
+      var minU = Math.log(0.1), maxU = Math.log(9.9);
+      function px(ua) { return pl + ((ua - minU) / (maxU - minU)) * bw; }
+      function py(ub) { return y1 - ((ub - minU) / (maxU - minU)) * bh; }
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      pts.forEach(function (p, i) {
+        if (i === 0) ctx.moveTo(px(p.ua), py(p.ub));
+        else ctx.lineTo(px(p.ua), py(p.ub));
+      });
+      ctx.stroke();
+      ctx.lineWidth = 1;
+      ctx.fillStyle = C.red;
+      ctx.beginPath();
+      ctx.arc(px(uA), py(uB), 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = C.green;
+      ctx.beginPath();
+      ctx.arc(px(Math.log(5)), py(Math.log(5)), 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('横轴 uA=ln x · 纵轴 uB=ln(10−x) · 红=λ 选点 · 绿=λ=0.5', pl + bw / 2, y1 + 31);
+    }
+    bind(['sw_lam'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
