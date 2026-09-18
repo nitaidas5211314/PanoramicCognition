@@ -817,11 +817,14 @@
     {
       "slug": "公地悲剧与集体行动逻辑：分散的收益、集中的成本，导致公共资源被过度消耗",
       "title": "公地悲剧与集体行动逻辑：分散的收益、集中的成本，导致公共资源被过度消耗",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 04:06:08",
+      "finished": "2026-09-19 04:13:09",
+      "duration_sec": 421,
+      "outputs": [
+        "reports/公地悲剧与集体行动逻辑：分散的收益、集中的成本，导致公共资源被过度消耗.html",
+        "reports/公地悲剧与集体行动逻辑：分散的收益、集中的成本，导致公共资源被过度消耗.md"
+      ],
       "error": null
     },
     {
@@ -1882,7 +1885,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 04:05",
+  "updated": "2026-09-19 04:13",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

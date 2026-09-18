@@ -1,0 +1,1768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>公地悲剧与集体行动逻辑：分散收益、集中成本如何掏空公共资源 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Commons × Collective Action × Institutions</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践路径</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>公地悲剧与集体行动逻辑：分散收益、集中成本如何掏空公共资源</h1>
+  <p class="sub">Hardin 的牧场不是命运，而是<strong>开放获取 + 收益私有、成本分摊</strong>的激励结构；奥尔森解释为何大集团更难组织；奥斯特罗姆证明社群规则可以改写结局。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>公地悲剧（Tragedy of the Commons）</strong>：当资源可被多人取用、难以排他，且每人独享自己多取的收益、却只分摊一小份耗竭成本时，理性个体会系统性地过度使用——直到集体受损。<span class="tag t-fact">事实</span></p>
+<p><strong>集体行动的逻辑（Olson）</strong>：集团共同利益像公共物品——不可排他；理性人倾向搭便车。大集团中个人份额更薄、边际贡献感更弱，<strong>除非强制或选择性激励</strong>，否则难自发为共同利益行动。<span class="tag t-fact">事实</span></p>
+<p>关键纠偏：Hardin（1968）常被读成「只有私有化或中央管制」；Ostrom（1990/2009）用大量田野证明——<strong>边界清晰、本地规则、监督、分级制裁、冲突解决、嵌套治理</strong>的社群，可以长期避免悲剧。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></p>
+<p>默认牧场模型（价值 (V(X)=V_0-\delta X)）：社会最优总量 (X_s=V_0/(2\delta))；纳什总量 (X_n=\frac{N}{N+1}\frac{V_0}{\delta})，过牧比 (\frac{X_n}{X_s}=\frac{2N}{N+1})。(N=10,V_0=10,\delta=0.5) 时 (X_s=10)、(X_n\approx18.18)、过牧比 <strong>1.818</strong>。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「人太自私」的道德训诫，而是三类可形式化对象：</p>
+<ol>
+<li><strong>公共池塘资源（CPR）</strong>：高竞争性（你取我少）+ 高排他成本（难把外人挡在外）。</li>
+<li><strong>开放获取（open access）vs 共同产权（common property）</strong>：前者是「无人有权排他」；后者是「社群有权排他并定规则」。Hardin 故事多半是前者被误叫成「公地」。<span class="tag t-ana">分析</span></li>
+<li><strong>集体行动 / 公共物品供给</strong>：收益不可排他 → 搭便车 → 供给不足（与 CPR 的「过度取用」是同一激励家族的镜像）。</li>
+</ol>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：Hardin 牧场逻辑、奥尔森集团规模与选择性激励、奥斯特罗姆设计原则、线性公共品（VCM）、渔业再生模型、气候/公海等全球公地的尺度批评。</li>
+<li><strong>在界外</strong>：具体环保工程招标、某只股票「庄家收割」、单一城市垃圾分类话术——除非压成「激励结构 / 制度变量」问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>分散收益、分摊成本如何导致过度使用或供给不足，以及何种制度扭转</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「资源属性 + 产权/规则 + 监督制裁」可建模为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>CPR、开放获取、搭便车、MPCR、设计原则、聚中心治理</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>资源使用者、监督者、地方政府、国家、国际组织、游说集团</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(N)、排他成本、监测成本、MPCR、贴现、制裁梯度、嵌套层级</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>捕捞量、排放、拥堵、贡献额、违规次数、协议批准</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实意图、对他人互惠的信念、隐性规范强度</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>资源属性→激励→行为→存量；规则↔监测↔制裁形成反馈</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>私有边际收益 &gt; 私有边际成本（社会成本被摊薄）⇒ 过用</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「资源坏了」≠ 公地悲剧；可能是产权不清、腐败或技术冲击<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>过牧、过渔、堵车加塞、开源维护不足、气候谈判拖延</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>不可排他的收益 + 竞争性损耗 / 公共品供给的正外部性</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。存量下降→单位努力收益降；信任崩塌→更难组织监督</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。生态滞后、制度学习、制裁信誉建立都有时滞</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>过用加速崩溃可正反馈；分级制裁与监测可负反馈</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>悲剧不是「公有」本身，而是 <strong>开放获取下的激励算术</strong>：收益贴着个人，成本摊在集体。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它是制度设计的入门考题</h4><p>用最少假设说明：个体理性 ≠ 集体理性——政策、社群规则、合同为何必要。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它连接微观搭便车与宏观崩溃</h4><p>从牧场、灌溉到公海渔业与大气，同一骨架换尺度；错把全球问题当本地公地会开错药方。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它纠正「二选一」幻觉</h4><p>私有化与国有化都不是唯一解；第三道路是<strong>用户自治 + 多中心嵌套</strong>（Ostrom）。<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「共同产权成功案例」当成「开放获取也能自动好起来」——成功社群往往有清晰边界与排他能力；把全球大气硬套本地牧场八原则而不加嵌套与国家能力，会低估搭便车的尺度。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看公地问题如何从「一棵草」长成「全球制度」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tcL9" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 全球公地 · 气候 / 公海 · 俱乐部与聚中心嵌套</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 国家与市场 · 配额、税、产权、补贴改革</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 奥斯特罗姆设计原则 · 边界·监督·分级制裁·嵌套</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 集体行动 · 奥尔森规模、选择性激励、特权集团</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 公共品供给 · VCM / MPCR · 贡献不足镜像</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 动态存量 · 再生、MSY、崩溃阈值</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 开放获取纳什 · 过牧比 2N/(N+1)</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 激励算术 · 收益私有 / 成本分摊</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 资源属性 · 竞争性 × 排他成本（CPR）</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L1→L3</strong>（分清 CPR / 开放获取 / 过牧比）；进阶卡在 <strong>L6→L7</strong>（奥尔森 vs 奥斯特罗姆）；应用卡在 <strong>L9</strong>（全球尺度不能直接复制村庄灌溉）。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到可操作判别。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="160" y="16" width="360" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">激励结构：私有收益 vs 分摊成本</text>
+
+  <rect x="40" y="100" width="180" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象：CPR / 公共物品</text>
+  <rect x="250" y="100" width="180" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制：搭便车 / 过用</text>
+  <rect x="460" y="100" width="180" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作：规则·监测·制裁</text>
+
+  <line x1="280" y1="60" x2="130" y2="100" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="190" width="180" height="64" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="218" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">问：竞争性？排他难？</text><text x="130" y="238" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">是 → CPR 候选</text>
+  <rect x="250" y="190" width="180" height="64" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="218" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">问：开放获取？</text><text x="340" y="238" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">是 → 警惕过牧比→2</text>
+  <rect x="460" y="190" width="180" height="64" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="218" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">问：谁监督谁？</text><text x="550" y="238" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">无 → 规则是空文</text>
+
+  <line x1="130" y1="152" x2="130" y2="190" stroke="#0f8a4d" stroke-width="1.2" marker-end="url(#cmA)"/>
+  <line x1="340" y1="152" x2="340" y2="190" stroke="#1d4ed8" stroke-width="1.2" marker-end="url(#cmA)"/>
+  <line x1="550" y1="152" x2="550" y2="190" stroke="#b8730a" stroke-width="1.2" marker-end="url(#cmA)"/>
+
+  <path d="M220,222 Q340,280 460,222" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <text x="340" y="300" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">反馈：存量↓ → 争抢↑ → 更难达成新规则</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>激励</th>
+<th>在系统里做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">资源使用者</td>
+<td>最大化私人净收益</td>
+<td>取用 / 贡献；决定是否遵守限额</td>
+</tr>
+<tr>
+<td class="k">监督者（可兼职）</td>
+<td>声誉、分成、职务</td>
+<td>观测违规；成本决定可信度</td>
+</tr>
+<tr>
+<td class="k">规则制定社群</td>
+<td>长期可续用 + 公平感</td>
+<td>定边界、配额、制裁梯度</td>
+</tr>
+<tr>
+<td class="k">地方政府 / 国家</td>
+<td>税收、稳定、政绩、游说</td>
+<td>承认自治、强制、补贴或私有化</td>
+</tr>
+<tr>
+<td class="k">特殊利益集团</td>
+<td>集中收益</td>
+<td>奥尔森意义上更易组织游说</td>
+</tr>
+<tr>
+<td class="k">国际组织 / 条约</td>
+<td>合法性与执行缺口</td>
+<td>尝试治理全球公地</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">使用者人数</td>
+<td>(N)</td>
+<td>摊薄个人成本份额；抬高过牧比上限</td>
+</tr>
+<tr>
+<td class="k">单位价值斜率</td>
+<td>(\delta)</td>
+<td>拥挤/耗竭使单位收益下降的速度</td>
+</tr>
+<tr>
+<td class="k">边际人均回报</td>
+<td>MPCR (m)</td>
+<td>公共品中「我贡献 1，每人得 (m)」</td>
+</tr>
+<tr>
+<td class="k">集体收益 / 成本</td>
+<td>(B,C)</td>
+<td>奥尔森：个人份额 (B/N) vs (C)</td>
+</tr>
+<tr>
+<td class="k">选择性激励</td>
+<td>(S)</td>
+<td>只给参与者的额外奖罚</td>
+</tr>
+<tr>
+<td class="k">监测概率 × 罚金</td>
+<td>(p\cdot F)</td>
+<td>须盖过违规诱惑才可信</td>
+</tr>
+<tr>
+<td class="k">再生率 / 承载力</td>
+<td>(r,K)</td>
+<td>动态存量与崩溃阈值</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note green"><b>判定口诀</b><p><strong>过用型悲剧</strong> ≈ 竞争性强 + 排他弱 + 开放获取；<strong>供给不足型</strong> ≈ 收益不可排他 + (1/N &lt; m \le 1)（线性公共品）。先分型，再开药。<span class="tag t-inf">推论</span></p></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<div class="flow"><span>开放获取</span><i>→</i><span class="hi">私有 MB &gt; 私有 MC</span><i>→</i><span class="hi">过用纳什</span><i>→</i><span>存量↓ / 租值消散</span><i>→</i><span>制度压力</span></div>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cfA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cfB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="120" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="80" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">CPR 属性</text>
+  <rect x="180" y="30" width="120" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="240" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">成本分摊</text>
+  <rect x="340" y="30" width="120" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="400" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">过用纳什</text>
+  <rect x="500" y="30" width="160" height="50" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="580" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">租值消散</text>
+  <line x1="140" y1="55" x2="180" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <line x1="300" y1="55" x2="340" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <line x1="460" y1="55" x2="500" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <rect x="160" y="130" width="360" height="50" rx="8" fill="#15181d"/><text x="340" y="160" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">边界+监督+分级制裁 → 把开放获取改成共同产权</text>
+  <path d="M400,80 Q400,110 340,130" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cfB)"/>
+  <text x="480" y="120" fill="#d5342c" font-size="11" font-family="sans-serif">反馈：改激励</text>
+</svg>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>「公地」被污名化</strong>：许多所谓悲剧案例其实是<strong>开放获取</strong>或国家吞并社群权利后的失败，不是「共同产权必然失败」。<span class="tag t-ana">分析</span></li>
+<li><strong>小集团 vs 大集团</strong>：奥尔森指出特权小集团更易组织；大集团更依赖强制或选择性激励——解释为何游说常赢过松散公众。<span class="tag t-fact">事实</span></li>
+<li><strong>气候不一定是经典公地</strong>：批评文献强调国内分配冲突、碳俱乐部（Nordhaus）等，单纯「国际搭便车」叙事可能误导。<span class="tag t-ana">分析</span></li>
+<li><strong>私有化也可能制造新悲剧</strong>：草场围栏化切断游牧轮牧，局部过度放牧——产权形式≠可持续。<span class="tag t-chk">待验证</span><span class="tag t-ana">分析</span></li>
+<li><strong>跨域同构</strong>：公地过用 ↔ 囚徒困境多人版 ↔ 拥堵定价缺失 ↔ 开源维护不足 ↔ 抗生素耐药——同一「外部性分摊」数学。<span class="tag t-inf">推论</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>开放获取牧场（教学模型）的运行机制：</p>
+<ol>
+<li>每头牛给主人带来完整私人收益（奶/肉）。  </li>
+<li>额外拥挤使所有牛的单位价值下降，成本由全体分摊。  </li>
+<li>个人最优条件忽略自己对他人的拥挤外部性 → 总量超过社会最优。  </li>
+<li>随着 (N) 增大，过牧比趋向 <strong>2</strong>（本模型族），租值趋向消散。  </li>
+<li>若引入边界与配额并可信执行，博弈从「开放获取」变为「受限 CPR」，纳什可移向更可持续点。</li>
+</ol>
+<p>公共品镜像：每人贡献的社会边际收益是 (N\cdot m)（或视标定），私人只看到 (m)；当 (1/N&lt;m\le 1) 时，<strong>社会要贡献、私人不贡献</strong>——供给不足而非过用。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="evA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#e2e6ec" stroke-width="2"/>
+  <circle cx="80" cy="100" r="8" fill="#0f8a4d"/><text x="80" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">资源丰裕</text><text x="80" y="140" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">开放无感</text>
+  <circle cx="220" cy="100" r="8" fill="#b8730a"/><text x="220" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">拥挤加剧</text><text x="220" y="140" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">单位收益↓</text>
+  <circle cx="360" cy="100" r="8" fill="#d5342c"/><text x="360" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">租值消散</text><text x="360" y="140" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">争抢/冲突</text>
+  <circle cx="500" cy="100" r="8" fill="#1d4ed8"/><text x="500" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">制度尝试</text><text x="500" y="140" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">配额/自治</text>
+  <circle cx="620" cy="100" r="8" fill="#15181d"/><text x="620" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">稳态分叉</text><text x="620" y="140" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">续存或崩溃</text>
+  <line x1="88" y1="100" x2="212" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#evA)"/>
+  <line x1="228" y1="100" x2="352" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#evA)"/>
+  <line x1="368" y1="100" x2="492" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#evA)"/>
+  <line x1="508" y1="100" x2="612" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#evA)"/>
+</svg>
+<p>渔业动态：logistic 再生 (g(S)=rS(1-S/K))，最大持续产量 MSY (=rK/4)。总捕捞 (H) 超过 MSY 后稳态消失或跌入低存量枝；默认 (r=0.4,K=100) 时 MSY=<strong>10</strong>，(H=8) 时高稳态存量约 <strong>72.36</strong>。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>集中什么</th>
+<th>分散什么</th>
+<th>典型策略</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">单个牧民/渔民</td>
+<td>多取的收益</td>
+<td>耗竭成本</td>
+<td>多养一头 / 多下一网</td>
+</tr>
+<tr>
+<td class="k">松散公众</td>
+<td>—</td>
+<td>环境收益</td>
+<td>搭便车、口头支持</td>
+</tr>
+<tr>
+<td class="k">特权小集团</td>
+<td>补贴、配额租金</td>
+<td>组织成本低</td>
+<td>游说维持开放或补贴</td>
+</tr>
+<tr>
+<td class="k">成功自治社群</td>
+<td>长期资源租金</td>
+<td>监督成本内部化</td>
+<td>轮值监测、分级罚</td>
+</tr>
+<tr>
+<td class="k">国家官僚</td>
+<td>控制权、项目</td>
+<td>信息与执行成本</td>
+<td>一刀切或忽视地方知识</td>
+</tr>
+</tbody>
+</table></div>
+<p>奥尔森核心句：有共同利益<strong>不足以</strong>保证集体行动；需要<strong>强制或选择性激励</strong>把个人账算过来。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 240" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="flB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="40" y="30" width="140" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="110" y="65" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">资源存量</text>
+  <rect x="270" y="30" width="140" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="65" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">取用流量</text>
+  <rect x="500" y="30" width="140" height="60" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="570" y="65" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">私人钱包</text>
+  <line x1="180" y1="60" x2="270" y2="60" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="410" y1="60" x2="500" y2="60" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <rect x="270" y="140" width="140" height="60" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="340" y="175" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">耗竭外部性</text>
+  <path d="M340,90 L340,140" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#flB)"/>
+  <path d="M270,170 Q110,170 110,90" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#flB)"/>
+  <text x="340" y="230" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">信息流：监测报告 → 制裁 → 改变取用；虚线=被摊薄的成本回流</text>
+</svg>
+<p>资金/租金流：开放获取下经济租被投入的努力「抽干」（租值消散）；有效限额或税收可把租从「过度努力」转为「资源所有者/财政/社群基金」。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+<th>注意</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>把开放获取改成可排他边界</td>
+<td>直接改激励算术</td>
+<td>边界争议可致冲突</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>可信监测 + 分级制裁</td>
+<td>规则从纸面变均衡</td>
+<td>一罚到底易报复</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>缩小有效决策圈 / 分层</td>
+<td>对抗奥尔森大集团失灵</td>
+<td>精英俘获风险</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>选择性激励（奖罚、身份）</td>
+<td>提高参与的私人回报</td>
+<td>奖品设计可扭曲</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>匹配地方条件的取用规则</td>
+<td>Ostrom：congruence</td>
+<td>勿抄蓝图</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>冲突解决低成本论坛</td>
+<td>防止规则破产</td>
+<td>需最低程序正义</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>嵌套治理（村↔流域↔国）</td>
+<td>跨尺度外部性</td>
+<td>层级打架</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>改支付：税/补贴/配额交易</td>
+<td>把社会成本内化</td>
+<td>分配政治</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>信息公开与可观察贡献</td>
+<td>降监测成本、促互惠</td>
+<td>隐私与操纵</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>碳俱乐部 / 贸易挂钩</td>
+<td>全球公地的「选择性激励」</td>
+<td>贸易战外溢<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「公有=必然悲剧」</summary><div class="dbody"><p>Hardin 描述的是开放获取；共同产权社群大量反例存在。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>2. 「私有化万能」</summary><div class="dbody"><p>排他成功≠可持续；分割草场可能毁掉轮牧恢复。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>3. 「国家接管就好」</summary><div class="dbody"><p>中央信息不足、执法不力可制造「国家失败的公地」。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>4. 「人多一定更糟，所以放弃组织」</summary><div class="dbody"><p>奥尔森强调大集团难，但分层、联邦、代表制、选择性激励可解。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>5. 「口头共识=集体行动」</summary><div class="dbody"><p>无选择性激励时，签字不等于出钱出力。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>6. 「一次严厉重罚最有效」</summary><div class="dbody"><p>奥斯特罗姆强调<strong>分级</strong>制裁：先警告，再升级——保合作、可执行。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>7. 「设计原则是施工蓝图」</summary><div class="dbody"><p>元分析表明原则稳健但非逐条充分；配置与语境重要。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>8. 「全球问题用村庄药方原样套」</summary><div class="dbody"><p>大气、公海交易成本与嵌套需求不同；需多中心+国家能力。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>9. 「看见资源退化就断定是公地悲剧」</summary><div class="dbody"><p>技术冲击、腐败、战争、产权战争都可能导致退化。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>10. 「道德动员可以替代激励设计」</summary><div class="dbody"><p>道德有用，但对抗系统分摊成本时，不改结构会疲劳。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <rect x="30" y="40" width="180" height="120" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="120" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">抽象</text>
+  <text x="120" y="105" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">外部性分摊</text>
+  <text x="120" y="130" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">搭便车不等式</text>
+
+  <rect x="250" y="40" width="180" height="120" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="340" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">机制</text>
+  <text x="340" y="105" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">开放获取纳什</text>
+  <text x="340" y="130" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">监测—制裁环</text>
+
+  <rect x="470" y="40" width="180" height="120" rx="10" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="560" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">操作</text>
+  <text x="560" y="105" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">边界·配额·轮值</text>
+  <text x="560" y="130" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">会费·署名·罚则</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>现实场景</th>
+<th>抽象同构</th>
+<th>常见误用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">近海过渔</td>
+<td>开放获取 CPR</td>
+<td>只喊「保护」不定配额</td>
+</tr>
+<tr>
+<td class="k">小区共享设施损坏</td>
+<td>公共品维护不足</td>
+<td>指望自愿修而不收会费</td>
+</tr>
+<tr>
+<td class="k">开源项目没人维护</td>
+<td>公共品 + 声誉激励不足</td>
+<td>骂「白嫖」不改治理</td>
+</tr>
+<tr>
+<td class="k">全球减排拖延</td>
+<td>大集团集体行动</td>
+<td>只靠道义、无俱乐部惩罚</td>
+</tr>
+<tr>
+<td class="k">公司知识不沉淀</td>
+<td>团队公共品</td>
+<td>考核只奖个人英雄</td>
+</tr>
+</tbody>
+</table></div>
+<p>FAO《世界渔业和水产养殖状况》显示：2021 年受监测海洋种群中约 <strong>62.3%</strong> 处于生物可持续水平（较 2019 降 2.3 个百分点）；按产量加权则约 <strong>76.9%</strong> 来自可持续种群——管理有效处明显更好。<span class="tag t-fact">事实</span>（SOFIA 2024 新闻稿口径）</p>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">诊断清单</button><button class="tab" data-pane="tb1-1">制度菜单</button><button class="tab" data-pane="tb1-2">个人/小团队</button></div>
+<div class="pane on" id="tb1-0"><ol>
+<li>资源是 CPR 还是纯公共品？竞争性？排他成本？  </li>
+<li>当前是开放获取还是已有共同/国家/私有产权？  </li>
+<li>(N) 多大？能否分层？  </li>
+<li>监测成本与违规诱惑比如何？  </li>
+<li>有无选择性激励或强制？  </li>
+<li>失败更像过用、供给不足，还是分配冲突？</li>
+</ol></div><div class="pane" id="tb1-1"><ul>
+<li><strong>边界</strong>：谁有权用？如何准入  </li>
+<li><strong>规则</strong>：季节、配额、技术限制  </li>
+<li><strong>监测</strong>：轮值、传感器、交叉监督  </li>
+<li><strong>制裁</strong>：警告→罚款→暂停资格  </li>
+<li><strong>论坛</strong>：低成本申诉  </li>
+<li><strong>嵌套</strong>：上游问题交给哪一层</li>
+</ul></div><div class="pane" id="tb1-2"><ul>
+<li>先缩小「有效公地」：明确名单与责任人  </li>
+<li>把贡献变可观察（看板、署名）  </li>
+<li>会费/押金 &gt; 纯自愿  </li>
+<li>对违规用梯度回应，避免一次撕破脸</li>
+</ul></div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>主干 A · 资源与产权判别</summary><div class="dbody"><p>CPR vs 公共品 vs 私人物品；开放获取 vs 共同产权；画 2×2 排他—竞争矩阵。</p></div></details>
+<details><summary>主干 B · 激励算术</summary><div class="dbody"><p>会算过牧比 (2N/(N+1))；会判奥尔森 (B/N ? C)；会判 MPCR 缺口。</p></div></details>
+<details><summary>主干 C · 制度设计</summary><div class="dbody"><p>默写奥斯特罗姆原则要点；会设计分级制裁与监测轮值。</p></div></details>
+<details><summary>主干 D · 动态与崩溃</summary><div class="dbody"><p>logistic + MSY；识别「努力↑但渔获↓」的租值消散信号。</p></div></details>
+<details><summary>主干 E · 尺度迁移</summary><div class="dbody"><p>本地成功≠全球解；碳俱乐部、多中心、国家能力的角色。</p></div></details>
+<details><summary>分支 · 实验与田野</summary><div class="dbody"><p>公共品实验、灌溉/渔业案例阅读；警惕幸存者偏差。</p></div></details>
+<details><summary>分支 · 批评文献</summary><div class="dbody"><p>对 Hardin 意识形态批评；对 Ostrom 忽视权力/文化的批评。</p></div></details>
+<details><summary>Boss · 完整诊断备忘录</summary><div class="dbody"><p>选一真实公地，写 2 页：结构→失败模式→杠杆→30 天试点。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是「公地修复官」。主线任务：把一块开放草场变成可续用共同产权，同时防备游说集团把配额变成私产劫掠。</p>
+<ul>
+<li><strong>地图区</strong>：村庄草场 → 流域灌溉 → 近海渔场 → 公海与大气  </li>
+<li><strong>经验值</strong>：成功一次监测回合、一次分级制裁、一次跨层协调  </li>
+<li><strong>失败条件</strong>：存量崩到阈值以下，或规则被精英俘获  </li>
+<li><strong>隐藏成就</strong>：在 (N) 很大时用分层代表制仍达成贡献门槛  </li>
+</ul>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>难度</th>
+<th>完成标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 画属性 2×2</td>
+<td>★</td>
+<td>标出你的案例落点</td>
+</tr>
+<tr>
+<td class="k">T2 算过牧比</td>
+<td>★★</td>
+<td>(N=5,10,50) 三组</td>
+</tr>
+<tr>
+<td class="k">T3 奥尔森账</td>
+<td>★★</td>
+<td>(B,C,N,S) 判定表</td>
+</tr>
+<tr>
+<td class="k">T4 设计监测轮值</td>
+<td>★★★</td>
+<td>一周排班 + 报告模板</td>
+</tr>
+<tr>
+<td class="k">T5 分级制裁草案</td>
+<td>★★★</td>
+<td>三级罚则书面化</td>
+</tr>
+<tr>
+<td class="k">T6 案例对照</td>
+<td>★★★★</td>
+<td>Hardin vs Ostrom 各一页</td>
+</tr>
+<tr>
+<td class="k">T7 全球尺度备忘</td>
+<td>★★★★★</td>
+<td>为何八原则要嵌套</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb2"><button class="tab on" data-pane="tb2-0">若 \(N\) 从 10 升到 100</button><button class="tab" data-pane="tb2-1">若只私有化不监测</button><button class="tab" data-pane="tb2-2">若重罚一次到底</button><button class="tab" data-pane="tb2-3">若引入碳俱乐部</button></div>
+<div class="pane on" id="tb2-0"><p>过牧比从 1.818 → 1.980，更接近上限 2；奥尔森份额 (B/N) 再薄一个数量级——更需强制/选择性激励/分层。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb2-1"><p>边界清晰但侵权廉价 → 纸面产权；或分割过碎毁掉规模经济与轮牧。<span class="tag t-ana">分析</span></p></div><div class="pane" id="tb2-2"><p>短期吓阻，长期隐瞒与报复；合作规范更难恢复。<span class="tag t-ana">分析</span></p></div><div class="pane" id="tb2-3"><p>对非成员加贸易惩罚 ≈ 国际版选择性激励，改变「纯自愿减排」的奥尔森结构。<span class="tag t-ana">分析</span></p></div>
+<h3>可调模型 1 · 牧场过牧：(X_n/X_s=2N/(N+1))</h3>
+<p>单位价值 (V(X)=V_0-\delta X)。社会最优 (X_s=V_0/(2\delta))；对称纳什 (X_n=\frac{N}{N+1}\frac{V_0}{\delta})。默认 (V_0=10,\delta=0.5,N=10) → (X_s=10)，(X_n\approx18.18)，过牧比 <strong>1.818</strong>，社会租 50 vs 纳什租约 <strong>16.53</strong>（租值消散）。</p>
+<div class="tool" id="tool_pasture">
+  <div class="ctrl">
+    <label>人数 N <output id="pa_nO">10</output></label>
+    <input type="range" id="pa_n" min="2" max="100" step="1" value="10"/>
+    <label>V₀ <output id="pa_v0O">10.0</output></label>
+    <input type="range" id="pa_v0" min="4" max="20" step="0.5" value="10"/>
+    <label>δ 拥挤斜率 <output id="pa_dO">0.50</output></label>
+    <input type="range" id="pa_d" min="0.1" max="1.5" step="0.05" value="0.50"/>
+  </div>
+  <div class="readout">
+    <div class="ro">社会 Xs<strong id="pa_xs">10.00</strong></div>
+    <div class="ro">纳什 Xn<strong id="pa_xn">18.18</strong></div>
+    <div class="ro">过牧比<strong id="pa_ratio">1.818</strong></div>
+    <div id="pa_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="pa_vh">N=10：Xn/Xs=1.818；社会租 50.0，纳什租 16.5 → 租值消散</span></div>
+  </div>
+  <canvas id="paChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · 奥尔森账：(B/N+S ? C)</h3>
+<p>个人是否参与集体行动：份额收益 (B/N) 加上选择性激励 (S) 是否盖过私人成本 (C)。默认 (B=1000,C=50,N=100,S=0) → 份额 10 &lt; 50，<strong>不参与</strong>；把 (S) 提到 45 → 仍不参与；(S=41) 且 (N=50) 时份额 20+41&gt;50 才翻转——体会「大集团有多难」。</p>
+<div class="tool" id="tool_olson">
+  <div class="ctrl">
+    <label>集体收益 B <output id="ol_bO">1000</output></label>
+    <input type="range" id="ol_b" min="100" max="5000" step="50" value="1000"/>
+    <label>私人成本 C <output id="ol_cO">50</output></label>
+    <input type="range" id="ol_c" min="5" max="200" step="5" value="50"/>
+    <label>人数 N <output id="ol_nO">100</output></label>
+    <input type="range" id="ol_n" min="2" max="500" step="1" value="100"/>
+    <label>选择性激励 S <output id="ol_sO">0</output></label>
+    <input type="range" id="ol_s" min="0" max="120" step="1" value="0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">份额 B/N<strong id="ol_share">10.0</strong></div>
+    <div class="ro">净激励<strong id="ol_net">-40.0</strong></div>
+    <div class="ro">参与？<strong id="ol_act">否</strong></div>
+    <div id="ol_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ol_vh">B/N+S=10.0 &lt; C=50 → 理性不参与（典型大集团搭便车）</span></div>
+  </div>
+  <canvas id="olChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 线性公共品：MPCR 缺口</h3>
+<p>支付 (\pi_i=e-c_i+m\sum c_j)。社会愿意贡献当 (m&gt;1/N)；私人占优贡献当 (m&gt;1)。默认 (m=0.5,N=10)：(1/N=0.10)，落在缺口带——<strong>社会要、私人不</strong>。</p>
+<div class="tool" id="tool_pg">
+  <div class="ctrl">
+    <label>MPCR m <output id="pg_mO">0.50</output></label>
+    <input type="range" id="pg_m" min="0.05" max="1.50" step="0.05" value="0.50"/>
+    <label>人数 N <output id="pg_nO">10</output></label>
+    <input type="range" id="pg_n" min="2" max="40" step="1" value="10"/>
+  </div>
+  <div class="readout">
+    <div class="ro">1/N<strong id="pg_inv">0.10</strong></div>
+    <div class="ro">社会要贡献？<strong id="pg_soc">是</strong></div>
+    <div class="ro">私人要贡献？<strong id="pg_pri">否</strong></div>
+    <div id="pg_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="pg_vh">1/N=0.10 &lt; m=0.50 ≤ 1 → 经典搭便车缺口：集体理性要贡献，个体理性不贡献</span></div>
+  </div>
+  <canvas id="pgChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 渔场存量：再生 vs 总捕捞</h3>
+<p>(g(S)=rS(1-S/K))，MSY(=rK/4)。总捕捞 (H=N\cdot h)。默认 (r=0.4,K=100,N=8,h=1) → (H=8)，MSY=10，高稳态 (S\approx72.36)。把 (h) 拖高使 (H) 逼近/超过 10，看稳态消失。</p>
+<div class="tool" id="tool_fish">
+  <div class="ctrl">
+    <label>再生率 r <output id="fi_rO">0.40</output></label>
+    <input type="range" id="fi_r" min="0.1" max="0.8" step="0.05" value="0.40"/>
+    <label>承载力 K <output id="fi_kO">100</output></label>
+    <input type="range" id="fi_k" min="40" max="200" step="10" value="100"/>
+    <label>渔船数 N <output id="fi_nO">8</output></label>
+    <input type="range" id="fi_n" min="1" max="30" step="1" value="8"/>
+    <label>单船捕捞 h <output id="fi_hO">1.0</output></label>
+    <input type="range" id="fi_h" min="0.2" max="3" step="0.1" value="1.0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">总 H<strong id="fi_H">8.0</strong></div>
+    <div class="ro">MSY<strong id="fi_msy">10.0</strong></div>
+    <div class="ro">高稳态 S<strong id="fi_ss">72.4</strong></div>
+    <div id="fi_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="fi_vh">H=8.0 &lt; MSY=10.0 → 存在高稳态约 72.4；继续加船/加网将逼近崩溃阈值</span></div>
+  </div>
+  <canvas id="fiChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>分清 CPR / 开放获取 / 共同产权</td>
+<td>口头 60 秒讲清</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>算过牧比与奥尔森账</td>
+<td>与滑块一致</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>设计监测+分级制裁</td>
+<td>写出可执行草案</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>尺度批评与替代模型</td>
+<td>指出案例为何不是经典公地</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一个身边「共享易损」的东西（冰箱公共区、群文件、开源依赖），画排他—竞争 2×2（8 分钟）。  </li>
+<li>假设 (N=) 实际人数，用模型 1 默认 (V_0,\delta) 只改 (N)，记下过牧比（7 分钟）。  </li>
+<li>用模型 2 代入：若集体收益大约多少、个人出力成本多少，看要不要 (S)（8 分钟）。  </li>
+<li>写下一句本周可执行规则（名单 / 轮值 / 小额会费）（7 分钟）。  </li>
+</ol>
+<p>产出：一张 2×2 + 一行规则——成本接近 0，可验证。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>概念分型</td>
+<td>3 个案例贴标签</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>过牧比</td>
+<td>手算与模型 1 对照</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>奥尔森</td>
+<td>一张激励表</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>公共品 MPCR</td>
+<td>模型 3 截图笔记</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>奥斯特罗姆原则</td>
+<td>默写 8 条要点</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>渔业/气候新闻</td>
+<td>1 则建模批评</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘</td>
+<td>技能树自测</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>成果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>结构判别熟练</td>
+<td>10 案例标签册</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>激励算术</td>
+<td>过牧/奥尔森/MPCR 手熟</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>制度试点</td>
+<td>一个小群规则 v0.1</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>尺度与批评</td>
+<td>全球公地备忘录 2 页</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>Hardin 开放获取牧场</td>
+<td>收益私有、成本分摊 → 过用</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>过牧比 (2N/(N+1))</td>
+<td>(N\to\infty) 时逼近 2</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>奥尔森集体行动</td>
+<td>大集团需强制或选择性激励</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>线性公共品 VCM</td>
+<td>(1/N&lt;m\le1) 供给不足</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>租值消散</td>
+<td>开放获取耗尽资源租金</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>logistic + MSY</td>
+<td>捕捞超阈值则稳态崩溃</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>奥斯特罗姆设计原则</td>
+<td>边界·监测·分级制裁·嵌套</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>聚中心治理</td>
+<td>多层级并行，非单一利维坦</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>碳俱乐部</td>
+<td>国际选择性激励对抗搭便车</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>保证博弈视角</td>
+<td>沟通与可信保证可改均衡族<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 这是开放获取还是共同产权？</summary><div class="dbody"><p>有无有效边界与成员权？没有 → 更接近 Hardin；有 → 看规则质量。</p></div></details>
+<details><summary>Q2 失败是过用还是贡献不足？</summary><div class="dbody"><p>竞争性耗竭 vs 公共品供给——药方相反（限额 vs 筹资激励）。</p></div></details>
+<details><summary>Q3 \(N\) 能否被切开？</summary><div class="dbody"><p>能分层/分区则优先降有效规模，再谈宏大动员。</p></div></details>
+<details><summary>Q4 监测谁出钱？</summary><div class="dbody"><p>监测本身是公共品；轮值、分成、技术可降成本。</p></div></details>
+<details><summary>Q5 制裁是否分级？</summary><div class="dbody"><p>无梯度 → 要么不敢罚、要么一次撕破。</p></div></details>
+<details><summary>Q6 需要选择性激励吗？</summary><div class="dbody"><p>算 (B/N ? C)；差额靠 (S)、强制或改 (N)。</p></div></details>
+<details><summary>Q7 国家应站哪一角色？</summary><div class="dbody"><p>承认地方组织权、提供上诉与科学信息，未必直接经营。</p></div></details>
+<details><summary>Q8 能否私有化？</summary><div class="dbody"><p>排他成本、外部性范围、公平与规模效应——三项过关再谈。</p></div></details>
+<details><summary>Q9 全球问题怎么办？</summary><div class="dbody"><p>嵌套 + 俱乐部惩罚 + 国内分配政治，三件套。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q10 成功指标是什么？</summary><div class="dbody"><p>存量趋势、违规率、执行成本、租值是否从「过度努力」转出——而非口号热度。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>精读 Hardin 1968 <em>Science</em> 原文与 Ostrom 1990 <em>Governing the Commons</em>。  </li>
+<li>对照 Olson 1965 <em>The Logic of Collective Action</em> 与赵鼎新对形式模型边界的评论。  </li>
+<li>FAO SOFIA 2024：可持续渔业比例与管理有效性对照。  </li>
+<li>Nordhaus 碳俱乐部；Dietz–Ostrom–Stern <em>Science</em> 2003 全球公地治理。  </li>
+<li>与本引擎《囚徒困境》《猎鹿博弈》交叉：公地是多人激励结构的资源版。  </li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Hardin 公地悲剧叙事</td>
+<td>经典论文</td>
+<td>Hardin, <em>Science</em> 1968, 162:1243</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">开放获取 vs 共同产权澄清</td>
+<td>综述/教材</td>
+<td>Ostrom 等多处；印第安纳 Ostrom Workshop 教学页</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">奥尔森搭便车与选择性激励</td>
+<td>专著</td>
+<td>Olson, <em>The Logic of Collective Action</em> 1965</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">奥斯特罗姆设计原则与自治案例</td>
+<td>专著/诺奖演讲</td>
+<td>Ostrom 1990；2009 诺奖演讲论聚中心</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">设计原则非蓝图、元分析</td>
+<td>同行评议</td>
+<td>Cox et al. 对 112 项研究；Ecology &amp; Society 综述</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">对 Ostrom 忽视权力/文化的批评</td>
+<td>学术批评</td>
+<td><em>Development and Change</em> 等理性选择争议文</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">保证博弈视角重释公地</td>
+<td>中文期刊</td>
+<td>吉首大学学报相关论文（博弈结构讨论）</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">海洋种群可持续比例 62.3%（2021）</td>
+<td>国际组织</td>
+<td>FAO SOFIA 2024 新闻稿</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">气候下渔获生物量风险</td>
+<td>国际组织</td>
+<td>FAO–FishMIP 2024 报告转述</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">草场私有化可能新悲剧</td>
+<td>综述转述</td>
+<td>《自然资源学报》等治理综述引用</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">碳俱乐部</td>
+<td>学术</td>
+<td>Nordhaus, AER 2015</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或标准定理；<span class="tag t-ana">分析</span>权威推断；<span class="tag t-inf">推论</span>本手册推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或转述链长。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与制度分析学习材料，不构成法律、投资、环境工程或公共政策的正式建议。公地与集体行动模型是对激励结构的简化；现实包含权力、文化、生态非线性与执行细节。将结论用于资源管理或组织治理前，应核对一手数据并咨询相应领域专业人士。页脚「耗时」由流水线自动写入，不代表研究完备性保证。</p>
+</section>
+<footer>  <p>《公地悲剧与集体行动逻辑：分散收益、集中成本如何掏空公共资源 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 7 分 1 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《公地悲剧与集体行动逻辑》主题脚本
+   四个可调模型：
+     1. 牧场过牧比 Xn/Xs = 2N/(N+1)
+     2. 奥尔森账 B/N + S ? C
+     3. 线性公共品 MPCR 缺口
+     4. 渔场再生 vs 总捕捞
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function clampLabel(ctx, lab, x, y, align, pl, w) {
+    var lw = ctx.measureText(lab).width;
+    ctx.textAlign = align;
+    var lx = align === 'left' ? Math.min(x, w - lw - 6) : Math.max(x, pl + 6);
+    ctx.fillText(lab, lx, y);
+  }
+
+  /* ── 1. Pasture overgrazing ── */
+  (function pasture() {
+    var nEl = $('pa_n'), vEl = $('pa_v0'), dEl = $('pa_d');
+    if (!nEl || !vEl || !dEl) return;
+    var cv = $('paChart');
+
+    function upd() {
+      var N = parseFloat(nEl.value), V0 = parseFloat(vEl.value), d = parseFloat(dEl.value);
+      if (d < 0.05) d = 0.05;
+      var Xs = V0 / (2 * d);
+      var Xn = (N / (N + 1)) * (V0 / d);
+      var ratio = (2 * N) / (N + 1);
+      var rentS = Xs * (V0 - d * Xs);
+      var rentN = Xn * (V0 - d * Xn);
+      var col = ratio > 1.7 ? C.red : (ratio > 1.4 ? C.amber : C.green);
+
+      txt($('pa_nO'), String(N));
+      txt($('pa_v0O'), V0.toFixed(1));
+      txt($('pa_dO'), d.toFixed(2));
+      txt($('pa_xs'), Xs.toFixed(2));
+      txt($('pa_xn'), Xn.toFixed(2));
+      txt($('pa_ratio'), ratio.toFixed(3));
+      tint($('pa_ratio'), col);
+
+      var msg = 'N=' + N + '：Xn/Xs=' + ratio.toFixed(3) +
+        '；社会租 ' + rentS.toFixed(1) + '，纳什租 ' + rentN.toFixed(1) +
+        (rentN < rentS * 0.5 ? ' → 租值消散明显' : ' → 仍有部分租');
+      txt($('pa_vh'), msg);
+      tint($('pa_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var vals = [
+        { lab: '社会 Xs', v: Xs, c: C.green },
+        { lab: '纳什 Xn', v: Xn, c: C.red },
+        { lab: '上限 2·Xs', v: 2 * Xs, c: C.amber }
+      ];
+      var vmax = Math.max(vals[0].v, vals[1].v, vals[2].v, 1);
+      function sx(v) { return pl + (v / vmax) * (bw - 8); }
+      function sy(i) { return pt + (i + 0.5) * (bh / 3); }
+
+      vals.forEach(function (item, i) {
+        var y = sy(i), x0 = pl, x1 = sx(item.v);
+        ctx.fillStyle = item.c;
+        ctx.fillRect(x0, y - 12, Math.max(2, x1 - x0), 24);
+        ctx.fillStyle = C.ink2;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(item.lab, pl, y - 16);
+        ctx.fillStyle = C.ink;
+        clampLabel(ctx, item.v.toFixed(2), x1 + 8, y + 4, 'left', pl, w);
+      });
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('总量（头/单位）', pl + bw / 2, y1 + 31);
+      for (var t = 0; t <= 4; t++) {
+        var tv = (vmax * t) / 4;
+        var xx = sx(tv);
+        ctx.strokeStyle = C.axis;
+        ctx.beginPath();
+        ctx.moveTo(xx, y1);
+        ctx.lineTo(xx, y1 + 4);
+        ctx.stroke();
+        ctx.fillStyle = C.ink3;
+        ctx.textAlign = 'center';
+        ctx.fillText(tv.toFixed(0), xx, y1 + 13);
+      }
+    }
+    bind(['pa_n', 'pa_v0', 'pa_d'], upd);
+    upd();
+  })();
+
+  /* ── 2. Olson ledger ── */
+  (function olson() {
+    var bEl = $('ol_b'), cEl = $('ol_c'), nEl = $('ol_n'), sEl = $('ol_s');
+    if (!bEl || !cEl || !nEl || !sEl) return;
+    var cv = $('olChart');
+
+    function upd() {
+      var B = parseFloat(bEl.value), Ccost = parseFloat(cEl.value);
+      var N = parseFloat(nEl.value), S = parseFloat(sEl.value);
+      var share = B / N;
+      var net = share + S - Ccost;
+      var act = net > 0;
+      var col = act ? C.green : C.red;
+
+      txt($('ol_bO'), String(Math.round(B)));
+      txt($('ol_cO'), String(Math.round(Ccost)));
+      txt($('ol_nO'), String(N));
+      txt($('ol_sO'), String(Math.round(S)));
+      txt($('ol_share'), share.toFixed(1));
+      txt($('ol_net'), (net >= 0 ? '+' : '') + net.toFixed(1));
+      txt($('ol_act'), act ? '是' : '否');
+      tint($('ol_act'), col);
+      tint($('ol_net'), col);
+
+      var msg = 'B/N+S=' + (share + S).toFixed(1) + (act ? ' ≥ ' : ' < ') + 'C=' + Ccost +
+        (act ? ' → 理性参与' : ' → 理性不参与（典型大集团搭便车）');
+      txt($('ol_vh'), msg);
+      tint($('ol_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var vals = [
+        { lab: '份额 B/N', v: share, c: C.blue },
+        { lab: '+ 选择性 S', v: S, c: C.amber },
+        { lab: '成本 C', v: Ccost, c: C.red }
+      ];
+      var vmax = Math.max(vals[0].v, vals[1].v, vals[2].v, share + S, 1);
+      function sx(v) { return pl + (v / vmax) * (bw - 8); }
+      function sy(i) { return pt + (i + 0.5) * (bh / 3); }
+
+      vals.forEach(function (item, i) {
+        var y = sy(i), x1 = sx(item.v);
+        ctx.fillStyle = item.c;
+        ctx.fillRect(pl, y - 12, Math.max(2, x1 - pl), 24);
+        ctx.fillStyle = C.ink2;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(item.lab, pl, y - 16);
+        ctx.fillStyle = C.ink;
+        clampLabel(ctx, item.v.toFixed(1), x1 + 8, y + 4, 'left', pl, w);
+      });
+
+      // threshold line at C
+      var xc = sx(Ccost);
+      ctx.strokeStyle = C.red;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(xc, pt);
+      ctx.lineTo(xc, y1);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('激励分量（参与门槛=成本线）', pl + bw / 2, y1 + 31);
+    }
+    bind(['ol_b', 'ol_c', 'ol_n', 'ol_s'], upd);
+    upd();
+  })();
+
+  /* ── 3. Public goods MPCR ── */
+  (function pg() {
+    var mEl = $('pg_m'), nEl = $('pg_n');
+    if (!mEl || !nEl) return;
+    var cv = $('pgChart');
+
+    function upd() {
+      var m = parseFloat(mEl.value), N = parseFloat(nEl.value);
+      var inv = 1 / N;
+      var soc = m > inv;
+      var pri = m > 1;
+      var gap = soc && !pri;
+      var col = gap ? C.red : (pri ? C.green : C.amber);
+
+      txt($('pg_mO'), m.toFixed(2));
+      txt($('pg_nO'), String(N));
+      txt($('pg_inv'), inv.toFixed(2));
+      txt($('pg_soc'), soc ? '是' : '否');
+      txt($('pg_pri'), pri ? '是' : '否');
+      tint($('pg_soc'), soc ? C.green : C.amber);
+      tint($('pg_pri'), pri ? C.green : C.red);
+
+      var msg;
+      if (gap) {
+        msg = '1/N=' + inv.toFixed(2) + ' < m=' + m.toFixed(2) + ' ≤ 1 → 经典搭便车缺口：集体理性要贡献，个体理性不贡献';
+      } else if (pri) {
+        msg = 'm=' + m.toFixed(2) + ' > 1 → 贡献是私人占优，缺口关闭';
+      } else {
+        msg = 'm=' + m.toFixed(2) + ' ≤ 1/N=' + inv.toFixed(2) + ' → 连社会也不该（在此线性模型下）强制贡献';
+      }
+      txt($('pg_vh'), msg);
+      tint($('pg_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 36, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var maxM = 1.5;
+
+      function sx(v) { return pl + (v / maxM) * bw; }
+      function sy(v) { return y1 - (v / maxM) * bh; } // unused vertical
+
+      // zones
+      var x0 = pl, xInv = sx(inv), x1 = sx(1), xMax = sx(maxM);
+      ctx.fillStyle = 'rgba(184,115,10,0.15)';
+      ctx.fillRect(x0, pt, Math.max(0, xInv - x0), bh);
+      ctx.fillStyle = 'rgba(213,52,44,0.18)';
+      ctx.fillRect(xInv, pt, Math.max(0, x1 - xInv), bh);
+      ctx.fillStyle = 'rgba(15,138,77,0.15)';
+      ctx.fillRect(x1, pt, Math.max(0, xMax - x1), bh);
+
+      // marker for m
+      var xm = sx(Math.min(m, maxM));
+      ctx.strokeStyle = C.ink;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(xm, pt);
+      ctx.lineTo(xm, y1);
+      ctx.stroke();
+      ctx.lineWidth = 1;
+      ctx.fillStyle = C.ink;
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('m=' + m.toFixed(2), xm, pt - 8);
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('MPCR 轴：黄=社会也不要 · 红=缺口 · 绿=私人也要', pl + bw / 2, y1 + 31);
+      [[inv, '1/N'], [1, '1']].forEach(function (pair) {
+        var xx = sx(pair[0]);
+        ctx.fillStyle = C.ink2;
+        ctx.font = '10px sans-serif';
+        ctx.fillText(pair[1], xx, y1 + 13);
+      });
+    }
+    bind(['pg_m', 'pg_n'], upd);
+    upd();
+  })();
+
+  /* ── 4. Fishery stock ── */
+  (function fish() {
+    var rEl = $('fi_r'), kEl = $('fi_k'), nEl = $('fi_n'), hEl = $('fi_h');
+    if (!rEl || !kEl || !nEl || !hEl) return;
+    var cv = $('fiChart');
+
+    function steady(r, K, H) {
+      var MSY = r * K / 4;
+      if (H > MSY + 1e-9) return { MSY: MSY, high: null, low: null, ok: false };
+      if (Math.abs(H - MSY) < 1e-9) return { MSY: MSY, high: K / 2, low: K / 2, ok: true };
+      var disc = 1 - 4 * H / (r * K);
+      if (disc < 0) return { MSY: MSY, high: null, low: null, ok: false };
+      var s = Math.sqrt(disc);
+      return { MSY: MSY, high: (K / 2) * (1 + s), low: (K / 2) * (1 - s), ok: true };
+    }
+
+    function upd() {
+      var r = parseFloat(rEl.value), K = parseFloat(kEl.value);
+      var N = parseFloat(nEl.value), h = parseFloat(hEl.value);
+      var H = N * h;
+      var st = steady(r, K, H);
+      var col = st.ok ? (H > st.MSY * 0.85 ? C.amber : C.green) : C.red;
+
+      txt($('fi_rO'), r.toFixed(2));
+      txt($('fi_kO'), String(Math.round(K)));
+      txt($('fi_nO'), String(N));
+      txt($('fi_hO'), h.toFixed(1));
+      txt($('fi_H'), H.toFixed(1));
+      txt($('fi_msy'), st.MSY.toFixed(1));
+      txt($('fi_ss'), st.high != null ? st.high.toFixed(1) : '无');
+      tint($('fi_ss'), col);
+
+      var msg;
+      if (!st.ok) {
+        msg = 'H=' + H.toFixed(1) + ' > MSY=' + st.MSY.toFixed(1) + ' → 无正稳态，开放获取路径指向崩溃';
+      } else {
+        msg = 'H=' + H.toFixed(1) + ' < MSY=' + st.MSY.toFixed(1) +
+          ' → 存在高稳态约 ' + st.high.toFixed(1) + '；继续加船/加网将逼近崩溃阈值';
+      }
+      txt($('fi_vh'), msg);
+      tint($('fi_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, hgt = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = hgt - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+
+      // plot g(S) and H line
+      var nPts = 60;
+      var gMax = st.MSY;
+      function sx(S) { return pl + (S / K) * bw; }
+      function sy(v) { return y1 - (v / (gMax * 1.15 || 1)) * bh; }
+
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (var i = 0; i <= nPts; i++) {
+        var S = (K * i) / nPts;
+        var gv = r * S * (1 - S / K);
+        var x = sx(S), y = sy(gv);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.lineWidth = 1;
+
+      // H horizontal
+      ctx.strokeStyle = C.red;
+      ctx.setLineDash([5, 3]);
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(H));
+      ctx.lineTo(pl + bw, sy(H));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // MSY marker
+      ctx.strokeStyle = C.amber;
+      ctx.beginPath();
+      ctx.moveTo(sx(K / 2), pt);
+      ctx.lineTo(sx(K / 2), y1);
+      ctx.stroke();
+
+      if (st.high != null) {
+        ctx.fillStyle = C.green;
+        ctx.beginPath();
+        ctx.arc(sx(st.high), sy(H), 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('再生 g(S)', pl + bw, pt + 12);
+      ctx.fillStyle = C.red;
+      ctx.fillText('H=' + H.toFixed(1), pl + bw, sy(H) - 6);
+      ctx.fillStyle = C.ink3;
+      ctx.textAlign = 'center';
+      ctx.fillText('存量 S（承载力 K=' + Math.round(K) + '）', pl + bw / 2, y1 + 31);
+      ctx.textAlign = 'center';
+      ctx.fillText('0', pl, y1 + 13);
+      ctx.fillText(String(Math.round(K)), pl + bw, y1 + 13);
+    }
+    bind(['fi_r', 'fi_k', 'fi_n', 'fi_h'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
