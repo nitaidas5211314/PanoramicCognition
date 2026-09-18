@@ -752,11 +752,14 @@
     {
       "slug": "显示原理（Revelation Principle）：任何可实现的结果都可由一个-说真话是最优-的直接机制实现",
       "title": "显示原理（Revelation Principle）：任何可实现的结果都可由一个\"说真话是最优\"的直接机制实现",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 03:28:20",
+      "finished": "2026-09-19 03:34:32",
+      "duration_sec": 372,
+      "outputs": [
+        "reports/显示原理（Revelation Principle）：任何可实现的结果都可由一个-说真话是最优-的直接机制实现.html",
+        "reports/显示原理（Revelation Principle）：任何可实现的结果都可由一个-说真话是最优-的直接机制实现.md"
+      ],
       "error": null
     },
     {
@@ -1867,7 +1870,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 03:27",
+  "updated": "2026-09-19 03:34",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
