@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>几何学 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Geometry × Erlangen Program × Invariants</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <div class="navgroup">因果与机制</div>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践路径</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天计划</a>
+    <div class="navgroup">模型与问题</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>几何学</h1>
+  <p class="sub">唯一一门<strong>靠一张图就能推翻两千年公理体系</strong>的学科——克莱因的埃尔朗根纲领把它压成一句话：几何，就是研究「在某个变换群下不变的东西」。</p>
+  <div class="meta">
+    <span class="chip b">27 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09 · 非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p>几何学是人类最早成形的<strong>形式系统</strong>——它从少数几条不证自明的公理出发，用纯推理推出整个空间的结构。它最危险也最迷人的地方在于：<strong>只要画对一张图，它就能推翻自己两千年里被认为「天经地义」的前提</strong>。</p>
+<p>整门学科可以被一条线索串起来，这就是克莱因 1872 年的<strong>埃尔朗根纲领（Erlangen Program）</strong>：</p>
+<blockquote>
+<p><strong>几何 = 研究「在某个变换群作用下保持不变的量（不变量）」。</strong></p>
+</blockquote>
+<ul>
+<li>欧氏几何 = 刚体运动群下的不变量（距离、角度、面积）</li>
+<li>仿射几何 = 保持平行性的变换群下的不变量（共线、比例）</li>
+<li>射影几何 = 中心投影群下的不变量（交比、无穷远线）</li>
+<li>拓扑 = 连续形变（同胚）下的不变量（连通性、洞、欧拉示性数）</li>
+</ul>
+<p>这条线索把「空间直觉」和「代数证明」缝在了一起：<strong>几何问题 = 找不变量；跨域同构 = 同一个不变结构在不同地方换了名字</strong>。物理里的守恒律、计算机里的数据流形、金融里的风险结构，全都是这套语言的方言。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话边界</h3>
+<p>几何学研究的不是「图形长什么样」，而是<strong>「在允许的变换下，什么必须保持不变」</strong>。一旦把「允许哪种变换」写清楚，几何学的分支就自动分化出来。所以几何学的真正核心对象不是三角形或球面，而是<strong>变换群 + 它保住的不变量</strong>这对组合。</p>
+<blockquote>
+<p>关键反转：我们从小被教成「几何是画图」，但严格地说，<strong>几何是删掉一切可画可不画的东西之后剩下的骨架</strong>。你能在不测量的情况下说「它和原来全等」吗？能——靠的是刚体变换下的不变量。</p>
+</blockquote>
+<h3>用 15 个问题划定边界</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">研究什么</td>
+<td>空间、形状、以及「在变换群作用下保持不变的性质」</td>
+</tr>
+<tr>
+<td class="k">边界在哪</td>
+<td>只管「结构性的不变性」，不管具体的数值大小（那是度量/分析的事）</td>
+</tr>
+<tr>
+<td class="k">核心对象</td>
+<td>变换群 G 与其不变量 Inv(G)；具体空间（流形、曲线、多面体）是载体</td>
+</tr>
+<tr>
+<td class="k">参与者</td>
+<td>纯数学家、几何学家、物理学家（广义相对论/规范场）、工程师（CAD/机器人）、计算机科学家（图形学/TDA）</td>
+</tr>
+<tr>
+<td class="k">核心变量</td>
+<td>曲率 K、距离 d、角度 θ、交比 CR、欧拉示性数 χ、同调群 Hₖ、群作用</td>
+</tr>
+<tr>
+<td class="k">可观察</td>
+<td>可测量的长度/角/面积、点云数据、图像像素、离散网格</td>
+</tr>
+<tr>
+<td class="k">不可观察但可推断</td>
+<td>流形的内在维数、隐藏的对称群、整体拓扑（有几个洞）</td>
+</tr>
+<tr>
+<td class="k">谁影响谁</td>
+<td>公理选择 → 允许的变换群 → 不变量集合 → 能回答什么问题</td>
+</tr>
+<tr>
+<td class="k">确定因果</td>
+<td>选定变换群 G ⇒ 不变量集合 Inv(G) 被唯一确定（因果清晰）</td>
+</tr>
+<tr>
+<td class="k">只是相关</td>
+<td>「图看起来对」与「命题为真」——历史上多次正相关，但<strong>不构成因果</strong></td>
+</tr>
+<tr>
+<td class="k">表层现象</td>
+<td>一张好看的图、一个看似成立的构造</td>
+</tr>
+<tr>
+<td class="k">底层机制</td>
+<td>不变量在群作用下的等价类结构（轨道-稳定子定理）</td>
+</tr>
+<tr>
+<td class="k">反馈</td>
+<td>物理应用（引力=曲率）反过来催生新几何（黎曼几何）；工程需求催生计算几何</td>
+</tr>
+<tr>
+<td class="k">时间延迟</td>
+<td>从纯几何突破到工程可用，常隔几十年（陈类 1940s → 规范场论 1970s）</td>
+</tr>
+<tr>
+<td class="k">正负反馈</td>
+<td>群论工具越强 → 能定义的不变量越多 → 新几何分支涌现（正反馈）；欧氏直觉越深 → 越难接受非欧几何（负反馈，见第 14 节）</td>
+</tr>
+</tbody>
+</table></div>
+<h3>它和相邻学科的区分</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>学科</th>
+<th>问的问题</th>
+<th>与几何的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">代数</td>
+<td>方程与结构的解</td>
+<td>代数几何把几何对象变成方程的解集；交换代数 ↔ 概形</td>
+</tr>
+<tr>
+<td class="k">分析</td>
+<td>变化、极限、函数</td>
+<td>微分几何用微积分研究弯曲空间；曲率是可微不变量</td>
+</tr>
+<tr>
+<td class="k">拓扑</td>
+<td>连续形变下不变的东西</td>
+<td>拓扑是「最弱」的几何（群最大），是几何的底层</td>
+</tr>
+<tr>
+<td class="k">群论</td>
+<td>对称的结构</td>
+<td>埃尔朗根纲领把几何<strong>定义</strong>为群论：几何 = 群的不变量</td>
+</tr>
+<tr>
+<td class="k">物理</td>
+<td>世界如何运动</td>
+<td>广义相对论把引力写成时空曲率；规范场论是纤维丛上的联络</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>四个理由（为什么它在你的认知系统里占一个位置）</h3>
+<div class="grid g2">
+<div class="card"><h4>它训练「不变量思维」，这是跨学科最稀缺的能力</h4><p>一眼看穿「什么在变、什么没变」是物理、计算机、经济、生物共通的核心技能。几何学把这种思维磨到了最锋利——它用两千年的失败和突破告诉你：<strong>找不变量比找答案重要得多</strong>。</p></div>
+<div class="card"><h4>它是「空间直觉」和「严格证明」之间唯一的桥</h4><p>人类天生有空间直觉，但直觉会骗人（见第 14 节「图看起来对就是对的」）。几何学把直觉翻译成可验证的代数陈述，让你既保留直觉的速度，又拥有证明的可靠。</p></div>
+<div class="card"><h4>它是现代物理与工程的底层语法</h4><p>广义相对论没有黎曼几何写不出；CAD、机器人运动学、计算机图形学没有射影几何和变换群走不动；拓扑数据分析（TDA）正成为 AI for Science 的新基础设施。</p></div>
+<div class="card"><h4>它是「反事实」最好的训练场</h4><p>「如果第五公设不成立会怎样？」——这个问题催生了非欧几何，进而催生了相对论。几何学教你用「改一条公理」来逼问世界的另一种可能，这正是第 20 节反事实模拟的源头。</p></div>
+</div>
+<div class="note amber"><b>一句话定性</b><p>几何学不是「关于图形的学问」，而是关于<strong>「在什么变换下、什么必须保持不变」的学问</strong>。掌握它，你就掌握了一套能套到物理、计算机、甚至社会系统上的通用分析框架。</p></div>
+<hr />
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<blockquote>
+<p>这一节给一张「九层世界地图」：从上到下是几何学的抽象层级，从公理到应用；右侧用嵌套方框画出<strong>欧氏 ⊂ 仿射 ⊂ 射影 ⊂ 拓扑</strong>的变换群包含关系——群越大，不变量越少。</p>
+</blockquote>
+<svg viewBox="0 0 680 740" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="geo1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#b0323a"></path>
+    </marker>
+  </defs>
+  <text x="24" y="16" font-size="13" font-weight="700" fill="#1f2a37">几何学九层世界地图（左：抽象层级 · 右：变换群嵌套）</text>
+  <!-- 左列 9 层 -->
+  <rect x="24" y="30" width="336" height="62" rx="6" fill="#e9eef7" stroke="#9fb3d1"></rect>
+  <text x="36" y="54" font-size="12" font-weight="700" fill="#23324a">① 公理与公设</text>
+  <text x="36" y="74" font-size="10.5" fill="#3a4a63">形式系统起点：欧几里得五公设、希尔伯特公理</text>
+
+  <rect x="24" y="100" width="336" height="62" rx="6" fill="#dbe7fb" stroke="#9fb3d1"></rect>
+  <text x="36" y="124" font-size="12" font-weight="700" fill="#23324a">② 变换群（克莱因纲领轴心）</text>
+  <text x="36" y="144" font-size="10.5" fill="#3a4a63">G = 允许的对称；几何由 G 唯一决定</text>
+
+  <rect x="24" y="170" width="336" height="62" rx="6" fill="#cdeccd" stroke="#8fbf8f"></rect>
+  <text x="36" y="194" font-size="12" font-weight="700" fill="#1f3a1f">③ 欧氏几何（刚体群）</text>
+  <text x="36" y="214" font-size="10.5" fill="#274d27">不变量：距离 / 角 / 面积 / 平行</text>
+
+  <rect x="24" y="240" width="336" height="62" rx="6" fill="#cfe3f5" stroke="#8fb3d9"></rect>
+  <text x="36" y="264" font-size="12" font-weight="700" fill="#1f3350">④ 仿射几何</text>
+  <text x="36" y="284" font-size="10.5" fill="#284565">不变量：共线 / 比例 / 平行（角度不保）</text>
+
+  <rect x="24" y="310" width="336" height="62" rx="6" fill="#e7d9f5" stroke="#b89fdc"></rect>
+  <text x="36" y="334" font-size="12" font-weight="700" fill="#3a2150">⑤ 射影几何</text>
+  <text x="36" y="354" font-size="10.5" fill="#4b2d65">不变量：交比 / 无穷远线（平行线相交）</text>
+
+  <rect x="24" y="380" width="336" height="62" rx="6" fill="#f6e7cf" stroke="#dcb87a"></rect>
+  <text x="36" y="404" font-size="12" font-weight="700" fill="#4a3413">⑥ 微分 / 黎曼几何（曲率）</text>
+  <text x="36" y="424" font-size="10.5" fill="#5c441d">局部用切空间 + 度量；曲率 K 是核心不变量</text>
+
+  <rect x="24" y="450" width="336" height="62" rx="6" fill="#f7d6d6" stroke="#d99a9a"></rect>
+  <text x="36" y="474" font-size="12" font-weight="700" fill="#4a1f1f">⑦ 拓扑（同胚群）</text>
+  <text x="36" y="494" font-size="10.5" fill="#5c2a2a">不变量：连通性 / 洞 / 欧拉示性数 χ</text>
+
+  <rect x="24" y="520" width="336" height="62" rx="6" fill="#fbeecb" stroke="#d8c486"></rect>
+  <text x="36" y="544" font-size="12" font-weight="700" fill="#4a3c13">⑧ 不变量（跨几何的公共货币）</text>
+  <text x="36" y="564" font-size="10.5" fill="#5c4d1d">群作用 → 轨道 → 不变量；同调/同伦/示性类</text>
+
+  <rect x="24" y="590" width="336" height="62" rx="6" fill="#d9e8e2" stroke="#8fbfae"></rect>
+  <text x="36" y="614" font-size="12" font-weight="700" fill="#1f3a30">⑨ 应用杠杆层</text>
+  <text x="36" y="634" font-size="10.5" fill="#274d40">物理（引力/规范场）· 工程（CAD/机器人）· 计算机（TDA/图形学）</text>
+
+  <!-- 右列嵌套 -->
+  <rect x="384" y="150" width="280" height="470" rx="10" fill="#f7d6d6" stroke="#c97a7a" stroke-width="2"></rect>
+  <text x="396" y="172" font-size="12" font-weight="700" fill="#4a1f1f">拓扑（群最大，不变量最少）</text>
+
+  <rect x="404" y="210" width="240" height="360" rx="10" fill="#e7d9f5" stroke="#b07fdc" stroke-width="2"></rect>
+  <text x="416" y="232" font-size="12" font-weight="700" fill="#3a2150">射影几何</text>
+
+  <rect x="424" y="270" width="200" height="240" rx="10" fill="#cfe3f5" stroke="#7f9fcf" stroke-width="2"></rect>
+  <text x="436" y="292" font-size="12" font-weight="700" fill="#1f3350">仿射几何</text>
+
+  <rect x="444" y="330" width="160" height="120" rx="10" fill="#cdeccd" stroke="#6faf6f" stroke-width="2"></rect>
+  <text x="456" y="352" font-size="12" font-weight="700" fill="#1f3a1f">欧氏几何</text>
+  <text x="456" y="372" font-size="10" fill="#274d27">（群最小，</text>
+  <text x="456" y="386" font-size="10" fill="#274d27">不变量最多）</text>
+
+  <line x1="600" y1="410" x2="600" y2="600" stroke="#b0323a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#geo1)"></line>
+  <text x="500" y="540" font-size="11" fill="#b0323a" transform="rotate(90 500 540)">群扩大 → 不变量减少</text>
+</svg>
+<h3>这张地图在系统里的作用</h3>
+<p>它把「几何学很散」的错觉打破：所有分支只是<strong>同一个定义（埃尔朗根纲领）在不同群上的实例化</strong>。你不需要背每个分支的结论，只要记住「换群 → 换不变量」这一条操作，就能自己生成任意分支。右侧嵌套框同时回答了「为什么非欧几何不是欧氏几何的敌人」——它只是把允许的变换群扩大了，于是一些「自明」的不变量（如平行公理）被放弃了。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<blockquote>
+<p>每个核心概念都是「抽象定义 ↔ 运行机制 ↔ 可操作检验」三层中的一环。下图画出三层映射。</p>
+</blockquote>
+<svg viewBox="0 0 680 420" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="geo2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#2f6f9f"></path>
+    </marker>
+  </defs>
+  <text x="24" y="16" font-size="13" font-weight="700" fill="#1f2a37">抽象 ↔ 机制 ↔ 操作 三层映射</text>
+
+  <rect x="24" y="40" width="190" height="340" rx="8" fill="#eef2f8" stroke="#9fb3d1"></rect>
+  <text x="40" y="64" font-size="12.5" font-weight="700" fill="#23324a">抽象层</text>
+  <text x="40" y="92" font-size="11" fill="#3a4a63">· 公理 / 公设</text>
+  <text x="40" y="116" font-size="11" fill="#3a4a63">· 变换群 G</text>
+  <text x="40" y="140" font-size="11" fill="#3a4a63">· 不变量 Inv(G)</text>
+  <text x="40" y="164" font-size="11" fill="#3a4a63">· 流形 / 度量</text>
+  <text x="40" y="188" font-size="11" fill="#3a4a63">· 同调群 Hₖ</text>
+  <text x="40" y="212" font-size="11" fill="#3a4a63">· 曲率 K</text>
+  <text x="40" y="236" font-size="11" fill="#3a4a63">· 欧拉示性数 χ</text>
+  <text x="40" y="260" font-size="11" fill="#3a4a63">· 纤维丛 / 联络</text>
+  <text x="40" y="284" font-size="11" fill="#3a4a63">· 无穷远线</text>
+  <text x="40" y="308" font-size="11" fill="#3a4a63">· 交比 CR</text>
+
+  <rect x="245" y="40" width="190" height="340" rx="8" fill="#eaf3ec" stroke="#8fbf8f"></rect>
+  <text x="261" y="64" font-size="12.5" font-weight="700" fill="#1f3a1f">机制层</text>
+  <text x="261" y="92" font-size="11" fill="#274d27">· 群作用：g·x</text>
+  <text x="261" y="116" font-size="11" fill="#274d27">· 轨道-稳定子</text>
+  <text x="261" y="140" font-size="11" fill="#274d27">· 证明（綜合法）</text>
+  <text x="261" y="164" font-size="11" fill="#274d27">· 坐标卡 + 转移函数</text>
+  <text x="261" y="188" font-size="11" fill="#274d27">· 链复形 / 边界算子</text>
+  <text x="261" y="212" font-size="11" fill="#274d27">· 高斯-博内积分</text>
+  <text x="261" y="236" font-size="11" fill="#274d27">· V−E+F 不变量</text>
+  <text x="261" y="260" font-size="11" fill="#274d27">· 平行移动 / 和乐</text>
+  <text x="261" y="284" font-size="11" fill="#274d27">· 齐次坐标 [x:y:z]</text>
+  <text x="261" y="308" font-size="11" fill="#274d27">· 截影 / 陈类</text>
+
+  <rect x="466" y="40" width="190" height="340" rx="8" fill="#fdf2e6" stroke="#dcb87a"></rect>
+  <text x="482" y="64" font-size="12.5" font-weight="700" fill="#4a3413">操作层</text>
+  <text x="482" y="92" font-size="11" fill="#5c441d">· 尺规作图</text>
+  <text x="482" y="116" font-size="11" fill="#5c441d">· 三角剖分</text>
+  <text x="482" y="140" font-size="11" fill="#5c441d">· 测距 / 测角</text>
+  <text x="482" y="164" font-size="11" fill="#5c441d">· 点云 → 复形</text>
+  <text x="482" y="188" font-size="11" fill="#5c441d">· 持久同调条码</text>
+  <text x="482" y="212" font-size="11" fill="#5c441d">· 曲率积分校验</text>
+  <text x="482" y="236" font-size="11" fill="#5c441d">· 网格 / CAD</text>
+  <text x="482" y="260" font-size="11" fill="#5c441d">· 相机投影矩阵</text>
+  <text x="482" y="284" font-size="11" fill="#5c441d">· 灭点提取</text>
+  <text x="482" y="308" font-size="11" fill="#5c441d">· 相似比反推</text>
+
+  <line x1="214" y1="210" x2="245" y2="210" stroke="#2f6f9f" stroke-width="2" marker-end="url(#geo2)"></line>
+  <line x1="435" y1="210" x2="466" y2="210" stroke="#2f6f9f" stroke-width="2" marker-end="url(#geo2)"></line>
+  <text x="246" y="200" font-size="9.5" fill="#2f6f9f">实例化</text>
+  <text x="467" y="200" font-size="9.5" fill="#2f6f9f">落地</text>
+</svg>
+<h3>概念之间的关系</h3>
+<ul>
+<li><strong>变换群</strong>是总开关：选了 G，不变量集合就被锁死。</li>
+<li><strong>曲率</strong>是微分几何的「局部不变量」，积分后变成<strong>拓扑的全局不变量</strong>（高斯-博内）。</li>
+<li><strong>欧拉示性数 χ</strong> 是「数数」得到的不变量，连通了多面体（V−E+F）和曲面（2−2g）。</li>
+<li><strong>无穷远线 / 交比</strong>是射影几何的招牌，直接对应计算机视觉里的<strong>灭点</strong>。</li>
+</ul>
+<hr />
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>角色</th>
+<th>在系统里的作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">纯数学家（几何/拓扑）</td>
+<td>定义新结构、证定理</td>
+<td>生产「不变量」与「群」的库存</td>
+</tr>
+<tr>
+<td class="k">数学物理学家（如 Atiyah、Segal、Witten）</td>
+<td>把几何当物理的语言</td>
+<td>把守恒律/场论翻译成纤维丛与指标定理</td>
+</tr>
+<tr>
+<td class="k">机构：MPI Bonn、IHÉS、IAS、MSRI</td>
+<td>聚集顶尖人才</td>
+<td>2026 阿贝尔奖得主 Faltings、Fields 得主 Pardon/Tsimerman 多出自此网络<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">工程师（CAD/机器人）</td>
+<td>把变换群变成软件</td>
+<td>让射影几何、李群成为可运行的生产力</td>
+</tr>
+<tr>
+<td class="k">计算机科学家（图形学/TDA）</td>
+<td>把几何当数据结构</td>
+<td>点云→单纯复形→持久同调，做药物/材料发现</td>
+</tr>
+<tr>
+<td class="k">教育/竞赛体系（IMO、大学）</td>
+<td>输送人才</td>
+<td>决定下一代几何学家的「直觉底色」（常是欧氏的）</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><span class="tag t-fact">事实</span>2026 年菲尔兹奖四位得主中，John Pardon（辛普lectic 几何、Fukaya 范畴、全纯曲线）和 Jacob Tsimerman（算术与复代数几何）直接处在几何学核心；Hong Wang（调和分析与几何测度论，解决三维 Kakeya 猜想）的工作横跨几何与物理直觉【事实，来源 ICM 2026 / Clay Math】。2026 阿贝尔奖授予 Gerd Faltings（算术几何，1983 年证明 Mordell 猜想即 Faltings 定理）【事实，来源 abelprize.no】。</p>
+</blockquote>
+<hr />
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+<th>谁控制它</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">曲率 K</td>
+<td>空间局部弯曲程度</td>
+<td>度量（黎曼度量）</td>
+</tr>
+<tr>
+<td class="k">距离 d / 角度 θ</td>
+<td>欧氏不变量</td>
+<td>刚体群</td>
+</tr>
+<tr>
+<td class="k">交比 CR</td>
+<td>射影不变量</td>
+<td>射影群</td>
+</tr>
+<tr>
+<td class="k">欧拉示性数 χ</td>
+<td>整体拓扑（V−E+F）</td>
+<td>同胚类（亏格 g）</td>
+</tr>
+<tr>
+<td class="k">同调群 Hₖ</td>
+<td>「k 维洞」的代数计数</td>
+<td>拓扑类型</td>
+</tr>
+<tr>
+<td class="k">变换群 G</td>
+<td>允许的对称</td>
+<td>你选的公理/框架</td>
+</tr>
+<tr>
+<td class="k">维数 d / 内在维数</td>
+<td>自由度 / 流形维数</td>
+<td>问题本身</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>关键洞察：<strong>在所有变量里，「变换群 G」是元变量</strong>——它一旦选定，其余变量哪些「存在」就被决定了。这正是埃尔朗根纲领的威力：变量不是并列的，而是 G 派生出来的。</p>
+</blockquote>
+<hr />
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<blockquote>
+<p>实线 = 因果；红色虚线 = 反馈（应用反哺几何，或直觉反噬）。</p>
+</blockquote>
+<svg viewBox="0 0 680 470" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="geo3" markerWidth="11" markerHeight="11" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#2f6f9f"></path>
+    </marker>
+    <marker id="geo3r" markerWidth="11" markerHeight="11" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#b0323a"></path>
+    </marker>
+  </defs>
+  <text x="24" y="16" font-size="13" font-weight="700" fill="#1f2a37">几何学因果图</text>
+
+  <rect x="40" y="60" width="150" height="56" rx="8" fill="#e9eef7" stroke="#9fb3d1"></rect>
+  <text x="56" y="84" font-size="11.5" font-weight="700" fill="#23324a">公理 / 公设</text>
+  <text x="56" y="102" font-size="10" fill="#3a4a63">形式系统起点</text>
+
+  <rect x="40" y="190" width="150" height="56" rx="8" fill="#dbe7fb" stroke="#9fb3d1"></rect>
+  <text x="56" y="214" font-size="11.5" font-weight="700" fill="#23324a">变换群 G</text>
+  <text x="56" y="232" font-size="10" fill="#3a4a63">克莱因纲领</text>
+
+  <rect x="40" y="320" width="150" height="56" rx="8" fill="#cdeccd" stroke="#8fbf8f"></rect>
+  <text x="56" y="344" font-size="11.5" font-weight="700" fill="#1f3a1f">具体几何分支</text>
+  <text x="56" y="362" font-size="10" fill="#274d27">欧/仿/射/拓</text>
+
+  <rect x="280" y="320" width="150" height="56" rx="8" fill="#fbeecb" stroke="#d8c486"></rect>
+  <text x="296" y="344" font-size="11.5" font-weight="700" fill="#4a3c13">不变量 Inv(G)</text>
+  <text x="296" y="362" font-size="10" fill="#5c4d1d">距离/χ/交比</text>
+
+  <rect x="500" y="320" width="150" height="56" rx="8" fill="#d9e8e2" stroke="#8fbfae"></rect>
+  <text x="516" y="344" font-size="11.5" font-weight="700" fill="#1f3a30">应用</text>
+  <text x="516" y="362" font-size="10" fill="#274d40">物理/工程/计算机</text>
+
+  <line x1="115" y1="116" x2="115" y2="190" stroke="#2f6f9f" stroke-width="2" marker-end="url(#geo3)"></line>
+  <line x1="115" y1="246" x2="115" y2="320" stroke="#2f6f9f" stroke-width="2" marker-end="url(#geo3)"></line>
+  <line x1="190" y1="348" x2="280" y2="348" stroke="#2f6f9f" stroke-width="2" marker-end="url(#geo3)"></line>
+  <line x1="430" y1="348" x2="500" y2="348" stroke="#2f6f9f" stroke-width="2" marker-end="url(#geo3)"></line>
+
+  <!-- 反馈：应用 → 几何分支（广义相对论催生黎曼几何；视觉灭点催生射影） -->
+  <path d="M575,320 C620,260 600,210 190,200" fill="none" stroke="#b0323a" stroke-width="2" stroke-dasharray="7 4" marker-end="url(#geo3r)"></path>
+  <text x="470" y="250" font-size="10" fill="#b0323a">反馈：物理/视觉需求反推新几何</text>
+
+  <!-- 反馈：计算工具 → 证明 -->
+  <path d="M500,376 C420,430 260,430 140,378" fill="none" stroke="#b0323a" stroke-width="2" stroke-dasharray="7 4" marker-end="url(#geo3r)"></path>
+  <text x="250" y="448" font-size="10" fill="#b0323a">反馈：AI/计算验证反哺证明（见第 02/08 节）</text>
+</svg>
+<h3>因果链的作用</h3>
+<p>这条链说明几何学不是「发现真理」而是「<strong>选择框架 → 推导后果</strong>」。选公理（因）→ 定群（果/因）→ 定分支（果）→ 定不变量（果）→ 落地应用（果）。而应用又会反推框架，所以系统是一个带反馈的环，不是单向瀑布。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<blockquote>
+<p>这一节是整本手册最该出彩的地方：<strong>同一个数学结构，在不同领域换了名字</strong>。找到它们，你就能把一个领域的工具直接搬去另一个领域。</p>
+</blockquote>
+<div class="grid g2">
+<div class="card"><h4>变换群 ↔ 物理守恒律（诺特定理）</h4><p>诺特定理：每一个连续对称（李群作用）对应一个守恒量。旋转对称 ⇒ 角动量守恒；时间平移 ⇒ 能量守恒。<strong>这正是埃尔朗根纲领在物理里的化身</strong>：对称群的不变量 = 守恒量。几何学的不变量思维 = 物理学的守恒思维。</p></div>
+<div class="card"><h4>曲率 ↔ 引力 ↔ 协方差结构</h4><p>爱因斯坦场方程 G_μν = 8πG·T_μν 说「物质告诉时空怎么弯」。曲率 K 是几何不变量，却对应「引力」。在统计里，流形上的协方差结构（Fisher 信息矩阵）也是一把「度量」——信息几何把概率分布族当成黎曼流形。</p></div>
+<div class="card"><h4>拓扑不变量 ↔ 相变 ↔ 数据聚类</h4><p>物质的拓扑相（陈数、贝里相位）是拓扑不变量；相变对应拓扑结构的改变。TDA 里，点云的「洞」（同调群）正是数据的聚类与环结构——<strong>同一个 Hₖ，在物理里叫相，在数据里叫簇</strong>。</p></div>
+<div class="card"><h4>无穷远线 ↔ 射影几何 ↔ 计算机视觉灭点</h4><p>射影几何把平行线在「无穷远线」上相交；针孔相机模型里，平行线在图像上交于<strong>灭点</strong>——灭点就是无穷远线在像平面的投影。自动驾驶/SLAM 用灭点恢复相机位姿，本质是在解射影几何。</p></div>
+<div class="card"><h4>单纯复形 ↔ 数据结构 ↔ 超图</h4><p>单纯复形（点-边-三角面…的层级）既是拓扑的计算载体，也是图/超图数据结构的几何化。持久同调把「数据的形状」变成可计算的条码。</p></div>
+<div class="card"><h4>欧拉示性数 ↔ 网络拓扑 ↔ 亏格</h4><p>V−E+F 对多面体是 2；对带洞曲面是 2−2g。神经网络架构的「瓶颈维数」、流形的内在维数，都是同一类「数不变量」的变体。</p></div>
+</div>
+<hr />
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>几何学的运行靠三条可复用的机制：</p>
+<ol>
+<li><strong>群作用机制</strong>：给定 G，对每个对象 x 定义轨道 G·x；不变量 = 在轨道上取相同值的函数。机制性公式：|G·x| = |G| / |Stab(x)|（轨道-稳定子定理）。</li>
+<li><strong>局部→全局积分机制</strong>：微分几何先定义局部不变量（曲率 K），再用积分得到全局拓扑量。高斯-博内定理 ∫_M K dA = 2πχ 是最干净的例子——<strong>局部弯曲的总量，被拓扑（χ）完全决定</strong>。</li>
+<li><strong>坐标卡拼接机制</strong>：流形本身没有全局坐标，只有局部坐标卡 + 转移函数保证拼接处一致。这是「整体靠局部拼出来」的工程范式，直接被图形学/CAD 采用。</li>
+</ol>
+<blockquote>
+<p>这三条机制分别对应「对称」「积分」「拼贴」，也是第 09 节之后所有模型的计算基础。</p>
+</blockquote>
+<hr />
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<blockquote>
+<p>几何学的关键转折几乎都是「改一条公理 / 换一个群」。下轴标注里程碑。</p>
+</blockquote>
+<svg viewBox="0 0 680 300" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="geo5" markerWidth="11" markerHeight="11" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#555"></path>
+    </marker>
+  </defs>
+  <text x="24" y="16" font-size="13" font-weight="700" fill="#1f2a37">几何学演化时间轴（公元前 300 → 2026）</text>
+  <line x1="40" y1="170" x2="650" y2="170" stroke="#666" stroke-width="2" marker-end="url(#geo5)"></line>
+  <text x="640" y="186" font-size="10" fill="#666">时间 →</text>
+
+  <g font-size="9.5" fill="#23324a">
+    <line x1="60" y1="160" x2="60" y2="180" stroke="#888"></line>
+    <text x="60" y="150" text-anchor="middle">c.300 BCE</text>
+    <text x="60" y="196" text-anchor="middle">欧几里得</text>
+    <text x="60" y="208" text-anchor="middle">《几何原本》</text>
+
+    <line x1="150" y1="160" x2="150" y2="180" stroke="#888"></line>
+    <text x="150" y="150" text-anchor="middle">1829</text>
+    <text x="150" y="196" text-anchor="middle">罗巴切夫斯基</text>
+    <text x="150" y="208" text-anchor="middle">双曲几何</text>
+
+    <line x1="210" y1="160" x2="210" y2="180" stroke="#888"></line>
+    <text x="210" y="150" text-anchor="middle">1854</text>
+    <text x="210" y="196" text-anchor="middle">黎曼</text>
+    <text x="210" y="208" text-anchor="middle">流形/曲率</text>
+
+    <line x1="270" y1="160" x2="270" y2="180" stroke="#888"></line>
+    <text x="270" y="150" text-anchor="middle">1868</text>
+    <text x="270" y="196" text-anchor="middle">贝尔特拉米</text>
+    <text x="270" y="208" text-anchor="middle">第五公设独立</text>
+
+    <line x1="330" y1="160" x2="330" y2="180" stroke="#888"></line>
+    <text x="330" y="150" text-anchor="middle">1872</text>
+    <text x="330" y="196" text-anchor="middle">克莱因</text>
+    <text x="330" y="208" text-anchor="middle">埃尔朗根纲领</text>
+
+    <line x1="400" y1="160" x2="400" y2="180" stroke="#888"></line>
+    <text x="400" y="150" text-anchor="middle">1895</text>
+    <text x="400" y="196" text-anchor="middle">庞加莱</text>
+    <text x="400" y="208" text-anchor="middle">拓扑/同调</text>
+
+    <line x1="470" y1="160" x2="470" y2="180" stroke="#888"></line>
+    <text x="470" y="150" text-anchor="middle">1915</text>
+    <text x="470" y="196" text-anchor="middle">爱因斯坦</text>
+    <text x="470" y="208" text-anchor="middle">广义相对论</text>
+
+    <line x1="530" y1="160" x2="530" y2="180" stroke="#888"></line>
+    <text x="530" y="150" text-anchor="middle">1967</text>
+    <text x="530" y="196" text-anchor="middle">朗兰兹</text>
+    <text x="530" y="208" text-anchor="middle">纲领提出</text>
+
+    <line x1="590" y1="160" x2="590" y2="180" stroke="#888"></line>
+    <text x="590" y="150" text-anchor="middle">2024</text>
+    <text x="590" y="196" text-anchor="middle">几何朗兰兹</text>
+    <text x="590" y="208" text-anchor="middle">证明完成</text>
+
+    <line x1="645" y1="160" x2="645" y2="180" stroke="#b0323a" stroke-width="2"></line>
+    <text x="645" y="150" text-anchor="middle" fill="#b0323a">2026</text>
+    <text x="645" y="196" text-anchor="middle" fill="#b0323a">Fields/Abel</text>
+  </g>
+</svg>
+<h3>演化的系统含义</h3>
+<p>每个里程碑都是「<strong>扩大允许的变换群</strong>」或「<strong>找到新的不变量</strong>」：非欧几何扩大群（放弃平行公理）；拓扑把群放到最大（同胚）；朗兰兹把几何与数论用「对偶群」缝起来。趋势是：<strong>不变量的集合在变小、变深、变统一</strong>。</p>
+<blockquote>
+<p><span class="tag t-fact">事实</span>几何朗兰兹猜想由 Dennis Gaitsgory 与 Sam Raskin 领导的 9 人团队于 2024 年证毕，共 5 篇、逾 800 页，被 Peter Scholze 称为「30 年努力的巅峰」【来源 Quanta 2024-07-19；arXiv:2409.09856】。</p>
+</blockquote>
+<hr />
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>激励源</th>
+<th>推动什么</th>
+<th>扭曲什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">纯数学声誉（Fields/Abel）</td>
+<td>攻克深层结构（如几何朗兰兹）</td>
+<td>偏向「美」多于「用」，应用滞后</td>
+</tr>
+<tr>
+<td class="k">工业高薪（AI/量化）</td>
+<td>把几何当工具（TDA、图形学）</td>
+<td>从纯数学「抽水」人才（见第 12 节）</td>
+</tr>
+<tr>
+<td class="k">国家科研经费</td>
+<td>战略方向（如 AI for Science）</td>
+<td>追热点，基础几何投入波动</td>
+</tr>
+<tr>
+<td class="k">物理需求</td>
+<td>催生黎曼几何、纤维丛</td>
+<td>偶尔让几何「服务物理」失焦</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>几何学特有的激励张力：<strong>最漂亮的结果（费马大定理、庞加莱猜想）往往先纯后用</strong>，而工业界想要「今天就能量化」的工具。这导致基础几何长期被低估其杠杆，直到几十年后工程界才发现它不可或缺。</p>
+</blockquote>
+<hr />
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<blockquote>
+<p>资源（人才/资金/问题）从基础层流向应用层；同时工业界以高薪「抽水」人才与注意力。红色虚线 = 抽水。</p>
+</blockquote>
+<svg viewBox="0 0 680 470" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="geo4" markerWidth="11" markerHeight="11" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#2f6f9f"></path>
+    </marker>
+    <marker id="geo4r" markerWidth="11" markerHeight="11" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#b0323a"></path>
+    </marker>
+  </defs>
+  <text x="24" y="16" font-size="13" font-weight="700" fill="#1f2a37">几何学资源 / 信息流与「抽水」</text>
+
+  <rect x="40" y="50" width="150" height="50" rx="8" fill="#e9eef7" stroke="#9fb3d1"></rect>
+  <text x="54" y="80" font-size="11" font-weight="700" fill="#23324a">公理基础（公共资源）</text>
+
+  <rect x="270" y="50" width="150" height="50" rx="8" fill="#eef2f8" stroke="#9fb3d1"></rect>
+  <text x="284" y="80" font-size="11" font-weight="700" fill="#23324a">大学/研究所人才</text>
+
+  <rect x="500" y="50" width="150" height="50" rx="8" fill="#eef2f8" stroke="#9fb3d1"></rect>
+  <text x="514" y="80" font-size="11" font-weight="700" fill="#23324a">政府/基金资金</text>
+
+  <rect x="120" y="200" width="160" height="54" rx="8" fill="#cdeccd" stroke="#8fbf8f"></rect>
+  <text x="134" y="232" font-size="11" font-weight="700" fill="#1f3a1f">纯数学研究</text>
+
+  <rect x="400" y="200" width="160" height="54" rx="8" fill="#cfe3f5" stroke="#8fb3d9"></rect>
+  <text x="414" y="232" font-size="11" font-weight="700" fill="#1f3350">应用数学/工程</text>
+
+  <rect x="230" y="380" width="220" height="54" rx="8" fill="#f6e7cf" stroke="#dcb87a"></rect>
+  <text x="244" y="412" font-size="11" font-weight="700" fill="#4a3413">工业 AI / 计算机 / 图形学</text>
+
+  <line x1="115" y1="100" x2="200" y2="200" stroke="#2f6f9f" stroke-width="2" marker-end="url(#geo4)"></line>
+  <line x1="345" y1="100" x2="400" y2="200" stroke="#2f6f9f" stroke-width="2" marker-end="url(#geo4)"></line>
+  <line x1="575" y1="100" x2="480" y2="200" stroke="#2f6f9f" stroke-width="2" marker-end="url(#geo4)"></line>
+  <line x1="280" y1="254" x2="340" y2="380" stroke="#2f6f9f" stroke-width="2" marker-end="url(#geo4)"></line>
+  <line x1="480" y1="254" x2="450" y2="380" stroke="#2f6f9f" stroke-width="2" marker-end="url(#geo4)"></line>
+
+  <!-- 抽水 -->
+  <path d="M350,210 C360,300 360,320 350,378" fill="none" stroke="#b0323a" stroke-width="2.5" stroke-dasharray="7 4" marker-end="url(#geo4r)"></path>
+  <path d="M560,100 C600,250 520,320 450,378" fill="none" stroke="#b0323a" stroke-width="2.5" stroke-dasharray="7 4" marker-end="url(#geo4r)"></path>
+  <text x="356" y="300" font-size="10" fill="#b0323a">抽水：人才</text>
+  <text x="500" y="240" font-size="10" fill="#b0323a">抽水：资金/注意力</text>
+</svg>
+<h3>这张图的作用</h3>
+<p>它解释了为什么「几何学很有用」却常显得「离钱远」：基础层是公共品，下游工业以高薪把最优人才抽走，导致纯几何人才链脆弱。<strong>想杠杆几何学，优先接「应用层」而非等基础层变现</strong>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<blockquote>
+<p>排序依据：<strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong>。前几项投入产出比最高。</p>
+</blockquote>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>为什么是杠杆</th>
+<th>操作成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>埃尔朗根纲领（换群→换不变量）</strong></td>
+<td>一条操作生成所有几何分支，省掉死记硬背</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>高斯-博内定理 ∫K dA = 2πχ</strong></td>
+<td>把局部曲率与全局拓扑一键连通，跨物理/几何通用</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>欧拉示性数 χ=2−2g</strong></td>
+<td>用「数数」得到拓扑不变量，零工具可验证</td>
+<td>极低</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>变换群 ↔ 诺特定理</strong></td>
+<td>把几何不变量直接翻译成物理守恒量</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>射影几何 / 无穷远线 / 灭点</strong></td>
+<td>计算机视觉、SLAM、CAD 的底层，工程杠杆极大</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>持久同调（TDA）</strong></td>
+<td>把任意点云变成拓扑特征，药物/材料发现已落地</td>
+<td>中高</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>流形假设 + 内在维数</strong></td>
+<td>降维、流形学习、信息几何的共同前提</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>单纯复形 / 链复形</strong></td>
+<td>拓扑与数据的统一计算载体</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>纤维丛与联络</strong></td>
+<td>规范场论、机器人的位形空间的语言</td>
+<td>高</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>反事实改公理（非欧思维）</strong></td>
+<td>逼问世界另一可能，训练系统性想象力</td>
+<td>低（思维）</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>杠杆逻辑：<strong>前 3 个几乎零成本却覆盖 80% 的跨域迁移</strong>；第 5、6 个是把几何直接换成工程产出的最快路径。</p>
+</blockquote>
+<hr />
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<blockquote>
+<p>这些都是几何学「看起来对但其实错」的经典坑。每条都用折叠卡藏起来，点开看为什么。</p>
+</blockquote>
+<details><summary>「图看起来对就是对的」——视觉证伪幻觉</summary><div class="dbody"><p>人类视觉系统极度相信「画出来像那么回事」。但历史上无数「看起来成立」的几何命题被反例推翻：连续函数可以处处不可微（魏尔斯特拉斯）、看似收敛的级数可以重排发散（黎曼重排定理）。<strong>图是直觉，不是证明。</strong> 对策：任何几何结论，问「它的不变量论证是什么」。</p></div></details>
+<details><summary>公理自明性幻觉</summary><div class="dbody"><p>欧氏第五公设被当作「天经地义」两千年，直到有人认真假设它不成立，才诞生非欧几何。陷阱是：把「从小被灌输的公理」当成「必然为真」。对策：记住公理是<strong>约定</strong>，不是事实；换公理换世界（见第 20 节）。</p></div></details>
+<details><summary>把欧氏直觉当普适真理</summary><div class="dbody"><p>我们在欧氏空间长大，于是默认「平行线永不相交」「三角形角和=180°」「最短路径是直线」。但在球面（角和&gt;180°）、双曲空间（角和&lt;180°）、广义相对论时空里这些都错。对策：遇到「显然」，先问「这是在哪个变换群/曲率下显然？」</p></div></details>
+<details><summary>维度诅咒（Curse of Dimensionality）</summary><div class="dbody"><p>低维里成立的几何直觉，高维全失效：高维球几乎全在表面、最近邻距离趋同、体积集中在薄壳。TDA 和流形学习正是为对抗它而生。对策：高维问题先问「内在维数 d 是多少」，别直接套 3D 直觉。</p></div></details>
+<details><summary>投影失真被当成真相</summary><div class="dbody"><p>照片/屏幕把 3D 压成 2D，近大远小、平行线交于灭点。若把投影图当「真实比例」，会误判距离与大小（如航拍测距、监控深度估计）。对策：任何 2D 图先问「这是哪种投影、灭点在哪、相似比是多少」。</p></div></details>
+<details><summary>把相关当因果（「图漂亮 = 命题真」）</summary><div class="dbody"><p>一张漂亮的示意图常让人误以为论证成立。几何学里示意图只是辅助，<strong>严格证明靠不变量代数的等价链</strong>。对策：把每个「因为图上看」换成「因为 Inv(G) 下…」。</p></div></details>
+<details><summary>过度依赖数值近似</summary><div class="dbody"><p>用多边形逼近 π、用网格近似曲面时，误把「近似值够近」当「等于」。阿基米德用 96 边形把 π 夹在 3.1410 与 3.1427 之间，但永远差一个 ε。对策：区分「估计」与「等式」，报告误差界。</p></div></details>
+<details><summary>混淆「同胚」与「全等」</summary><div class="dbody"><p>拓扑只保连通和洞，不保距离和角。一个咖啡杯和一个甜甜圈同胚（一个洞），但显然不全等。陷阱：用拓扑结论去做需要度量的事。对策：先定你要的是哪一层不变量。</p></div></details>
+<details><summary>度量依赖陷阱</summary><div class="dbody"><p>「距离」「角度」在欧氏下自明，但在流形上依赖所选度量；不同度量给出不同几何。陷阱：默认用欧氏距离处理流形数据。对策：先明确度量从哪来（如 Fisher 信息、图拉普拉斯）。</p></div></details>
+<details><summary>把工具当本体</summary><div class="dbody"><p>以为「几何 = 画图」「拓扑 = 橡皮泥变形」。这是比喻，不是定义。陷阱：被比喻锁死，看不见群论本质。对策：回到「几何 = 群的不变量」这条硬定义。</p></div></details>
+<details><summary>忽视边界与奇异点</summary><div class="dbody"><p>中心投影在无穷远线、针孔相机在灭点、曲率在脐点都会出现奇异。陷阱：在奇异点套用普通公式得到无穷大/NaN。对策：clamp 边界、单独处理奇点（见第 25 节工具对 D=0 的处理）。</p></div></details>
+<details><summary>复杂度错觉（以为越抽象越难）</summary><div class="dbody"><p>射影几何初看比欧氏难，其实它「更少不变量、更统一」，常更简单。陷阱：被符号吓退。对策：从「换群→换不变量」视角，抽象反而是简化。</p></div></details>
+<hr />
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<p>几何学不是远离生活的抽象。举几个「今天就在你手里」的现实锚点：</p>
+<ul>
+<li><strong>手机导航</strong>：GPS 把地球当椭球（黎曼几何），不是平面；公里数按大圆距离算。</li>
+<li><strong>拍照/人脸解锁</strong>：针孔相机模型是射影几何；灭点帮你判断距离。</li>
+<li><strong>游戏/电影特效</strong>：所有 3D 都是变换群（平移/旋转/缩放）作用在网格上。</li>
+<li><strong>医疗影像</strong>：MRI/CT 重建靠调和分析与几何；器官分割用拓扑。</li>
+<li><strong>AI 推荐/降维</strong>：t-SNE、UMAP 把高维数据铺到低维，本质是流形假设。</li>
+</ul>
+<blockquote>
+<p>作用：把「几何很远」的错觉拆掉——你每天用的设备，底层都是几何学在跑。</p>
+</blockquote>
+<hr />
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<p>把几何学变成可执行的行动，只需三步循环：</p>
+<ol>
+<li><strong>识别群</strong>：面对一个问题，先问「这里允许的变换是什么？」→ 决定能用哪类不变量。</li>
+<li><strong>提取不变量</strong>：距离？交比？χ？Hₖ？选一个可测量、可比较的。</li>
+<li><strong>验证 + 反事实</strong>：用不变量做判断，并问「如果换群/换公理会怎样」测试稳健性。</li>
+</ol>
+<blockquote>
+<p>这一循环可套到投资（风险结构的不变量）、产品（用户行为的拓扑）、甚至组织（信息流的几何）。几何学提供的是<strong>方法论</strong>，不是某个答案。</p>
+</blockquote>
+<hr />
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L0 · 直觉层（人人可达）</summary><div class="dbody"><p>尺规作图、相似三角形、勾股定理、多边形与圆。产出：能「看图说话」并知道何时不可信。</p></div></details>
+<details><summary>L1 · 结构层（本科入门）</summary><div class="dbody"><p>向量与线性代数、群论基础、欧氏/仿射坐标、欧拉公式 V−E+F。产出：能用坐标表达变换。</p></div></details>
+<details><summary>L2 · 现代层（进阶）</summary><div class="dbody"><p>微分几何（曲率、度量）、拓扑（同伦/同调）、射影几何与齐次坐标、高斯-博内。产出：能读现代物理与几何文献。</p></div></details>
+<details><summary>L3 · 应用层（专家）</summary><div class="dbody"><p>纤维丛与联络、TDA/持久同调、流形学习、规范场论、计算几何。产出：能把几何写成可运行的代码与系统。</p></div></details>
+<hr />
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>把几何学变成一张可刷的「地图」：</p>
+<ul>
+<li><strong>主线任务</strong>：集齐 4 大几何分支（欧/仿/射/拓）的「不变量图鉴」。</li>
+<li><strong>成就系统</strong>：① 用一张图推翻一个直觉（非欧）② 用 χ 验证一个多面体 ③ 用灭点反推一个距离。</li>
+<li><strong>Boss</strong>：证明「平行公理独立于其余四公理」（历史 Boss，1868 年由 Beltrami 通关）。</li>
+<li><strong>副本</strong>：改一条公理，造一个自己的几何世界（第 20 节反事实）。</li>
+</ul>
+<hr />
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>难度</th>
+<th>奖励（认知）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">用橙子画多面体验证 V−E+F=2</td>
+<td>★</td>
+<td>拓扑不变量直觉</td>
+</tr>
+<tr>
+<td class="k">用手机测距反推相似比</td>
+<td>★</td>
+<td>射影几何手感</td>
+</tr>
+<tr>
+<td class="k">手算 96 边形夹 π</td>
+<td>★★</td>
+<td>逼近与误差界思维</td>
+</tr>
+<tr>
+<td class="k">用持久同调分析一小撮点云</td>
+<td>★★★</td>
+<td>TDA 入门</td>
+</tr>
+<tr>
+<td class="k">把「守恒律」写成「群不变量」</td>
+<td>★★★</td>
+<td>诺特同构打通</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<blockquote>
+<p>用「如果当时选了另一条路」逼问系统的脆弱点。下面三个反事实，每个都能翻出一段真实历史。</p>
+</blockquote>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">如果欧几里得没写第五公设</button><button class="tab" data-pane="tb1-1">如果黎曼没提出流形与曲率（1854）</button><button class="tab" data-pane="tb1-2">如果克莱因没提埃尔朗根纲领（1872）</button></div>
+<div class="pane on" id="tb1-0"><p>几何学可能不会卡两千年。没有「平行公理自明」的包袱，非欧几何可能早诞生千年，相对论的思想准备也会提前。教训：<strong>把未证伪的假设当公理，会系统性拖慢进展</strong>。</p></div><div class="pane" id="tb1-1"><p>广义相对论失去语言，爱因斯坦可能要自己发明微分几何。说明：<strong>物理突破常卡在「没有对应的几何语言」</strong>，几何是物理的前置基础设施。</p></div><div class="pane" id="tb1-2"><p>几何各分支会继续各自为战，群论与几何的缝合推迟。说明：<strong>一条好的「统一视角」能把散点变成可生成的整体</strong>，杠杆极高。</p></div>
+<hr />
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能做什么</th>
+<th>标志性成果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">入门</td>
+<td>识别不变量、用欧拉公式</td>
+<td>验证 V−E+F、解释非欧</td>
+</tr>
+<tr>
+<td class="k">进阶</td>
+<td>用变换群分类问题</td>
+<td>把物理守恒律写成群不变量</td>
+</tr>
+<tr>
+<td class="k">熟练</td>
+<td>算曲率/同调、做 TDA</td>
+<td>用持久同调分析真实数据</td>
+</tr>
+<tr>
+<td class="k">专家</td>
+<td>设计几何系统、写代码落地</td>
+<td>把几何变成 CAD/视觉/AI 组件</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<blockquote>
+<p>成本≈0、今天就能做、产出可验证。不需要电脑，一支笔一个橙子就够。</p>
+</blockquote>
+<p><strong>实践 A · 用橙子验证欧拉示性数（约 15 分钟）</strong>
+1. 拿一个橙子（球面，拓扑亏格 g=0，χ 应为 2）。
+2. 用记号笔在皮上画一个多面体（比如尽量画成「足球」的 12 个五边形近似，或直接画四面体/立方体网格）。
+3. 数出顶点数 V、边数 E、面数 F，算 V−E+F。
+4. <strong>判定</strong>：结果应≈2。如果不是，重数——这正是拓扑不变量的可验证性。
+5. 进阶：在橙子上戳一个洞（g=1，环面），再数，应≈0。</p>
+<p><strong>实践 B · 用手机测距反推相似比（约 10 分钟）</strong>
+1. 立一根已知高度 H 的杆（如 1.7 m 的人），站在距离 D 处。
+2. 用手机拍照，量照片里人的像高像素 h'。
+3. 让同一个人走到 2D 处再拍一张，像高应变为约 h'/2（近大远小 = 投影压出来的）。
+4. <strong>判定</strong>：两次像高比应≈ D₂/D₁。这就是射影几何的相似比，零成本可验。</p>
+<blockquote>
+<p>想用数字版本？下面第 25 节的 4 个可调模型把以上三步都做成了可拖动验证。</p>
+</blockquote>
+<hr />
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>任务</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>读埃尔朗根纲领，写「换群→换不变量」笔记</td>
+<td>一张分支对照表</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>手算多边形逼近 π（n=6,12,96）</td>
+<td>误差记录</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>用橙子验证 χ（实践 A）</td>
+<td>V−E+F=2</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>学射影/灭点，拍一张带灭点的照片</td>
+<td>灭点标注</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>学高斯-博内，验证单位球 ∫K dA=4π</td>
+<td>计算稿</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>学 TDA 概念，装好工具（如 GUDHI）</td>
+<td>跑通一个小例子</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>写一篇「几何如何套到我领域」的短文</td>
+<td>跨域映射 3 条</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>焦点</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>公理与群</td>
+<td>能独立用埃尔朗根纲领分类任意几何分支</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>微分/拓扑</td>
+<td>掌握曲率、χ、同调的定义与计算</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>应用映射</td>
+<td>完成 3 个跨域同构（物理/计算机/你的领域）</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>动手落地</td>
+<td>用 TDA 或投影几何解决一个真实小问题，写成笔记</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<blockquote>
+<p>下面 10 个模型是几何学的「压缩包」。其中 4 个配了<strong>可拖动验证</strong>的交互工具（正多边形逼近、勾股/相似、欧拉示性数、投影灭点），滑块全部真实参与计算。</p>
+</blockquote>
+<h3>模型 1 · 埃尔朗根纲领（几何 = 群的不变量）</h3>
+<p>选变换群 G → 不变量集合 Inv(G) 确定。这是总模型，其余 9 个都是它的实例。</p>
+<h3>模型 2 · 相似与不变量（多边形逼近圆）</h3>
+<p>单位圆内接正 n 边形：周长 P=2n·sin(π/n)，面积 A=(n/2)·sin(2π/n)。n→∞ 时 P→2π、A→π。由周长估计的 π = n·sin(π/n)。</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 1 · 正多边形逼近圆：n 变大，π 的误差怎么收敛</h4></div>
+  <p class="tool-sub">滑块 n（边数）和 R（半径）都真实参与计算。输出周长、面积、由周长估计的 π，以及与真值 π 的误差。可对照：n=6 时 π≈3.000000（误差 −0.1416）；n=96 时 π≈3.141032（误差 −5.607×10⁻⁴）；n=1000 时误差已小到 −5.17×10⁻⁶。</p>
+  <canvas id="polyChart" height="200" style="height:200px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="poly_n">边数 n</label>
+    <input type="range" id="poly_n" min="3" max="1000" step="1" value="96">
+    <output id="poly_nO">96</output>
+  </div>
+  <div class="ctrl">
+    <label for="poly_r">半径 R</label>
+    <input type="range" id="poly_r" min="0.2" max="3" step="0.1" value="1">
+    <output id="poly_rO">1.0</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">周长 P</div><div class="val" id="poly_perim_v">—</div><div class="hint" id="poly_perim_h">2n·R·sin(π/n)</div></div>
+    <div class="ro"><div class="lbl">面积 A</div><div class="val" id="poly_area_v">—</div><div class="hint" id="poly_area_h">(n/2)·R²·sin(2π/n)</div></div>
+    <div class="ro"><div class="lbl">π 估计（由周长）</div><div class="val" id="poly_pi_v">—</div><div class="hint" id="poly_pi_h">n·R·sin(π/n)</div></div>
+    <div class="ro"><div class="lbl">π 误差</div><div class="val" id="poly_err_v">—</div><div class="hint" id="poly_err_h">估计值 − π</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="poly_v" style="font-size:15px">拖动 n 观察收敛</div>
+      <div class="hint" id="poly_vh" style="margin-top:0">n 越大越接近 π，但永远差一个 ε</div>
+    </div>
+  </div>
+</div>
+<h3>模型 3 · 勾股定理的多种证明（与相似三角形）</h3>
+<p>直角三角形两直角边 a、b，斜边 c=√(a²+b²)。a=3,b=4→c=5，角≈36.870°/53.130°；a=5,b=12→c=13。相似三角形保角，所以「比例」是不变量。</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 2 · 勾股 / 相似三角形解算：拖动两边，实时画图</h4></div>
+  <p class="tool-sub">滑块 a、b 真实参与计算，输出斜边 c、两个锐角，并在画布上按比例画出直角三角形。相似比 b/a 展示「形状由比例决定，与绝对大小无关」。</p>
+  <canvas id="pyChart" height="200" style="height:200px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="py_a">直角边 a</label>
+    <input type="range" id="py_a" min="1" max="30" step="0.5" value="3">
+    <output id="py_aO">3.0</output>
+  </div>
+  <div class="ctrl">
+    <label for="py_b">直角边 b</label>
+    <input type="range" id="py_b" min="1" max="30" step="0.5" value="4">
+    <output id="py_bO">4.0</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">斜边 c</div><div class="val" id="py_c_v">—</div><div class="hint" id="py_c_h">√(a²+b²)</div></div>
+    <div class="ro"><div class="lbl">角 A（对 a）</div><div class="val" id="py_aAng_v">—</div><div class="hint" id="py_aAng_h">atan(a/b)</div></div>
+    <div class="ro"><div class="lbl">角 B（对 b）</div><div class="val" id="py_bAng_v">—</div><div class="hint" id="py_bAng_h">atan(b/a)</div></div>
+    <div class="ro"><div class="lbl">相似比 b/a</div><div class="val" id="py_ratio_v">—</div><div class="hint" id="py_ratio_h">决定形状，与大小无关</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="py_v" style="font-size:15px">拖动看形状由比例定</div>
+      <div class="hint" id="py_vh" style="margin-top:0">相似三角形：角相同，边成比例</div>
+    </div>
+  </div>
+</div>
+<h3>模型 4 · 射影几何与无穷远线（灭点）</h3>
+<p>平行线在无穷远线相交；针孔相机把 3D 压到 2D，像高 h'=f·H/D，近大远小是投影压出来的。</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 3 · 投影与灭点：距离 D 怎么把「像」压小</h4></div>
+  <div class="tool-sub">取焦距 f=50mm、物高 H=1.7m。滑块 D（观测距离，clamp 到 ≥0.5 避免除零）真实参与计算。输出像高 h'、相对 D=2m 的比、以及视角张角。D=1m 像高约是 D=2m 的 2 倍；D=10m 只剩 0.2 倍——这就是灭点背后「近大远小」的量化。</div>
+  <canvas id="projChart" height="200" style="height:200px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="proj_D">观测距离 D（米）</label>
+    <input type="range" id="proj_D" min="0.5" max="20" step="0.1" value="2">
+    <output id="proj_DO">2.0</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">像高 h'</div><div class="val" id="proj_h_v">—</div><div class="hint" id="proj_h_h">f·H/D（mm）</div></div>
+    <div class="ro"><div class="lbl">相对 D=2m 的比</div><div class="val" id="proj_ratio_v">—</div><div class="hint" id="proj_ratio_h">2/D</div></div>
+    <div class="ro"><div class="lbl">视角张角</div><div class="val" id="proj_angle_v">—</div><div class="hint" id="proj_angle_h">2·atan(H/2D)（度）</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="proj_v" style="font-size:15px">近大远小 = 投影失真</div>
+      <div class="hint" id="proj_vh" style="margin-top:0">照片比例不可直接当天 truth</div>
+    </div>
+  </div>
+</div>
+<h3>模型 5 · 黎曼曲率</h3>
+<p>曲率 K 是微分几何的局部不变量；黎曼度量决定 K。球面 K&gt;0、欧氏 K=0、双曲 K&lt;0。</p>
+<h3>模型 6 · 欧拉公式 V−E+F=2</h3>
+<p>对凸多面体与球面：V−E+F=2。四面体 4−6+4=2、立方体 8−12+6=2、二十面体 12−30+20=2。</p>
+<h3>模型 7 · 高斯-博内定理 ∫_M K dA = 2πχ</h3>
+<p>局部曲率积分 = 全局拓扑。球面（χ=2）：∫K dA=4π；环面（χ=0）：总曲率=0；双环面（χ=−2）：−4π。</p>
+<h3>模型 8 · 单纯复形与欧拉示性数</h3>
+<p>点-边-三角面…构成单纯复形；其欧拉示性数 = Σ(−1)ᵏ(第 k 层个数)。是 TDA 与拓扑的计算载体。</p>
+<h3>模型 9 · 四维流形</h3>
+<p>4 维是拓扑最「野生」的维度（存在不可数多个不同微分结构的 R⁴）。超立方体、时空连续体都在此层。</p>
+<h3>模型 10 · 纤维丛</h3>
+<p>底流形 × 纤维，配联络（平行移动）。规范场论把「力」写成纤维丛上的联络；机器人的位形空间也是纤维丛。</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 4 · 曲面欧拉示性数 χ = 2−2g：亏格怎么吃掉不变量</h4></div>
+  <p class="tool-sub">滑块 g（亏格/「洞数」，0–5）真实参与计算。输出 χ=2−2g、曲面名称、以及高斯-博内总曲率 2πχ。g=0（球面）χ=2、总曲率 4π；g=1（环面）χ=0、总曲率 0；g=2（双环面）χ=−2、总曲率 −4π。画布按比例画出带 g 个「把手」的示意。</p>
+  <canvas id="eulChart" height="200" style="height:200px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="eul_g">亏格 g（洞数）</label>
+    <input type="range" id="eul_g" min="0" max="5" step="1" value="1">
+    <output id="eul_gO">1</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">欧拉示性数 χ</div><div class="val" id="eul_chi_v">—</div><div class="hint" id="eul_chi_h">2−2g</div></div>
+    <div class="ro"><div class="lbl">曲面</div><div class="val" id="eul_name_v">—</div><div class="hint" id="eul_name_h">球面/环面/双环面…</div></div>
+    <div class="ro"><div class="lbl">总曲率 ∫K dA</div><div class="val" id="eul_totalK_v">—</div><div class="hint" id="eul_totalK_h">2πχ</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="eul_v" style="font-size:15px">洞越多，χ 越小</div>
+      <div class="hint" id="eul_vh" style="margin-top:0">局部曲率之和被拓扑锁定</div>
+    </div>
+  </div>
+</div>
+<hr />
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 · 我面对的问题里，允许的变换群是什么？</summary><div class="dbody"><p>不回答这个，就不知道能用哪类不变量。</p></div></details>
+<details><summary>Q2 · 哪个不变量可测量、可比较？</summary><div class="dbody"><p>距离？交比？χ？选一个能量化对比的。</p></div></details>
+<details><summary>Q3 · 我的空间曲率是多少？</summary><div class="dbody"><p>欧氏(K=0)假设是否成立？高维/弯曲空间要换度量。</p></div></details>
+<details><summary>Q4 · 这是投影失真还是真实比例？</summary><div class="dbody"><p>任何 2D 表示先问灭点与相似比。</p></div></details>
+<details><summary>Q5 · 如果换一条公理会怎样？</summary><div class="dbody"><p>非欧思维：测系统的脆弱点。</p></div></details>
+<details><summary>Q6 · 我的数据内在维数 d 是多少？</summary><div class="dbody"><p>高维先降维/流形学习，别套 3D 直觉。</p></div></details>
+<details><summary>Q7 · 守恒量对应哪个对称群？</summary><div class="dbody"><p>物理/系统里找诺特同构。</p></div></details>
+<details><summary>Q8 · 拓扑（洞/连通）是否比距离更关键？</summary><div class="dbody"><p>分类、聚类问题常是拓扑问题。</p></div></details>
+<details><summary>Q9 · 奇异点/无穷远线在哪？</summary><div class="dbody"><p>投影、曲率、相变都在奇点翻车，需单独处理。</p></div></details>
+<details><summary>Q10 · 我的结论经得起反事实吗？</summary><div class="dbody"><p>改群/改公理再跑一遍，看是否还成立。</p></div></details>
+<hr />
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li><strong>几何朗兰兹</strong>（2024 证毕）：几何与数论如何通过「对偶群」缝合——当代最深的统一。【事实，来源 Quanta / arXiv:2409.09856】</li>
+<li><strong>AI 辅助证明</strong>：AlphaProof（Lean 4 形式化，2024 IMO 银牌；Nature 2025-11-12，651:607-613）与 AlphaProof Nexus（arXiv:2605.22763，2026-05）已自主解决 9/353 个 Erdős 公开问题与 44/492 个 OEIS 猜想，单题成本约数百美元。<span class="tag t-fact">事实</span></li>
+<li><strong>AI for Science 中的 TDA</strong>：2025 年 J. Chem. Inf. Model. 综述（DOI 10.1021/acs.jcim.5c02266）系统梳理持久同调在药物发现、材料、病毒演化中的落地。<span class="tag t-fact">事实</span></li>
+<li><strong>四维流形与奇点</strong>：4 维拓扑的「野生」结构仍是开放前沿。</li>
+<li><strong>信息几何</strong>：把概率分布族当黎曼流形，连接统计与微分几何。</li>
+</ul>
+<blockquote>
+<p>下一阶段的关键词是<strong>「统一」与「自动化」</strong>：几何正同时变得更统一（朗兰兹）、更可计算（TDA）、更被机器验证（形式化证明）。</p>
+</blockquote>
+<hr />
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2026 菲尔兹奖得主（Deng/Pardon/Tsimerman/Wang）与阿贝尔奖（Faltings）</td>
+<td>官方公告</td>
+<td>ICM 2026（Philadelphia, 2026-07-23）、Clay Math、abelprize.no、MPG</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2026 Fields 奖金 15,000 CAD ≈ $10,650；Abel 7.5M NOK ≈ €670,000</td>
+<td>官方/媒体</td>
+<td>CGTN 2026-07-23、mpg.de</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">几何朗兰兹 2024 证毕（9 人、&gt;800 页、5 篇）</td>
+<td>学术/媒体</td>
+<td>Quanta 2024-07-19、arXiv:2409.09856</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">AlphaProof / AlphaProof Nexus 结果</td>
+<td>学术/期刊</td>
+<td>Nature 651:607-613 (2025-11-12)、arXiv:2605.22763 (2026-05)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">TDA 分子科学综述</td>
+<td>期刊</td>
+<td>J. Chem. Inf. Model. 2025, DOI 10.1021/acs.jcim.5c02266 (PMID 41235667)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">非欧几何史（高斯 1792 起、罗巴切夫斯基 1829、鲍耶 1832、黎曼 1854、贝尔特拉米 1868、克莱因 1872）</td>
+<td>史学/百科</td>
+<td>Wikipedia（Parallel postulate / Foundations of geometry）、St Andrews 数学史</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">阿基米德 96 边形夹 π 于 3.1410–3.1427</td>
+<td>史学/计算</td>
+<td>本手册 node 脚本复算（内切 3.141032 / 外切 3.142715）</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">各公式数值（π 误差、勾股、χ、高斯-博内、投影比）</td>
+<td>计算</td>
+<td>本手册 <code>tools/_calc_geo.js</code> 复算</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>标记约定</strong>：<span class="tag t-fact">事实</span>= 一手/多方一致；<span class="tag t-ana">分析</span>= 权威机构判断；<span class="tag t-inf">推论</span>= 由已知推导；<span class="tag t-hyp">假设</span>= 未验证猜想；<span class="tag t-chk">待验证</span>= 单一来源/转载链过长。本主题无二手数字需标<span class="tag t-chk">待验证</span>。</p>
+<hr />
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为<strong>认知与方法论框架</strong>，不是数学教材、也不是投资建议。所有交互工具仅用于演示几何不变量的计算逻辑，不构成对任何投资决策、工程方案或科学结论的背书。几何学结论的正确性以严格证明与可重复计算为准；本手册中的数值均经 node 脚本复算，但与官方出版物可能存在舍入差异。涉及物理、计算机、金融的跨域类比均为<strong>启发式同构</strong>，不意味着各领域机制等同。读者应自行验证后落地。</p>
+</section>
+<footer>  <p>《几何学 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 22 分 2 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   几何学 主题脚本
+   四个可调模型（滑块全部真实参与计算）：
+     1. 正多边形逼近圆   — n, R → 周长/面积/π估计/误差
+     2. 勾股/相似三角形  — a, b → 斜边/角度/相似比，实时画图
+     3. 投影与灭点       — D → 像高/比/视角（clamp D>=0.5 防除零）
+     4. 曲面欧拉示性数    — g → χ=2-2g / 名称 / 总曲率 2πχ
+   自包含 IIFE，与页面通用脚本隔离。
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+
+  /* 通用：在画布上画一个会被 clamp 的数值标签，防止文字画出边界 */
+  function label(ctx, s, x, y, w, align, fill) {
+    ctx.font = '11px -apple-system,Helvetica,Arial,sans-serif';
+    ctx.fillStyle = fill || '#23324a';
+    ctx.textAlign = align || 'left';
+    ctx.textBaseline = 'middle';
+    var tw = ctx.measureText(s).width;
+    var lx = x;
+    if (align === 'left') lx = Math.min(x, w - tw - 4);
+    else if (align === 'right') lx = Math.max(x, tw + 4);
+    ctx.fillText(s, lx, y);
+  }
+
+  var PI = Math.PI;
+
+  /* ══════════════════════════════════════════════════════════
+     工具 1 · 正多边形逼近圆
+     ══════════════════════════════════════════════════════════ */
+  (function polyTool() {
+    var nEl = $('poly_n'), rEl = $('poly_r');
+    if (!nEl || !rEl) return;
+    var nO = $('poly_nO'), rO = $('poly_rO');
+    var cv = $('polyChart'), ctx = cv ? cv.getContext('2d') : null;
+    var vPerim = $('poly_perim_v'), hPerim = $('poly_perim_h');
+    var vArea = $('poly_area_v'), hArea = $('poly_area_h');
+    var vPi = $('poly_pi_v'), hPi = $('poly_pi_h');
+    var vErr = $('poly_err_v'), hErr = $('poly_err_h');
+    var vJ = $('poly_v'), hJ = $('poly_vh');
+
+    function draw(n, R) {
+      if (!ctx) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.clientWidth || 600, h = 210;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var cx = w / 2, cy = h / 2 + 6, sc = Math.min(w, h) * 0.40 / R;
+      // 外接圆
+      ctx.beginPath();
+      ctx.arc(cx, cy, R * sc, 0, 2 * PI);
+      ctx.strokeStyle = '#9fb3d1'; ctx.lineWidth = 1; ctx.stroke();
+      // 内接正 n 边形
+      ctx.beginPath();
+      for (var k = 0; k <= n; k++) {
+        var a = 2 * PI * k / n - PI / 2;
+        var x = cx + R * sc * Math.cos(a), y = cy + R * sc * Math.sin(a);
+        if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(143,191,143,0.25)';
+      ctx.strokeStyle = '#3a7a3a'; ctx.lineWidth = 1.5; ctx.fill(); ctx.stroke();
+      label(ctx, 'n = ' + n + '  边', 10, 16, w, 'left', '#23324a');
+    }
+
+    function update() {
+      var n = Math.max(3, Math.round(parseFloat(nEl.value) || 3));
+      var R = Math.max(0.1, parseFloat(rEl.value) || 1);
+      txt(nO, String(n));
+      txt(rO, R.toFixed(1));
+      var perim = 2 * n * R * Math.sin(PI / n);
+      var area = (n / 2) * R * R * Math.sin(2 * PI / n);
+      var piEst = n * R * Math.sin(PI / n);
+      var err = piEst - PI;
+      txt(vPerim, perim.toFixed(4));
+      txt(vArea, area.toFixed(4));
+      txt(vPi, piEst.toFixed(6));
+      txt(vErr, (err >= 0 ? '+' : '') + err.toExponential(3));
+      tint(vErr, Math.abs(err) < 1e-3 ? '#1f7a3a' : '#b0323a');
+      txt(hPerim, '2n·R·sin(π/n)');
+      txt(hArea, '(n/2)·R²·sin(2π/n)');
+      txt(hPi, 'n·R·sin(π/n)');
+      txt(hErr, '估计值 − π');
+      if (Math.abs(err) < 1e-4) {
+        txt(vJ, '已非常接近 π');
+        txt(hJ, 'n=' + n + ' 时误差 ' + err.toExponential(2));
+      } else {
+        txt(vJ, 'n 越大越接近 π');
+        txt(hJ, '当前误差 ' + err.toExponential(2) + '，仍差一个 ε');
+      }
+      draw(n, R);
+    }
+    nEl.addEventListener('input', update);
+    rEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 2 · 勾股 / 相似三角形
+     ══════════════════════════════════════════════════════════ */
+  (function pyTool() {
+    var aEl = $('py_a'), bEl = $('py_b');
+    if (!aEl || !bEl) return;
+    var aO = $('py_aO'), bO = $('py_bO');
+    var cv = $('pyChart'), ctx = cv ? cv.getContext('2d') : null;
+    var vC = $('py_c_v'), hC = $('py_c_h');
+    var vA = $('py_aAng_v'), hA = $('py_aAng_h');
+    var vB = $('py_bAng_v'), hB = $('py_bAng_h');
+    var vR = $('py_ratio_v'), hR = $('py_ratio_h');
+    var vJ = $('py_v'), hJ = $('py_vh');
+
+    function draw(a, b, c) {
+      if (!ctx) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.clientWidth || 600, h = 210;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var sc = (Math.min(w, h) * 0.78) / Math.max(a, b, 1);
+      var ox = 28, oy = h - 24;
+      var x1 = ox, y1 = oy, x2 = ox + b * sc, y2 = oy, x3 = ox, y3 = oy - a * sc;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.closePath();
+      ctx.fillStyle = 'rgba(207,227,245,0.4)';
+      ctx.strokeStyle = '#2f6f9f'; ctx.lineWidth = 1.6; ctx.fill(); ctx.stroke();
+      label(ctx, 'a=' + a.toFixed(1), x3 - 4, (y1 + y3) / 2, w, 'right', '#1f3350');
+      label(ctx, 'b=' + b.toFixed(1), (x1 + x2) / 2, y2 + 14, w, 'center', '#1f3350');
+      label(ctx, 'c=' + c.toFixed(2), (x2 + x3) / 2 - 6, (y2 + y3) / 2, w, 'left', '#b0323a');
+    }
+
+    function update() {
+      var a = Math.max(1, parseFloat(aEl.value) || 1);
+      var b = Math.max(1, parseFloat(bEl.value) || 1);
+      txt(aO, a.toFixed(1));
+      txt(bO, b.toFixed(1));
+      var c = Math.sqrt(a * a + b * b);
+      var angA = Math.atan2(a, b) * 180 / PI;
+      var angB = Math.atan2(b, a) * 180 / PI;
+      var ratio = b / a;
+      txt(vC, c.toFixed(4));
+      txt(vA, angA.toFixed(3) + '°');
+      txt(vB, angB.toFixed(3) + '°');
+      txt(vR, ratio.toFixed(4));
+      txt(hC, '√(a²+b²)');
+      txt(hA, 'atan(a/b)');
+      txt(hB, 'atan(b/a)');
+      txt(hR, '决定形状，与大小无关');
+      txt(vJ, '形状由比例 b/a 决定');
+      txt(hJ, '相似三角形：角相同，边成比例');
+      draw(a, b, c);
+    }
+    aEl.addEventListener('input', update);
+    bEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 3 · 投影与灭点（clamp D>=0.5 防除零）
+     ══════════════════════════════════════════════════════════ */
+  (function projTool() {
+    var dEl = $('proj_D');
+    if (!dEl) return;
+    var dO = $('proj_DO');
+    var cv = $('projChart'), ctx = cv ? cv.getContext('2d') : null;
+    var vH = $('proj_h_v'), hH = $('proj_h_h');
+    var vR = $('proj_ratio_v'), hR = $('proj_ratio_h');
+    var vA = $('proj_angle_v'), hA = $('proj_angle_h');
+    var vJ = $('proj_v'), hJ = $('proj_vh');
+    var f = 50, H = 1.7;
+
+    function draw(D) {
+      if (!ctx) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.clientWidth || 600, h = 210;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var groundY = h - 40;
+      // 地面
+      ctx.beginPath(); ctx.moveTo(20, groundY); ctx.lineTo(w - 20, groundY);
+      ctx.strokeStyle = '#9fb3d1'; ctx.lineWidth = 1; ctx.stroke();
+      // 两个物体：近(D=1) 远(D= 当前 D 但用相对基准 2 演示)
+      var refD = 2;
+      var nearX = 70, farX = Math.min(w - 60, 70 + (refD / Math.max(D, 0.5)) * 18);
+      var nearH = Math.min(150, f * H / 1 * (h / 170));   // 示意
+      var farH = Math.min(150, f * H / Math.max(D, 0.5) * (h / 170));
+      ctx.fillStyle = 'rgba(143,191,143,0.55)';
+      ctx.fillRect(nearX - 12, groundY - nearH, 24, nearH);
+      ctx.fillStyle = 'rgba(180,160,220,0.55)';
+      ctx.fillRect(farX - 12, groundY - farH, 24, farH);
+      label(ctx, '近 (D=1m) 像高大', nearX, groundY - nearH - 10, w, 'center', '#1f3a1f');
+      label(ctx, '远 (D=' + D.toFixed(1) + 'm) 像高小', farX, groundY - farH - 10, w, 'center', '#3a2150');
+      // 灭点虚线：两杆顶向远方收敛
+      ctx.beginPath();
+      ctx.setLineDash([5, 4]);
+      ctx.moveTo(nearX, groundY - nearH); ctx.lineTo(w - 10, groundY - 4);
+      ctx.moveTo(farX, groundY - farH); ctx.lineTo(w - 10, groundY - 4);
+      ctx.strokeStyle = '#b0323a'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.setLineDash([]);
+      label(ctx, '灭点（无穷远线投影）', w - 12, groundY - 16, w, 'right', '#b0323a');
+    }
+
+    function update() {
+      var D = Math.max(0.5, parseFloat(dEl.value) || 2);
+      txt(dO, D.toFixed(1));
+      var hImg = f * H / D;               // mm
+      var ratio = 2 / D;                 // 相对 D=2m
+      var ang = 2 * Math.atan2(H / 2, D) * 180 / PI;
+      txt(vH, hImg.toFixed(3) + ' mm');
+      txt(vR, ratio.toFixed(3));
+      txt(vA, ang.toFixed(2) + '°');
+      txt(hH, 'f·H/D');
+      txt(hR, '2/D');
+      txt(hA, '2·atan(H/2D)');
+      txt(vJ, '近大远小 = 投影失真');
+      txt(hJ, 'D=1m 像高≈D=2m 的 ' + (2 / 1).toFixed(1) + ' 倍；D=10m 仅 ' + (2 / 10).toFixed(2) + ' 倍');
+      draw(D);
+    }
+    dEl.addEventListener('input', update);
+    update();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 4 · 曲面欧拉示性数 χ = 2 - 2g
+     ══════════════════════════════════════════════════════════ */
+  (function eulTool() {
+    var gEl = $('eul_g');
+    if (!gEl) return;
+    var gO = $('eul_gO');
+    var cv = $('eulChart'), ctx = cv ? cv.getContext('2d') : null;
+    var vChi = $('eul_chi_v'), hChi = $('eul_chi_h');
+    var vName = $('eul_name_v'), hName = $('eul_name_h');
+    var vK = $('eul_totalK_v'), hK = $('eul_totalK_h');
+    var vJ = $('eul_v'), hJ = $('eul_vh');
+
+    var NAMES = ['球面', '环面', '双环面', '三环面', '四环面', '五环面'];
+
+    function draw(g) {
+      if (!ctx) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.clientWidth || 600, h = 210;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var cx = w / 2, cy = h / 2;
+      if (g === 0) {
+        ctx.beginPath(); ctx.arc(cx, cy, 60, 0, 2 * PI);
+        ctx.fillStyle = 'rgba(207,227,245,0.5)'; ctx.strokeStyle = '#2f6f9f'; ctx.lineWidth = 2; ctx.fill(); ctx.stroke();
+        label(ctx, '球面（0 个洞）', cx, cy + 80, w, 'center', '#1f3350');
+      } else {
+        // 画一个带 g 个把手的环面示意：外环 + g 个内圈
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, 95, 55, 0, 0, 2 * PI);
+        ctx.fillStyle = 'rgba(231,217,245,0.5)'; ctx.strokeStyle = '#7a3fb0'; ctx.lineWidth = 2; ctx.fill(); ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, 42, 24, 0, 0, 2 * PI);
+        ctx.fillStyle = '#fff'; ctx.fill(); ctx.stroke();
+        for (var i = 0; i < g; i++) {
+          var hxx = g === 1 ? cx : (cx - 78 + i * (156 / (g - 1)));
+          ctx.beginPath();
+          ctx.arc(hxx, cy - 50, 13, 0, 2 * PI);
+          ctx.fillStyle = 'rgba(123,63,176,0.35)'; ctx.fill();
+          ctx.strokeStyle = '#7a3fb0'; ctx.lineWidth = 1.4; ctx.stroke();
+        }
+        label(ctx, 'g = ' + g + ' 个洞', cx, cy + 84, w, 'center', '#3a2150');
+      }
+    }
+
+    function update() {
+      var g = Math.max(0, Math.min(5, Math.round(parseFloat(gEl.value) || 0)));
+      txt(gO, String(g));
+      var chi = 2 - 2 * g;
+      var K = 2 * PI * chi;
+      txt(vChi, String(chi));
+      txt(vName, NAMES[g] || ('g=' + g + ' 曲面'));
+      txt(vK, (K >= 0 ? '' : '') + K.toFixed(4) + ' = ' + (chi >= 0 ? '' : '−') + Math.abs(chi) + 'π');
+      tint(vChi, chi === 0 ? '#b0323a' : '#1f7a3a');
+      txt(hChi, '2−2g');
+      txt(hName, '球面/环面/双环面…');
+      txt(hK, '高斯-博内：∫K dA = 2πχ');
+      txt(vJ, '洞越多，χ 越小');
+      txt(hJ, '局部曲率之和被拓扑 χ 锁定');
+      draw(g);
+    }
+    gEl.addEventListener('input', update);
+    update();
+  })();
+
+})();
+</script>
+</body>
+</html>

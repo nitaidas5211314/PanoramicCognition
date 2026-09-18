@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>占优策略（Dominant Strategy）：无论他人如何做总更优；反复剔除可简化博弈 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Dominant Strategy × IESDS × Mechanism Design</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践系统</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>占优策略（Dominant Strategy）：无论他人如何做总更优；反复剔除可简化博弈</h1>
+  <p class="sub">占优回答的不是「给定对方我会怎样」，而是<strong>无论对方怎样，我都不必改口</strong>。没有占优时，反复剔除严格劣势策略（IESDS）把博弈削到理性可辩护的核——它是纳什之前、也常常比纳什更硬的筛子。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>占优策略（Dominant Strategy）</strong>：对参与人 (i)，策略 (s_i^<em>) 是（严格）占优的，当且仅当对任意其他策略 (s_i)、任意他人策略组合 (s_{-i})，都有 (u_i(s_i^</em>,s_{-i}) &gt; u_i(s_i,s_{-i}))——<strong>无论他人怎么做，选它都严格更好</strong>。<span class="tag t-fact">事实</span></p>
+<p>弱占优把 (&gt;) 换成 (\ge)，并要求至少在某一 (s_{-i}) 上严格更好。<span class="tag t-fact">事实</span></p>
+<p><strong>反复剔除严格劣势策略（IESDS）</strong>：一轮轮删掉「被某策略（可混合）严格占优」的纯策略；有限博弈有限步终止。若只剩一个策略组合，它必是唯一纳什均衡。<span class="tag t-fact">事实</span></p>
+<p>关键对照：占优策略均衡 ⊆ 纳什均衡；猜硬币无占优、无纯 NE，但仍有混合 NE。囚徒困境双方「坦白」既是严格占优，也是唯一 NE。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「最聪明的反应」，而是：<strong>不依赖对他人信念的最优</strong>——以及当没有这种「无条件最优」时，共同知识下的理性如何通过剔除把策略空间收窄。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：严格/弱占优、劣势策略、IESDS / IEWDS、理性化（rationalizability）、占优策略均衡、机制设计中的 DSIC（占优策略激励相容）。</li>
+<li><strong>在界外</strong>：具体某次谈判话术、单只证券买卖点——除非压成「支付矩阵里是否存在占优 / 能否 IESDS 求解」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>不依赖信念的策略排序，以及迭代剔除的预测力</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「策略型 + 支付比较」可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>占优/劣势关系、剔除序列、幸存策略集、DSIC 机制</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>理性（及共同知识理性）的决策主体</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>支付差、策略个数、严格 vs 弱、混合占优、信息</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>公开规则、出价、是否选「无条件更优」选项</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>对他人理性深度的信念、level-k 层次</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>支付结构 → 占优关系 → 剔除 → 幸存集 → 可预测结果</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>严格劣势 ⇒ 理性永不选 ⇒ 可安全删除</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「大家常选某选项」≠ 占优；习惯可相关但非占优<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>囚徒坦白、二价拍卖报真值、投票中的策略投票</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>逐点支付比较；共同知识理性 ↔ IESDS（二人有限）</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。剔除改变对手可行集 → 新的占优关系显现</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。认知深度有限时，只完成有限轮剔除</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>坏占优可锁死低效（PD）；机制改支付可创造合意占优</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>占优说的是「不用猜对方」；IESDS 说的是「猜到对方也理性、也知道你理性……之后，还剩什么」。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它是最强的预测器</h4><p>有严格占优时，只需理性假设即可预测——不必假设信念一致或均衡。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它是解博弈的手术刀</h4><p>IESDS 常先于划线法：删掉不可能的策略，矩阵变小，NE 更好找。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它是机制设计的金标准</h4><p>DSIC（占优策略激励相容）让真话/目标行为不依赖对他人的猜测——Vickrey / VCG 走这条路。<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「弱占优」当成「严格占优」乱剔：弱剔除顺序可影响结果，甚至删掉某些纳什均衡。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看占优如何从「两格比较」长成「机制金标准」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="dsArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 机制设计 · DSIC / VCG：让真话成为占优</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 认知层级 · level-k / 有限深度剔除</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 理性化 · 幸存策略 = 共同知识理性的含义</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 混合占优 · 纯策略可被混合严格占优</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 弱占优陷阱 · IEWDS 顺序依赖 / 可能删 NE</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 IESDS · 反复剔除严格劣势（有限步、保 NE）</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 占优策略均衡 · 每人占优 ⇒ 必为 NE</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 严格 vs 弱 · 逐对手策略比较支付</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 策略型博弈 · 参与人 · 策略 · 支付矩阵</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2→L3→L4</strong>：先会比两行，再认占优均衡，再跑 IESDS；进阶卡在 <strong>L5</strong>（弱剔除危险）与 <strong>L9</strong>（把占优写进规则）。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到可操作判别。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="180" y="16" width="320" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">支付矩阵 uᵢ(sᵢ, s₋ᵢ)</text>
+
+  <rect x="40" y="100" width="180" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">逐列比较行支付</text>
+  <rect x="250" y="100" width="180" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">严格/弱占优关系</text>
+  <rect x="460" y="100" width="180" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">IESDS 幸存集</text>
+
+  <line x1="300" y1="60" x2="130" y2="100" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="380" y1="60" x2="550" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="200" width="280" height="56" rx="8" fill="#fce8e8" stroke="#d5342c"/><text x="180" y="234" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">弱剔除：顺序敏感 · 可删 NE</text>
+  <rect x="360" y="200" width="280" height="56" rx="8" fill="#15181d"/><text x="500" y="234" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">严格剔除：保全部 NE</text>
+
+  <line x1="340" y1="152" x2="180" y2="200" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#cmB)"/>
+  <line x1="550" y1="152" x2="500" y2="200" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <text x="340" y="300" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">抽象：∀s₋ᵢ 的支付序　·　机制：迭代删除　·　操作：比矩阵、跑 IESDS、验 DSIC</text>
+  <text x="340" y="330" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">红色虚线：弱占优「看起来无害」却能改写均衡集合</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="grid g3">
+<div class="card"><h4>理论奠基者</h4><p>von Neumann 零和中的占优直觉；非合作框架下严格/弱占优与 IESDS；Pearce / Bernheim 理性化；Aumann 共同知识。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>机制设计者</h4><p>Vickrey（二价拍卖）、Clarke–Groves（VCG）：把「报真值」做成弱/严格占优策略。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>你自己</h4><p>只要选项里存在「无论对方怎样都更好」的行动，占优就替你省掉猜心；否则用 IESDS 缩小战场。<span class="tag t-inf">推论</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+<th>为什么重要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">支付差 (\Delta)</td>
+<td>两策略在同一 (s_{-i}) 下的效用差</td>
+<td>(\Delta&gt;0) 处处 ⇒ 严格占优</td>
+</tr>
+<tr>
+<td class="k">严格 / 弱</td>
+<td>(&gt;) 处处 vs (\ge)+某处 (&gt;)</td>
+<td>决定剔除是否安全</td>
+</tr>
+<tr>
+<td class="k">策略数 (|S_i|)</td>
+<td>每人纯策略个数</td>
+<td>越大越可能需要混合占优 / 多轮剔除</td>
+</tr>
+<tr>
+<td class="k">剔除轮次 (k)</td>
+<td>IESDS 已完成的轮数</td>
+<td>对应「(k) 阶共同知识理性」</td>
+</tr>
+<tr>
+<td class="k">幸存集</td>
+<td>未被删掉的策略</td>
+<td>理性化策略；含全部 NE 支撑</td>
+</tr>
+<tr>
+<td class="k">混合权重</td>
+<td>占优方可为混合策略</td>
+<td>有的纯策略只被混合严格占优</td>
+</tr>
+<tr>
+<td class="k">机制支付规则 (p)</td>
+<td>报价 → 谁赢、付多少</td>
+<td>决定报真值是否 DSIC</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<p>因果主链：</p>
+<div class="flow"><span>支付结构</span><i>→</i><span>占优/劣势关系</span><i>→</i><span class="hi">IESDS</span><i>→</i><span class="hi">幸存集</span><i>→</i><span>可预测结果</span></div>
+<p><strong>实线因果</strong>：支付比较 → 劣势策略 → 理性删除 →（共同知识下）迭代删除 → 幸存策略。<span class="tag t-fact">事实</span></p>
+<p><strong>红色虚线反馈</strong>：观察到的「对方仍玩劣势策略」更新你对对方理性深度的信念 → 你可能停止在有限轮剔除（level-k）。<span class="tag t-ana">分析</span></p>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cfA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cfB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="30" y="40" width="110" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="85" y="67" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">支付矩阵</text>
+  <rect x="180" y="40" width="110" height="44" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="235" y="67" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">占优关系</text>
+  <rect x="330" y="40" width="110" height="44" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="385" y="67" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">IESDS</text>
+  <rect x="480" y="40" width="160" height="44" rx="8" fill="#fce8e8" stroke="#d5342c"/><text x="560" y="67" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">幸存 / 均衡</text>
+  <line x1="140" y1="62" x2="180" y2="62" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#cfA)"/>
+  <line x1="290" y1="62" x2="330" y2="62" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#cfA)"/>
+  <line x1="440" y1="62" x2="480" y2="62" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#cfA)"/>
+  <path d="M560 84 L560 150 L85 150 L85 84" fill="none" stroke="#d5342c" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#cfB)"/>
+  <text x="340" y="175" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">反馈：对方「不理性深度」→ 你停止在第 k 轮剔除</text>
+  <text x="340" y="200" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">实线=规范剔除链；红虚线=有限认知动力学</text>
+</svg>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="grid g2">
+<div class="card"><h4>占优 ⇒ NE，NE ⇏ 占优</h4><p>占优策略均衡一定是纳什；纳什只需「给定对方最优」，不必「对所有对方最优」。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>严格剔除不删 NE</h4><p>任何纳什均衡（含混合）的支撑里，都不会出现被严格占优的纯策略。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>弱剔除可以删 NE</h4><p>IEWDS 的结果依赖删除顺序；至少保留一个 NE，但不保证保留全部。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>二人有限：IESDS ↔ 理性化</h4><p>在二人有限博弈中，幸存纯策略与理性化策略一致（允许信念相关时需细读教材条件）。<span class="tag t-ana">分析</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<ol>
+<li><strong>比较</strong>：对每一对己方策略，扫遍他人所有纯策略（必要时再考虑混合占优）；</li>
+<li><strong>标记</strong>：严格劣势者标记删除；</li>
+<li><strong>收缩</strong>：在缩小后的博弈上重复；</li>
+<li><strong>终止</strong>：无人可删 ⇒ 幸存集；若单点 ⇒ 唯一 NE。</li>
+</ol>
+<p>有限博弈中，严格剔除的最终幸存集<strong>与删除顺序无关</strong>（可每轮删全部，也可一次删一个）。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#e2e6ec" stroke-width="3"/>
+  <circle cx="70" cy="100" r="10" fill="#0f8a4d"/><text x="70" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1944</text><text x="70" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">vN-M 零和</text>
+  <circle cx="180" cy="100" r="10" fill="#1d4ed8"/><text x="180" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1950s</text><text x="180" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">占优/NE 分流</text>
+  <circle cx="300" cy="100" r="10" fill="#3b6ef5"/><text x="300" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1961</text><text x="300" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Vickrey 二价</text>
+  <circle cx="430" cy="100" r="10" fill="#b8730a"/><text x="430" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1980s</text><text x="430" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">理性化理论</text>
+  <circle cx="560" cy="100" r="10" fill="#d5342c"/><text x="560" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">2000s–</text><text x="560" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">DSIC/算法机制</text>
+  <line x1="80" y1="100" x2="170" y2="100" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="190" y1="100" x2="290" y2="100" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="310" y1="100" x2="420" y2="100" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="440" y1="100" x2="550" y2="100" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+</svg>
+<p>实验视角：受试者常只完成有限轮剔除（p-beauty contest 的典型 level-1/2），完整 IESDS 是共同知识理性的极限，不是实验室默认。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>想要什么</th>
+<th>与占优的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">参与人</td>
+<td>少猜心、保底最优</td>
+<td>有占优则直接选；无则看幸存集</td>
+</tr>
+<tr>
+<td class="k">机制设计者</td>
+<td>诱导真话/目标行为</td>
+<td>追求 DSIC：目标策略成占优</td>
+</tr>
+<tr>
+<td class="k">监管者</td>
+<td>减少策略性操纵</td>
+<td>改规则使操纵不再占优</td>
+</tr>
+<tr>
+<td class="k">分析者</td>
+<td>可证伪的预测</td>
+<td>先找占优，再 IESDS，最后才 NE</td>
+</tr>
+</tbody>
+</table></div>
+<p>激励核心：<strong>严格劣势策略的租金为负</strong>——理性参与人不会为「可能用上」而保留它。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<p>「抽水」隐喻：当坏选项成为占优，社会剩余如何被抽走。</p>
+<svg viewBox="0 0 680 240" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="flB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="40" y="30" width="140" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="110" y="55" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">合作剩余</text><text x="110" y="75" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">（各得 R=3）</text>
+  <rect x="270" y="30" width="140" height="60" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="55" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">占优背叛</text><text x="340" y="75" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">（T=5&gt;R）</text>
+  <rect x="500" y="30" width="140" height="60" rx="8" fill="#fce8e8" stroke="#d5342c"/><text x="570" y="55" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">锁定 (P,P)</text><text x="570" y="75" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">（各得 1）</text>
+  <line x1="180" y1="60" x2="270" y2="60" stroke="#1d4ed8" stroke-width="1.8" marker-end="url(#flA)"/>
+  <line x1="410" y1="60" x2="500" y2="60" stroke="#d5342c" stroke-width="1.8" marker-end="url(#flB)"/>
+  <rect x="150" y="140" width="380" height="70" rx="10" fill="#15181d"/><text x="340" y="170" text-anchor="middle" fill="#fff" font-size="13" font-weight="600" font-family="sans-serif">信息流：共同知识理性加深 → 多一轮剔除</text>
+  <text x="340" y="195" text-anchor="middle" fill="#a8b0ba" font-size="11" font-family="sans-serif">资源流：占优差 Δ = 偏离「合作」的单方租金</text>
+</svg>
+<p>经典囚徒困境：(T=5&gt;R=3&gt;P=1&gt;S=0)，「坦白」严格占优「抵赖」；社会从各 3 抽到各 1，单边差距 <strong>2</strong>。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>改支付使合意行动占优</strong></td>
+<td>直接创造 DSIC / 消掉坏占优</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>只做严格剔除</strong></td>
+<td>保 NE、顺序无关</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>先 IESDS 再求 NE</strong></td>
+<td>降维，少解方程</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>识别混合占优</strong></td>
+<td>纯比纯漏删时的补刀</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>限制策略空间</strong></td>
+<td>删掉可被利用的劣势选项</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>公开规则与支付</strong></td>
+<td>让占优关系成为共同知识</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>二价/VCG 类支付</strong></td>
+<td>报真值成弱占优</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>提高对方理性深度</strong></td>
+<td>教育/重复使剔除轮次加深</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>避免弱剔除赌顺序</strong></td>
+<td>防误删均衡</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>用实验校准 level-k</strong></td>
+<td>预测真实人停在第几轮</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱 1 · 把「最优反应」说成「占优」</summary><div class="dbody"><p>最优反应依赖对方策略；占优要求对<strong>所有</strong>对方策略都最优。猜硬币两边都有最优反应，但无人占优。</p></div></details>
+<details><summary>陷阱 2 · 弱占优当严格占优删</summary><div class="dbody"><p>弱剔除顺序可变结果，且可能删掉某些 NE。默认只用严格。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 3 · 以为无占优 = 无法分析</summary><div class="dbody"><p>无占优仍可 IESDS；再不行才上划线 / 混合 NE。</p></div></details>
+<details><summary>陷阱 4 · 只比「平均」不比「逐列」</summary><div class="dbody"><p>占优是逐个 (s_{-i}) 比较，不是对信念取期望后再比（那是最优反应）。</p></div></details>
+<details><summary>陷阱 5 · 忽略混合策略占优</summary><div class="dbody"><p>有的纯策略不被任何纯策略占优，却被某个混合严格占优——不删会错。</p></div></details>
+<details><summary>陷阱 6 · 把 IESDS 幸存集当成「唯一预测」</summary><div class="dbody"><p>幸存集可很大；它排除不可能，不自动给出单点预测。</p></div></details>
+<details><summary>陷阱 7 · 假设实验室里人人完成无限剔除</summary><div class="dbody"><p>p-beauty contest 显示多数人停在有限层。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱 8 · 一口价拍卖里「报真值总是占优」</summary><div class="dbody"><p>一价密封拍卖中报真值一般<strong>不是</strong>占优；二价才是（弱）占优。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 9 · 占优均衡一定帕累托最优</summary><div class="dbody"><p>囚徒困境反例：占优均衡严格劣于合作。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 10 · 连续策略空间直接套「有限 IESDS」</summary><div class="dbody"><p>有限性保证有限步终止；连续统要额外结构（如单调性）。<span class="tag t-fact">事实</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实机制</th>
+<th>可操作动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">严格占优</td>
+<td>「反正都更好」的选项</td>
+<td>合同条款里找无条件更优条款</td>
+</tr>
+<tr>
+<td class="k">IESDS</td>
+<td>删掉不可能的还价/出价</td>
+<td>谈判前划掉不可理喻选项</td>
+</tr>
+<tr>
+<td class="k">弱占优</td>
+<td>二价拍卖报真值</td>
+<td>知道「不必猜第二高价」</td>
+</tr>
+<tr>
+<td class="k">DSIC</td>
+<td>机制让真话占优</td>
+<td>设计规则而非劝说诚实</td>
+</tr>
+<tr>
+<td class="k">level-k</td>
+<td>对手只剔 k 轮</td>
+<td>按对手深度而非无限理性行动</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="grid g3">
+<div class="card"><h4>诊断</h4><p>画出矩阵：对每一行，问「是否存在另一行在每一列都严格更高？」<span class="tag t-inf">推论</span></p></div>
+<div class="card"><h4>收缩</h4><p>跑 IESDS（只用严格）；写下每轮删除理由。<span class="tag t-inf">推论</span></p></div>
+<div class="card"><h4>设计</h4><p>若结果坏：改哪一格支付能让好行动变成占优？成本最低的一格是杠杆。<span class="tag t-ana">分析</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>① 基础：严格占优一眼识</summary><div class="dbody"><p>2×2 矩阵上标出是否存在占优策略；写出 ∀ 列的不等式。</p></div></details>
+<details><summary>② 中级：IESDS 手算</summary><div class="dbody"><p>3×3 上按轮删除；验证最终点是 NE；说明为何弱剔除要谨慎。</p></div></details>
+<details><summary>③ 高级：混合占优与理性化</summary><div class="dbody"><p>检查「纯不占优但混合占优」；把幸存集与理性化、NE 支撑对照。</p></div></details>
+<details><summary>④ 专家：DSIC 机制草图</summary><div class="dbody"><p>给定分配目标，设计支付使目标报告成弱占优（二价/VCG 直觉）。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是「劣势猎手」：每张支付矩阵是一张地图，严格劣势是必须清除的迷雾。得分不看「猜中对方」，看「用最少轮次剔到不可再小的核」，以及「是否误用弱剔除」。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>完成标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 找占优</td>
+<td>在 PD 中证明坦白严格占优</td>
+</tr>
+<tr>
+<td class="k">T2 跑 IESDS</td>
+<td>对本手册 3×3 示例写出三轮删除</td>
+</tr>
+<tr>
+<td class="k">T3 对照 NE</td>
+<td>说明猜硬币为何无占优仍有混合 NE</td>
+</tr>
+<tr>
+<td class="k">T4 弱剔除警告</td>
+<td>举一个顺序影响结果的 2×2</td>
+</tr>
+<tr>
+<td class="k">T5 DSIC 直觉</td>
+<td>用二价拍卖数字说明报真值不吃亏</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>若把 PD 的 (T) 降到 (2.5&lt;R=3)，则坦白不再占优，合作可成纯 NE。<span class="tag t-inf">推论</span></p>
+<p>若只允许有限 1 轮剔除，本手册 3×3 在删掉 R 后仍留 U/M/D×L/M——预测集显著大于完整 IESDS。<span class="tag t-fact">事实</span></p>
+<p>若把二价改成一价，报真值失去占优地位，最优报价依赖对他人估值的信念。<span class="tag t-fact">事实</span></p>
+<h3>可调模型 1 · 囚徒困境：何时「坦白」严格占优</h3>
+<p>经典条件：(T&gt;R&gt;P&gt;S)。默认 (R=3,T=5,P=1,S=0)：对合作者 (5&gt;3)，对背叛者 (1&gt;0)，双边严格占优；均衡各得 <strong>1</strong>，相对合作差距 <strong>2</strong>。</p>
+<div class="tool" id="tool_pd">
+  <div class="ctrl">
+    <label>合作奖励 R <output id="pd_rO">3.0</output></label>
+    <input type="range" id="pd_r" min="1" max="6" step="0.1" value="3.0"/>
+    <label>背叛诱惑 T <output id="pd_tO">5.0</output></label>
+    <input type="range" id="pd_t" min="1" max="8" step="0.1" value="5.0"/>
+    <label>惩罚 P <output id="pd_pO">1.0</output></label>
+    <input type="range" id="pd_p" min="0" max="4" step="0.1" value="1.0"/>
+    <label>傻瓜支付 S <output id="pd_sO">0.0</output></label>
+    <input type="range" id="pd_s" min="-2" max="3" step="0.1" value="0.0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">D≻C？<strong id="pd_dom">是（严格）</strong></div>
+    <div class="ro">占优均衡<strong id="pd_eq">(D,D)</strong></div>
+    <div class="ro">R−P<strong id="pd_gap">2.0</strong></div>
+    <div id="pd_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="pd_vh">T&gt;R 且 P&gt;S → 坦白严格占优；唯一占优均衡=(D,D)，相对合作差距 2.0</span></div>
+  </div>
+  <canvas id="pdChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · IESDS 三轮收缩（固定教学矩阵）</h3>
+<p>矩阵（行 U/M/D，列 L/M/R；格内为行,列支付）：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>L</th>
+<th>M</th>
+<th>R</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">U</td>
+<td>1,0</td>
+<td>1,2</td>
+<td>0,1</td>
+</tr>
+<tr>
+<td class="k">M</td>
+<td>0,3</td>
+<td>0,1</td>
+<td>2,0</td>
+</tr>
+<tr>
+<td class="k">D</td>
+<td>0,1</td>
+<td>0,0</td>
+<td>1,−1</td>
+</tr>
+</tbody>
+</table></div>
+<p>严格 IESDS：第 1 轮删 <strong>R</strong>（被列 M 严格占优）→ 第 2 轮删 <strong>M、D</strong>（被行 U 严格占优）→ 第 3 轮删 <strong>L</strong>（被列 M 严格占优）→ 幸存 <strong>(U,M)</strong>，支付 <strong>(1,2)</strong>。滑块选择「看到第几轮」。</p>
+<div class="tool" id="tool_ie">
+  <div class="ctrl">
+    <label>剔除进行到第几轮 <output id="ie_kO">0</output></label>
+    <input type="range" id="ie_k" min="0" max="3" step="1" value="0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">幸存行<strong id="ie_rows">U, M, D</strong></div>
+    <div class="ro">幸存列<strong id="ie_cols">L, M, R</strong></div>
+    <div class="ro">本轮删除<strong id="ie_drop">（尚未开始）</strong></div>
+    <div id="ie_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ie_vh">完整矩阵 3×3。拖动滑块观察严格 IESDS 如何逐轮收缩到 (U,M)。</span></div>
+  </div>
+  <canvas id="ieChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 弱占优：删除顺序可以改写结局</h3>
+<p>教学矩阵（行支付；列玩家对称兴趣较弱，只看行玩家）：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>L</th>
+<th>R</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T</td>
+<td>1, 1</td>
+<td>0, 0</td>
+</tr>
+<tr>
+<td class="k">B</td>
+<td>0, 0</td>
+<td>0, 0</td>
+</tr>
+</tbody>
+</table></div>
+<p>对行玩家：T <strong>弱</strong>占优 B（对 L 严格更好，对 R 一样）。若先删 B，再看列：L 弱占优 R → 常得到 (T,L)。若先从列侧以不同弱理由开删，幸存集可以不同——<strong>这就是弱剔除危险的最小模型</strong>。滑块切换「先删谁」。</p>
+<div class="tool" id="tool_wk">
+  <div class="ctrl">
+    <label>删除顺序模式 <output id="wk_modeO">先删行B</output></label>
+    <input type="range" id="wk_mode" min="0" max="1" step="1" value="0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">步骤<strong id="wk_steps">B弱劣 → 删B；后 L弱≻R → 删R</strong></div>
+    <div class="ro">幸存<strong id="wk_surv">(T, L)</strong></div>
+    <div class="ro">警示<strong id="wk_warn">弱剔除</strong></div>
+    <div id="wk_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="wk_vh">模式0：先删行B再删列R → (T,L)。模式1：先强调列侧弱关系，叙事顺序改变——实践中应避免依赖弱剔除。</span></div>
+  </div>
+  <canvas id="wkChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 二价拍卖：报真值为何（弱）占优</h3>
+<p>你的估值 (v)，报价 (b)，他人最高价 (m)。二价规则：若 (b&gt;m) 则赢得物品并支付 (m)，效用 (v-m)；否则效用 0。默认 (v=100,m=60,b=100) → 效用 <strong>40</strong>；压价到 50 会输掉本可到手的 40；抬价到 120 且 (m=110) 时效用 <strong>−10</strong>。</p>
+<div class="tool" id="tool_vc">
+  <div class="ctrl">
+    <label>你的估值 v <output id="vc_vO">100</output></label>
+    <input type="range" id="vc_v" min="20" max="200" step="1" value="100"/>
+    <label>你的报价 b <output id="vc_bO">100</output></label>
+    <input type="range" id="vc_b" min="0" max="200" step="1" value="100"/>
+    <label>他人最高价 m <output id="vc_mO">60</output></label>
+    <input type="range" id="vc_m" min="0" max="200" step="1" value="60"/>
+  </div>
+  <div class="readout">
+    <div class="ro">是否成交<strong id="vc_win">是</strong></div>
+    <div class="ro">你的效用<strong id="vc_u">40</strong></div>
+    <div class="ro">报真值效用<strong id="vc_truth">40</strong></div>
+    <div id="vc_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="vc_vh">b=v=100，m=60 → 成交，付 60，效用 40；偏离报价无法在所有 m 下改进</span></div>
+  </div>
+  <canvas id="vcChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>识别严格占优</td>
+<td>PD 书面证明</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>手算 IESDS</td>
+<td>3×3 三轮删除正确</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>分清弱/严 + 混合占优</td>
+<td>指出一处弱剔除风险</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>DSIC 直觉</td>
+<td>说明二价为何报真值</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>在纸上画本手册 PD 默认矩阵，用两行不等式证明坦白严格占优（5 分钟）。  </li>
+<li>对 IESDS 3×3 矩阵，不看答案写出第 1 轮删除（10 分钟）。  </li>
+<li>打开 HTML 滑块核对第 2–3 轮，记录与手算差异（10 分钟）。  </li>
+<li>用二价模型故意设 (b=50,v=100,m=60)，写下一句「我损失了多少潜在效用」（5 分钟）。  </li>
+</ol>
+<p>产出：一张手算稿 + 一句「严格 vs 弱」警示——成本接近 0，可验证。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>严格占优定义</td>
+<td>2 个自造 2×2</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>PD 变体</td>
+<td>调 T 使占优消失</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>IESDS</td>
+<td>完整三轮</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>弱剔除</td>
+<td>写风险备忘</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>与 NE 对照</td>
+<td>猜硬币短文</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>二价拍卖</td>
+<td>5 组 (v,b,m) 表</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘</td>
+<td>技能树自测</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<p>每周一个主题：周1 定义与 PD；周2 IESDS 与理性化；周3 弱剔除与实验 level-k；周4 机制 DSIC 小品（二价/简单 VCG 故事）。月末：独立完成一份「某制度是否 DSIC」一页评估。</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<ol>
+<li><strong>严格占优</strong>：(\forall s_{-i}: u_i(s_i^*,s_{-i})&gt;u_i(s_i,s_{-i}))  </li>
+<li><strong>弱占优</strong>：(\ge) 处处且 (&gt;) 某处  </li>
+<li><strong>占优策略均衡</strong>：每人都选占优策略  </li>
+<li><strong>IESDS</strong>：迭代删严格劣势  </li>
+<li><strong>IEWDS</strong>：迭代删弱劣势（慎用）  </li>
+<li><strong>理性化</strong>：共同知识理性下的幸存策略  </li>
+<li><strong>混合占优</strong>：混合可严格占优纯策略  </li>
+<li><strong>DSIC</strong>：目标策略在机制中为占优  </li>
+<li><strong>Vickrey 二价</strong>：报真值弱占优  </li>
+<li><strong>level-k</strong>：有限深度剔除的行为模型  </li>
+</ol>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 占优和最优反应差在哪？</summary><div class="dbody"><p>占优 = 对所有对方策略最优；最优反应 = 对某一信念/某一对方策略最优。</p></div></details>
+<details><summary>Q2 为什么严格剔除不删 NE？</summary><div class="dbody"><p>若均衡里正概率使用某纯策略，它必须是对均衡信念的最优反应，故不可能被严格占优。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q3 弱剔除为何危险？</summary><div class="dbody"><p>顺序可变；可删掉某些 NE；只保证至少一个 NE 幸存。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q4 IESDS 唯一幸存是否一定是 NE？</summary><div class="dbody"><p>是；且是唯一 NE。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q5 没有占优策略怎么办？</summary><div class="dbody"><p>跑 IESDS；再划线找纯 NE；再解混合。</p></div></details>
+<details><summary>Q6 二人与多人 IESDS 一样吗？</summary><div class="dbody"><p>程序一样；与理性化的精确等价关系在多人时更细（相关信念等）。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q7 二价拍卖报真值是严格还是弱占优？</summary><div class="dbody"><p>一般为<strong>弱</strong>占优：某些 (m) 下偏离无差别。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q8 一价拍卖能 DSIC 吗？</summary><div class="dbody"><p>标准一价下报真值不是占优；真相揭示需不同支付规则。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q9 实验里人为何「不占优」？</summary><div class="dbody"><p>利他、错误、有限深度、支付太小——用行为模型补，不否定占优作为规范基准。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q10 如何把坏占优改掉？</summary><div class="dbody"><p>改支付（罚/奖）、禁策略、或改成重复博弈改变阶段占优结构。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>与《纳什均衡》对照：占优是更强解概念，NE 是更广解概念。  </li>
+<li>深入理性化、相关均衡、可证实现（implementation）。  </li>
+<li>算法机制设计：近似 DSIC、简单 vs 最优拍卖。  </li>
+<li>实验：p-beauty contest 与 level-k 估计。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">严格/弱占优与 IESDS 定义</td>
+<td>教材/综述</td>
+<td>Osborne《Introduction to Game Theory》；Wikipedia Strategic dominance；MIT 14.12 讲义</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">严格剔除保 NE、弱剔除顺序敏感</td>
+<td>教材定理</td>
+<td>标准博弈论教材命题（Osborne–Rubinstein 等）</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">囚徒困境占优结构</td>
+<td>经典例子</td>
+<td>Flood–Dresher / Tucker 叙述；支付 (T&gt;R&gt;P&gt;S)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">理性化与 IESDS</td>
+<td>学术</td>
+<td>Bernheim / Pearce；MIT OCW Rationalizability 讲义</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Vickrey / VCG 与 DSIC</td>
+<td>机制设计</td>
+<td>Vickrey 1961；Clarke–Groves；现代 AGT 讲义（Stanford/Brown）</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">本手册 3×3 IESDS 数值</td>
+<td>自构教学矩阵</td>
+<td>经 node 逐轮复核：删 R→删 M,D→删 L→(U,M)=(1,2)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">实验室有限剔除</td>
+<td>文献综述口径</td>
+<td>p-beauty contest / level-k 实验传统</td>
+<td><span class="tag t-ana">分析</span>/<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">标记约定</td>
+<td>本引擎</td>
+<td><span class="tag t-fact">事实</span><span class="tag t-ana">分析</span><span class="tag t-inf">推论</span><span class="tag t-hyp">假设</span><span class="tag t-chk">待验证</span></td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为博弈论与机制设计的认知与练习框架，用于理解占优、IESDS 与 DSIC 的结构关系，<strong>不构成</strong>投资、投标、谈判或法律建议。真实世界的支付、信息与执行约束会使「纸面占优」失效；涉及金钱、合规与契约时，请以可执行规则与专业意见为准。交互模型中的数值为教学默认值，可调但不保证匹配任一实证场景。</p>
+</section>
+<footer>  <p>《占优策略（Dominant Strategy）：无论他人如何做总更优；反复剔除可简化博弈 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 9 分 14 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《占优策略 / IESDS》主题脚本
+   四个可调模型：
+     1. 囚徒困境：严格占优判定
+     2. IESDS 三轮收缩
+     3. 弱占优删除顺序
+     4. 二价拍卖 DSIC
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+
+  /* ── 1. Prisoner's Dilemma dominance ── */
+  (function pd() {
+    var rEl = $('pd_r'), tEl = $('pd_t'), pEl = $('pd_p'), sEl = $('pd_s');
+    if (!rEl || !tEl || !pEl || !sEl) return;
+    var cv = $('pdChart');
+
+    function upd() {
+      var R = parseFloat(rEl.value), T = parseFloat(tEl.value);
+      var P = parseFloat(pEl.value), S = parseFloat(sEl.value);
+      var dVsC = T > R, dVsD = P > S;
+      var strict = dVsC && dVsD;
+      var weak = (T >= R && P >= S) && (T > R || P > S) && !strict;
+      var dom, col, eq;
+      if (strict) { dom = '是（严格）'; col = C.red; eq = '(D,D)'; }
+      else if (weak) { dom = '弱占优'; col = C.amber; eq = '(D,D)弱'; }
+      else if (R > T && S > P) { dom = '否；C占优'; col = C.green; eq = '(C,C)'; }
+      else { dom = '否（无占优）'; col = C.blue; eq = '需划线/混合'; }
+
+      var gap = R - P;
+      txt($('pd_rO'), R.toFixed(1));
+      txt($('pd_tO'), T.toFixed(1));
+      txt($('pd_pO'), P.toFixed(1));
+      txt($('pd_sO'), S.toFixed(1));
+      txt($('pd_dom'), dom);
+      txt($('pd_eq'), eq);
+      txt($('pd_gap'), gap.toFixed(1));
+      tint($('pd_dom'), col);
+
+      var msg;
+      if (strict) {
+        msg = 'T>R 且 P>S → 坦白严格占优；唯一占优均衡=(D,D)，相对合作差距 ' + gap.toFixed(1);
+      } else if (weak) {
+        msg = '弱占优成立但非严格——剔除时勿与严格 IESDS 混用';
+      } else if (R > T && S > P) {
+        msg = '合作反而占优：支付已离开经典 PD 区域';
+      } else {
+        msg = '对合作者 Δ=' + (T - R).toFixed(1) + '，对背叛者 Δ=' + (P - S).toFixed(1) + ' → 无（严格）占优，需用最优反应/NE';
+      }
+      txt($('pd_vh'), msg);
+      tint($('pd_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var vals = [
+        { lab: '对C: T−R', v: T - R, c: T > R ? C.red : C.green },
+        { lab: '对D: P−S', v: P - S, c: P > S ? C.red : C.green },
+        { lab: 'R−P 差距', v: gap, c: C.amber }
+      ];
+      var maxAbs = Math.max(1, Math.abs(vals[0].v), Math.abs(vals[1].v), Math.abs(vals[2].v));
+      function sx(v) { return pl + bw / 2 + (v / maxAbs) * (bw / 2 - 8); }
+      function sy(i) { return pt + (i + 0.5) * (bh / 3); }
+
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), pt);
+      ctx.lineTo(sx(0), y1);
+      ctx.stroke();
+
+      vals.forEach(function (item, i) {
+        var y = sy(i), x0 = sx(0), x1 = sx(item.v);
+        ctx.fillStyle = item.c;
+        ctx.fillRect(Math.min(x0, x1), y - 12, Math.abs(x1 - x0), 24);
+        ctx.fillStyle = C.ink2;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(item.lab, pl, y - 16);
+        var lab = item.v.toFixed(1);
+        ctx.font = '12px sans-serif';
+        var lw = ctx.measureText(lab).width;
+        ctx.textAlign = item.v >= 0 ? 'left' : 'right';
+        var lx = item.v >= 0 ? Math.min(x1 + 8, w - lw - 6) : Math.max(x1 - 8, pl + 6);
+        ctx.fillStyle = C.ink;
+        ctx.fillText(lab, lx, y + 4);
+      });
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Δ>0 表示「坦白更好」的一边', pl + bw / 2, y1 + 31);
+    }
+    bind(['pd_r', 'pd_t', 'pd_p', 'pd_s'], upd);
+    upd();
+  })();
+
+  /* ── 2. IESDS stepper ── */
+  (function ie() {
+    var kEl = $('ie_k');
+    if (!kEl) return;
+    var cv = $('ieChart');
+    var rows = ['U', 'M', 'D'], cols = ['L', 'M', 'R'];
+    // [rowPay, colPay]
+    var G = [
+      [[1, 0], [1, 2], [0, 1]],
+      [[0, 3], [0, 1], [2, 0]],
+      [[0, 1], [0, 0], [1, -1]]
+    ];
+    var stages = [
+      { r: [0, 1, 2], c: [0, 1, 2], drop: '（尚未开始）', msg: '完整矩阵 3×3。拖动滑块观察严格 IESDS 如何逐轮收缩到 (U,M)。' },
+      { r: [0, 1, 2], c: [0, 1], drop: '列 R（被列 M 严格占优）', msg: '第1轮：列支付 M=(2,1,0) ≻ R=(1,0,−1) 处处严格 → 删 R。' },
+      { r: [0], c: [0, 1], drop: '行 M、D（被行 U 严格占优）', msg: '第2轮：缩后 U=(1,1) ≻ M=(0,0) 且 ≻ D=(0,0) → 删 M、D。' },
+      { r: [0], c: [1], drop: '列 L（被列 M 严格占优）', msg: '第3轮：仅剩行 U 时列 M 得 2 > 列 L 得 0 → 删 L。幸存 (U,M)=(1,2)。' }
+    ];
+
+    function upd() {
+      var k = parseInt(kEl.value, 10);
+      var st = stages[k];
+      txt($('ie_kO'), String(k));
+      txt($('ie_rows'), st.r.map(function (i) { return rows[i]; }).join(', '));
+      txt($('ie_cols'), st.c.map(function (i) { return cols[i]; }).join(', '));
+      txt($('ie_drop'), st.drop);
+      txt($('ie_vh'), st.msg);
+      tint($('ie_vh'), k === 3 ? C.green : C.blue);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 56, pr = 16, pt = 24, y1 = h - 46;
+      var aliveR = {}; st.r.forEach(function (i) { aliveR[i] = 1; });
+      var aliveC = {}; st.c.forEach(function (i) { aliveC[i] = 1; });
+      var cellW = (w - pl - pr) / 3, cellH = (y1 - pt) / 3;
+
+      for (var i = 0; i < 3; i++) {
+        for (var j = 0; j < 3; j++) {
+          var x = pl + j * cellW, y = pt + i * cellH;
+          var on = aliveR[i] && aliveC[j];
+          ctx.fillStyle = on ? '#e8f8ef' : '#f1f3f5';
+          ctx.strokeStyle = on ? C.green : C.axis;
+          ctx.lineWidth = on ? 2 : 1;
+          ctx.fillRect(x + 2, y + 2, cellW - 4, cellH - 4);
+          ctx.strokeRect(x + 2, y + 2, cellW - 4, cellH - 4);
+          ctx.fillStyle = on ? C.ink : C.ink3;
+          ctx.font = '12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(G[i][j][0] + ',' + G[i][j][1], x + cellW / 2, y + cellH / 2 + 4);
+        }
+      }
+      ctx.fillStyle = C.ink2;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (i = 0; i < 3; i++) ctx.fillText(rows[i], pl - 8, pt + (i + 0.5) * cellH + 4);
+      ctx.textAlign = 'center';
+      for (j = 0; j < 3; j++) ctx.fillText(cols[j], pl + (j + 0.5) * cellW, y1 + 14);
+      ctx.fillStyle = C.ink3;
+      ctx.fillText('绿色=仍幸存的格子', pl + (w - pl - pr) / 2, y1 + 31);
+    }
+    bind(['ie_k'], upd);
+    upd();
+  })();
+
+  /* ── 3. Weak dominance order ── */
+  (function wk() {
+    var mEl = $('wk_mode');
+    if (!mEl) return;
+    var cv = $('wkChart');
+
+    function upd() {
+      var mode = parseInt(mEl.value, 10);
+      txt($('wk_modeO'), mode === 0 ? '先删行B' : '先删列R叙事');
+      var steps, surv, warn, msg, col;
+      if (mode === 0) {
+        steps = 'B弱劣 → 删B；后 L弱≻R → 删R';
+        surv = '(T, L)';
+        warn = '弱剔除';
+        msg = '模式0：先删行B再删列R → (T,L)。支付上 T 对 L 严格更好、对 R 无差别——典型弱占优。';
+        col = C.amber;
+      } else {
+        steps = '先谈列：R 对行无严格贡献 → 叙事删R；再删B';
+        surv = '(T, L)（同点异路）';
+        warn = '顺序敏感';
+        msg = '模式1：改叙述顺序仍可能落到同一点，但一般矩阵上弱剔除可改写幸存集并删掉部分 NE——实践默认只用严格。';
+        col = C.red;
+      }
+      txt($('wk_steps'), steps);
+      txt($('wk_surv'), surv);
+      txt($('wk_warn'), warn);
+      txt($('wk_vh'), msg);
+      tint($('wk_warn'), col);
+      tint($('wk_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 70, pr = 20, pt = 30, y1 = h - 46;
+      var cells = [
+        [{ p: '1,1', on: true }, { p: '0,0', on: mode === 0 }],
+        [{ p: '0,0', on: false }, { p: '0,0', on: false }]
+      ];
+      // mode0 after: only TL; during illustration show TL alive always, TR maybe, bottom dead
+      if (mode === 1) {
+        cells = [
+          [{ p: '1,1', on: true }, { p: '0,0', on: false }],
+          [{ p: '0,0', on: false }, { p: '0,0', on: false }]
+        ];
+      }
+      var cw = (w - pl - pr) / 2, ch = (y1 - pt) / 2;
+      var labelsR = ['T', 'B'], labelsC = ['L', 'R'];
+      for (var i = 0; i < 2; i++) {
+        for (var j = 0; j < 2; j++) {
+          var x = pl + j * cw, y = pt + i * ch;
+          var on = cells[i][j].on;
+          ctx.fillStyle = on ? '#eaf0ff' : '#f1f3f5';
+          ctx.strokeStyle = on ? C.blue : C.axis;
+          ctx.lineWidth = on ? 2 : 1;
+          ctx.fillRect(x + 4, y + 4, cw - 8, ch - 8);
+          ctx.strokeRect(x + 4, y + 4, cw - 8, ch - 8);
+          ctx.fillStyle = on ? C.ink : C.ink3;
+          ctx.font = '14px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(cells[i][j].p, x + cw / 2, y + ch / 2 + 5);
+        }
+      }
+      ctx.fillStyle = C.ink2;
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'right';
+      for (i = 0; i < 2; i++) ctx.fillText(labelsR[i], pl - 10, pt + (i + 0.5) * ch + 4);
+      ctx.textAlign = 'center';
+      for (j = 0; j < 2; j++) ctx.fillText(labelsC[j], pl + (j + 0.5) * cw, y1 + 14);
+      ctx.fillStyle = C.ink3;
+      ctx.fillText('蓝色=弱剔除后强调的幸存格', pl + (w - pl - pr) / 2, y1 + 31);
+    }
+    bind(['wk_mode'], upd);
+    upd();
+  })();
+
+  /* ── 4. Vickrey second-price ── */
+  (function vc() {
+    var vEl = $('vc_v'), bEl = $('vc_b'), mEl = $('vc_m');
+    if (!vEl || !bEl || !mEl) return;
+    var cv = $('vcChart');
+
+    function util(v, b, m) {
+      if (b > m) return v - m;
+      return 0;
+    }
+
+    function upd() {
+      var v = parseFloat(vEl.value), b = parseFloat(bEl.value), m = parseFloat(mEl.value);
+      var u = util(v, b, m);
+      var ut = util(v, v, m);
+      var win = b > m;
+      txt($('vc_vO'), String(Math.round(v)));
+      txt($('vc_bO'), String(Math.round(b)));
+      txt($('vc_mO'), String(Math.round(m)));
+      txt($('vc_win'), win ? '是' : '否');
+      txt($('vc_u'), u.toFixed(0));
+      txt($('vc_truth'), ut.toFixed(0));
+      tint($('vc_u'), u > 0 ? C.red : (u < 0 ? C.green : C.ink2));
+
+      var msg;
+      var col = C.blue;
+      if (Math.abs(b - v) < 1e-9) {
+        msg = 'b=v=' + Math.round(v) + '，m=' + Math.round(m) + ' → ' + (win ? ('成交，付 ' + Math.round(m) + '，效用 ' + u.toFixed(0)) : '未成交，效用 0') + '；偏离报价无法在所有 m 下改进';
+        col = C.green;
+      } else if (b < v && m > b && m < v) {
+        msg = '压价导致未成交：相对报真值损失潜在效用 ' + (v - m).toFixed(0);
+        col = C.red;
+      } else if (b > v && m > v && m < b) {
+        msg = '抬价买到价高于估值：效用 ' + u.toFixed(0) + '（报真值本可避开）';
+        col = C.red;
+      } else {
+        msg = '当前效用 ' + u.toFixed(0) + '，报真值效用 ' + ut.toFixed(0) + '；二价下报真值弱占优';
+        col = u >= ut ? C.green : C.amber;
+      }
+      txt($('vc_vh'), msg);
+      tint($('vc_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var mMax = 200;
+      function sx(mm) { return pl + (mm / mMax) * bw; }
+      function sy(uu) {
+        var ymin = -40, ymax = 120;
+        return y1 - ((uu - ymin) / (ymax - ymin)) * bh;
+      }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var uu = -40; uu <= 120; uu += 40) {
+        var y = sy(uu);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(String(uu), pl - 6, y + 4);
+      }
+
+      // utility if bid = b, as function of m
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = C.blue;
+      ctx.beginPath();
+      var i, mm, uu2, x;
+      for (i = 0; i <= 200; i++) {
+        mm = i;
+        uu2 = util(v, b, mm);
+        x = sx(mm);
+        if (i === 0) ctx.moveTo(x, sy(uu2)); else ctx.lineTo(x, sy(uu2));
+      }
+      ctx.stroke();
+
+      // truthful
+      ctx.strokeStyle = C.green;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      for (i = 0; i <= 200; i++) {
+        mm = i;
+        uu2 = util(v, v, mm);
+        x = sx(mm);
+        if (i === 0) ctx.moveTo(x, sy(uu2)); else ctx.lineTo(x, sy(uu2));
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // current m marker
+      ctx.strokeStyle = C.amber;
+      ctx.beginPath();
+      ctx.moveTo(sx(m), pt);
+      ctx.lineTo(sx(m), y1);
+      ctx.stroke();
+      ctx.fillStyle = C.amber;
+      ctx.beginPath();
+      ctx.arc(sx(m), sy(u), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('蓝=当前b · 绿虚=报真值 · 横轴m', w - pr, y1 + 31);
+    }
+    bind(['vc_v', 'vc_b', 'vc_m'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>

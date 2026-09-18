@@ -1,0 +1,2696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>《停損的勝算》 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Quit × Decision Science</small></div>
+  <nav id="nav">
+    <div class="navgroup">正文</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">入口</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图（9 层）</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">决策</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">行动</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <div class="navgroup">反事实</div>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">训练</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天计划</a>
+    <div class="navgroup">参考</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>《停損的勝算》</h1>
+  <p class="sub">一本把「放棄」重写成决策技能的书——<strong>它最锋利的地方是逼你在投入之前就写好退出条件，最容易被误读的地方是把「停損」讲得比停損的实测效果动听太多</strong></p>
+  <div class="meta">
+    <span class="chip b">27 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p>《停損的勝算》只做一件事：<strong>把「要不要放弃」从一个当下临场发挥的情绪问题，改造成一个提前写好条件的检查动作。</strong></p>
+<p>它的核心主张是：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主张</th>
+<th>一句话</th>
+<th>对应机制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">放弃是被低估的技能</td>
+<td>赢家不是从不弃牌的人，是弃得准的人</td>
+<td>扑克：职业选手弃掉大部分手牌</td>
+</tr>
+<tr>
+<td class="k">沉没成本是假的</td>
+<td>真正会浪费的不是已投入的，是接下来要继续投入的</td>
+<td>前瞻性浪费 vs 回溯性成本</td>
+</tr>
+<tr>
+<td class="k">终止条件要提前写</td>
+<td>决策质量最高的时刻，是你还没被套住的时候</td>
+<td>kill criteria（终止条件）</td>
+</tr>
+<tr>
+<td class="k">最该先做难的</td>
+<td>先训猴子，别先搭台子</td>
+<td>猴子与台子（Astro Teller）</td>
+</tr>
+</tbody>
+</table></div>
+<p>但必须把另一半说清楚，否则这份手册就是骗人的：</p>
+<blockquote>
+<p><span class="tag t-ana">分析</span>安妮·杜克在书里有一句被引用最多的话——「停損是提高勝算的決策工具」。<strong>这句话在书里的意思是「整体决策质量」，不是「这一笔交易的期望值」。</strong> 而对宽基指数做固定比例停損的实测结果是：年化期望收益反而<strong>下降</strong> 2.62 个百分点（本手册模型实测，见第 20 节）。停損买到的是<strong>左尾保险</strong>，不是更高的胜算。把这两者混起来，就是这本书最常被误读的地方。</p>
+</blockquote>
+<p>所以这份手册会做一件书里没做的事：<strong>把「该放弃」这件事拆成两条完全不同的路——一条是心理的（你被沉没成本绑架了），一条是数学的（停損本身值不值）——然后分别给出可验算的判据。</strong></p>
+<hr />
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<h3>一句话边界</h3>
+<p>它研究的<strong>不是「该不该坚持」这种励志问题，而是「在信息不完全、结果随机、且你已经投入了不可回收资源的条件下，如何决定是否继续下注」</strong>。</p>
+<p>这个边界很重要。它把「放弃」从一个道德问题（你是懦夫还是硬汉）降级成一个技术问题（这道题的期望值还是正的吗）。</p>
+<h3>用 15 个问题划定边界</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">研究什么</td>
+<td>在不可回收投入存在时，继续 / 退出的决策规则</td>
+</tr>
+<tr>
+<td class="k">边界在哪</td>
+<td>只管「决策规则」，不管「心理安慰」——书里最容易走偏的地方就是退化成鸡汤</td>
+</tr>
+<tr>
+<td class="k">核心对象</td>
+<td>一个人的一条「投入路径」（一个项目、一段关系、一个仓位、一个职业）</td>
+</tr>
+<tr>
+<td class="k">参与者</td>
+<td>决策者本人、外部观察者（quitting coach）、以及「公开承诺」塑造的观众</td>
+</tr>
+<tr>
+<td class="k">核心变量</td>
+<td>沉没成本、终止条件、机会成本、身份认同、期望值、波动率</td>
+</tr>
+<tr>
+<td class="k">可观察</td>
+<td>已投入的量、当前状态、时间刻度、同类成功者的轨迹</td>
+</tr>
+<tr>
+<td class="k">不可观察但可推断</td>
+<td>未来的期望值、你此刻的偏差有多大、退出后的替代路径值多少</td>
+</tr>
+<tr>
+<td class="k">谁影响谁</td>
+<td>身份 → 承诺强度 → 沉没成本敏感度 → 退出难度</td>
+</tr>
+<tr>
+<td class="k">确定因果</td>
+<td>越公开的承诺 → 公开认错的成本越高 → 越难退出</td>
+</tr>
+<tr>
+<td class="k">只是相关</td>
+<td>「坚持到底」与「成功」——相关，但漏掉了大量的幸存者偏差</td>
+</tr>
+<tr>
+<td class="k">表层现象</td>
+<td>「我已经投入这么多了」「再撑一撑」「不能半途而废」</td>
+</tr>
+<tr>
+<td class="k">底层机制</td>
+<td>损失厌恶 + 心理账户 + 身份融合三者叠加，把退出成本人为放大</td>
+</tr>
+<tr>
+<td class="k">反馈</td>
+<td>正反馈：投入 → 假进展 → 更舍不得退；负反馈：早退 → 释放资源 → 反而更快成功</td>
+</tr>
+<tr>
+<td class="k">时间延迟</td>
+<td>早退的收益要过很久才显现，而坚持的痛苦立刻就能感受到——<strong>这是整个问题最核心的不对称</strong></td>
+</tr>
+<tr>
+<td class="k">正负反馈</td>
+<td>在能力圈内坚持 = 正反馈；在死路上坚持 = 负反馈。<strong>事前两者长得一样</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>它和相邻方法的区别</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>问的问题</th>
+<th>与本书的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">《恆毅力》(Angela Duckworth)</td>
+<td>为什么有人能坚持到底</td>
+<td>不矛盾。杜克不是反对恒毅力，是指出<strong>恒毅力只回答了半道题</strong>——它没告诉你「坚持什么」</td>
+</tr>
+<tr>
+<td class="k">《从 A 到 A+》(Jim Collins)</td>
+<td>为什么好公司能持续卓越</td>
+<td>对立面。杜克整本书的一个反面教材就是「死守零售业务的 Sears」</td>
+</tr>
+<tr>
+<td class="k">《困境》(Seth Godin, The Dip)</td>
+<td>什么时候该放弃</td>
+<td>最近的邻居。Godin 讲「感觉」（何时是低谷），杜克讲「机制」（怎么算、怎么提前写）</td>
+</tr>
+<tr>
+<td class="k">期望值 / 凯利公式</td>
+<td>这笔下注值不值</td>
+<td><strong>补充关系</strong>。杜克给了心理层的退出条件，凯利给了数学层的下注量表——但<strong>两者都只管「下注量」，都不保证停損本身有正期望</strong></td>
+</tr>
+<tr>
+<td class="k">停損单（交易术语）</td>
+<td>亏多少就砍</td>
+<td><strong>同名不同物</strong>。这是本手册要重点切开的一个混淆，见第 14 节第 1 条</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>它不是一本投资书，但它对投资者最有用也最危险</h3>
+<p>杜克本人是<strong>前职业扑克选手</strong>（2004 年 WSOP 金手链、2004 年 WSOP 冠军赛 200 万美元冠军、2010 年 NBC 全国单挑赛冠军，职业生涯锦标赛奖金超 400 万美元），也是<strong>宾夕法尼亚大学认知心理学博士</strong>（2023 年取得，读博期间中途退学去打了二十年扑克——她本人就是这本书的活体案例）。这种履历组合让她同时握着两把工具：<strong>概率直觉</strong>和<strong>实证心理学</strong>。</p>
+<p><span class="tag t-fact">事实</span>但她的书里<strong>没有一条交易层面的停損实证</strong>。她讲的是 Everest 登山者的折返时刻、Philips 卖掉照明业务、奥运选手的退役、创业者关掉公司。停損（stop-loss）这个词在书里是个<strong>比喻</strong>，不是一个交易指令。</p>
+<p><span class="tag t-inf">推论</span>这正好解释了为什么这本书在中文图书市场上常被当成「停損圣经纪」来卖。繁体版书名《停損的勝算》，副标题「世界撲克冠軍教你精準判斷何時放棄，反而贏更多」，读完最容易被记住的却是「停損」两个字。</p>
+<h3>因为它是「反直觉且可验证」的少数派</h3>
+<p>大多数决策类书籍的说法无法被证伪。这本书里的核心主张却可以被切成两半，一半是心理学（可重复实验支持），一半是概率论（可解析计算）：</p>
+<ul>
+<li><strong>心理学那半</strong>：沉没成本效应、处置效应、损失厌恶——有几十年、多国、多资产类别的重复验证。</li>
+<li><strong>概率论那半</strong>：停損在什么样的收益过程下能加值——有明确的数学条件（Kaminski &amp; Lo 2014）。</li>
+</ul>
+<p><strong>能切成两半，就说明可以分别检查。</strong> 这份手册的主要工作就是分别检查。</p>
+<h3>三组必须记住的实测数字</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>数字</th>
+<th>出处</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">有浮盈的持仓被卖掉的概率，是有浮亏持仓的 <strong>1.51 倍</strong></td>
+<td><span class="tag t-fact">事实</span>Odean (1998)，1 万个美股折价券商账户，1987–1993</td>
+<td>「见好就收、不好就撑着」的量化形态</td>
+</tr>
+<tr>
+<td class="k">停損 10% 的规则，在正漂移市场里<strong>年化期望收益少 2.62 个百分点</strong></td>
+<td><span class="tag t-inf">推论</span>本手册第 20 节蒙特卡洛，μ=10%、σ=18%、2 万条路径</td>
+<td>停損的真实代价，书里没有</td>
+</tr>
+<tr>
+<td class="k">亏 50% 之后，在 μ=10% 的假设下，<strong>平均要 6.93 年才能回到成本价</strong></td>
+<td><span class="tag t-inf">推论</span>−ln(1−x)/μ 精确解</td>
+<td>为什么「撑着」是最贵的选择</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<hr />
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图（9 层）</h2>
+<p>《停損的勝算》的作用对象不是一个行业，而是<strong>一个人面对「继续还是退出」这个瞬间的九层结构</strong>。越往下越不可见，越往下越决定结果。</p>
+<svg viewBox="0 0 680 620" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="sldA" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="680" height="620" fill="#fbfcfe"/>
+
+  <text x="16" y="26" font-size="13" font-weight="700" fill="#0f1115">九层世界地图 · 从「我怎么这么难放弃」到「这条路的期望值还是正的吗」</text>
+
+  <!-- L1 -->
+  <rect x="16" y="44" width="648" height="52" rx="8" fill="#ffffff" stroke="#d8dee8"/>
+  <rect x="16" y="44" width="5" height="52" rx="2" fill="#64748b"/>
+  <text x="34" y="66" font-size="12" font-weight="700" fill="#0f1115">L1 · 现象层</text>
+  <text x="34" y="84" font-size="11.5" fill="#5b6472">「我已经投入这么多了」「再撑一撑就过去了」「不能半途而废」</text>
+
+  <line x1="340" y1="96" x2="340" y2="110" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#sldA)"/>
+
+  <!-- L2 -->
+  <rect x="16" y="112" width="648" height="52" rx="8" fill="#ffffff" stroke="#d8dee8"/>
+  <rect x="16" y="112" width="5" height="52" rx="2" fill="#0d9488"/>
+  <text x="34" y="134" font-size="12" font-weight="700" fill="#0f1115">L2 · 语言层</text>
+  <text x="34" y="152" font-size="11.5" fill="#5b6472">中文里没有 neutral 的「退」字：退 = 输；「停損」听起来比「认赔」体面</text>
+
+  <line x1="340" y1="164" x2="340" y2="178" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#sldA)"/>
+
+  <!-- L3 -->
+  <rect x="16" y="180" width="648" height="52" rx="8" fill="#ffffff" stroke="#d8dee8"/>
+  <rect x="16" y="180" width="5" height="52" rx="2" fill="#2563eb"/>
+  <text x="34" y="202" font-size="12" font-weight="700" fill="#0f1115">L3 · 行为层</text>
+  <text x="34" y="220" font-size="11.5" fill="#5b6472">可观测的四个动作：加码、拖延决定、换话题、把决策权推给别人</text>
+
+  <line x1="340" y1="232" x2="340" y2="246" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#sldA)"/>
+
+  <!-- L4 -->
+  <rect x="16" y="248" width="648" height="52" rx="8" fill="#ffffff" stroke="#d8dee8"/>
+  <rect x="16" y="248" width="5" height="52" rx="2" fill="#7c3aed"/>
+  <text x="34" y="270" font-size="12" font-weight="700" fill="#0f1115">L4 · 偏差层</text>
+  <text x="34" y="288" font-size="11.5" fill="#5b6472">沉没成本 · 损失厌恶（亏的痛苦约是赚的 2 倍）· 现状偏误 · 禀赋效应 · 认知失调</text>
+
+  <line x1="340" y1="300" x2="340" y2="314" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#sldA)"/>
+
+  <!-- L5 -->
+  <rect x="16" y="316" width="648" height="52" rx="8" fill="#ffffff" stroke="#d8dee8"/>
+  <rect x="16" y="316" width="5" height="52" rx="2" fill="#dc2626"/>
+  <text x="34" y="338" font-size="12" font-weight="700" fill="#0f1115">L5 · 身份层</text>
+  <text x="34" y="356" font-size="11.5" fill="#5b6472">「我是创业者 / 我是做量化的 / 我是老股民」——放弃路径 = 放弃一部分自我</text>
+
+  <line x1="340" y1="368" x2="340" y2="382" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#sldA)"/>
+
+  <!-- L6 -->
+  <rect x="16" y="384" width="648" height="52" rx="8" fill="#ffffff" stroke="#d8dee8"/>
+  <rect x="16" y="384" width="5" height="52" rx="2" fill="#d97706"/>
+  <text x="34" y="406" font-size="12" font-weight="700" fill="#0f1115">L6 · 社会层</text>
+  <text x="34" y="424" font-size="11.5" fill="#5b6472">公开承诺把「退出」变成「公开认错」；观众越多，退出的价格越高</text>
+
+  <line x1="340" y1="436" x2="340" y2="450" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#sldA)"/>
+
+  <!-- L7 -->
+  <rect x="16" y="452" width="648" height="56" rx="8" fill="#ffffff" stroke="#d8dee8"/>
+  <rect x="16" y="452" width="5" height="56" rx="2" fill="#0284c7"/>
+  <text x="34" y="474" font-size="12" font-weight="700" fill="#0f1115">L7 · 规则层</text>
+  <text x="34" y="492" font-size="11.5" fill="#5b6472">终止条件（kill criteria）= 状态 + 日期；premortem 提前把失败情景倒推成信号</text>
+
+  <line x1="340" y1="508" x2="340" y2="522" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#sldA)"/>
+
+  <!-- L8 -->
+  <rect x="16" y="524" width="648" height="56" rx="8" fill="#ffffff" stroke="#d8dee8"/>
+  <rect x="16" y="524" width="5" height="56" rx="2" fill="#059669"/>
+  <text x="34" y="546" font-size="12" font-weight="700" fill="#0f1115">L8 · 数学层</text>
+  <text x="34" y="564" font-size="11.5" fill="#5b6472">期望值 · 机会成本 · 停止溢酬（停損到底值不值）· 最优停止（何时必须收手）</text>
+
+  <line x1="340" y1="580" x2="340" y2="594" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#sldA)"/>
+
+  <!-- L9 -->
+  <rect x="16" y="596" width="648" height="18" rx="6" fill="#eef4ff" stroke="#2563eb"/>
+  <text x="34" y="609" font-size="11.5" font-weight="700" fill="#1d4ed8">L9 · 元层：这一整套「退出判断」本身，也是一个可以训练的技能</text>
+</svg>
+<p><strong>这张图最该记住的一层是 L6。</strong> 杜克在书里反复回到同一个机制：<strong>公开承诺把退出成本抬高了</strong>。这也解释了一个反直觉的推论——「把目标公之于众」这类主流建议，在需要留退路的事情上是有害的。</p>
+<p><strong>第二该记住的是 L9。</strong> 全书最诚实的一句话是杜克自己说的：「不像 grittiness，形容 quittiness 的正面词几乎没有——quittiness 这个词本身都不在字典里。」</p>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<svg viewBox="0 0 680 470" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="680" height="470" fill="#fbfcfe"/>
+  <text x="16" y="26" font-size="13" font-weight="700" fill="#0f1115">核心概念地图 · 四个诊断口，四条对策</text>
+
+  <!-- 左：症状 -->
+  <text x="30" y="56" font-size="11.5" font-weight="700" fill="#dc2626">症状（你在 L1 能感觉到的）</text>
+  <rect x="24" y="66" width="176" height="42" rx="7" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="36" y="84" font-size="11" fill="#7f1d1d">「都投这么多了，退了不就白投了」</text>
+  <text x="36" y="100" font-size="10" fill="#b91c1c">沉没成本谬误</text>
+
+  <rect x="24" y="118" width="176" height="42" rx="7" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="36" y="136" font-size="11" fill="#7f1d1d">「先搭台子，那儿比较容易出成绩」</text>
+  <text x="36" y="152" font-size="10" fill="#b91c1c">假进展 / 搭台子</text>
+
+  <rect x="24" y="170" width="176" height="42" rx="7" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="36" y="188" font-size="11" fill="#7f1d1d">「现在退出，别人会怎么看我」</text>
+  <text x="36" y="204" font-size="10" fill="#b91c1c">身份融合 / 公开承诺</text>
+
+  <rect x="24" y="222" width="176" height="42" rx="7" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="36" y="240" font-size="11" fill="#7f1d1d">「再等等，说不定就回来了」</text>
+  <text x="36" y="256" font-size="10" fill="#b91c1c">损失厌恶 / 现状偏误</text>
+
+  <!-- 中：机制 -->
+  <text x="252" y="56" font-size="11.5" font-weight="700" fill="#2563eb">机制（L4–L8）</text>
+  <rect x="246" y="66" width="176" height="42" rx="7" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="258" y="84" font-size="11" fill="#1e3a8a">浪费是前瞻性的，不是回溯性的</text>
+  <text x="258" y="100" font-size="10" fill="#1d4ed8">只算「接下来还要投入什么」</text>
+
+  <rect x="246" y="118" width="176" height="42" rx="7" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="258" y="136" font-size="11" fill="#1e3a8a">不确定 ≠ 现在就退出</text>
+  <text x="258" y="152" font-size="10" fill="#1d4ed8">要的是「信息增益」足够大</text>
+
+  <rect x="246" y="170" width="176" height="42" rx="7" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="258" y="188" font-size="11" fill="#1e3a8a">准时退出必然感觉像退早了</text>
+  <text x="258" y="204" font-size="10" fill="#1d4ed8">因为你在还有不确定性时就得走</text>
+
+  <rect x="246" y="222" width="176" height="42" rx="7" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="258" y="240" font-size="11" fill="#1e3a8a">不决定也是一种决定</text>
+  <text x="258" y="256" font-size="10" fill="#1d4ed8">「维持现状」是一个主动选项</text>
+
+  <!-- 右：对策 -->
+  <text x="462" y="56" font-size="11.5" font-weight="700" fill="#059669">对策（可执行）</text>
+  <rect x="462" y="66" width="194" height="42" rx="7" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="474" y="84" font-size="11" fill="#064e3b">终止条件 = 状态 + 日期</text>
+  <text x="474" y="100" font-size="10" fill="#047857">「12 个月内没到 1000 付费用户，关掉」</text>
+
+  <rect x="462" y="118" width="194" height="42" rx="7" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="474" y="136" font-size="11" fill="#064e3b">先训猴子（Monkey First）</text>
+  <text x="474" y="152" font-size="10" fill="#047857">最先验证最不可能的那一环</text>
+
+  <rect x="462" y="170" width="194" height="42" rx="7" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="474" y="188" font-size="11" fill="#064e3b">找一个「退出教练」</text>
+  <text x="474" y="204" font-size="10" fill="#047857">给你一张坦白的否决票</text>
+
+  <rect x="462" y="222" width="194" height="42" rx="7" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="474" y="240" font-size="11" fill="#064e3b">premortem 倒推信号</text>
+  <text x="474" y="256" font-size="10" fill="#047857">先想象已经失败，再回推原因</text>
+
+  <!-- 底：关键分野 -->
+  <rect x="24" y="292" width="632" height="150" rx="9" fill="#fffbeb" stroke="#fcd34d"/>
+  <text x="40" y="316" font-size="12" font-weight="700" fill="#78350f">最容易混的一刀：心理层的「该退出」≠ 数学层的「停損有用」</text>
+  <text x="40" y="342" font-size="11.5" fill="#7c2d12">· 心理层（L4–L6）：你被沉没成本和身份绑架了 —— 这一层杜克的证据扎实</text>
+  <text x="40" y="364" font-size="11.5" fill="#7c2d12">· 数学层（L8）：砍掉一条还在正期望里的路径，期望值会被削掉 —— 这一层书里没写</text>
+  <text x="40" y="392" font-size="11.5" font-weight="700" fill="#b45309">两者可以同时成立：你确实该退出（因为机会成本），但停損这个动作本身确实在减收益。</text>
+  <text x="40" y="414" font-size="11.5" fill="#7c2d12">结论不是「别停損」，而是：停損是为了买左尾保险，代价是期望收益——先把账算清楚再决定买不买。</text>
+  <text x="40" y="434" font-size="10.5" fill="#92400e">【推论】本手册第 20 节的模型把这笔账量化：停損 10% 在 μ=10%/σ=18% 下，一年少赚 2.62pp，换来第 5 百分位改善 7.2pp。</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>想要什么</th>
+<th>手里有什么</th>
+<th>对「放弃」的态度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>决策者本人</strong></td>
+<td>别后悔、别显得蠢、别浪费</td>
+<td>信息、时间、身份、沉默成本</td>
+<td>最不客观的一方</td>
+</tr>
+<tr>
+<td class="k"><strong>退出教练</strong>（quitting coach）</td>
+<td>帮你说出你不愿承认的话</td>
+<td>外部视角、没有沉没成本</td>
+<td>唯一有资格劝你退的人</td>
+</tr>
+<tr>
+<td class="k"><strong>观众 / 同侪</strong></td>
+<td>通过见证你的承诺确认你的可靠</td>
+<td>社会评价权</td>
+<td>让退出变贵的第三方</td>
+</tr>
+<tr>
+<td class="k"><strong>沉没成本的守护者</strong>（自己的过去）</td>
+<td>证明过去的选择是对的</td>
+<td>已经花掉的一切</td>
+<td>制造「不甘心」的源头</td>
+</tr>
+<tr>
+<td class="k"><strong>替代路径</strong></td>
+<td>抢走你的资源</td>
+<td>更高的期望值</td>
+<td>沉默的竞争者，不发声</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>关键结构：这五方里，只有「退出教练」和「替代路径」是站在退出这一边的，而它们都不会主动开口。</strong> 替代路径永远沉默；退出教练需要你主动授权（而且书里最实用的一条建议是：<strong>提前授权</strong>——在你还没被套住的时候，就告诉那个人「将来你看到这些信号，可以直接骂我」）。</p>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>定义</th>
+<th>为什么关键</th>
+<th>可观测入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">沉没成本 S</td>
+<td>已经花掉且不可回收的资源</td>
+<td>它<strong>不应该</strong>进入决策，但它就是会进入</td>
+<td>你能说出的「已经投入了多少」</td>
+</tr>
+<tr>
+<td class="k">机会成本 O</td>
+<td>同样资源放在次优路径上的期望值</td>
+<td>书里重新定义了「浪费」：真正的浪费是 O，不是 S</td>
+<td>你的次优路径是什么</td>
+</tr>
+<tr>
+<td class="k">终止条件</td>
+<td>状态 + 日期组成的 if-then</td>
+<td>把决策从情绪时刻挪到冷静时刻</td>
+<td>有没有写下来</td>
+</tr>
+<tr>
+<td class="k">身份耦合度</td>
+<td>「这件事」和「我是谁」的重叠比例</td>
+<td>耦合越高，退出越像自我否定</td>
+<td>你会不会说「我是做 X 的」</td>
+</tr>
+<tr>
+<td class="k">公开度</td>
+<td>有多少人知道你在做这件事</td>
+<td>公开度 ↑ → 退出成本 ↑</td>
+<td>知道的人有多少</td>
+</tr>
+<tr>
+<td class="k">停止溢酬</td>
+<td>停損相对买入持有的期望收益差</td>
+<td><strong>决定停損是投资还是消费</strong></td>
+<td>见第 20 节模型</td>
+</tr>
+<tr>
+<td class="k">一阶自相关 φ</td>
+<td>收益序列的动量强度</td>
+<td>φ ≥ 夏普比率，停損才可能加值</td>
+<td>见第 20 节模型</td>
+</tr>
+<tr>
+<td class="k">漂移 μ</td>
+<td>长期正收益趋势</td>
+<td>正漂移越强，停損代价越大</td>
+<td>宽基指数的长期年化</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<hr />
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 400" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="slc1" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 z" fill="#64748b"/>
+    </marker>
+    <marker id="slc2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="680" height="400" fill="#fbfcfe"/>
+  <text x="16" y="26" font-size="13" font-weight="700" fill="#0f1115">因果图 · 实线 = 因果，红色虚线 = 反馈回路</text>
+
+  <rect x="24" y="52" width="132" height="40" rx="7" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="36" y="70" font-size="11" fill="#0f1115">已投入资源 S</text>
+  <text x="36" y="85" font-size="10" fill="#64748b">时间 / 钱 / 声望</text>
+
+  <line x1="156" y1="72" x2="196" y2="72" stroke="#64748b" stroke-width="1.4" marker-end="url(#slc1)"/>
+
+  <rect x="198" y="52" width="132" height="40" rx="7" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="210" y="70" font-size="11" fill="#0f1115">心理账户锁定</text>
+  <text x="210" y="85" font-size="10" fill="#64748b">这笔钱被单独记账</text>
+
+  <line x1="330" y1="72" x2="370" y2="72" stroke="#64748b" stroke-width="1.4" marker-end="url(#slc1)"/>
+
+  <rect x="372" y="52" width="140" height="40" rx="7" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="384" y="70" font-size="11" fill="#7f1d1d">退出 = 确认亏损</text>
+  <text x="384" y="85" font-size="10" fill="#b91c1c">「损失终于落地了」</text>
+
+  <line x1="512" y1="72" x2="556" y2="72" stroke="#64748b" stroke-width="1.4" marker-end="url(#slc1)"/>
+  <rect x="558" y="52" width="98" height="40" rx="7" fill="#fef3c7" stroke="#fcd34d"/>
+  <text x="572" y="70" font-size="11" fill="#78350f">继续投入</text>
+  <text x="572" y="85" font-size="10" fill="#92400e">避免「落地」</text>
+
+  <!-- 第二条链 -->
+  <rect x="24" y="132" width="132" height="40" rx="7" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="36" y="150" font-size="11" fill="#0f1115">先做容易的</text>
+  <text x="36" y="165" font-size="10" fill="#64748b">搭台子</text>
+
+  <line x1="156" y1="152" x2="196" y2="152" stroke="#64748b" stroke-width="1.4" marker-end="url(#slc1)"/>
+
+  <rect x="198" y="132" width="132" height="40" rx="7" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="210" y="150" font-size="11" fill="#0f1115">假进展</text>
+  <text x="210" y="165" font-size="10" fill="#64748b">看起来在前进</text>
+
+  <line x1="330" y1="152" x2="370" y2="152" stroke="#64748b" stroke-width="1.4" marker-end="url(#slc1)"/>
+
+  <rect x="372" y="132" width="140" height="40" rx="7" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="384" y="150" font-size="11" fill="#7f1d1d">团队被动员</text>
+  <text x="384" y="165" font-size="10" fill="#b91c1c">组织惯性形成</text>
+
+  <line x1="512" y1="152" x2="556" y2="152" stroke="#64748b" stroke-width="1.4" marker-end="url(#slc1)"/>
+  <rect x="558" y="152" width="98" height="40" rx="7" fill="#fef3c7" stroke="#fcd34d"/>
+  <text x="572" y="170" font-size="11" fill="#78350f">更想退出</text>
+  <text x="572" y="185" font-size="10" fill="#92400e">但已经走不了</text>
+
+  <!-- 第三条链 -->
+  <rect x="24" y="212" width="132" height="40" rx="7" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="36" y="230" font-size="11" fill="#0f1115">公开承诺</text>
+  <text x="36" y="245" font-size="10" fill="#64748b">告诉了所有人</text>
+
+  <line x1="156" y1="232" x2="196" y2="232" stroke="#64748b" stroke-width="1.4" marker-end="url(#slc1)"/>
+  <rect x="198" y="212" width="132" height="40" rx="7" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="210" y="230" font-size="11" fill="#0f1115">身份融合</text>
+  <text x="210" y="245" font-size="10" fill="#64748b">「我是做 X 的」</text>
+
+  <line x1="330" y1="232" x2="370" y2="232" stroke="#64748b" stroke-width="1.4" marker-end="url(#slc1)"/>
+  <rect x="372" y="212" width="140" height="40" rx="7" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="384" y="230" font-size="11" fill="#7f1d1d">退出 = 自我否定</text>
+  <text x="384" y="245" font-size="10" fill="#b91c1c">不只是认赔，是认错人</text>
+
+  <line x1="512" y1="232" x2="556" y2="232" stroke="#64748b" stroke-width="1.4" marker-end="url(#slc1)"/>
+  <rect x="558" y="212" width="98" height="40" rx="7" fill="#fef3c7" stroke="#fcd34d"/>
+  <text x="572" y="230" font-size="11" fill="#78350f">加码证明</text>
+  <text x="572" y="245" font-size="10" fill="#92400e">把坑挖得更深</text>
+
+  <!-- 反馈回路 -->
+  <path d="M607,92 C660,92 660,200 607,252" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#slc2)"/>
+  <text x="632" y="172" font-size="10" fill="#dc2626" writing-mode="tb">正反馈</text>
+
+  <path d="M24,92 C-14,92 -14,220 24,258" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#slc2)" transform="translate(14,0)"/>
+  <text x="6" y="178" font-size="10" fill="#dc2626">沉没成本累积</text>
+
+  <rect x="24" y="292" width="632" height="94" rx="9" fill="#f0fdf4" stroke="#6ee7b7"/>
+  <text x="40" y="314" font-size="11.5" font-weight="700" fill="#064e3b">打断回路的唯一位置</text>
+  <text x="40" y="336" font-size="11" fill="#065f46">在「已投入资源 → 心理账户锁定」这一步之前介入：把退出条件写下来，让检查动作发生在情绪起来之前。</text>
+  <text x="40" y="356" font-size="11" fill="#065f46">书里的原话是——「最不适合做这个决定的时刻，就是你人已经在里面的时刻。」</text>
+  <text x="40" y="376" font-size="10.5" fill="#047857">【分析】三条链的终点都是「加码」。这就是为什么中断点必须放在最上游，而不是下游的「要不要加码」。</text>
+</svg>
+<h3>三条链，一个终点</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>链</th>
+<th>起点</th>
+<th>终点</th>
+<th>干预点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">沉没成本链</td>
+<td>已投入资源</td>
+<td>继续投入以避免「损失落地」</td>
+<td>把它重述为期望值问题：「如果今天从零开始，我还进不进？」</td>
+</tr>
+<tr>
+<td class="k">假进展链</td>
+<td>先做容易的</td>
+<td>组织惯性形成，想退也退不了</td>
+<td>先训猴子：最先验证最不可能的那一环</td>
+</tr>
+<tr>
+<td class="k">身份链</td>
+<td>公开承诺</td>
+<td>加码证明自己不是错的人</td>
+<td>降低公开度；或把身份重述为「我是做决策的人」而不是「我是做 X 的人」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<p>这一节讲三条书里没有明说、但一旦看穿就会改变你行为的关系。</p>
+<h3>隐藏关系一：止損点越紧，期望值越低——但左尾保护越强</h3>
+<p>这是一个<strong>交换关系</strong>，不是优劣关系。本手册模型（μ=10%、σ=18%、252 个交易日、2 万条路径）给出的整条曲线：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>停損阈值</th>
+<th>一年内触发概率</th>
+<th>期望收益</th>
+<th>相对买入持有</th>
+<th>第 5 百分位</th>
+<th>胜率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">不止損</td>
+<td>—</td>
+<td><strong>10.33%</strong></td>
+<td>基准</td>
+<td>−17.9%</td>
+<td>70.8%</td>
+</tr>
+<tr>
+<td class="k">5%</td>
+<td>61.4%</td>
+<td>5.16%</td>
+<td><strong>−5.17pp</strong></td>
+<td>−6.3%</td>
+<td>37.7%</td>
+</tr>
+<tr>
+<td class="k">10%</td>
+<td>37.7%</td>
+<td>7.72%</td>
+<td><strong>−2.62pp</strong></td>
+<td>−10.7%</td>
+<td>57.3%</td>
+</tr>
+<tr>
+<td class="k">15%</td>
+<td>22.1%</td>
+<td>9.06%</td>
+<td>−1.27pp</td>
+<td>−14.8%</td>
+<td>66.3%</td>
+</tr>
+<tr>
+<td class="k">20%</td>
+<td>12.5%</td>
+<td>9.75%</td>
+<td>−0.59pp</td>
+<td>−18.7%</td>
+<td>69.7%</td>
+</tr>
+<tr>
+<td class="k">30%</td>
+<td>3.3%</td>
+<td>10.21%</td>
+<td>−0.12pp</td>
+<td>−19.2%</td>
+<td>70.7%</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span>读法：<strong>停損的价格，就是你愿意为「最坏情况」付的钱。</strong> 停損 10% 的账单是：一年少赚 2.62pp、胜率从 70.8% 掉到 57.3%，换回第 5 百分位从 −17.9% 改善到 −10.7%（改善 7.2pp）和 95 分位回撤从 32.5% 降到 23.5%。</p>
+<p><strong>注意 20% 那一行</strong>：它的第 5 百分位是 −18.7%，比不止損的 −17.9% 还差。因为停損在极左尾路径上反而少损失一点，但那些路径本来也没触发到 20%——<strong>而少数触发的路径把仓位彻底锁在亏损里，且错过了反弹</strong>。</p>
+<h3>隐藏关系二：停損的好处，主要来自「停損后钱去了哪」</h3>
+<p>这是本手册读文献时最大的一个发现。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>停損 10% 之后资金转投</th>
+<th>期望收益</th>
+<th>相对买入持有的溢酬</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">现金（0%）</td>
+<td>7.72%</td>
+<td><strong>−2.62pp</strong></td>
+</tr>
+<tr>
+<td class="k">短债 / 货基（年化 4%）</td>
+<td>8.77%</td>
+<td><strong>−1.56pp</strong></td>
+</tr>
+<tr>
+<td class="k">长期国债（年化 8%，且在股市下跌时上涨）</td>
+<td>9.84%</td>
+<td><strong>−0.50pp</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-ana">分析</span>Kaminski &amp; Lo (2014) 的实证里，停損规则之所以在 1950–2004 的宽基指数上能跑出 0.5%–1.0%/月 的超额（未计摩擦成本），<strong>机制不在停損，而在停損期间长期国债上涨</strong>。他们明确指出：转向短期国库券（T-bills）得不到同样的好处，因为短债在股市熊市里不会涨。</p>
+<blockquote>
+<p><strong>这一条推翻了「停損提高胜算」的最常见理解。</strong> 如果你的避险腿是现金，那你是在纯粹的用期望值买保险；如果你有一个真正负相关的避险资产，你买的才是「保险 + 一点正收益」。<strong>停損和资产配置在这件事上是一件事。</strong></p>
+</blockquote>
+<h3>隐藏关系三：「准时退出」必然感觉像「退早了」</h3>
+<p>这不是心理问题，是结构问题。</p>
+<p><span class="tag t-inf">推论</span>要在一个决策上退出得<strong>最优</strong>，你必须在<strong>还有不确定性</strong>的时候退出——因为一旦等到 100% 确定失败，你已经多付出了一大截代价。所以一个执行正确的退出，<strong>事后看必然有相当大比例是「明明还有希望」</strong>。</p>
+<p>这带来一个直接的推论：<strong>用「退出后事情变好了」来判断自己是否退错，是一个统计上无效的判据。</strong> 因为退出决策的正确性只能按「做决定时的信息集」评估，不能按结果评估。</p>
+<blockquote>
+<p>这也解释了为什么「结果论」如此顽固：结果是可见的，信息集是不可见的。<strong>唯一能对抗它的，就是把终止条件提前写下来——那时候的信息集也被同时固定住了。</strong></p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<svg viewBox="0 0 680 470" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="680" height="470" fill="#fbfcfe"/>
+  <text x="16" y="26" font-size="13" font-weight="700" fill="#0f1115">抽象 → 机制 → 操作：三层映射</text>
+
+  <!-- 第一层 -->
+  <rect x="24" y="46" width="200" height="112" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="38" y="68" font-size="11.5" font-weight="700" fill="#1e3a8a">① 抽象</text>
+  <text x="38" y="90" font-size="11" fill="#1e40af">「沉没成本不该进入决策」</text>
+  <text x="38" y="110" font-size="11" fill="#1e40af">「准时退出感觉像退早了」</text>
+  <text x="38" y="130" font-size="11" fill="#1e40af">「先验证最难的一环」</text>
+  <text x="38" y="150" font-size="10.5" fill="#3b82f6">这三句你都听过，但都没法直接用</text>
+
+  <line x1="228" y1="102" x2="252" y2="102" stroke="#94a3b8" stroke-width="1.4"/>
+  <path d="M250,96 L258,102 L250,108 z" fill="#94a3b8"/>
+
+  <!-- 第二层 -->
+  <rect x="260" y="46" width="200" height="112" rx="8" fill="#f5f3ff" stroke="#c4b5fd"/>
+  <text x="274" y="68" font-size="11.5" font-weight="700" fill="#5b21b6">② 机制</text>
+  <text x="274" y="90" font-size="11" fill="#6d28d9">损失厌恶把「退出」定价成「亏损落地」</text>
+  <text x="274" y="110" font-size="11" fill="#6d28d9">信息集不可见 → 只能按结果评价</text>
+  <text x="274" y="130" font-size="11" fill="#6d28d9">假进展的产生惯性 → 抬高退出成本</text>
+  <text x="274" y="150" font-size="10.5" fill="#8b5cf6">机制解释「为什么知道道理也没用」</text>
+
+  <line x1="464" y1="102" x2="488" y2="102" stroke="#94a3b8" stroke-width="1.4"/>
+  <path d="M486,96 L494,102 L486,108 z" fill="#94a3b8"/>
+
+  <!-- 第三层 -->
+  <rect x="496" y="46" width="160" height="112" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="510" y="68" font-size="11.5" font-weight="700" fill="#064e3b">③ 操作</text>
+  <text x="510" y="90" font-size="11" fill="#065f46">写下「状态 + 日期」</text>
+  <text x="510" y="110" font-size="11" fill="#065f46">授权一个退出教练</text>
+  <text x="510" y="130" font-size="11" fill="#065f46">先做最不可能的那一环</text>
+  <text x="510" y="150" font-size="10.5" fill="#059669">只有这一层能改变结果</text>
+
+  <!-- 中段：两套判据 -->
+  <rect x="24" y="184" width="632" height="128" rx="9" fill="#ffffff" stroke="#d8dee8"/>
+  <text x="40" y="208" font-size="12" font-weight="700" fill="#0f1115">但「该不该退出」有两套判据，必须分开算</text>
+
+  <rect x="40" y="222" width="296" height="76" rx="7" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="54" y="242" font-size="11.5" font-weight="700" fill="#7f1d1d">判据 A · 心理学：我是不是被绑架了</text>
+  <text x="54" y="262" font-size="10.5" fill="#b91c1c">问法：如果今天从零开始、没有已投入，我还进不进？</text>
+  <text x="54" y="280" font-size="10.5" fill="#b91c1c">信号：说不出「什么条件下我就退」；只谈过去不谈未来</text>
+
+  <rect x="352" y="222" width="304" height="76" rx="7" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="366" y="242" font-size="11.5" font-weight="700" fill="#1e3a8a">判据 B · 数学：这条路的期望值还是正的吗</text>
+  <text x="366" y="262" font-size="10.5" fill="#1d4ed8">问法：继续的期望值 vs 退出的期望值（含机会成本）</text>
+  <text x="366" y="280" font-size="10.5" fill="#1d4ed8">注意：停損作为「动作」本身有成本，见第 20 节</text>
+
+  <!-- 底：执行时序 -->
+  <text x="40" y="342" font-size="12" font-weight="700" fill="#0f1115">执行时序：所有有效的退出机制，都必须发生在投入之前</text>
+
+  <rect x="40" y="356" width="132" height="46" rx="7" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="52" y="376" font-size="11" font-weight="700" fill="#065f46">T₀ 投入前</text>
+  <text x="52" y="392" font-size="10" fill="#047857">写 kill criteria</text>
+
+  <line x1="176" y1="379" x2="200" y2="379" stroke="#94a3b8" stroke-width="1.4"/>
+  <path d="M198,373 L206,379 L198,385 z" fill="#94a3b8"/>
+
+  <rect x="208" y="356" width="132" height="46" rx="7" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="220" y="376" font-size="11" font-weight="700" fill="#065f46">T₁ 中途</text>
+  <text x="220" y="392" font-size="10" fill="#047857">只检查，不重谈</text>
+
+  <line x1="344" y1="379" x2="368" y2="379" stroke="#94a3b8" stroke-width="1.4"/>
+  <path d="M366,373 L374,379 L366,385 z" fill="#94a3b8"/>
+
+  <rect x="376" y="356" width="132" height="46" rx="7" fill="#fffbeb" stroke="#fcd34d"/>
+  <text x="388" y="376" font-size="11" font-weight="700" fill="#78350f">T₂ 触发</text>
+  <text x="388" y="392" font-size="10" fill="#92400e">执行，不复议</text>
+
+  <line x1="512" y1="379" x2="536" y2="379" stroke="#94a3b8" stroke-width="1.4"/>
+  <path d="M534,373 L542,379 L534,385 z" fill="#94a3b8"/>
+
+  <rect x="544" y="356" width="112" height="46" rx="7" fill="#f0fdf4" stroke="#6ee7b7"/>
+  <text x="556" y="376" font-size="11" font-weight="700" fill="#064e3b">T₃ 事后</text>
+  <text x="556" y="392" font-size="10" fill="#047857">只复盘信息集</text>
+
+  <text x="40" y="428" font-size="11" fill="#5b6472">关键在 T₁：「只检查，不重谈」。一旦允许自己在 T₁ 重新谈判终止条件，整机制立刻失效——因为 T₁ 的你正是被套住的那个你。</text>
+  <text x="40" y="450" font-size="11" fill="#5b6472">这就是 kill criteria 唯一的技术含量：它是一份你清醒时跟未来自己签的合同。</text>
+</svg>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 340" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="680" height="340" fill="#fbfcfe"/>
+  <text x="16" y="26" font-size="13" font-weight="700" fill="#0f1115">退出成本的演化 · 为什么越晚越贵</text>
+
+  <line x1="60" y1="272" x2="640" y2="272" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="600" y="292" font-size="10.5" fill="#64748b">时间 →</text>
+
+  <!-- 成本曲线 -->
+  <path d="M60,256 C160,248 250,220 340,178 C430,136 520,96 620,72" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+  <text x="512" y="62" font-size="10.5" font-weight="700" fill="#dc2626">退出成本（心理 + 社会 + 沉没）</text>
+
+  <!-- 信息曲线 -->
+  <path d="M60,262 C180,236 300,196 400,164 C500,132 570,120 620,116" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-dasharray="6,4"/>
+  <text x="470" y="134" font-size="10.5" font-weight="700" fill="#2563eb">可获得的确定性</text>
+
+  <!-- 阴影：最优退出窗口 -->
+  <rect x="228" y="60" width="132" height="212" fill="#fffbeb" opacity="0.85"/>
+  <line x1="228" y1="60" x2="228" y2="272" stroke="#f59e0b" stroke-width="1.6"/>
+  <line x1="360" y1="60" x2="360" y2="272" stroke="#f59e0b" stroke-width="1.6"/>
+  <text x="238" y="80" font-size="11" font-weight="700" fill="#92400e">最优退出窗口</text>
+
+  <text x="70" y="76" font-size="10.5" fill="#64748b">两类曲线交叉处之前，</text>
+  <text x="70" y="92" font-size="10.5" fill="#64748b">「退出」既便宜又有效</text>
+
+  <text x="238" y="252" font-size="10.5" fill="#b45309">窗口右侧：信息更多了，</text>
+  <text x="238" y="268" font-size="10.5" fill="#b45309">但你已经走不了了</text>
+
+  <rect x="24" y="300" width="632" height="30" rx="7" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="38" y="320" font-size="11" fill="#7f1d1d">最贵的三种「等」：等确定性、等回本、等别人先开口。</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>已投入</th>
+<th>退出成本</th>
+<th>你实际会做的事</th>
+<th>该做的事</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T₀ 投入前</td>
+<td>0</td>
+<td>极低</td>
+<td>兴奋，只看上行</td>
+<td><strong>写终止条件</strong>（唯一有效的时刻）</td>
+</tr>
+<tr>
+<td class="k">T₁ 早期受挫</td>
+<td>小</td>
+<td>低</td>
+<td>「再给它一次机会」</td>
+<td>检查是否触发了 T₀ 写下的信号</td>
+</tr>
+<tr>
+<td class="k">T₂ 中期</td>
+<td>中</td>
+<td>中</td>
+<td>开始搭台子，制造假进展</td>
+<td>回到「猴子」：最难那一环验证了吗</td>
+</tr>
+<tr>
+<td class="k">T₃ 后期</td>
+<td>大</td>
+<td>高</td>
+<td>加码、辩护、攻击质疑者</td>
+<td>找退出教练，交出否决权</td>
+</tr>
+<tr>
+<td class="k">T₄ 沉没</td>
+<td>极大</td>
+<td>极高</td>
+<td>只剩下「不能让人看笑话」</td>
+<td>已经太晚——只能等外部强制终止</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-ana">分析</span>回头看这个时间轴，会发现<strong>整个机制的全部杠杆都在 T₀</strong>。这也解释了为什么这本书的方法论部分只讲两件事：<strong>premortem（提前倒推失败信号）</strong>和 <strong>kill criteria（写成状态 + 日期）</strong>。它们都是把决策挪到 T₀ 的技术。</p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>激励方向</th>
+<th>会怎么扭曲信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">项目负责人</td>
+<td>想保住项目</td>
+<td>上报「进度」而非「验证结果」，制造假进展</td>
+</tr>
+<tr>
+<td class="k">创业者（拿了外部钱）</td>
+<td>想避免公开认输</td>
+<td>把「退出」重命名为「转型」，拖延真实终止</td>
+</tr>
+<tr>
+<td class="k">基金经理</td>
+<td>想避免看到已实现亏损</td>
+<td>卖盈守亏，账面好看（这就是处置效应）</td>
+</tr>
+<tr>
+<td class="k">券商 / 交易平台</td>
+<td>想提高换手</td>
+<td>「停損是纪律」「止损保护你」——<strong>换手越多次费越多</strong></td>
+</tr>
+<tr>
+<td class="k">内容创作者</td>
+<td>想获得点击</td>
+<td>把「停損」讲成必胜技巧，回避它的成本</td>
+</tr>
+<tr>
+<td class="k">退出教练</td>
+<td>想说真话</td>
+<td>但需要你提前授权，否则说话即得罪人</td>
+</tr>
+<tr>
+<td class="k">你自己</td>
+<td>想证明过去是对的</td>
+<td>把「我错了」重述成「时候还没到」</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>最值得警惕的一行是券商。</strong> 停損单是券商最喜欢的下单类型之一——它把一次可能长期不动的持仓，变成两笔交易（卖出 + 未来再买入）。这不是阴谋，只是激励的方向如此。</p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 360" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="slf1" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="680" height="360" fill="#fbfcfe"/>
+  <text x="16" y="26" font-size="13" font-weight="700" fill="#0f1115">资源抽水图 · 一条被套住的路径如何抽干其余所有选项</text>
+
+  <!-- 资源池 -->
+  <rect x="24" y="52" width="150" height="76" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="38" y="74" font-size="11.5" font-weight="700" fill="#1e3a8a">你有限的资源池</text>
+  <text x="38" y="94" font-size="10.5" fill="#1d4ed8">时间 · 注意力 · 现金</text>
+  <text x="38" y="112" font-size="10.5" fill="#1d4ed8">情绪带宽 · 信誉</text>
+
+  <line x1="174" y1="90" x2="214" y2="90" stroke="#64748b" stroke-width="1.5" marker-end="url(#slf1)"/>
+
+  <!-- 抽水机 -->
+  <rect x="216" y="52" width="164" height="76" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="230" y="74" font-size="11.5" font-weight="700" fill="#7f1d1d">已投入的那条路</text>
+  <text x="230" y="94" font-size="10.5" fill="#b91c1c">不产生回报，但持续</text>
+  <text x="230" y="112" font-size="10.5" fill="#b91c1c">要求追加投入来「维持」</text>
+
+  <line x1="380" y1="90" x2="420" y2="90" stroke="#64748b" stroke-width="1.5" marker-end="url(#slf1)"/>
+
+  <!-- 被抽干的 -->
+  <rect x="422" y="52" width="234" height="76" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="5,4"/>
+  <text x="436" y="74" font-size="11.5" font-weight="700" fill="#475569">被饿死的替代路径</text>
+  <text x="436" y="94" font-size="10.5" fill="#64748b">每一个都是「没时间做」的那个</text>
+  <text x="436" y="112" font-size="10.5" fill="#64748b">它们永远不会来敲你的门</text>
+
+  <!-- 四条抽水管 -->
+  <g stroke="#dc2626" stroke-width="1.6" fill="none">
+    <path d="M120,128 L120,150"/>
+    <path d="M120,150 L280,150 L280,178"/>
+    <path d="M180,128 L180,166 L460,166 L460,178"/>
+    <path d="M240,128 L240,192 L560,192 L560,178"/>
+    <path d="M300,128 L300,208 L620,208 L620,178"/>
+    <path d="M60,128 L60,232 L340,232 L340,178"/>
+  </g>
+
+  <!-- 机会成本池 -->
+  <rect x="24" y="178" width="632" height="52" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+  <text x="40" y="200" font-size="11.5" font-weight="700" fill="#78350f">机会成本池 · 这才是「浪费」的真实定义</text>
+  <text x="40" y="219" font-size="10.5" fill="#92400e">杜克的原话：再花一分钟、一块钱、一点力气在不再值得的事情上，那才是真正的浪费。</text>
+
+  <!-- 底部结论 -->
+  <rect x="24" y="248" width="632" height="88" rx="9" fill="#f0fdf4" stroke="#6ee7b7"/>
+  <text x="40" y="270" font-size="11.5" font-weight="700" fill="#064e3b">抽水机最狠的地方在于它不吵不闹</text>
+  <text x="40" y="290" font-size="11" fill="#065f46">它不会给你一个明确的「失败了」的信号——它只是一直让替代路径没时间。</text>
+  <text x="40" y="310" font-size="11" fill="#065f46">所以「什么时候退出」这个问题，真正的形式是：「我愿意让哪些替代路径继续饿着？」</text>
+  <text x="40" y="328" font-size="10.5" fill="#047857">【推论】这也是为什么第 22 节的 30 分钟最小实践从「列出你的次优路径」开始，而不是从「评估当前项目」开始。</text>
+</svg>
+<hr />
+<hr />
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序。前三个是必须做的，后七个是加分项。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>一句话操作</th>
+<th>为什么排这个位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>写下终止条件</strong></td>
+<td>对每一件在投入的事，写「状态 + 日期」两条</td>
+<td>唯一同时覆盖心理层和数学层的动作；成本 10 分钟，收益终身</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>换问法</strong></td>
+<td>不问「我该不该放弃」，问「今天从零开始我还进不进」</td>
+<td>一句话就把沉没成本从等式里删掉</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>先训猴子</strong></td>
+<td>项目启动时先验证最不可能的那一环</td>
+<td>从源头掐断假进展链；越早越便宜</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>算清停損的价码</strong></td>
+<td>用第 20 节模型算：停損换来的左尾改善值多少期望收益</td>
+<td>把「停損是纪律」这种口号换成一条可比较的账</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>授权退出教练</strong></td>
+<td>提前指定一个人，给他「看到信号就直接说不」的权限</td>
+<td>唯一能破解身份融合的外部力量</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>降低公开度</strong></td>
+<td>需要留退路的事，别提前公开承诺</td>
+<td>直接降低 L6 的退出价格</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>premortem</strong></td>
+<td>先假设「一年后彻底失败了」，再回推原因 → 变成信号</td>
+<td>把 kill criteria 从空想变成可执行的检查表</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>监控 PGR/PLR</strong></td>
+<td>记录自己「卖盈」和「割亏」的次数比</td>
+<td>处置效应是「不好就撑着」的可观测指标</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>算清回本账</strong></td>
+<td>亏 30% 需要涨 42.9%，期望要 3.57 年</td>
+<td>「撑着等回本」是最贵的选择，但这个数不算出来感觉不到</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>把「不决定」也记成一次决定</strong></td>
+<td>每次说「再想想」，改说「我选择维持现状」</td>
+<td>让现状偏误现形</td>
+</tr>
+</tbody>
+</table></div>
+<h3>第 1 条的展开：终止条件到底怎么写</h3>
+<p>书里给的标准形式是 <strong>状态（state）+ 日期（date）</strong>。Google X 的项目标准是：<strong>必须有潜力做到 10 倍改变世界（状态），必须能在 5–10 年内商业化（状态），否则关掉（日期）。</strong></p>
+<p>对照着写，你自己的版本长这样：</p>
+<pre><code>终止条件（三档，全部写成 if-then）
+  if 12 个月内付费用户 &lt; 1000 人     → 关停
+  if 第 6 个月时复购率 &lt; 15%         → 转入维护模式，不再投入
+  if 连续 3 个月我无法说出新学到的东西 → 立即退出（这是「信息增益」信号）
+</code></pre>
+<p><strong>注意第三档。</strong> 它检查的不是「业务指标」，而是「你还在不在学习」。这是书里一个很微妙但很实用的信号——<strong>当你已经做不出新东西的时候，你其实已经不在推进这件事了，你只是在维持它。</strong></p>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<p>以下 12 条，每条都配一个「自检问题」。前 4 条是这本书的核心，后 8 条是相邻的坑。</p>
+<details><summary>陷阱 01 · 把「停損」当成「提高胜算」的技巧</summary><div class="dbody"><p><strong>表现</strong>：以为设了停損点，整体胜率或期望收益就提高了。
+<strong>真相</strong>：停損是一个<strong>交换</strong>——用期望收益买左尾保护。在 μ=10%、σ=18% 的假设下，停損 10% 的价码是年化少赚 2.62pp、胜率从 70.8% 掉到 57.3%，换来第 5 百分位改善 7.2pp。
+<strong>自检</strong>：你能说出你的停損换来了什么、付出了什么吗？如果只能说出「守纪律」，那还没算清。</p></div></details>
+<details><summary>陷阱 02 · 用「已投入多少」来决定「接下来投多少」</summary><div class="dbody"><p><strong>表现</strong>：「都投了三年了，现在退出前三年不就白投了。」
+<strong>真相</strong>：前三年已经不可回收，它<strong>不该</strong>出现在决策等式里。但它就是会进来——这就是沉没成本谬误。
+<strong>自检</strong>：把已投入的时长、金额全部遮住，只看「从现在到未来的期望值」，你的决定会变吗？</p></div></details>
+<details><summary>陷阱 03 · 搭台子代替训猴子</summary><div class="dbody"><p><strong>表现</strong>：项目卡在最难的一环上，于是转去做那些「肯定能做出来」的周边工作：改文档、搭流程、优化工具、做漂亮的看板。
+<strong>真相</strong>：康奈尔/Google X 的框架（Astro Teller）说得很直白——你有两个任务（教猴子耍火把 / 建台子），必须<strong>先教猴子</strong>。因为台子你建得再多，也不能告诉你猴子能不能学会。而<strong>台子本身会产生惯性</strong>：团队被动员起来了，投入变多了，退出更贵了。
+<strong>自检</strong>：你这周做的事里，哪一件是「如果它失败，你会立刻放弃整个项目」的？如果没有，你就是在搭台子。</p></div></details>
+<details><summary>陷阱 04 · 把「退出」翻译成「自我否定」</summary><div class="dbody"><p><strong>表现</strong>：「我是做量化的」「我是创业者」。一退出，就不知道自己是誰了。
+<strong>真相</strong>：杜克用奥运选手 Lindsey Vonn 的例子——她在最终退役前承受了大量不可逆的伤病，而退役后依然被批评。<strong>坚持也不保证不被批评，只是批评来得晚一些。</strong>
+<strong>自检</strong>：你会用这件事来介绍自己吗？如果是，你的退出成本里有很大一块是身份，不是钱。</p></div></details>
+<details><summary>陷阱 05 · 认为「准时不退出」是自己的问题</summary><div class="dbody"><p><strong>表现</strong>：退出后事情变好了，于是认定自己退错了。
+<strong>真相</strong>：准时退出<strong>必然</strong>感觉像退早了——因为你必须在还有不确定性的时候走。这是结构，不是失误。
+<strong>自检</strong>：你评价那次退出时，用的是「当时的信息集」还是「后来的结果」？</p></div></details>
+<details><summary>陷阱 06 · 把「不决定」当成「还没决定」</summary><div class="dbody"><p><strong>表现</strong>：「我还没想好。」「让我再观察观察。」
+<strong>真相</strong>：<strong>不决定本身就是一次决定</strong>——你选择了维持现状。书里的建议是把话说全：「我现在认为维持现状还是最好的选择。」
+<strong>自检</strong>：你能不能把最近一次「再想想」重述成「我选择继续持有」？</p></div></details>
+<details><summary>陷阱 07 · 用「别人都没退」来校准自己</summary><div class="dbody"><p><strong>表现</strong>：行业里大家都在扛，所以我也扛。
+<strong>真相</strong>：这是一个巨大的幸存者偏差。退出的那些人不在你的视野里——他们换了赛道、改了行、关了公司，不再出现在这个圈子的样本里。
+<strong>自检</strong>：你的参照样本是「还在场的人」还是「当初同一起点的人」？</p></div></details>
+<details><summary>陷阱 08 · 把沉没成本的问题当成人格问题</summary><div class="dbody"><p><strong>表现</strong>：「我是不是不够坚韧？」
+<strong>真相</strong>：这不是品格问题，是一个可以被写成规则的技术问题。全球 10 万美元级别的散户数据都显示处置效应，<strong>专业投资者也一样</strong>。
+<strong>自检</strong>：你是在找方法，还是在找理由评价自己？</p></div></details>
+<details><summary>陷阱 09 · 停止条件的「中途重新谈判」</summary><div class="dbody"><p><strong>表现</strong>：到了规定日期，发现差一点就达标，于是把日期往后推三个月。
+<strong>真相</strong>：<strong>这一推，整套机制就废了。</strong> 因为执行复议的正是被套住的那个你。
+<strong>自检</strong>：你上一次重谈终止条件时，用的是新信息，还是新的不甘心？</p></div></details>
+<details><summary>陷阱 10 · 用停損替代仓位管理</summary><div class="dbody"><p><strong>表现</strong>：重仓单一标的，靠停損控制风险。
+<strong>真相</strong>：停損把「市场风险」换成了<strong>执行风险 + 择时风险 + 再投资风险</strong>。SEC 的投资者公告和 FINRA 都明确提示：停損触发后变成市价单，快速行情下成交价可能远离停損价。2010 年 5 月 6 日的闪电崩盘中，标普 500 在约 36 分钟内盘中跌约 9% 又收回——挂停損单的投资者正好卖在最低点。
+<strong>自检</strong>：如果停損单可能在最差的价格成交，那它给你的还是「保险」吗？</p></div></details>
+<details><summary>陷阱 11 · 只看胜率，不看基准</summary><div class="dbody"><p><strong>表现</strong>：「我的策略胜率 65%，很能打。」
+<strong>真相</strong>：股票有正漂移，随机做多的胜率不是 50%。μ=10%、σ=18% 时，持有 40 个交易日的基准胜率就有 58.76%，252 个交易日高达 71.07%。<strong>65% 的 40 日胜率，真实超额只有 6.2pp。</strong>
+<strong>自检</strong>：你的胜率减掉基准了吗？</p></div></details>
+<details><summary>陷阱 12 · 把「保持选择开放」当成免费</summary><div class="dbody"><p><strong>表现</strong>：一直不投入、不承诺，保持随时可以换的自由。
+<strong>真相</strong>：保持选择权本身有成本。亚马逊的读者评论里有一条很尖锐的批评：这本书几乎没讨论<strong>「保持多线开放、反复切换」的代价</strong>。切换本身消耗注意力，而且什么都浅尝辄止永远到不了深水区。
+<strong>自检</strong>：你的「灵活性」是在积累选项，还是在逃避承诺？</p></div></details>
+<hr />
+<hr />
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<p>把这本书的三条核心主张，各自翻译成一个你今天可以验证的动作。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象主张</th>
+<th>现实翻译</th>
+<th>今天可做的验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">沉没成本不该进入决策</td>
+<td>你手上每一个「舍不得放手」的东西，都是一道可复原的题</td>
+<td>拿一张纸，把「已投入」一栏涂黑，只写下「未来的期望值」和「替代方案」，看答案是否变化</td>
+</tr>
+<tr>
+<td class="k">准时退出感觉像退早了</td>
+<td>你过去每一次「退对了」的经历，当时都觉得早</td>
+<td>回忆两次退出，写下<strong>当时</strong>手上有哪些信息——不许用后来的结果</td>
+</tr>
+<tr>
+<td class="k">先训猴子</td>
+<td>你的项目里有一个「如果它不成立，一切都白搭」的假设</td>
+<td>把它找出来，问：我用什么最快、最便宜的方式验证它</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<h3>三个动作，按顺序做</h3>
+<p><strong>动作一：清点（15 分钟）</strong>
+列出你现在「正在投入」的所有东西——职位、项目、仓位、关系、技能学习。对每一项写两个数：
+- 我已经投入了（时间 / 钱）
+- 如果今天从零开始，我还会不会开始</p>
+<p><strong>做这个动作时有个硬规矩：写完「已投入」这一栏，就用笔划掉它，之后再不许看。</strong></p>
+<p><strong>动作二：写条件（每项 5 分钟）</strong>
+对每一个你还想继续的项，写一组 kill criteria。格式必须是 <code>if &lt;可观测的状态&gt; 在 &lt;日期&gt; 之前没有达到 → &lt;具体动作&gt;</code>。</p>
+<p>不合格的写法：「如果它不行了就退出」——<strong>「不行」不可观测，「就退出」不是日期</strong>。</p>
+<p><strong>动作三：授权（10 分钟）</strong>
+找 1–2 个人，告诉他们你的终止条件，并明确授权：「如果我到时候不认，你直接说。」</p>
+<blockquote>
+<p><span class="tag t-ana">分析</span>书里管这个人叫 <strong>quitting coach（退出教练）</strong>。它的作用机制很朴素：你自己受禀赋效应影响（一旦拥有就更难放弃），需要一个没有沉没成本的外部视角。而<strong>提前授权</strong>是关键，因为事情真到了那一步，临时找人没人敢开口。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>技能树 · 五级</summary><div class="dbody"><p><strong>L0 · 认知（知道自己在被什么推着走）</strong>
+- [ ] 能说出沉没成本谬误、损失厌恶、处置效应三者的区别
+- [ ] 能举出自己身上三个真实的沉没成本案例
+- [ ] 知道「准时退出必然感觉像退早了」</p>
+<p><strong>L1 · 诊断（能给自己开单子）</strong>
+- [ ] 能对任一在投项目写出合格的「状态 + 日期」终止条件
+- [ ] 会做 premortem：先假设已失败，再倒推原因
+- [ ] 能识别「搭台子」行为（做了什么但不验证核心假设）
+- [ ] 会算回本账（亏 x% 需要涨 x/(1−x)）</p>
+<p><strong>L2 · 数学（能把账算清）</strong>
+- [ ] 会用对照基准检验胜率：p_base = Φ(μT/252 ÷ (σ√(T/252)))
+- [ ] 知道停損溢酬取决于漂移、动量、避险腿收益三者
+- [ ] 理解 37% 最优停止法则的适用边界（不可回溯才成立）
+- [ ] 能算出「要证明我的胜率不是运气，需要多少次交易」</p>
+<p><strong>L3 · 执行（能在情绪起来的时候照做）</strong>
+- [ ] 已有一个签字生效的终止条件清单
+- [ ] 已指定至少一个退出教练，并完成授权
+- [ ] 到了触发点能直接执行，不复议
+- [ ] 能把「再想想」重述成「我选择维持现状」</p>
+<p><strong>L4 · 迁移（把退出能力变成通用资产）</strong>
+- [ ] 把「弃牌」的能力迁移到职业、关系、时间分配
+- [ ] 会主动设计可逆的小步试探，而不是一次性大投入
+- [ ] 能在公开度与灵活性之间做有意识的取舍
+- [ ] 能教别人这一套，并且教的是「怎么算」而不是「要勇敢」</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<h3>世界设定</h3>
+<p>你是一名<strong>扑克选手</strong>，手上有有限的筹码（时间、注意力、现金、声誉）。牌桌上同时开着 20 局，每局你都能看到自己已投入多少，但<strong>看不到未来的发牌</strong>。</p>
+<p>每一局都会持续向你索取筹码——不给就停摆，给了也不保证出结果。你的任务不是赢下每一局，而是<strong>在该弃牌的那一局弃牌</strong>，把筹码留给更好的局。</p>
+<h3>三个核心资源</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>资源</th>
+<th>初始值</th>
+<th>被谁消耗</th>
+<th>恢复方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">筹码（时间 / 钱）</td>
+<td>有限且递减</td>
+<td>每一局都在抽</td>
+<td>退出低期望值的局</td>
+</tr>
+<tr>
+<td class="k">注意力带宽</td>
+<td>有限</td>
+<td>维持多线开放</td>
+<td>关掉不需要维护的局</td>
+</tr>
+<tr>
+<td class="k">信誉</td>
+<td>有限</td>
+<td>公开承诺后的退出</td>
+<td>退出时说实话</td>
+</tr>
+</tbody>
+</table></div>
+<h3>核心机制</h3>
+<ul>
+<li><strong>弃牌自由</strong>：任何时候都可以弃牌，<strong>但已投入的筹码不退还</strong>。</li>
+<li><strong>身份锁</strong>：每公开宣布一次「我在做 X」，该局弃牌成本 +1 级。</li>
+<li><strong>假进展陷阱</strong>：你可以选择「搭台子」——它给你 +进展分，但<strong>不给任何关于胜负的信息</strong>。</li>
+<li><strong>退出教练</strong>：可以在开局前指定一个人，他会在你触发终止条件时扣除你一次「重新谈判」的权利。</li>
+</ul>
+<h3>计分</h3>
+<p><strong>只有一个分数：终局时你手上还剩多少筹码 × 这些筹码是否放在期望值最高的那一局上。</strong></p>
+<p>不统计「你赢了几局」——因为赢的局数是可以靠加大投入硬堆出来的，而筹码总量不行。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>难度</th>
+<th>产出</th>
+<th>验收标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>探查</strong> 列出你全部在投项</td>
+<td>★</td>
+<td>一张清单</td>
+<td>≥ 8 项，每项都有「已投入」数字</td>
+</tr>
+<tr>
+<td class="k"><strong>诊断</strong> 对每项算「从零重来还进不进」</td>
+<td>★★</td>
+<td>每项一个 是/否</td>
+<td>能说出答「否」的最强理由</td>
+</tr>
+<tr>
+<td class="k"><strong>立约</strong> 写 3 组终止条件</td>
+<td>★★</td>
+<td>3 个 if-then</td>
+<td>每个都有可观测状态和明确日期</td>
+</tr>
+<tr>
+<td class="k"><strong>验猴</strong> 找出你项目里的「猴子」，设计最便宜的验证</td>
+<td>★★★</td>
+<td>一个验证方案</td>
+<td>能在 7 天内拿到是/否</td>
+</tr>
+<tr>
+<td class="k"><strong>清账</strong> 算一次停損的价码</td>
+<td>★★★</td>
+<td>一张对照表</td>
+<td>用第 20 节模型跑出你自己的参数</td>
+</tr>
+<tr>
+<td class="k"><strong>授权</strong> 找到并正式授权一个退出教练</td>
+<td>★★</td>
+<td>一段对话</td>
+<td>对方明确说了「我会说」</td>
+</tr>
+<tr>
+<td class="k"><strong>执行</strong> 触发并执行一次终止条件</td>
+<td>★★★★</td>
+<td>一次真实退出</td>
+<td>事后 30 天内不重谈</td>
+</tr>
+<tr>
+<td class="k"><strong>复盘</strong> 按信息集而非结果复盘</td>
+<td>★★★</td>
+<td>一页复盘</td>
+<td>明确写出「当时我不知道什么」</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<hr />
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>这一节是整份手册最硬的地方。杜克的书说「停損提高胜算」，但这句话到底成不成立、在什么条件下成立、代价是多少，<strong>书里没算</strong>。下面四个模型把这笔账算出来。</p>
+<div class="note amber"><b>先看这一句再看滑块</b><p><strong>模型的立场是「隔离停損这个动作本身」。</strong> 它假设收益服从带正漂移的随机过程，停損触发后资金转投避险资产（收益可调），不再回场。这是刻意的简化——<strong>正因为简化，它算出来的就是停損的纯成本/纯收益，不掺杂选股能力和市场判断。</strong></p></div>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 1 · 停損价码计算器：停損到底买到了什么，付了多少钱</h4></div>
+  <p class="tool-sub">μ=10%、σ=18%、252 个交易日、2 万条蒙特卡洛路径，固定随机种子。停損触发后资金转投避险资产（收益率可调）。<b>核心结论：在正漂移无动量的收益过程下，停損的期望收益永远是负数——它买到的是左尾保险，不是更高的胜算。</b></p>
+  <canvas id="slChart" height="196" style="height:196px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="sl_L">停損阈值</label>
+    <input type="range" id="sl_L" min="0" max="40" step="1" value="10">
+    <output id="sl_LO">10%</output>
+  </div>
+  <div class="ctrl">
+    <label for="sl_rb">停損后避险腿年化</label>
+    <input type="range" id="sl_rb" min="0" max="10" step="0.5" value="0">
+    <output id="sl_rbO">0%（现金）</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">期望收益 · 买入持有</div><div class="val" id="sl_bh">+10.3%</div><div class="hint">什么都不做</div></div>
+    <div class="ro"><div class="lbl">期望收益 · 停損</div><div class="val" id="sl_sl">+7.7%</div><div class="hint">触发后转避险资产</div></div>
+    <div class="ro"><div class="lbl">停止溢酬</div><div class="val" id="sl_prem">−2.62 pp</div><div class="hint">停損 − 买入持有</div></div>
+    <div class="ro"><div class="lbl">一年内触发概率</div><div class="val" id="sl_hit">37.7%</div><div class="hint">多久被扫一次</div></div>
+    <div class="ro"><div class="lbl">第 5 百分位（最差 5%）</div><div class="val" id="sl_p5">−17.9% → −10.7%</div><div class="hint">这才是停損买到的东西</div></div>
+    <div class="ro"><div class="lbl">胜率</div><div class="val" id="sl_win">70.8% → 57.3%</div><div class="hint">停損会显著降低胜率</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="sl_vd" style="font-size:15px">买左尾保险，保费 2.62pp</div>
+    </div>
+  </div>
+</div>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 2 · 回本账：为什么「撑着等回本」是最贵的选择</h4></div>
+  <p class="tool-sub">亏掉 x% 之后，需要涨 x/(1−x) 才能回到成本价——这个非线性关系大多数人只在亏到 50% 时才第一次感受到。右栏是「期望首次穿越时间」：在算术布朗运动带正漂移时，E[T] = −ln(1−x)/μ 是<b>精确解</b>（μ=10%/年，即 0.0003968/日）。</p>
+  <canvas id="rbChart" height="190" style="height:190px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="rb_x">当前亏损幅度</label>
+    <input type="range" id="rb_x" min="5" max="80" step="1" value="30">
+    <output id="rb_xO">30%</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">需要涨幅才能回本</div><div class="val" id="rb_need">+42.9%</div><div class="hint">x/(1−x)</div></div>
+    <div class="ro"><div class="lbl">等价对数收益</div><div class="val" id="rb_ln">0.3567</div><div class="hint">−ln(1−x)</div></div>
+    <div class="ro"><div class="lbl">期望回本时间</div><div class="val" id="rb_y">3.57 年</div><div class="hint">≈ 899 个交易日</div></div>
+    <div class="ro"><div class="lbl">同期「不止損」的期望收益</div><div class="val" id="rb_ref">+42.9%</div><div class="hint">从成本价重算的年化 10%</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="rb_vd" style="font-size:15px">回本要 3.6 年——这期间的机会成本才是真浪费</div>
+    </div>
+  </div>
+</div>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 3 · 处置效应判定器：你有没有在「卖盈守亏」</h4></div>
+  <p class="tool-sub">Odean (1998) 用同一条公式测了 1 万个美股账户：<b>PGR</b>（实现的盈利 ÷ 所有可实现的盈利）和 <b>PLR</b>（实现的亏损 ÷ 所有可实现的亏损）。他测出的基准值是 PGR = 14.8%、PLR = 9.8%，比值 1.51。把自己的交易记录套进这个框架，就能给自己打分。</p>
+  <div class="ctrl">
+    <label for="de_pgr">PGR（浮盈被卖出的比例）</label>
+    <input type="range" id="de_pgr" min="0" max="40" step="0.1" value="14.8">
+    <output id="de_pgrO">14.8%</output>
+  </div>
+  <div class="ctrl">
+    <label for="de_plr">PLR（浮亏被砍掉的比例）</label>
+    <input type="range" id="de_plr" min="0" max="40" step="0.1" value="9.8">
+    <output id="de_plrO">9.8%</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">PGR ÷ PLR</div><div class="val" id="de_r">1.51</div><div class="hint">Odean 实测值</div></div>
+    <div class="ro"><div class="lbl">相对 Odean 基准</div><div class="val" id="de_cmp">持平</div><div class="hint">1.51 是市场平均水位</div></div>
+    <div class="ro"><div class="lbl">卖出行为中有多少是浮盈</div><div class="val" id="de_mix">60.2%</div><div class="hint">PGR/(PGR+PLR)</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="de_vd" style="font-size:15px">典型处置效应——你在砍盈利、留亏损</div>
+    </div>
+  </div>
+</div>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 4 · 37% 最优停止：什么时候必须收手</h4></div>
+  <p class="tool-sub">「该继续找还是该定下来」的最优解：先无脑拒绝前 <b>n/e</b> 个候选只做基准，之后遇到比基准更好的立刻拿下。成功率恒为 1/e ≈ 36.79%，与 n 无关——<b>这正是它最反直觉的地方：候选再多，你选中最优的概率也不会提高。</b>前提是「拒绝后不可回溯」。</p>
+  <canvas id="osChart" height="190" style="height:190px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="os_n">候选总数 n</label>
+    <input type="range" id="os_n" min="5" max="500" step="1" value="100">
+    <output id="os_nO">100 个</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">最优观察期</div><div class="val" id="os_r">前 37 个</div><div class="hint">即 r−1</div></div>
+    <div class="ro"><div class="lbl">观察期占比</div><div class="val" id="os_ratio">37.0%</div><div class="hint">≈ 1/e</div></div>
+    <div class="ro"><div class="lbl">选中最优的概率</div><div class="val" id="os_p">37.10%</div><div class="hint">基本不随 n 变</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判断</div>
+      <div class="val" id="os_vd" style="font-size:15px">前 37 个只观察，第 38 个起第一个超越基准就收</div>
+    </div>
+  </div>
+</div>
+<h3>反事实 A · 如果停損后钱没有去处</h3>
+<p>把工具 1 的避险腿拉到 0%，你会看到整条曲线都在零以下。这回答了书里没有回答的问题：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>停損 10% 之后的去向</th>
+<th>期望收益</th>
+<th>溢酬</th>
+<th>停損还是「提高胜算」吗</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">现金</td>
+<td>7.72%</td>
+<td>−2.62pp</td>
+<td><strong>不是</strong>，是纯买保险</td>
+</tr>
+<tr>
+<td class="k">短债 / 货基（年化 4%）</td>
+<td>8.77%</td>
+<td>−1.56pp</td>
+<td>部分补偿，仍是净支出</td>
+</tr>
+<tr>
+<td class="k">长期国债（年化 8%，负相关）</td>
+<td>9.84%</td>
+<td>−0.50pp</td>
+<td>接近中性——<strong>这才是文献里停損「有效」的真实来源</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>反事实 B · 如果市场真有动量</h3>
+<p>Kaminski &amp; Lo (2014) 的结论是：<strong>停損只在两类收益过程下可能加值——存在动量，或存在状态切换（regime switching）。</strong> 他们在 1950–2004 的宽基指数月度数据上测出，停損在「已触发」期间相对买入持有每月有 0.5%–1.0% 的优势（未计摩擦成本）。</p>
+<p><strong>但摩擦成本会吃掉它。</strong> 同一批研究在个股上的结论是：原始收益「非常差」（very poor），因为交易成本过高。</p>
+<blockquote>
+<p><span class="tag t-ana">分析</span>有一条被反复引用的判据：停損要产生正的停止溢酬，收益的<strong>一阶自相关系数 φ 必须不低于该策略的夏普比率</strong>。按 μ=10%、σ=18% 算，夏普比率是 <strong>0.556</strong>。而宽基指数日收益的一阶自相关通常在 0.05 以内，甚至微负——<strong>差了整整一个数量级</strong>。</p>
+</blockquote>
+<h3>反事实 C · 如果那笔钱一开始就没投</h3>
+<p>这是整本书最锋利的反事实，也是杜克反复推荐的问法：</p>
+<blockquote>
+<p><strong>「如果今天从零开始、没有任何已投入，我还会不会开始这件事？」</strong></p>
+</blockquote>
+<p>注意这个问法的技术含量：它不是在问你「后不后悔」，而是在<strong>把沉没成本从等式的输入项里物理删除</strong>。如果删掉之后答案翻转了，那说明你的决策此前一直被一个不该参与计算的变量控制着。</p>
+<h3>反事实 D · 如果公开承诺没有发生</h3>
+<p>把身份锁拆掉会怎样？书里给的间接证据是 <strong>Philips 对 Sears</strong>：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>Sears</th>
+<th>Philips</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">身份</td>
+<td>「我们是零售商」</td>
+<td>一度也是（灯泡、收音机、剃须刀、电视……）</td>
+</tr>
+<tr>
+<td class="k">面对变化</td>
+<td>死守零售、保留金融业务</td>
+<td>2014 年宣布卖出照明，2019 年卖掉剩余 75%，2020 年后照明业务清零</td>
+</tr>
+<tr>
+<td class="k">结果</td>
+<td>破产重组</td>
+<td>转型为健康科技公司</td>
+</tr>
+</tbody>
+</table></div>
+<p>Philips 能转型，一部分原因是它<strong>没有把身份钉死在具体产品上</strong>——它是「一家科技公司」，不是「一家灯泡公司」。<strong>身份写得越具体，退出成本越高。</strong></p>
+<hr />
+<hr />
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力特征</th>
+<th>典型表现</th>
+<th>升级标志</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1 知</strong></td>
+<td>知道有沉没成本这回事</td>
+<td>能讲出概念，但遇事仍然找理由</td>
+<td>能对自己复盘出一次真实案例</td>
+</tr>
+<tr>
+<td class="k"><strong>L2 算</strong></td>
+<td>能把账算清</td>
+<td>会算基准胜率、回本账、停損溢酬</td>
+<td>在决策前先算，而不是事后解释</td>
+</tr>
+<tr>
+<td class="k"><strong>L3 约</strong></td>
+<td>会跟自己立约</td>
+<td>有书面的终止条件，有授权的教练</td>
+<td>到点能执行，不重谈</td>
+</tr>
+<tr>
+<td class="k"><strong>L4 迁</strong></td>
+<td>退出能力成为通用资产</td>
+<td>把「弃牌」用在职业、关系、时间上</td>
+<td>别人开始拿你当「退出教练」</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>每级最典型的卡点：</strong></p>
+<ul>
+<li>L1→L2：以为「知道」就够了。<strong>知道沉没成本谬误的人，照样被它绑住</strong>——杜克在书里明确说，很多自称懂沉没成本的人仍然只会问「我投入这么多了怎么办」。</li>
+<li>L2→L3：<strong>能算但不会执行</strong>。原因几乎总是缺了那两个动作——没写下来、没授权给人。</li>
+<li>L3→L4：只把它当投资技巧，没意识到职业、关系、时间分配是同一个问题。</li>
+</ul>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>目标</strong>：30 分钟，零成本，产出可验证。</p>
+<h3>第 1 步（8 分钟）· 列出你的次优路径</h3>
+<p>在一张纸上写：</p>
+<pre><code>我正在投入的（≥6 项）
+  1. ______________  已投入：______
+  2. ______________  已投入：______
+  ...
+
+我因为「没时间」而没做的事（≥3 项）
+  A. ______________  它值多少：______
+  B. ______________
+  C. ______________
+</code></pre>
+<p><strong>从第二栏开始写，不要从第一栏开始。</strong> 理由在第 12 节：抽水机不会来敲你的门，替代路径永远沉默。</p>
+<h3>第 2 步（7 分钟）· 洗一遍沉没成本</h3>
+<p>对第一栏每一项，问：<strong>「如果今天从零开始，我还会开始吗？」</strong></p>
+<ul>
+<li>答「会」→ 下一步</li>
+<li>答「不会」→ 直接进第 3 步</li>
+<li>答「不知道」→ <strong>这就是最重要的信号</strong>，它意味着你没有任何终止条件</li>
+</ul>
+<h3>第 3 步（10 分钟）· 写三组终止条件</h3>
+<p>格式必须是 <code>if &lt;可观测状态&gt; 在 &lt;日期&gt; 之前没达到 → &lt;具体动作&gt;</code>：</p>
+<pre><code>1. if ______________________ 在 ____ 之前没达到 → ______________
+2. if ______________________ 在 ____ 之前没达到 → ______________
+3. if 连续 ____ 个月我学不到新东西            → ______________
+</code></pre>
+<p><strong>验收标准</strong>：把这张纸给一个不了解背景的人看，他能不能判断你有没有达标？如果不能，说明「状态」不可观测。</p>
+<h3>第 4 步（5 分钟）· 授权</h3>
+<p>发给一个人：</p>
+<blockquote>
+<p>「我在做的 X，终止条件是 ___。如果到时候我没做到，请直接跟我说。」</p>
+</blockquote>
+<p><strong>这一步是整个实践里唯一一条必须找外人做的。</strong> 因为前 25 分钟你都在跟自己谈判，第 26 分钟必须引入一个没有沉没成本的视角。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>动作</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>做一遍 30 分钟最小实践</td>
+<td>一张终止条件清单</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>对其中一件最贵的事做 premortem：假设一年后彻底失败，写出 5 个原因</td>
+<td>5 条可检查的信号</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>用工具 1 算一次你自己参数的停損溢酬</td>
+<td>一个 pp 数字，写在清单上</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>算一次回本账（工具 2），写在你现有亏损最大的那个仓位上</td>
+<td>「需要涨 X%，期望 Y 年」</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>复盘一笔历史交易，只写「当时的信息集」</td>
+<td>一页，不用结果评价</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>统计自己的 PGR/PLR（工具 3）</td>
+<td>一个比值</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>把 D1 的清单再读一遍，删掉你认为「一定做不到」的条件，改写成可达的</td>
+<td>一份能真的执行的清单</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>目标</th>
+<th>关键动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>第 1 周</strong></td>
+<td>建立基线</td>
+<td>完成 7 天计划全部内容</td>
+</tr>
+<tr>
+<td class="k"><strong>第 2 周</strong></td>
+<td>引入外部视角</td>
+<td>正式指定退出教练，并让对方复述一遍你的终止条件（<strong>复述比同意更有效</strong>）</td>
+</tr>
+<tr>
+<td class="k"><strong>第 3 周</strong></td>
+<td>拆掉一条搭台子链</td>
+<td>挑一个项目，找出它的「猴子」，7 天内验证；<strong>验证失败就当场终止，不许延期</strong></td>
+</tr>
+<tr>
+<td class="k"><strong>第 4 周</strong></td>
+<td>完成一次真实退出</td>
+<td>执行任意一条你写下的终止条件；事后 30 天内不重谈，只复盘信息集</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>第 4 周是整个计划的核心。</strong> 前面三周都是准备，只有真的执行过一次，这套机制才算长在你身上。而第一次执行一定很难受——<strong>这是正常的，第 8 节说过：准时退出必然感觉像退早了。</strong></p>
+<hr />
+<hr />
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>用在哪</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>终止条件（kill criteria）</strong></td>
+<td>状态 + 日期的 if-then</td>
+<td>所有长期投入</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>猴子与台子（Monkey First）</strong></td>
+<td>先验证最不可能的一环</td>
+<td>项目启动、研发排期</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>沉没成本重述</strong></td>
+<td>「今天从零开始我还进不进」</td>
+<td>所有犹豫不决的时刻</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>premortem</strong></td>
+<td>先假设已失败，再倒推原因</td>
+<td>生成终止条件</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>期望值比较</strong></td>
+<td>继续 vs 退出的未来期望值</td>
+<td>定量决策</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>对照基准</strong> p_base = Φ(μT/252 ÷ (σ√(T/252)))</td>
+<td>剥离市场正漂移带来的假胜率</td>
+<td>评价任何策略胜率</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>停止溢酬</strong></td>
+<td>停損 − 买入持有的期望差</td>
+<td>决定要不要停損</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>回本账</strong> x/(1−x) 与 −ln(1−x)/μ</td>
+<td>量化「撑着」的代价</td>
+<td>处置浮亏</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>处置效应 PGR/PLR</strong></td>
+<td>卖盈守亏的量化形态</td>
+<td>自我诊断</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>37% 最优停止</strong></td>
+<td>前 n/e 只观察，之后超越基准就收</td>
+<td>不可回溯的择一问题</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<p>把这 12 个问题当作一次体检。<strong>每一个「答不出来」都是一个待补的漏洞。</strong></p>
+<ol>
+<li>我现在正在投入的事，有几件是我的<strong>次优路径</strong>在让位？</li>
+<li>我能不能为每一件事写出一条<strong>可被外人验证</strong>的终止条件？</li>
+<li>我最近一次说「再想想」，实际上选择了什么？</li>
+<li>我的「已投入」里，有多少是<strong>搭台子</strong>（做了但没验证任何核心假设）？</li>
+<li>我的项目里，那个「如果它不成立就全完」的假设，我用什么最小成本验证过？</li>
+<li>谁是我的退出教练？他<strong>知道</strong>自己被授权了吗？</li>
+<li>我公开承诺过什么？它现在是我的动力，还是我的枷锁？</li>
+<li>我上一次退出，是按时退的还是拖到不能再拖才退的？</li>
+<li>我用「当时的信息集」还是「后来的结果」评价那次退出？</li>
+<li>我手上最大的浮亏是多少？回本需要涨多少、期望要多久？</li>
+<li>我的 PGR/PLR 是多少？我是在砍盈利还是砍亏损？</li>
+<li>如果停損是一份保险，<strong>它的保费是多少 pp，我愿不愿意付？</strong></li>
+</ol>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<h3>三个值得继续追的方向</h3>
+<p><strong>方向一 · 把「停止溢酬」做成自己的仪表盘</strong>
+用工具 1 的参数框架，把 μ、σ、避险腿收益换成你自己实际持仓的数字，每季度更新一次。<strong>一旦你能说出「我的停損保费是 X pp」，你就不再需要「停損是纪律」这种口号了。</strong></p>
+<p><strong>方向二 · 把 kill criteria 从项目扩展到「时间预算」</strong>
+这本书的应用面里最被低估的是时间。你可以为自己的「每周 40 小时」设置终止条件：某项活动连续 3 周产出低于 Y，就把它的时段回收。<strong>时间是最标准的不可回收投入。</strong></p>
+<p><strong>方向三 · 研究「反向退出」——什么条件下该加倍下注</strong>
+这本书全部在讲退出，但<strong>退出决策的正确性必须建立在「什么该留」的标准上</strong>。下一阶段值得读的是 Kelly 准则与最优下注规模那一支：它回答的正是「留下来的那些，该压多重」。</p>
+<h3>三条还没解决的问题</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>为什么难</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">如何区分「该坚持的死路」和「该坚持的正常低谷」</td>
+<td>事前两者形态相同，Godin 说靠感觉，Duke 说靠规则，<strong>两者都无法保证事前可分</strong></td>
+</tr>
+<tr>
+<td class="k">组织层面的 kill criteria 怎么落地</td>
+<td>书里承认：政治、结构、情绪因素让理性的退出标准很难在组织内执行</td>
+</tr>
+<tr>
+<td class="k">「保持选择开放」的成本怎么量化</td>
+<td>书里几乎没讨论，有读者明确指出这是全书最大的空白</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<hr />
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">《停損的勝算》繁体中文版信息（采實文化，2024，译者谢佳真，ISBN 9786263497153）</td>
+<td>出版信息</td>
+<td>出版社与多家书商页面</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">杜克履历：2004 年 WSOP 金手链、2004 年 WSOP 冠军赛 200 万美元冠军、2010 年 NBC 全国单挑赛冠军、职业奖金超 400 万美元、2023 年取得宾大认知心理学博士</td>
+<td>个人事实</td>
+<td>annieduke.com 官方年表；GlobeNewswire 人物稿</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">处置效应实测：PGR = 14.8%、PLR = 9.8%、比值 1.51</td>
+<td>学术实证</td>
+<td>Odean, J. (1998), <em>Are Investors Reluctant to Realize Their Losses?</em>，1 万个折价券商账户，1987–1993</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">处置效应在 12 月消失（税负效应）</td>
+<td>学术实证</td>
+<td>同上</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">处置效应为全球现象（芬兰、澳大利亚、中国台湾地区、韩国、瑞典等）</td>
+<td>学术实证</td>
+<td>Grinblatt &amp; Keloharju (2001)；Brown et al. (2006)；Barber et al. (2007)；Choe &amp; Eom (2009)；Calvet et al. (2009)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">中国散户数据：1511 个账户，亏损实现速度比盈利慢约 30%</td>
+<td>学术实证</td>
+<td>Feng &amp; Seasholes (2005)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">前景理论不足以单独解释处置效应，参数区间外会出现相反模式</td>
+<td>学术分析</td>
+<td>Barberis &amp; Xiong (2006)</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">随机游走下停損必然降低期望收益</td>
+<td>理论结论</td>
+<td>Kaminski &amp; Lo (2014), <em>When Do Stop-Loss Rules Stop Losses?</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">停損在动量 / 状态切换下可加值；1950–2004 宽基指数上「已触发期间」月均优势 0.5%–1.0%（未计摩擦）</td>
+<td>实证</td>
+<td>同上</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">停損收益主要来自长期国债在停損期间的上涨，转向短债无此效果</td>
+<td>学术分析</td>
+<td>对 Kaminski &amp; Lo 结果的机制解读</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">停損要产生正停止溢酬，一阶自相关系数需不低于夏普比率</td>
+<td>学术分析</td>
+<td>第三方对 Kaminski &amp; Lo 框架的总结</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">个股停損的原始收益「非常差」，交易成本过高</td>
+<td>实证</td>
+<td>Lo &amp; Remorov (2017) 一类研究</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">动量策略加停損：月均收益 1.01% → 1.73%（买入持有 0.62%），月波动 6.07% → 4.67%，最差月度 −49.79% → −11.34%，偏度 −1.18 → +1.86</td>
+<td>实证</td>
+<td>Han, Zhou &amp; Zhu (2014), <em>Taming Momentum Crashes</em>，1926–2011</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">停損单触发后转为市价单，快速行情下成交价可能显著偏离停損价</td>
+<td>监管提示</td>
+<td>SEC 投资者教育与倡导办公室公告；FINRA 停損单说明</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2010 年 5 月 6 日闪电崩盘：标普 500 约 36 分钟内盘中跌约 9% 后收回</td>
+<td>市场事件</td>
+<td>监管与媒体复盘</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">37% 最优停止法则：观察期 n/e，成功率 1/e ≈ 36.79%</td>
+<td>数学结论</td>
+<td>秘书问题 / 最优停止理论的标准解</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">停損溢酬、回本时间、基准胜率等全部数值</td>
+<td>本手册模型</td>
+<td>蒙特卡洛 2 万条路径（μ=10%、σ=18%、252 日，固定种子）+ 解析式交叉验证</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">本书「偏重轶事证据、二元框架有过度简化风险、西方文化中心、对组织情境落地不足」等批评</td>
+<td>书评与读者评价</td>
+<td>多家书评与读者反馈汇总</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">繁体版宣传语「停損，是提高勝算的決策工具」</td>
+<td>出版方文案</td>
+<td>出版社营销文案</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>标记约定</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>标记</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><span class="tag t-fact">事实</span></td>
+<td>一手来源，或经多个独立来源交叉一致</td>
+</tr>
+<tr>
+<td class="k"><span class="tag t-ana">分析</span></td>
+<td>权威机构 / 研究者的判断与解读，非原始数据</td>
+</tr>
+<tr>
+<td class="k"><span class="tag t-inf">推论</span></td>
+<td>由本手册模型的推导或计算结果得出</td>
+</tr>
+<tr>
+<td class="k"><span class="tag t-hyp">假设</span></td>
+<td>未经检验的猜想</td>
+</tr>
+<tr>
+<td class="k"><span class="tag t-chk">待验证</span></td>
+<td>单一来源、转载链过长，或为营销性表述</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<div class="note red"><b>必读</b><p><strong>本手册不是投资建议，也不构成任何买卖要约。</strong></p>
+<ol>
+<li>手册中的全部数值来自<strong>简化模型</strong>（蒙特卡洛模拟与解析式），参数假设（μ=10%、σ=18%、252 个交易日、固定种子）是为了让结论可复算而设的，<strong>不对应任何真实标的</strong>。真实市场的收益过程有自相关、波动聚集、跳空、涨跌停、流动性枯竭等特征，模型的结论在这些条件下可能不成立。</li>
+<li>「停損的期望收益为负」这一结论，仅适用于<strong>模型假设的收益过程</strong>（正漂移、无动量、停損后转投无风险资产）。在存在动量、状态切换或真实负相关避险资产的场景下，结论会改变。</li>
+<li>停損单在快速下跌行情中可能以远差于停損价的价格成交，<strong>停損不等于限价保护</strong>。</li>
+<li>处置效应、沉没成本等行为偏差的<strong>存在</strong>有充分实证支持，但「克服偏差就能改善投资结果」这一推论<strong>未被本手册验证</strong>。</li>
+<li>涉及中国内地市场时，涨跌停制度、T+1 交收、印花税与过户费都会改变停損的实际可执行性——本手册未做这些调整。</li>
+<li>任何决策请结合自身风险承受能力、资金期限与税务情况，必要时咨询持牌专业人士。</li>
+<li>数据截至 2026 年 9 月。若引用本手册，请连同上述限定条件一并引用。</li>
+</ol></div>
+</section>
+<footer>  <p>《《停損的勝算》 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 10 分 33 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* 《停損的勝算》主题脚本 · 自包含 IIFE，与页面通用脚本隔离
+   数字纪律：本文件算出的每个数都必须与正文一致。
+   停損蒙特卡洛参数与正文完全相同：μ=10%、σ=18%、252 交易日、2 万条路径、种子 20260916。 */
+(function () {
+  'use strict';
+
+  function $(id) { return document.getElementById(id); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  /* 负数用 U+2212 减号，与正文排版一致 */
+  function num(v, d) { return (v < 0 ? '−' : '') + Math.abs(v).toFixed(d); }
+
+  var INK = '#0f1115', MUT = '#5b6472', LINE = '#d8dee8';
+  var BLUE = '#2563eb', RED = '#dc2626', GREEN = '#059669', AMBER = '#d97706', PURPLE = '#7c3aed';
+
+  /* ── 通用：canvas 上屏 ────────────────────────────────────────── */
+  function fit(cv) {
+    var dpr = window.devicePixelRatio || 1;
+    var w = cv.clientWidth || 640;
+    var h = parseInt(cv.getAttribute('height'), 10) || 180;
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(h * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: h };
+  }
+  function clear(ctx, w, h) { ctx.clearRect(0, 0, w, h); }
+  function label(ctx, s, x, y, color, size, align, weight) {
+    ctx.fillStyle = color || INK;
+    ctx.font = (weight ? weight + ' ' : '') + (size || 11) + 'px system-ui,-apple-system,"PingFang SC",sans-serif';
+    ctx.textAlign = align || 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(s, x, y);
+  }
+  function clampTag(ctx, s, x, y, color) {
+    ctx.font = '600 11px system-ui,-apple-system,"PingFang SC",sans-serif';
+    var tw = ctx.measureText(s).width;
+    var lx = Math.max(4, Math.min(x, 636 - tw));
+    label(ctx, s, lx, y, color, 11, 'left', '600');
+  }
+
+  /* ── 随机数：与验证脚本逐位一致 ──────────────────────────────── */
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  var N = 20000, T = 252, SEED = 20260916;
+  var MU_A = 0.10, SD_A = 0.18;
+  var muD = MU_A / 252, sdD = SD_A / Math.sqrt(252);
+  var Z = null;                     // 预计算的标准正态矩阵（Float32Array, N×T）
+
+  function buildZ() {
+    var rnd = mulberry32(SEED);
+    var z = new Float32Array(N * T);
+    var i = 0;
+    for (var k = 0; k < N; k++) {
+      for (var t = 0; t < T; t++) {
+        var u = 0, v = 0;
+        while (u === 0) u = rnd();
+        while (v === 0) v = rnd();
+        z[i++] = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+      }
+    }
+    return z;
+  }
+
+  /* 停損 vs 买入持有：同一批路径上跑两种规则，配对比较 */
+  function simStop(L, rb) {
+    if (!Z) Z = buildZ();
+    var rbd = rb / 252;
+    var bhSum = 0, slSum = 0, hit = 0, bhWin = 0, slWin = 0;
+    var tailBH = [], tailSL = [], ddBH = [], ddSL = [];
+    for (var k = 0; k < N; k++) {
+      var base = k * T;
+      // 买入持有
+      var c = 0, pk = -1e9, dd = 0;
+      for (var t = 0; t < T; t++) {
+        c += muD + Z[base + t] * sdD;
+        if (c > pk) pk = c;
+        if (pk - c > dd) dd = pk - c;
+      }
+      // 停損：累计对数收益 <= -L 触发，之后转避险资产
+      var c2 = 0, pk2 = -1e9, dd2 = 0, didExit = false;
+      for (var t2 = 0; t2 < T; t2++) {
+        if (!didExit) {
+          c2 += muD + Z[base + t2] * sdD;
+          if (c2 > pk2) pk2 = c2;
+          if (pk2 - c2 > dd2) dd2 = pk2 - c2;
+          if (c2 <= -L) didExit = true;
+        } else {
+          c2 += rbd;
+        }
+      }
+      bhSum += c; slSum += c2;
+      if (didExit) hit++;
+      if (c > 0) bhWin++;
+      if (c2 > 0) slWin++;
+      tailBH.push(c); tailSL.push(c2); ddBH.push(dd); ddSL.push(dd2);
+    }
+    tailBH.sort(function (a, b) { return a - b; });
+    tailSL.sort(function (a, b) { return a - b; });
+    ddBH.sort(function (a, b) { return a - b; });
+    ddSL.sort(function (a, b) { return a - b; });
+    var q = function (arr, p) { return arr[Math.min(arr.length - 1, Math.max(0, Math.floor(p * (arr.length - 1))))]; };
+    var f = function (x) { return Math.expm1(x) * 100; };
+    return {
+      bh: f(bhSum / N), sl: f(slSum / N),
+      hit: hit / N * 100,
+      p5bh: f(q(tailBH, 0.05)), p5sl: f(q(tailSL, 0.05)),
+      p95bh: f(q(tailBH, 0.95)), p95sl: f(q(tailSL, 0.95)),
+      dd50bh: q(ddBH, 0.50) * 100, dd50sl: q(ddSL, 0.50) * 100,
+      dd95bh: q(ddBH, 0.95) * 100, dd95sl: q(ddSL, 0.95) * 100,
+      winBH: bhWin / N * 100, winSL: slWin / N * 100
+    };
+  }
+
+  /* ── 工具 1 · 停損价码 ────────────────────────────────────────── */
+  var cur1 = null;
+  function drawStop(st, L) {
+    var cv = $('slChart'); if (!cv) return;
+    var g = fit(cv), ctx = g.ctx, w = g.w, h = g.h;
+    clear(ctx, w, h);
+
+    var padL = 104, padR = 14, padT = 30, gap = 26;
+    var panelW = (w - padL - padR - gap) / 2;
+    var data = [
+      { t: '期望收益（越高越好）', a: st.bh, b: st.sl, ca: BLUE, cb: AMBER },
+      { t: '第 5 百分位（越靠右越好）', a: st.p5bh, b: st.p5sl, ca: BLUE, cb: GREEN }
+    ];
+
+    for (var i = 0; i < 2; i++) {
+      var d = data[i], x0 = padL + i * (panelW + gap);
+      label(ctx, d.t, x0, padT - 14, MUT, 11, 'left', '600');
+
+      var lo = Math.min(0, d.a, d.b), hi = Math.max(0, d.a, d.b);
+      var span = (hi - lo) || 1;
+      lo -= span * 0.12; hi += span * 0.18;
+      var zero = x0 + (0 - lo) / (hi - lo) * panelW;
+
+      // 零轴线
+      ctx.strokeStyle = LINE; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(zero, padT - 2); ctx.lineTo(zero, h - 26); ctx.stroke();
+
+      var bh = 16, tops = [padT + 6, padT + 6 + bh + 16];
+      var vals = [d.a, d.b], cols = [d.ca, d.cb], names = ['买持', '停損'];
+      ctx.font = '600 11px system-ui,-apple-system,"PingFang SC",sans-serif';
+      var vw = Math.max(ctx.measureText('+' + Math.abs(d.a).toFixed(1) + '%').width,
+                        ctx.measureText('−' + Math.abs(d.a).toFixed(1) + '%').width);
+      for (var j = 0; j < 2; j++) {
+        var y = tops[j], xv = x0 + (vals[j] - lo) / (hi - lo) * panelW;
+        var left = Math.min(zero, xv), bw = Math.abs(xv - zero);
+        ctx.fillStyle = cols[j];
+        ctx.globalAlpha = 0.85;
+        ctx.fillRect(left, y, bw, bh);
+        ctx.globalAlpha = 1;
+        var s = (vals[j] > 0 ? '+' : '−') + Math.abs(vals[j]).toFixed(1) + '%';
+        // 名称与数值都排在面板左侧之外，数值靠右、名称在数值左边——不会与条形重叠
+        ctx.font = '600 11px system-ui,-apple-system,"PingFang SC",sans-serif';
+        label(ctx, s, x0 - 10, y + bh / 2, cols[j], 11, 'right', '700');
+        label(ctx, names[j], x0 - 10 - vw - 8, y + bh / 2, MUT, 10, 'right');
+      }
+      label(ctx, '0', zero, h - 14, MUT, 10, 'center');
+    }
+    label(ctx, '停損阈值 ' + (L * 100).toFixed(0) + '%', w - padR, padT - 14, INK, 11, 'right', '700');
+  }
+
+  function renderStop() {
+    var el = $('sl_L'); if (!el) return;
+    var L = parseFloat(el.value) / 100;
+    var brb = $('sl_rb');
+    var rb = brb ? parseFloat(brb.value) / 100 : 0;
+    txt($('sl_LO'), (L * 100).toFixed(0) + '%');
+    if (brb) txt($('sl_rbO'), (rb * 100).toFixed(rb === 0 ? 0 : 1) + '%' + (rb === 0 ? '（现金）' : ''));
+
+    var st = simStop(L, rb);
+    cur1 = st;
+    txt($('sl_bh'), '+' + st.bh.toFixed(1) + '%');
+    txt($('sl_sl'), '+' + st.sl.toFixed(1) + '%');
+    var prem = st.sl - st.bh;
+    txt($('sl_prem'), (prem >= 0 ? '+' : '−') + Math.abs(prem).toFixed(2) + ' pp');
+    tint($('sl_prem'), prem >= 0 ? GREEN : RED);
+    txt($('sl_hit'), st.hit.toFixed(1) + '%');
+    txt($('sl_p5'), num(st.p5bh, 1) + '% → ' + num(st.p5sl, 1) + '%');
+    txt($('sl_win'), st.winBH.toFixed(1) + '% → ' + st.winSL.toFixed(1) + '%');
+
+    var gain = st.p5sl - st.p5bh;
+    var vd, col;
+    if (prem >= 0) { vd = '停止溢酬转正：' + prem.toFixed(2) + 'pp 增益'; col = GREEN; }
+    else if (Math.abs(prem) < 0.5) { vd = '接近中性：保费 ' + Math.abs(prem).toFixed(2) + 'pp'; col = AMBER; }
+    else { vd = '买左尾保险，保费 ' + Math.abs(prem).toFixed(2) + 'pp，尾部改善 ' + gain.toFixed(1) + 'pp'; col = RED; }
+    txt($('sl_vd'), vd);
+    tint($('sl_vd'), col);
+    drawStop(st, L);
+  }
+
+  /* ── 工具 2 · 回本账 ──────────────────────────────────────────── */
+  function drawBack(x) {
+    var cv = $('rbChart'); if (!cv) return;
+    var g = fit(cv), ctx = g.ctx, w = g.w, h = g.h;
+    clear(ctx, w, h);
+
+    var padL = 48, padR = 16, padT = 26, padB = 28;
+    var pw = w - padL - padR, ph = h - padT - padB;
+    var xa = 0.05, xb = 0.80, ya = 0, yb = 4.0;   // 需要涨幅 0–400%
+    var sx = function (v) { return padL + (v - xa) / (xb - xa) * pw; };
+    var sy = function (v) { return padT + ph - (Math.min(v, yb) - ya) / (yb - ya) * ph; };
+
+    // 网格
+    ctx.strokeStyle = LINE; ctx.lineWidth = 1;
+    for (var i = 0; i <= 4; i++) {
+      var y = padT + ph * i / 4;
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+      label(ctx, (400 - 100 * i) + '%', padL - 6, y, MUT, 10, 'right');
+    }
+    for (var jj = 0; jj <= 3; jj++) {
+      var x = padL + pw * jj / 3;
+      var lv = (xa + (xb - xa) * jj / 3) * 100;
+      label(ctx, lv.toFixed(0) + '%', x, h - 12, MUT, 10, 'center');
+    }
+
+    // 曲线
+    ctx.strokeStyle = RED; ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    for (var s = 0; s <= 150; s++) {
+      var xv = xa + (xb - xa) * s / 150;
+      var need = xv / (1 - xv);
+      var px = sx(xv), py = sy(need);
+      if (s === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // 当前位置
+    var need0 = x / (1 - x);
+    var mx = sx(x), my = sy(need0);
+    ctx.strokeStyle = AMBER; ctx.lineWidth = 1.4; ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(mx, padT); ctx.lineTo(mx, padT + ph); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = AMBER;
+    ctx.beginPath(); ctx.arc(mx, my, 5, 0, Math.PI * 2); ctx.fill();
+    label(ctx, '亏 ' + (x * 100).toFixed(0) + '% → 要涨 +' + (need0 * 100).toFixed(1) + '%',
+          Math.min(mx + 10, w - padR - 150), my - 14, AMBER, 11, 'left', '700');
+
+    label(ctx, '需要涨幅 x/(1−x)', padL, padT - 12, RED, 11, 'left', '600');
+    label(ctx, '当前亏损幅度 →', w - padR, h - 12, MUT, 10, 'right');
+  }
+
+  function renderBack() {
+    var el = $('rb_x'); if (!el) return;
+    var x = parseFloat(el.value) / 100;
+    txt($('rb_xO'), (x * 100).toFixed(0) + '%');
+    var need = x / (1 - x);
+    var ln = -Math.log(1 - x);
+    var days = ln / muD;
+    txt($('rb_need'), '+' + (need * 100).toFixed(1) + '%');
+    txt($('rb_ln'), ln.toFixed(4));
+    txt($('rb_y'), (days / 252).toFixed(2) + ' 年');
+    txt($('rb_ref'), '+' + (need * 100).toFixed(1) + '%');
+    var vd, col;
+    if (days / 252 < 2) { vd = '回本要 ' + (days / 252).toFixed(1) + ' 年——还能忍'; col = GREEN; }
+    else if (days / 252 < 5) { vd = '回本要 ' + (days / 252).toFixed(1) + ' 年——这期间的机会成本才是真浪费'; col = AMBER; }
+    else { vd = '回本要 ' + (days / 252).toFixed(1) + ' 年——「撑着」已经不是选择，是放弃其他所有选择'; col = RED; }
+    txt($('rb_vd'), vd);
+    tint($('rb_vd'), col);
+    drawBack(x);
+  }
+
+  /* ── 工具 3 · 处置效应判定 ────────────────────────────────────── */
+  function renderDisp() {
+    var ep = $('de_pgr'), el = $('de_plr'); if (!ep || !el) return;
+    var pgr = parseFloat(ep.value) / 100, plr = parseFloat(el.value) / 100;
+    txt($('de_pgrO'), (pgr * 100).toFixed(1) + '%');
+    txt($('de_plrO'), (plr * 100).toFixed(1) + '%');
+
+    if (plr <= 0) {
+      txt($('de_r'), '∞');
+      txt($('de_cmp'), '没卖过亏损');
+      txt($('de_mix'), '100%');
+      txt($('de_vd'), '你从不实现亏损——这是处置效应的极端形态');
+      tint($('de_vd'), RED);
+      return;
+    }
+    var r = pgr / plr;
+    txt($('de_r'), r.toFixed(2));
+    var base = 1.51;
+    var cmp, ccol;
+    if (r > base * 1.3) { cmp = '高于样本均值 ' + ((r / base - 1) * 100).toFixed(0) + '%'; ccol = RED; }
+    else if (r > base) { cmp = '略高于样本均值'; ccol = AMBER; }
+    else if (r > base * 0.8) { cmp = '与样本均值持平'; ccol = AMBER; }
+    else { cmp = '低于样本均值（更健康）'; ccol = GREEN; }
+    txt($('de_cmp'), cmp); tint($('de_cmp'), ccol);
+    txt($('de_mix'), (pgr / (pgr + plr) * 100).toFixed(1) + '%');
+
+    var vd, col;
+    if (r > 1.2) { vd = '典型处置效应——你在砍盈利、留亏损'; col = RED; }
+    else if (r > 1.05) { vd = '轻微卖盈守亏，值得盯住'; col = AMBER; }
+    else if (r > 0.95) { vd = '接近中性 ✔ 卖出行为与盈亏无关'; col = GREEN; }
+    else { vd = '反向：你先砍亏损、留盈利'; col = GREEN; }
+    txt($('de_vd'), vd);
+    tint($('de_vd'), col);
+  }
+
+  /* ── 工具 4 · 37% 最优停止 ────────────────────────────────────── */
+  function P(n, r) {
+    var s = 0;
+    for (var i = r; i <= n; i++) s += 1 / (i - 1);
+    return (r - 1) / n * s;
+  }
+  function drawOpt(n, bestR, bestP) {
+    var cv = $('osChart'); if (!cv) return;
+    var g = fit(cv), ctx = g.ctx, w = g.w, h = g.h;
+    clear(ctx, w, h);
+
+    var padL = 46, padR = 16, padT = 26, padB = 28;
+    var pw = w - padL - padR, ph = h - padT - padB;
+    var sx = function (frac) { return padL + frac * pw; };
+    var sy = function (p) { return padT + ph - (p - 0.15) / (0.42 - 0.15) * ph; };
+
+    ctx.strokeStyle = LINE; ctx.lineWidth = 1;
+    for (var i = 0; i <= 3; i++) {
+      var y = padT + ph * i / 3;
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+      label(ctx, (42 - 9 * i) + '%', padL - 6, y, MUT, 10, 'right');
+    }
+    for (var jj = 0; jj <= 4; jj++) {
+      var x = padL + pw * jj / 4;
+      label(ctx, (jj * 25) + '%', x, h - 12, MUT, 10, 'center');
+    }
+
+    // 曲线：观察期比例 → 成功率（抽样绘制，n 较大时按比例采样）
+    var steps = 160;
+    ctx.strokeStyle = BLUE; ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    for (var s = 1; s <= steps; s++) {
+      var frac = s / steps * 0.95;
+      var r = Math.max(2, Math.round(frac * n));
+      if (r > n) r = n;
+      var p = P(n, r) * 100;
+      var px = sx(frac), py = sy(p / 100);
+      if (s === 1) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // 最优点
+    var fx = sx((bestR - 1) / n), fy = sy(bestP / 100);
+    ctx.strokeStyle = AMBER; ctx.lineWidth = 1.4; ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(fx, padT); ctx.lineTo(fx, padT + ph); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = AMBER;
+    ctx.beginPath(); ctx.arc(fx, fy, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.font = '600 11px system-ui,-apple-system,"PingFang SC",sans-serif';
+    var tag = '最优：观察 ' + ((bestR - 1) / n * 100).toFixed(1) + '% → 成功率 ' + (bestP * 100).toFixed(2) + '%';
+    var tw = ctx.measureText(tag).width;
+    label(ctx, tag, Math.max(4, Math.min(fx + 10, 636 - tw)), fy - 15, AMBER, 11, 'left', '600');
+
+    label(ctx, '成功率', padL - 6, padT - 12, BLUE, 11, 'left', '600');
+    label(ctx, '观察期占比 →', w - padR, h - 12, MUT, 10, 'right');
+  }
+
+  function renderOpt() {
+    var el = $('os_n'); if (!el) return;
+    var n = parseInt(el.value, 10);
+    txt($('os_nO'), n + ' 个');
+    var bestP = 0, bestR = 0;
+    for (var r = 2; r <= n; r++) { var p = P(n, r); if (p > bestP) { bestP = p; bestR = r; } }
+    txt($('os_r'), '前 ' + (bestR - 1) + ' 个');
+    txt($('os_ratio'), ((bestR - 1) / n * 100).toFixed(1) + '%');
+    txt($('os_p'), (bestP * 100).toFixed(2) + '%');
+    txt($('os_vd'), '前 ' + (bestR - 1) + ' 个只观察，第 ' + bestR + ' 个起第一个超越基准就收（成功率 ' + (bestP * 100).toFixed(2) + '%）');
+    drawOpt(n, bestR, bestP);
+  }
+
+  /* ── 绑定 ─────────────────────────────────────────────────────── */
+  function bind(id, fn) {
+    var el = $(id);
+    if (!el) return;
+    el.addEventListener('input', fn);
+    el.addEventListener('change', fn);
+  }
+
+  function init() {
+    bind('sl_L', renderStop);
+    bind('sl_rb', renderStop);
+    bind('rb_x', renderBack);
+    bind('de_pgr', renderDisp);
+    bind('de_plr', renderDisp);
+    bind('os_n', renderOpt);
+
+    // 立即用真实计算值覆盖 HTML 里的硬编码初值
+    try { renderStop(); } catch (e) { txt($('sl_vd'), '模型初始化失败：' + e.message); }
+    try { renderBack(); } catch (e) { txt($('rb_vd'), '模型初始化失败：' + e.message); }
+    try { renderDisp(); } catch (e) { txt($('de_vd'), '模型初始化失败：' + e.message); }
+    try { renderOpt(); } catch (e) { txt($('os_vd'), '模型初始化失败：' + e.message); }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>

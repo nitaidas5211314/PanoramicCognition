@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>量化交易与博弈论的关系 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Quant × Game Theory</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路径</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天实践计划</a>
+    <a href="#s24"><i>24</i>30 天能力构建计划</a>
+    <a href="#s25"><i>25</i>最值得掌握的 10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索方向</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>量化交易与博弈论的关系</h1>
+  <p class="sub">市场不是一台定价机器，而是一桌<strong>牌局</strong>——每个人都在根据别人的打法调整自己，而这些调整本身又改写了游戏规则。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p>博弈论在量化里的作用，不是教你「如何战胜市场」。</p>
+<p>它做的是两件更根本的事：<strong>告诉你超额收益（alpha）是从谁手里来的</strong>，以及<strong>告诉你它为什么注定会消失</strong>。</p>
+<p>前者决定了策略能不能成立，后者决定了策略能活多久。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>先把边界划清楚。这里讨论的不是「博弈论能否预测股价」——那是个坏问题。真正的问题是：</p>
+<blockquote>
+<p>当你执行的每一个信号，都会被对手观察、适应并反向利用时，"策略"这个东西究竟是什么？</p>
+</blockquote>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>多个自利决策者在同一规则下相互作用时，策略如何形成、收益如何分配</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「参与者能改变规则」为止——规则制定（监管）是外生的，但会被博弈结果反向推动</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>策略、订单、价格、信息、资金</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>知情交易者、做市商、噪声交易者、量化机构、散户、监管</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>信息不对称度、噪声交易量、策略拥挤度、交易成本、速度差</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>成交量、订单流不平衡、价差、换手率、成交占比</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>谁掌握什么信息、别人的模型参数、真实拥挤度</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>订单流推动价格；价格改变信号；信号改变订单流 —— 闭环</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>信息不对称 → 做市商扩大价差（明确因果）</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>成交量上升与后续下跌（常见于"坟包收割"叙事，是相关不是必然因果）</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>股价涨跌、K 线形态、指标金叉</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>谁在什么约束下、基于什么信息、与谁争夺同一笔收益</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。收益信号吸引资金，资金改变收益 —— 这是全系统最核心的反馈</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。从"因子被发现"到"被套利殆尽"，历史上以年计，现在以月计</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>拥挤是正反馈（越多人用越多人用），套利是负反馈（越多人用越不赚钱）</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<p>第 13 条和第 15 条合起来，构成了这个领域的全部张力：</p>
+<p><strong>一个策略的收益，是它自身流行度的减函数。</strong></p>
+<p>这是博弈论给量化最冷酷也最有用的礼物。物理学里的规律不会因为你知道它而改变；博弈论里的规律会——因为知道的人一变多，规律本身就变了。</p>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>三个理由</h3>
+<div class="grid g3">
+<div class="card"><h4>它解释了 alpha 的来源</h4><p>如果不清楚收益是从谁的亏损里转移出来的，你就无法判断这个策略是真的有逻辑，还是只是最近运气好。凯尔模型（Kyle, 1985）把这件事说得很清楚：知情交易者赚的是<strong>噪声交易者</strong>的钱，而做市商在中间收过路费。</p></div>
+<div class="card"><h4>它解释了 alpha 的消亡</h4><p>绝大多数策略不是"失效了"，而是"被套利掉了"。米勒和庞蒂夫（McLean &amp; Pontiff, 2016）追踪 97 个已发表的收益预测因子，发现样本外收益比样本内<strong>低 26%</strong>，论文发表后<strong>低 58%</strong><span class="tag t-fact">事实</span>。这不是统计假象，是真实的资金在竞争。</p></div>
+<div class="card"><h4>它把&quot;决策质量&quot;和&quot;决策结果&quot;分开</h4><p>扑克冠军安妮·杜克（Annie Duke）称之为"结果论"（resulting）——用结果倒推决策质量。她说自己在咨询中请高管列出"去年最好的和最差的决策"，<strong>没有一个人列出的是决策，全是结果</strong>。博弈论提供的正是对抗这种偏差的结构。</p></div>
+</div>
+<h3>一个必须接受的坏消息</h3>
+<p>A 股市场整体是<strong>负和博弈</strong>：手续费、印花税、以及 IPO 与再融资的净抽水，持续从池子里拿走资金。</p>
+<p>央视网与人民网的分析都指出这一点<span class="tag t-ana">分析</span>：如果把所有股民当作一个整体，交易成本让他们整体处于亏损状态，差额就是政府和券商的"抽水"。</p>
+<p>这意味着一个不舒服的推论：<strong>有人赚，就必须有人亏得更多</strong>。量化私募的收益不会平均分配，它有一个明确的资金来源。</p>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<h3>三层博弈结构</h3>
+<p>量化与博弈论的交集不是一层，而是三层。混淆这三层是初学者最常见的错误。</p>
+<svg viewBox="0 0 680 400" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="arw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/>
+    </marker>
+    <marker id="arwR" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+
+  <rect x="14" y="18" width="652" height="104" rx="12" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="32" y="44" font-size="14" font-weight="700" fill="#15181d" font-family="sans-serif">第一层 · 微观结构博弈</text>
+  <text x="32" y="66" font-size="12" fill="#454c56" font-family="sans-serif">时间尺度：毫秒 ~ 秒　　对手：做市商、其他知情者、噪声流</text>
+  <text x="32" y="86" font-size="12" fill="#454c56" font-family="sans-serif">核心问题：我的订单会不会被识别？我要分几笔走才不推价？</text>
+  <text x="32" y="106" font-size="12" fill="#7c848f" font-family="sans-serif">理论工具：Kyle (1985)、Glosten-Milgrom (1985)、最优执行</text>
+
+  <rect x="14" y="136" width="652" height="104" rx="12" fill="#fff7e6" stroke="#b8730a" stroke-width="1.5"/>
+  <text x="32" y="162" font-size="14" font-weight="700" fill="#15181d" font-family="sans-serif">第二层 · 策略拥挤博弈</text>
+  <text x="32" y="184" font-size="12" fill="#454c56" font-family="sans-serif">时间尺度：周到月　　对手：用相似因子的同行</text>
+  <text x="32" y="204" font-size="12" fill="#454c56" font-family="sans-serif">核心问题：这个信号还有多少人在用？我要不要先跑？</text>
+  <text x="32" y="224" font-size="12" fill="#7c848f" font-family="sans-serif">理论工具：少数者博弈、El Farol、因子拥挤度</text>
+
+  <rect x="14" y="254" width="652" height="104" rx="12" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.5"/>
+  <text x="32" y="280" font-size="14" font-weight="700" fill="#15181d" font-family="sans-serif">第三层 · 生态演化博弈</text>
+  <text x="32" y="302" font-size="12" fill="#454c56" font-family="sans-serif">时间尺度：年到十年　　对手：整个策略种群 + 监管</text>
+  <text x="32" y="322" font-size="12" fill="#454c56" font-family="sans-serif">核心问题：哪种策略活下来了？环境变了谁会被淘汰？</text>
+  <text x="32" y="342" font-size="12" fill="#7c848f" font-family="sans-serif">理论工具：演化稳定策略、复制动态、Grossman-Stiglitz 悖论</text>
+
+  <line x1="340" y1="122" x2="340" y2="136" stroke="#7c848f" stroke-width="1.5" marker-end="url(#arw)"/>
+  <line x1="340" y1="240" x2="340" y2="254" stroke="#7c848f" stroke-width="1.5" marker-end="url(#arw)"/>
+  <line x1="666" y1="264" x2="666" y2="130" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arwR)"/>
+  <text x="668" y="200" font-size="11" fill="#d5342c" font-family="sans-serif" transform="rotate(90 668 200)">监管反向作用</text>
+</svg>
+<p><strong>新手最容易犯的错</strong>：只研究第一层（怎么下单更快、冲击更小），却忽略了第二层才是决定策略生死的地方。执行做得好，只能让一个本来能赚钱的策略少漏点血；拥挤度判断错了，再好的执行也救不回来。</p>
+<h3>九层拆解</h3>
+<details><summary>Level 0 · 现象层</summary><div class="dbody"><p>看到的：K 线、成交量、涨跌幅、龙虎榜。</p>
+<p>这一层的信息价值最低——因为所有人都看得到。价格是博弈的结果，不是博弈的原因。</p></div></details>
+<details><summary>Level 1 · 组成部分</summary><div class="dbody"><p>市场由四类订单构成：知情订单、噪声订单、做市订单、套保订单。</p>
+<p>凯尔模型的核心洞见：做市商<strong>看不见</strong>单个订单的类别，只能看到总订单流 Q = x + u（信息交易 + 噪声交易）。所有微观结构的复杂性，都源于这个"看不见"。</p></div></details>
+<details><summary>Level 2 · 关系网络</summary><div class="dbody"><p>订单流 → 价格 → 信号 → 订单流。这是一个闭环。</p>
+<p>闭环意味着：任何基于价格的信号，都会因为你使用它而被削弱。这跟挖矿不一样——矿挖完就没了，信号是你挖的动作本身在消耗它。</p></div></details>
+<details><summary>Level 3 · 运行机制</summary><div class="dbody"><p>做市商通过价差补偿逆向选择风险。价差 = 逆向选择成本 + 库存风险 + 订单处理成本。</p>
+<p>当信息不对称加剧（比如财报前、崩盘前），逆向选择成本上升，价差扩大，流动性蒸发。2023 年 3 月硅谷银行崩盘前数小时，买卖价差急剧扩大、每笔卖单的价格冲击变大，正是这个机制的教科书式体现<span class="tag t-ana">分析</span>。</p></div></details>
+<details><summary>Level 4 · 参与者与利益</summary><div class="dbody"><div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>凭什么赚钱</th>
+<th>被谁赚走</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">知情交易者</td>
+<td>私有信息</td>
+<td>伪装成本、价格冲击</td>
+</tr>
+<tr>
+<td class="k">做市商</td>
+<td>买卖价差</td>
+<td>逆向选择（被知情者打）</td>
+</tr>
+<tr>
+<td class="k">中低频量化</td>
+<td>因子风险溢价、行为偏差</td>
+<td>拥挤、因子衰减</td>
+</tr>
+<tr>
+<td class="k">高频量化</td>
+<td>速度、订单流预测</td>
+<td>监管、技术军备竞赛</td>
+</tr>
+<tr>
+<td class="k">散户</td>
+<td>长期持有 + 流动性需求</td>
+<td>交易成本、行为偏差</td>
+</tr>
+</tbody>
+</table></div></div></details>
+<details><summary>Level 5 · 环境与约束</summary><div class="dbody"><p>交易成本（印花税、佣金、冲击成本）、涨跌停、T+1、融券限制、程序化交易报备、高频认定标准。</p>
+<p><strong>约束不是背景板，是博弈的规则本身。</strong> 2026 年中国监管从物理设备层面推进公平性——6 月清退量化专属高速通道，7 月 30 日起交易所机房行情接入由局域网转广域网<span class="tag t-fact">事实</span>——这些动作直接改写了第一层博弈的收益结构。</p></div></details>
+<details><summary>Level 6 · 动态变化</summary><div class="dbody"><p>策略有生命周期：发现 → 验证 → 资金涌入 → 拥挤 → 衰减 → 失效或演化。</p>
+<p>学术研究显示，股票类策略的信号有效性通常在<strong>12 个月内明显下降</strong>，动量策略约 <strong>10 个月</strong>后收益转负<span class="tag t-chk">待验证</span>（单一来源，口径不明）。衰减速度本身在加快，美国市场每年约 36 个基点<span class="tag t-chk">待验证</span>。</p></div></details>
+<details><summary>Level 7 · 长期演化</summary><div class="dbody"><p>从"人 vs 人" → "人 vs 机器" → "机器 vs 机器"。</p>
+<p>每一次升级都会消灭一批参与者，同时创造新的生态位。当前正在发生的转变：从<strong>速度优势</strong>转向<strong>信息优势与容量优势</strong>——因为监管正在系统性拆除速度特权。</p></div></details>
+<details><summary>Level 8 · 系统级反馈</summary><div class="dbody"><p>最危险的正反馈：拥挤 → 相关性上升 → 同涨同跌 → 一起踩踏 → 相关性瞬间趋近 1 → 流动性消失。</p>
+<p>这不是假设。因子拥挤时期的典型症状就是"收益不再来源于因子逻辑，而取决于谁跑得更快"。一旦风向逆转，多杀多的踩踏会让回撤远超模型预期。</p></div></details>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<h3>五个必须分清的概念</h3>
+<div class="grid g2">
+<div class="card"><h4>零和 / 负和 / 正和</h4><p><strong>零和</strong>：一方的盈利等于另一方的亏损。<strong>负和</strong>：总亏损大于总盈利（因为有抽水）。<strong>正和</strong>：长期由企业盈利创造价值。</p>
+<p>股市的三重身份：长期是正和（企业创造价值），中期接近零和（财富转移为主），短期高频交易<strong>确定是负和</strong>（每次换手都被抽水）。</p></div>
+<div class="card"><h4>纳什均衡</h4><p>没人能通过单方面改变策略而获益的状态。</p>
+<p>在市场上的含义：如果存在一个大家都知道的稳定盈利策略，那它一定不是均衡——因为会有更多人用它，直到利润消失。<strong>均衡是 alpha 的坟场。</strong></p></div>
+<div class="card"><h4>少数者博弈</h4><p>赢的条件是站在少数一方。</p>
+<p>这是对量化策略最贴切的隐喻：如果所有人都用同一个信号买入，那么信号本身就失效了。你的收益不取决于信号对不对，取决于<strong>有多少人和你一样</strong>。</p></div>
+<div class="card"><h4>演化稳定策略 ESS</h4><p>一个策略不仅要在当前环境下能盈利，还要能抵抗变异策略的入侵。</p>
+<p>量化策略的死法之一不是"失效"，而是"被更适应环境的策略淘汰"——你的策略还在赚钱，但有别人的策略赚得更多，资金就走了。</p></div>
+<div class="card"><h4>逆向选择</h4><p>你知道的和对手知道的不对等。做市商面对的最核心风险。</p>
+<p>对量化的启示：<strong>你发出的每一个订单都在向市场传递信息</strong>。这就是为什么大单要拆、要随机化。</p></div>
+</div>
+<h3>概念之间的关系</h3>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="a2" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 z" fill="#454c56"/>
+    </marker>
+    <marker id="a2r" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/>
+    </marker>
+  </defs>
+
+  <rect x="30" y="120" width="130" height="56" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="95" y="145" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">信息不对称</text>
+  <text x="95" y="163" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">有人知道得更多</text>
+
+  <rect x="200" y="120" width="130" height="56" rx="10" fill="#fff7e6" stroke="#b8730a" stroke-width="1.5"/>
+  <text x="265" y="145" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">价差扩大</text>
+  <text x="265" y="163" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">做市商自保</text>
+
+  <rect x="370" y="120" width="130" height="56" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.5"/>
+  <text x="435" y="145" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">alpha 出现</text>
+  <text x="435" y="163" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">有价差可赚</text>
+
+  <rect x="540" y="120" width="120" height="56" rx="10" fill="#fbf9ff" stroke="#6b30d9" stroke-width="1.5"/>
+  <text x="600" y="145" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">资金涌入</text>
+  <text x="600" y="163" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">同行跟进</text>
+
+  <line x1="162" y1="148" x2="198" y2="148" stroke="#454c56" stroke-width="1.5" marker-end="url(#a2)"/>
+  <line x1="332" y1="148" x2="368" y2="148" stroke="#454c56" stroke-width="1.5" marker-end="url(#a2)"/>
+  <line x1="502" y1="148" x2="538" y2="148" stroke="#454c56" stroke-width="1.5" marker-end="url(#a2)"/>
+
+  <path d="M600,178 C600,250 265,262 265,180" fill="none" stroke="#d5342c" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#a2r)"/>
+  <text x="430" y="278" text-anchor="middle" font-size="11.5" fill="#d5342c" font-family="sans-serif">拥挤 → 价差被抹平 → alpha 归零（负反馈）</text>
+
+  <path d="M95,118 C95,50 600,44 600,116" fill="none" stroke="#0b7a74" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="340" y="30" text-anchor="middle" font-size="11.5" fill="#0b7a74" font-family="sans-serif">信息优势吸引研究投入 → 信息更快被定价 → 不对称度下降</text>
+</svg>
+<p>这张图包含两个反馈环，是理解全部内容的钥匙：</p>
+<ul>
+<li><strong>红色虚线（负反馈）</strong>：拥挤会消灭 alpha。这是策略的<strong>死因</strong>。</li>
+<li><strong>青色虚线（负反馈）</strong>：信息优势会吸引研究投入，最终降低信息不对称。这是<strong>整个行业利润率的死因</strong>，也是 Grossman-Stiglitz 悖论的内容。</li>
+</ul>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<h3>谁在和谁博弈</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与者</th>
+<th>目标函数</th>
+<th>信息优势</th>
+<th>约束</th>
+<th>A 股典型代表</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">知情交易者</td>
+<td>最大化信息租金</td>
+<td>强</td>
+<td>伪装成本、监管</td>
+<td>产业资本、内幕者</td>
+</tr>
+<tr>
+<td class="k">高频做市/套利</td>
+<td>最大化速度租金</td>
+<td>快（毫秒级）</td>
+<td>监管、技术投入</td>
+<td>头部量化自营</td>
+</tr>
+<tr>
+<td class="k">中低频量化</td>
+<td>因子风险溢价</td>
+<td>中（模型/数据）</td>
+<td>容量、拥挤</td>
+<td>幻方、九坤、明汯等</td>
+</tr>
+<tr>
+<td class="k">主观多头</td>
+<td>基本面判断</td>
+<td>中（深度研究）</td>
+<td>认知、情绪</td>
+<td>公募、私募主观</td>
+</tr>
+<tr>
+<td class="k">散户</td>
+<td>财富增值</td>
+<td>弱</td>
+<td>资金、信息、纪律</td>
+<td>约 2 亿账户</td>
+</tr>
+<tr>
+<td class="k">监管</td>
+<td>公平性 + 稳定性</td>
+<td>全面</td>
+<td>市场活力</td>
+<td>证监会、交易所</td>
+</tr>
+</tbody>
+</table></div>
+<h3>关键的非对称</h3>
+<p><strong>散户与量化之间的非对称不是"谁更聪明"，而是三重叠加</strong>：</p>
+<ol>
+<li><strong>信息非对称</strong>：量化能同时在几千只股票上扫描量价关系，人只能盯几十只</li>
+<li><strong>速度非对称</strong>：2026 年 6 月前，部分量化机构的通道比散户快数百倍<span class="tag t-fact">事实</span></li>
+<li><strong>纪律非对称</strong>：算法的止损是无条件的，人的止损需要跟自己谈判</li>
+</ol>
+<p>南京大学安同良团队的研究把这种结构称为"非对称收割"，并拆解出"坟包收割""逐浪抱团""精准狙击"等手法<span class="tag t-ana">分析</span>。</p>
+<div class="note amber"><b>必须说清楚的边界</b><p>"收割"是该团队的<strong>学术定性</strong>，个案是否构成违规须以监管认定为准。同时，那组广为流传的对比数据——2025 年 45 家百亿量化平均收益 37.6%、散户人均亏损 2.1 万元——<strong>在传播上有力，在方法上粗糙</strong>：前者是小盘牛市风格下的产品收益率，后者是"不完全统计"的散户口径，两者并非同一口径的因果两端。</p>
+<p>量化赚的钱不全部、也不直接等于散户亏的钱。这一点必须诚实标注为<span class="tag t-chk">待验证</span>。</p></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<h3>六个决定胜负的变量</h3>
+<div class="grid g3">
+<div class="card"><h4>信息不对称度 σv</h4><p>标的价值的不确定性。越高，知情者的信息越值钱，做市商越紧张，价差越宽。</p></div>
+<div class="card"><h4>噪声交易量 σu</h4><p>与信息无关的交易量。它是知情者的<strong>伪装来源</strong>。</p>
+<p>凯尔模型的结论很反直觉：噪声越多，市场反而越"好"——因为你可以藏在里面。</p></div>
+<div class="card"><h4>策略拥挤度</h4><p>有多少资金在跑相似的逻辑。这是最难直接观察、却最决定生死的变量。</p></div>
+<div class="card"><h4>交易成本 c</h4><p>显性（佣金、印花税）+ 隐性（冲击成本、机会成本）。它是负和博弈的抽水口。</p></div>
+<div class="card"><h4>速度差 Δt</h4><p>你的决策延迟与最快参与者的差距。监管正在系统性压缩这个差距的价值。</p></div>
+<div class="card"><h4>容量</h4><p>策略在不显著损害自身收益的前提下能容纳的资金上限。<strong>这是最被低估的变量</strong>——很多策略不是失效而死，是"被自己的规模压死"。</p></div>
+</div>
+<h3>哪个变量解释力最强</h3>
+<p>如果你只能盯一个变量，盯<strong>拥挤度</strong>。</p>
+<p>原因：它对收益的影响是<strong>非线性的</strong>，且存在阈值效应。拥挤度低时，多一点参与者几乎无感；跨过某个临界点后，收益会加速坍塌，同时尾部风险急剧放大。</p>
+<p>这也解释了为什么"因子拥挤"是最难管理却又最致命的风险。</p>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<h3>凯尔模型：量化世界里最干净的一个因果链</h3>
+<p>凯尔（Albert Kyle）1985 年的论文《连续拍卖与内幕交易》把市场抽象成三类人：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>知道什么</th>
+<th>想做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>知情交易者</strong></td>
+<td>资产的真实价值</td>
+<td>用信息赚钱，但不想暴露</td>
+</tr>
+<tr>
+<td class="k"><strong>噪声交易者</strong></td>
+<td>什么都不知道</td>
+<td>出于流动性、对冲、情绪而交易</td>
+</tr>
+<tr>
+<td class="k"><strong>做市商</strong></td>
+<td>只知道总订单流</td>
+<td>定价，且要防止被知情者占便宜</td>
+</tr>
+</tbody>
+</table></div>
+<p>核心冲突极为清晰：<strong>做市商只能看到总订单流 Q = x + u（信息交易 + 噪声交易），无法区分两者。</strong></p>
+<p>这创造了一个优雅的均衡：</p>
+<ul>
+<li>知情者如果交易太猛，做市商会从订单流里推断出信息，价格立刻调整，利润消失</li>
+<li>知情者如果交易太慢，信息优势被时间浪费掉</li>
+<li><strong>最优解是：把交易规模设置成与信息优势成正比，同时藏在噪声里</strong></li>
+</ul>
+<p>均衡结果给出凯尔 λ：</p>
+<blockquote>
+<p><strong>λ = σv / (2 × σu)</strong></p>
+</blockquote>
+<p>其中 σv 是资产真实价值的标准差，σu 是噪声交易量的标准差。</p>
+<p>这个公式的信息量极大：</p>
+<ul>
+<li><strong>价值越不确定（σv 大）→ λ 越大 → 流动性越差</strong></li>
+<li><strong>噪声交易越多（σu 大）→ λ 越小 → 流动性越好</strong></li>
+</ul>
+<p>第二条是反直觉的：<strong>噪声交易者在做好事</strong>。他们提供了知情者藏身的森林。没有噪声，任何订单都会被立刻识别，市场流动性归零。</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 1 · 凯尔 λ：你的订单在推多远的价？</h4></div>
+  <p class="tool-sub">λ = σv / (2σu)。它衡量每单位净订单流推动价格多少，也是"市场深度"的倒数。拖动滑块，看流动性如何随信息不对称而塌陷。</p>
+  <div class="ctrl">
+    <label for="ky_sv">基本面不确定度 σv（元/股）</label>
+    <input type="range" id="ky_sv" min="0.1" max="10" step="0.1" value="1">
+    <output id="ky_svO">1.0</output>
+  </div>
+  <div class="ctrl">
+    <label for="ky_su">噪声交易量 σu（万股）</label>
+    <input type="range" id="ky_su" min="10" max="1000" step="10" value="200">
+    <output id="ky_suO">200</output>
+  </div>
+  <div class="ctrl">
+    <label for="ky_p">当前股价（元）</label>
+    <input type="range" id="ky_p" min="5" max="100" step="1" value="20">
+    <output id="ky_pO">20</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">凯尔 λ</div><div class="val" id="ky_l">2.50e-7</div><div class="hint" id="ky_lh">每 1 股净买入推动价格上升这么多</div></div>
+    <div class="ro"><div class="lbl">100 万股净买入的冲击</div><div class="val" id="ky_imp">0.25 元</div><div class="hint" id="ky_imp2">占股价 1.25%</div></div>
+    <div class="ro"><div class="lbl">流动性判断</div><div class="val" id="ky_v" style="font-size:15px">良好</div><div class="hint" id="ky_vh">冲击成本可接受</div></div>
+  </div>
+</div>
+<p><strong>怎么用这个模型做判断</strong>：如果你的策略容量需要单日成交某只股票日均量的 5%，而 λ 算出冲击成本超过了策略的预期 alpha，那么<strong>这个策略在这只股票上的容量已经到顶了</strong>。不是策略错了，是物理限制。</p>
+<h3>从单期到连续：为什么大单要拆</h3>
+<p>凯尔模型的动态版本给出一个漂亮结果：在连续时间里，知情交易者的最优策略是<strong>匀速交易</strong>——不在期初集中执行，也不拖到最后，而是像 TWAP 一样均匀铺开。</p>
+<p>原因：价格冲击是凸的。集中执行会自我伤害，匀速执行能让信息逐步释放、价格缓慢反映，反而最赚。</p>
+<div class="note blue"><b>这个结论今天就印在你的交易软件里</b><p>券商算法交易里的 TWAP（时间加权）、VWAP（成交量加权）、IS（执行差额）三种主流算法，理论根都在这里。</p>
+<p>凯尔的 λ 是 Almogren 与 Chriss（2001）最优执行框架中<strong>线性冲击项</strong>的理论来源——他们把这个博弈论结果变成了可编程的执行计划。</p></div>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>同一套数学，五张不同的皮</h3>
+<p>博弈论最迷人的地方：<strong>同一个数学结构会在完全不同的领域反复出现</strong>，只是穿的衣服不一样。</p>
+<p>识别这些同构，你就能把一个领域的解法搬到另一个领域。</p>
+<div class="grid g2">
+<div class="card"><h4>少数者博弈 ↔ 反向交易 ↔ 逆势策略</h4><p>赢的条件是"和别人不一样"。</p>
+<p>同一个结构：少数者博弈（Challet &amp; Zhang, 1997）↔ 股市里的反向操作 ↔ 凯恩斯的选美理论 ↔ 索罗斯的反身性。都是"预测别人的预测"。</p></div>
+<div class="card"><h4>凯尔 λ ↔ 信道容量 ↔ 信噪比</h4><p>知情者把信息"编码"进订单流，做市商"解码"。</p>
+<p>这跟香农的信道容量是同一个结构：<strong>信息传输速率受噪声水平约束</strong>。噪声交易在这里扮演的角色，跟通信里的热噪声完全对应——它既干扰信号，也保护信号。</p></div>
+<div class="card"><h4>复制动态 ↔ 生物演化 ↔ 策略生命周期</h4><p>收益率高于平均的策略，其资金份额会增长。</p>
+<p>这就是生物学里的复制动态方程（replicator dynamics）：适应度高的物种占比上升。策略的"发现→拥挤→衰减"完全等价于<strong>生态位的饱和</strong>。</p></div>
+<div class="card"><h4>逆向选择 ↔ 柠檬市场 ↔ 二手车问题</h4><p>信息不对称让交易成本上升，最终市场萎缩。</p>
+<p>阿克洛夫的柠檬市场（1970）↔ 做市商扩大价差 ↔ 企业招聘中的学历通胀。机制完全一样：<strong>当质量无法被识别时，交易成本就成了筛选器</strong>。</p></div>
+<div class="card"><h4>结果论 ↔ 幸存者偏差 ↔ 归因错误</h4><p>用结果反推决策质量。</p>
+<p>扑克玩家叫它 resulting，统计学家叫它幸存者偏差，心理学家叫它基本归因错误。<strong>量化里它最致命的形式是：用回测收益判断策略好坏。</strong></p></div>
+<div class="card"><h4>Grossman-Stiglitz 悖论 ↔ 公地悲剧 ↔ 开源困境</h4><p>人人都想白嫖，但没人付出就没有东西可白嫖。</p>
+<p>信息是公共品：你花钱发现了错价，买入后价格上升，所有人受益，只有你付了成本。这与公地悲剧、开源软件的资助困境是同一结构。</p></div>
+</div>
+<h3>最值得记住的一个同构</h3>
+<p><strong>少数者博弈 ↔ 策略拥挤 ↔ 生态位饱和</strong></p>
+<p>这三个词描述的是同一件事：<em>当一个位置被足够多的个体占据时，它的收益必然下降到平均水平。</em></p>
+<p>这个洞察可以直接移植：</p>
+<ul>
+<li>生物学告诉我们，生态位饱和后会出现<strong>分化</strong>（新物种占据细分位）</li>
+<li>这对应到量化：拥挤压力会逼着策略向更高频、更低频、或另类数据方向分化</li>
+<li>所以<strong>拥挤不是终点，是分化的起点</strong></li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>三个机制串联起整个系统</h3>
+<p><strong>机制一（微观）</strong>：信息不对称 → 做市商扩大价差 → 知情者赚取价差 → 价差被套利 → 信息不对称下降</p>
+<p><strong>机制二（中观）</strong>：alpha 被发现 → 资金涌入 → 策略拥挤 → alpha 衰减 → 资金流出</p>
+<p><strong>机制三（宏观）</strong>：交易成本持续抽水 → 整体负和 → 必须有净输家 → 输家退出 → 市场参与者结构变化</p>
+<p>三个机制的传导速度差异巨大：机制一以毫秒计，机制二以月计，机制三以年计。<strong>新手常犯的错误是用机制三的时间尺度去理解机制一的事件。</strong></p>
+<h3>少数者博弈：为什么"人多的地方不要去"在数学上成立</h3>
+<p>这是最能解释量化策略生命周期的模型。</p>
+<p>设定极简：N 个参与者（N 为奇数），每轮独立选择买或卖。<strong>选择少数一方的人获胜</strong>，得 1 分。</p>
+<p>每人手里有若干个策略（每个策略就是一张"在什么历史情形下该买还是该卖"的查表）。每轮用累计得分最高的那个策略。</p>
+<p>结果出人意料地深刻：</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 2 · 少数者博弈模拟器</h4></div>
+  <p class="tool-sub">N 个参与者各自用"历史最佳策略"预测，选择少数一方者获胜。观察两件事：不管多少人参与，多数方比例都顽固地回到 50%；但波动幅度会随人数显著变化。</p>
+  <div class="ctrl">
+    <label for="mg_n">参与者数量 N</label>
+    <input type="range" id="mg_n" min="1" max="5" step="1" value="3">
+    <output id="mg_nO">101</output>
+  </div>
+  <div class="ctrl">
+    <label for="mg_m">记忆长度 M</label>
+    <input type="range" id="mg_m" min="2" max="4" step="1" value="3">
+    <output id="mg_mO">3</output>
+  </div>
+  <canvas id="mgChart" width="640" height="240" style="width:100%;max-width:640px"></canvas>
+  <div class="readout">
+    <div class="ro"><div class="lbl">实际波动率</div><div class="val" id="mg_vol">—</div><div class="hint" id="mg_volh">偏离 50% 的幅度（标准差）</div></div>
+    <div class="ro"><div class="lbl">随机基准波动率</div><div class="val" id="mg_rand">—</div><div class="hint">纯抛硬币时的理论波动</div></div>
+    <div class="ro"><div class="lbl">判断</div><div class="val" id="mg_v" style="font-size:15px">—</div><div class="hint" id="mg_vh">—</div></div>
+  </div>
+</div>
+<p><strong>从这张图要读出的三件事</strong>：</p>
+<ol>
+<li><strong>可预测性被系统性消灭</strong>。参与者越是用心找规律，结果越接近 50:50。这是"投机压力消除套利机会"的数学证明。</li>
+<li><strong>人数少时波动巨大，人数多时反而稳定</strong>。这是反直觉的：人越多，每个人的影响力被稀释，系统越平稳。</li>
+<li><strong>策略必须持续更新</strong>。因为一旦你的规律被其他人掌握，它就失效了。这解释了为什么量化的研究投入永远不会停止——不是贪心，是生存。</li>
+</ol>
+<div class="note purple"><b>这个模型对 A 股的直接含义</b><p>量化策略同质化是真实存在的风险。有资料显示，<strong>90% 以上的量化机构使用相似的量价因子，超过 70% 的机构止损阈值相差不超过 3%</strong><span class="tag t-chk">待验证</span>。</p>
+<p>这意味着：一旦市场风向逆转，大家会在同一个位置同时止损。这不再是"alpha 衰减"问题，而是<strong>系统性踩踏风险</strong>。</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<h3>一个因子的完整一生</h3>
+<p>每个因子都会走完这条路，没有例外：</p>
+<svg viewBox="0 0 680 250" width="100%" style="max-width:680px">
+  <line x1="50" y1="180" x2="650" y2="180" stroke="#e2e6ec" stroke-width="2"/>
+  <line x1="50" y1="30" x2="50" y2="180" stroke="#e2e6ec" stroke-width="2"/>
+  <text x="30" y="40" font-size="11" fill="#7c848f" font-family="sans-serif" text-anchor="end">超额</text>
+  <text x="30" y="54" font-size="11" fill="#7c848f" font-family="sans-serif" text-anchor="end">收益</text>
+  <text x="648" y="198" font-size="11" fill="#7c848f" font-family="sans-serif" text-anchor="end">时间</text>
+
+  <path d="M50,50 C140,52 190,70 250,100 C310,128 370,150 450,164 C530,176 600,178 650,178"
+        fill="none" stroke="#1d4ed8" stroke-width="2.5"/>
+
+  <circle cx="70" cy="51" r="5" fill="#0f8a4d"/>
+  <circle cx="250" cy="100" r="5" fill="#b8730a"/>
+  <circle cx="450" cy="164" r="5" fill="#d5342c"/>
+  <circle cx="630" cy="178" r="5" fill="#7c848f"/>
+
+  <text x="70" y="34" font-size="11.5" font-weight="700" fill="#0f8a4d" font-family="sans-serif" text-anchor="middle">发现</text>
+  <text x="250" y="84" font-size="11.5" font-weight="700" fill="#b8730a" font-family="sans-serif" text-anchor="middle">拥挤</text>
+  <text x="450" y="148" font-size="11.5" font-weight="700" fill="#d5342c" font-family="sans-serif" text-anchor="middle">衰减</text>
+  <text x="628" y="162" font-size="11.5" font-weight="700" fill="#7c848f" font-family="sans-serif" text-anchor="middle">失效/演化</text>
+
+  <text x="70" y="212" font-size="10.5" fill="#454c56" font-family="sans-serif" text-anchor="middle">竞争者极少</text>
+  <text x="70" y="226" font-size="10.5" fill="#454c56" font-family="sans-serif" text-anchor="middle">容量充裕</text>
+  <text x="250" y="212" font-size="10.5" fill="#454c56" font-family="sans-serif" text-anchor="middle">相关性上升</text>
+  <text x="250" y="226" font-size="10.5" fill="#454c56" font-family="sans-serif" text-anchor="middle">收益被摊薄</text>
+  <text x="450" y="212" font-size="10.5" fill="#454c56" font-family="sans-serif" text-anchor="middle">踩踏风险</text>
+  <text x="450" y="226" font-size="10.5" fill="#454c56" font-family="sans-serif" text-anchor="middle">回撤超预期</text>
+  <text x="628" y="212" font-size="10.5" fill="#454c56" font-family="sans-serif" text-anchor="middle">要么退休</text>
+  <text x="628" y="226" font-size="10.5" fill="#454c56" font-family="sans-serif" text-anchor="middle">要么改造</text>
+</svg>
+<h3>有实证锚点的衰减幅度</h3>
+<p>麦 克 莱 恩 与 庞 蒂 夫（McLean &amp; Pontiff, 2016）做了一件很硬的事：追踪 <strong>97 个已发表的收益预测因子</strong><span class="tag t-fact">事实</span>，结果：</p>
+<ul>
+<li><strong>样本外收益比样本内低 26%</strong></li>
+<li><strong>论文发表后收益低 58%</strong></li>
+<li>发表后，各因子组合之间的<strong>相关性显著上升</strong></li>
+</ul>
+<p>这三条数据合起来讲了一个完整的故事：不是因子变差了，是<strong>因子被交易掉了</strong>。而且交易它的人变多之后，它们的走势开始趋同——这正是拥挤的数学指纹。</p>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 3 · Alpha 衰减：拥挤吃掉了多少？</h4></div>
+  <p class="tool-sub">模型：剩余 alpha 比例 = exp(−k × 拥挤度)，其中 k 由"发表后收益低 58%"这一实证锚点标定（k ≈ 0.868）。模型形式是【假设】，锚点是【事实】。</p>
+  <div class="ctrl">
+    <label for="ad_c">拥挤度（1 = 已被广泛知晓并交易）</label>
+    <input type="range" id="ad_c" min="0" max="3" step="0.05" value="1">
+    <output id="ad_cO">1.00</output>
+  </div>
+  <div class="ctrl">
+    <label for="ad_a">原始 alpha（年化 %）</label>
+    <input type="range" id="ad_a" min="1" max="40" step="1" value="20">
+    <output id="ad_aO">20</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">剩余 alpha 比例</div><div class="val" id="ad_rem">42.0%</div><div class="hint" id="ad_remh">—</div></div>
+    <div class="ro"><div class="lbl">衰减后年化 alpha</div><div class="val" id="ad_new">8.4%</div><div class="hint" id="ad_newh">—</div></div>
+    <div class="ro"><div class="lbl">需要多少成本容忍度</div><div class="val" id="ad_cost" style="font-size:15px">—</div><div class="hint" id="ad_costh">—</div></div>
+  </div>
+</div>
+<p><strong>这个工具真正的用途</strong>：不是预测，而是<strong>给策略定一个"失效判断线"</strong>。如果你的策略上线前年化 alpha 是 20%，而拥挤度模型告诉你行业里已有大量资金在做类似的事，那你应该预期实际拿到的是个位数——而不是继续用 20% 的假设去做容量规划。</p>
+<h3>为什么要建立"衰减监控"而不是"业绩归因"</h3>
+<p>专业做法不是等亏了才分析，而是持续监控衰减信号：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>衰减信号</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">滚动 Sharpe</td>
+<td>持续低于回测值</td>
+<td>最直接的警报</td>
+</tr>
+<tr>
+<td class="k">成交滑点</td>
+<td>系统性上升</td>
+<td>拥挤或流动性恶化</td>
+</tr>
+<tr>
+<td class="k">胜率</td>
+<td>缓慢下滑</td>
+<td>结构变化，不是波动</td>
+</tr>
+<tr>
+<td class="k">与同类的相关性</td>
+<td>突然上升</td>
+<td><strong>最危险的信号</strong>，踩踏前兆</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>最后一条最容易被忽略，却最致命。</strong> 相关性上升意味着你和别人持有了相同的头寸，此时风险不再是各策略独立的，而是高度共振的。</p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<h3>谁在付钱，谁在收钱</h3>
+<p>这是全篇最重要的一张表。看不懂钱怎么流动，就看不懂博弈。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>资金流向</th>
+<th>从谁</th>
+<th>到谁</th>
+<th>机制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>交易成本</strong></td>
+<td>所有交易者</td>
+<td>券商、交易所、政府</td>
+<td>佣金、印花税、过户费</td>
+</tr>
+<tr>
+<td class="k"><strong>价差</strong></td>
+<td>急于成交者</td>
+<td>做市商、流动性提供者</td>
+<td>买卖价差</td>
+</tr>
+<tr>
+<td class="k"><strong>信息租金</strong></td>
+<td>噪声交易者</td>
+<td>知情交易者</td>
+<td>逆向选择</td>
+</tr>
+<tr>
+<td class="k"><strong>因子溢价</strong></td>
+<td>行为偏差者</td>
+<td>量化策略</td>
+<td>系统性定价错误</td>
+</tr>
+<tr>
+<td class="k"><strong>速度租金</strong></td>
+<td>慢速参与者</td>
+<td>高速参与者</td>
+<td>时间套利（正被监管压缩）</td>
+</tr>
+<tr>
+<td class="k"><strong>管理费</strong></td>
+<td>投资者</td>
+<td>管理人</td>
+<td>固定费率（与业绩无关）</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note red"><b>最后一行是理解行业的钥匙</b><p>管理费是<strong>与业绩无关</strong>的收入。这意味着量化机构的激励是<strong>做大管理规模</strong>，而不是把有限容量的策略做到极致。</p>
+<p>这创造了一个真实的利益冲突：当策略容量接近上限时，机构会倾向继续吸金（收更多管理费）而不是封盘（保护业绩）。<strong>你在选择产品时，要看清它的规模是否已经超过了策略容量。</strong></p></div>
+<h3>激励扭曲的三个后果</h3>
+<div class="grid g3">
+<div class="card"><h4>规模优先于收益</h4><p>规模直接产生管理费，收益只影响业绩提成（且很多产品没有）。</p>
+<p>结果：策略容量被系统性透支。</p></div>
+<div class="card"><h4>短期业绩压力</h4><p>季度排名驱动短期行为，而真正的 alpha 往往需要更长持有期。</p>
+<p>结果：风格漂移、抱团。</p></div>
+<div class="card"><h4>数据挖掘激励</h4><p>发表因子能获得学术声望，但发表即摧毁该因子。</p>
+<p>结果：因子动物园膨胀（数百个"显著"因子），真正可交易的极少。</p></div>
+</div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>负和博弈：抽水口在哪里</h3>
+<p>股市的三重身份必须分清：</p>
+<ul>
+<li><strong>长期</strong>：正和。企业创造价值，分红与盈利增长是真实的净增量</li>
+<li><strong>中期</strong>：接近零和。财富在参与者之间转移</li>
+<li><strong>短期高频</strong>：<strong>确定的负和</strong>。每次换手都被抽水</li>
+</ul>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="a3" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 z" fill="#454c56"/>
+    </marker>
+  </defs>
+  <rect x="240" y="18" width="200" height="52" rx="10" fill="#eaf0ff" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="340" y="40" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">市场资金池</text>
+  <text x="340" y="58" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">所有参与者投入的资金</text>
+
+  <rect x="40" y="130" width="130" height="52" rx="10" fill="#fbf9ff" stroke="#6b30d9" stroke-width="1.5"/>
+  <text x="105" y="152" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">企业盈利</text>
+  <text x="105" y="170" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">注水（正和来源）</text>
+
+  <rect x="200" y="130" width="130" height="52" rx="10" fill="#fffafa" stroke="#d5342c" stroke-width="1.5"/>
+  <text x="265" y="152" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">交易成本</text>
+  <text x="265" y="170" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">印花税+佣金+冲击</text>
+
+  <rect x="360" y="130" width="130" height="52" rx="10" fill="#fffafa" stroke="#d5342c" stroke-width="1.5"/>
+  <text x="425" y="152" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">融资抽水</text>
+  <text x="425" y="170" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">IPO·再融资·减持</text>
+
+  <rect x="520" y="130" width="130" height="52" rx="10" fill="#f8fdfa" stroke="#0f8a4d" stroke-width="1.5"/>
+  <text x="585" y="152" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">参与者之间</text>
+  <text x="585" y="170" text-anchor="middle" font-size="10.5" fill="#454c56" font-family="sans-serif">零和转移</text>
+
+  <line x1="300" y1="72" x2="140" y2="126" stroke="#454c56" stroke-width="1.3" marker-end="url(#a3)"/>
+  <line x1="330" y1="72" x2="270" y2="126" stroke="#d5342c" stroke-width="1.6" marker-end="url(#a3)"/>
+  <line x1="355" y1="72" x2="420" y2="126" stroke="#d5342c" stroke-width="1.6" marker-end="url(#a3)"/>
+  <line x1="385" y1="72" x2="578" y2="126" stroke="#454c56" stroke-width="1.3" marker-end="url(#a3)"/>
+
+  <text x="340" y="222" text-anchor="middle" font-size="11.5" fill="#15181d" font-family="sans-serif">
+    正和来源（企业盈利） &lt; 抽水（成本+融资） ⟹ 整体负和
+  </text>
+  <text x="340" y="242" text-anchor="middle" font-size="11" fill="#7c848f" font-family="sans-serif">
+    差额必须有净输家来承担 —— 这就是"八亏一平一赚"的结构性来源
+  </text>
+</svg>
+<h3>换手率的代价：一个可以自己算的账</h3>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 4 · 负和抽水：你的换手率值多少钱？</h4></div>
+  <p class="tool-sub">年化成本拖累 ≈ 双边年换手倍数 × 单边成本（含冲击）。这是负和博弈对你的直接收费，与判断对错无关。</p>
+  <div class="ctrl">
+    <label for="ns_t">年双边换手率（%）</label>
+    <input type="range" id="ns_t" min="50" max="3000" step="50" value="600">
+    <output id="ns_tO">600%</output>
+  </div>
+  <div class="ctrl">
+    <label for="ns_c">单边成本（基点 bp）</label>
+    <input type="range" id="ns_c" min="2" max="60" step="1" value="12">
+    <output id="ns_cO">12</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">年化成本拖累</div><div class="val" id="ns_drag">0.72%</div><div class="hint" id="ns_dragh">直接从你的收益里扣除</div></div>
+    <div class="ro"><div class="lbl">需要的年化 alpha 底线</div><div class="val" id="ns_need">0.72%</div><div class="hint">覆盖成本所需的最低超额收益</div></div>
+    <div class="ro"><div class="lbl">夏普被吃掉多少</div><div class="val" id="ns_sharpe" style="font-size:15px">—</div><div class="hint" id="ns_sharpeh">按年化波动 20% 折算</div></div>
+  </div>
+</div>
+<p><strong>把这个工具开到高频再想一遍负和博弈</strong>：如果年双边换手是 3000%、单边成本 12bp，年化成本拖累就是 3.6%。这意味着<strong>你必须先赚 3.6% 才能不亏</strong>。</p>
+<p>这就是为什么高频交易对散户是双重不利的：判断对了也未必赚钱（成本吃掉），判断错了还要再亏。</p>
+<div class="note amber"><b>同一件事的另一面</b><p>负和抽水同样作用在<strong>量化机构</strong>身上，只是它们的单边成本更低（自有通道、算法执行）。</p>
+<p>所以成本优势本身就是 alpha 的来源之一——<strong>这也正是监管拆除速度特权会实质影响行业利润的原因</strong>。当速度优势被削平，一部分原本靠"快"赚的钱就不存在了。</p></div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序。前三个是真正的 20% 解释 80%。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆点</th>
+<th>为什么杠杆率高</th>
+<th>怎么操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>判断对手是谁</strong></td>
+<td>决定你的钱从谁那里来。如果说不清对手，你就不知道收益能否持续</td>
+<td>对每个策略问："这笔收益是从知情者、做市商还是噪声交易者身上赚的？"</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>拥挤度估计</strong></td>
+<td>决定策略还能活多久。非线性影响，有阈值效应</td>
+<td>跟踪同类产品数量与规模、因子相关性、滑点趋势</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>成本结构</strong></td>
+<td>负和抽水直接扣收益，且与判断无关</td>
+<td>算清单边总成本，把年换手率乘上去</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>容量约束</td>
+<td>很多策略死于规模而非失效</td>
+<td>用工具 1 估冲击成本，反推最大可承载资金</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>相关性监控</td>
+<td>踩踏前兆，尾部风险的真正来源</td>
+<td>滚动跟踪与同类的收益相关性</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>噪声交易量 σu</td>
+<td>它是你的掩护，也是流动性本身</td>
+<td>关注换手率、散户活跃度等代理变量</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>信息不对称度 σv</td>
+<td>决定价差与冲击成本</td>
+<td>财报窗口、事件驱动期特别关注</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>速度优势</td>
+<td><strong>正在被监管系统性削平</strong></td>
+<td>不要再把速度当作长期护城河</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>结果与决策的分离</td>
+<td>防止把运气当能力</td>
+<td>记录决策日志，评估过程而非仅看盈亏</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>激励结构识别</td>
+<td>看清管理人是为规模还是为业绩</td>
+<td>查产品规模是否已超策略容量、有无封盘机制</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note blue"><b>如果只看三个</b><p><strong>对手是谁 / 拥挤到什么程度 / 成本多少</strong>。</p>
+<p>这三个问题一个都答不上来的策略，无论回测多漂亮都不该上真金白银。</p></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱 1 · 把回测收益当成策略能力</summary><div class="dbody"><p>最普遍也最致命。回测是在<strong>已知答案</strong>的情况下做题，实盘是在不知道答案的情况下做题。</p>
+<p>麦 克 莱 恩 与 庞 蒂 夫 的数据已经量化了这一点：样本外低 26%，发表后低 58%。</p></div></details>
+<details><summary>陷阱 2 · 用结果判断决策质量（结果论）</summary><div class="dbody"><p>杜克（Annie Duke）的经典观察：她请高管列出"去年最好的和最差的决策"，<strong>没有一个人列出的是决策，全是结果</strong>。</p>
+<p>一笔违反系统却赚钱的交易是<strong>坏决策</strong>；严格执行规则但亏钱的交易是<strong>好决策</strong>。长期看，期望值会站在好决策一边。</p></div></details>
+<details><summary>陷阱 3 · 混淆相关与因果</summary><div class="dbody"><p>"成交量放大后股价下跌"是观察，不是规律。</p>
+<p>可能是：量化在派发（因果）／也可能是下跌过程中恐慌盘涌出（倒因为果）／也可能两者都由第三个因素驱动。</p>
+<p><strong>没有机制解释的统计关系，在样本外极不可靠。</strong></p></div></details>
+<details><summary>陷阱 4 · 幸存者偏差</summary><div class="dbody"><p>你听说过的量化机构都是活下来的。倒闭的那些不会写书、不会接受采访、不会出现在排行榜上。</p>
+<p>西蒙斯的大奖章基金年化收益确实惊人，但<strong>它是特例不是常态</strong>——用幸存者定义行业平均水平，会系统性高估收益、低估风险。</p></div></details>
+<details><summary>陷阱 5 · 把 alpha 衰减误认为暂时回撤</summary><div class="dbody"><p>两者在早期难以区分。</p>
+<p>区别方法：回撤是均值回复的（会回来），衰减是结构性的（不会）。看滚动 Sharpe 的趋势，而不是单次回撤幅度。</p></div></details>
+<details><summary>陷阱 6 · 忽略容量约束</summary><div class="dbody"><p>一个策略在小资金下年化 40%，规模扩大十倍后可能只剩 8%——因为它自己的交易在推高成本。</p>
+<p><strong>这是最被低估的死法</strong>：不是亏死，是赚得不够多而死。</p></div></details>
+<details><summary>陷阱 7 · 认为&quot;数学好就能做好量化&quot;</summary><div class="dbody"><p>数学能力决定你能<strong>构造</strong>多少种策略，不决定<strong>哪个策略现在有效</strong>。</p>
+<p>策略有效性取决于市场结构和对手行为，这是博弈问题，不是数学问题。数学是必要条件，不是充分条件。</p></div></details>
+<details><summary>陷阱 8 · 把拥挤当作&quot;大家都看好，所以更该买&quot;</summary><div class="dbody"><p>完全反了。</p>
+<p>在博弈框架下，<strong>拥挤是风险的来源而不是确定性的来源</strong>。当所有人都用同一因子时，这个因子的风险回报比已经恶化了。</p></div></details>
+<details><summary>陷阱 9 · 用&quot;这次不一样&quot;解释一切</summary><div class="dbody"><p>每一次都有人论证为什么这次不同。有时确实不同（机制变了），有时只是老故事穿新衣。</p>
+<p><strong>判断标准</strong>：机制是否发生了可验证的变化？（如监管新规、市场结构改变）还是只有叙述变了？</p></div></details>
+<details><summary>陷阱 10 · 忽视监管作为博弈参与者</summary><div class="dbody"><p>监管不是背景板，它是一个<strong>有目标函数的参与者</strong>。</p>
+<p>2026 年中国监管的一系列动作——6 月清退高速通道、7 月 30 日局域网转广域网<span class="tag t-fact">事实</span>——直接改写了策略的收益结构。把监管当成外生常量去做长期规划，会犯严重错误。</p></div></details>
+<details><summary>陷阱 11 · 追求高胜率</summary><div class="dbody"><p>胜率与盈亏比是一对权衡。追求 70% 胜率往往意味着极差的盈亏比。</p>
+<p><strong>真正决定长期结果的是期望值，不是胜率。</strong> 凯利公式早就说清了这一点。</p></div></details>
+<details><summary>陷阱 12 · 以为&quot;不做&quot;不是决策</summary><div class="dbody"><p>不交易也是一种头寸（持有现金也是一种观点）。</p>
+<p>杜克对此的说法很精确：<strong>更大的错误是瘫痪——什么都不做，假装那不是决策。</strong></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<h3>三组概念的落地路径</h3>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">少数者博弈 → 反向思考</button><button class="tab" data-pane="tb1-1">@@逆向选择 → 订单即信息</button><button class="tab" data-pane="tb1-2">@@结果论 → 决策日志</button></div>
+<div class="pane on" id="tb1-0"><p><strong>抽象</strong>：赢的条件是站在少数一方。</p>
+<p><strong>为什么成立</strong>：如果所有人都用同一个信号买入，买入行为本身就把价格推高到无利可图。</p>
+<p><strong>可观察信号</strong>：某个因子被大量产品持有；相关报道铺天盖地；学术论文密集发表；卖方研报扎堆推荐。</p>
+<p><strong>可操作动作</strong>：当发现某策略"人尽皆知"时，主动降低其权重；或反向寻找被冷落的角落。</p>
+<p><strong>危险之处</strong>：反向不等于正确。"人多的地方不要去"不等于"人少的地方一定好"——很多冷门地方的冷门是有原因的。</p></div><div class="pane" id="tb1-1"><p><strong>抽象</strong>：你的每笔交易都在向市场泄露信息。</p>
+<p><strong>为什么成立</strong>：做市商会从总订单流的异常中推断知情者的存在，并扩大价差。</p>
+<p><strong>可观察信号</strong>：大单成交后价格向你有利方向持续漂移（说明你在被人利用）；或反方向漂移（说明你在被识别）。</p>
+<p><strong>可操作动作</strong>：拆单、随机化下单时间、使用 TWAP/VWAP 等算法、避开流动性最差的时段。</p>
+<p><strong>现实对应</strong>：机构的大宗交易、暗池交易（dark pool），本质上都是为了<strong>减少信息泄露</strong>。</p></div><div class="pane" id="tb1-2"><p><strong>抽象</strong>：决策质量与结果质量是两个独立的维度。</p>
+<p><strong>为什么重要</strong>：在不确定性环境里，好决策也会失败。如果只看结果，你会系统性地强化坏习惯。</p>
+<p><strong>可观察信号</strong>：你是否经常说"这次运气不好"（对自己的失败）和"我很厉害"（对自己的成功）。</p>
+<p><strong>可操作动作</strong>：建立决策日志。每笔交易前写下：依据、赔率、止损位、心理状态。事后评估<strong>决策过程</strong>，而非仅看盈亏。</p>
+<p><strong>额外收益</strong>：三个月后回看，你会清楚看到自己的重复性错误。
+@@</p></div>
+<h3>一个日常生活的对照</h3>
+<p>博弈论的很多结论不止用于交易：</p>
+<ul>
+<li><strong>少数者博弈 ↔ 职业选择</strong>：当所有人都涌入某个行业时，该行业的人力资本回报会下降</li>
+<li><strong>逆向选择 ↔ 二手车/保险</strong>：卖方信息优势导致市场萎缩</li>
+<li><strong>容量约束 ↔ 投资自己</strong>：一个人的精力容量有限，超过后边际收益递减</li>
+<li><strong>结果论 ↔ 求职面试复盘</strong>：没拿到 offer 不代表面试表现差</li>
+</ul>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<h3>从知识到技能的转换链</h3>
+<pre><code>博弈论概念 → 分析工具 → 决策规则 → 具体行动 → 可验证实验 → 数据 → 修正后的规则
+</code></pre>
+<p>以"拥挤度"为例走一遍：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>环节</th>
+<th>具体内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">概念</td>
+<td>因子拥挤：过多资金追逐同一逻辑，收益被摊薄</td>
+</tr>
+<tr>
+<td class="k">工具</td>
+<td>相关性监控、滑点趋势、同类产品规模跟踪</td>
+</tr>
+<tr>
+<td class="k">决策规则</td>
+<td>当与同类的相关性从 0.3 升到 0.7，减仓一半</td>
+</tr>
+<tr>
+<td class="k">行动</td>
+<td>每月计算滚动相关性，设阈值告警</td>
+</tr>
+<tr>
+<td class="k">实验</td>
+<td>回测：历史上相关性升破 0.7 后，后续 3 个月收益如何？</td>
+</tr>
+<tr>
+<td class="k">数据</td>
+<td>记录每次告警后的实际表现</td>
+</tr>
+<tr>
+<td class="k">修正</td>
+<td>根据数据调整阈值（可能是 0.6 或 0.8 更合适）</td>
+</tr>
+</tbody>
+</table></div>
+<h3>你现在能做什么</h3>
+<div class="grid g3">
+<div class="card"><h4>立刻能做</h4><p>算清自己的年双边换手率与单边成本，得出年化拖累（工具 4）。</p>
+<p>如果它已经超过你的预期年化收益，那问题不在选股，在频率。</p></div>
+<div class="card"><h4>这周能做</h4><p>给自己的持仓/策略做一次"对手分析"：这笔收益是从谁那里赚来的？说不清就是危险信号。</p></div>
+<div class="card"><h4>这个月能做</h4><p>建立决策日志，并回看三个月前的记录，找出重复性错误。</p></div>
+</div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>基础认知（1–3 个月）</summary><div class="dbody"><p><strong>核心概念</strong>
+- 零和 / 负和 / 正和博弈的区分
+- 纳什均衡的直觉理解
+- 逆向选择与信息不对称
+- 交易成本的构成</p>
+<p><strong>基本工具</strong>
+- 凯尔 λ 的直觉与计算
+- 少数者博弈的逻辑
+- 换手率与成本拖累的换算</p>
+<p><strong>基本判断</strong>
+- 能说清一个策略的收益来源
+- 能识别"结果论"陷阱
+- 知道回测 ≠ 实盘</p></div></details>
+<details><summary>中级能力（3–12 个月）</summary><div class="dbody"><p><strong>模型建立</strong>
+- 能估算策略容量上限
+- 能构建拥挤度代理指标
+- 能做基本的冲击成本建模</p>
+<p><strong>问题分析</strong>
+- 区分回撤与衰减
+- 分析策略失效的机制原因
+- 识别激励结构带来的偏差</p>
+<p><strong>决策</strong>
+- 建立并执行书面决策规则
+- 设计决策日志并坚持记录
+- 设定策略失效判断线</p>
+<p><strong>实践</strong>
+- 用模拟盘验证拥挤度监控
+- 完整走通一次"假设→实验→修正"</p></div></details>
+<details><summary>高级能力（1–3 年）</summary><div class="dbody"><p><strong>系统分析</strong>
+- 三层博弈（微观/策略/生态）联动分析
+- 理解监管作为内生参与者
+- 跨市场、跨资产的博弈结构比较</p>
+<p><strong>预测与反事实推演</strong>
+- 能对策略衰减做前瞻判断
+- 能模拟不同拥挤度下的收益分布
+- 能做多情景压力测试</p>
+<p><strong>复杂决策</strong>
+- 在容量、收益、风险之间做权衡
+- 处理相关性与尾部风险的矛盾</p>
+<p><strong>模型创新</strong>
+- 结合另类数据构建新信号
+- 把其他领域的博弈结构迁移过来</p></div></details>
+<details><summary>专家能力（3 年以上）</summary><div class="dbody"><ul>
+<li><strong>发现新变量</strong>：识别出市场上尚无人系统追踪的博弈维度</li>
+<li><strong>发现隐藏关系</strong>：识别跨市场、跨策略的结构性关联</li>
+<li><strong>建立新模型</strong>：构建能解释并预测拥挤过程的模型</li>
+<li><strong>发现系统漏洞</strong>：找到市场结构或规则中的可利用不均衡（且合规）</li>
+<li><strong>创造新方案</strong>：设计出在监管与容量约束下依然有效的新范式</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<h3>这个领域作为一场游戏</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>元素</th>
+<th>对应物</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>玩家</strong></td>
+<td>你</td>
+</tr>
+<tr>
+<td class="k"><strong>世界</strong></td>
+<td>一个持续演化的多参与者博弈场</td>
+</tr>
+<tr>
+<td class="k"><strong>资源</strong></td>
+<td>资金、时间、信息、算力、纪律、认知带宽</td>
+</tr>
+<tr>
+<td class="k"><strong>目标</strong></td>
+<td>在负和环境中获得正期望，并让它可持续</td>
+</tr>
+<tr>
+<td class="k"><strong>规则</strong></td>
+<td>交易成本、涨跌停、T+1、监管约束</td>
+</tr>
+<tr>
+<td class="k"><strong>NPC</strong></td>
+<td>做市商、机构、散户、监管</td>
+</tr>
+<tr>
+<td class="k"><strong>技能树</strong></td>
+<td>见上一节</td>
+</tr>
+<tr>
+<td class="k"><strong>装备</strong></td>
+<td>数据源、执行算法、风控系统、决策日志</td>
+</tr>
+<tr>
+<td class="k"><strong>经验值</strong></td>
+<td>每完成一次"假设→验证→修正"循环</td>
+</tr>
+<tr>
+<td class="k"><strong>Boss</strong></td>
+<td>拥挤度判断——它无形、动态、且致命</td>
+</tr>
+<tr>
+<td class="k"><strong>失败</strong></td>
+<td>用错误的模型赚钱（最危险）、或用正确的模型亏钱（可接受）</td>
+</tr>
+<tr>
+<td class="k"><strong>奖励</strong></td>
+<td>可持续的正期望，以及<strong>知道自己为什么赚钱</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>隐藏地图</h3>
+<p>只有深入理解系统之后才会注意到的结构：</p>
+<div class="grid g2">
+<div class="card"><h4>隐藏任务 1：你的对手不知道自己是对手</h4><p>很多散户不认为自己在博弈，他们以为在"投资"。这个认知差本身就是可预测性来源——<strong>群体行为偏差是可建模的</strong>。</p></div>
+<div class="card"><h4>隐藏任务 2：监管动作的前瞻信号</h4><p>监管的公开表态、征求意见稿、行业座谈，都是<strong>可提前观察的政策信号</strong>。2026 年的一系列动作都有明确的政策脉络。</p></div>
+<div class="card"><h4>隐藏任务 3：容量而非收益才是护城河</h4><p>容易复制的策略，收益会被抢走；<strong>难以扩容的策略反而能长期存活</strong>（因为大资金看不上）。这是小型参与者的结构性优势。</p></div>
+<div class="card"><h4>隐藏地图 4：噪声交易者是你的盟友</h4><p>在做市商视角里，噪声交易是收入来源。如果你是流动性提供方，<strong>散户的活跃度直接决定你的收益</strong>——这解释了为什么有些策略在散户热情高涨时表现更好。</p></div>
+</div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<h3>探索式学习路径</h3>
+<p>不要按章节读，按任务做。每个任务都要求你先<strong>预测</strong>再<strong>验证</strong>。</p>
+<div class="grid g2">
+<div class="card"><h4>任务 1：观察</h4><p>选一只你熟悉的股票，找出最近一个月成交量最大的三个交易日。</p>
+<p><strong>记录</strong>：那天之后 5 个交易日的走势。</p></div>
+</div>
+<div class="grid g2">
+<div class="card"><h4>任务 2：预测</h4><p>在任务 1 的基础上，写下你对"放量之后会怎样"的预测，并写出<strong>理由机制</strong>。</p>
+<p><strong>关键</strong>：必须是机制，不能是"感觉"。</p></div>
+</div>
+<div class="grid g2">
+<div class="card"><h4>任务 3：选择</h4><p>把任务 2 的预测应用到另外 10 只股票上，逐条记录。</p>
+<p><strong>注意</strong>：这次你不是在选股，是在<strong>检验假设</strong>。</p></div>
+</div>
+<div class="grid g2">
+<div class="card"><h4>任务 4：观察结果</h4><p>统计你的预测命中率，以及<strong>盈亏比</strong>（这点更重要）。</p>
+<p><strong>提问</strong>：如果胜率 60% 但亏损单平均比盈利单大一倍，你赚了吗？</p></div>
+</div>
+<div class="grid g2">
+<div class="card"><h4>任务 5：解释错误</h4><p>挑出预测错误最离谱的三次，问：是机制错了，还是环境不适用，还是运气？</p>
+<p><strong>工具</strong>：区分"决策错误"和"结果不佳"。</p></div>
+</div>
+<div class="grid g2">
+<div class="card"><h4>任务 6：修改模型</h4><p>基于任务 5，修改你的假设。写清楚<strong>改了什么、为什么改</strong>。</p>
+<p><strong>这一步才是真正的学习。</strong></p></div>
+</div>
+<div class="grid g2">
+<div class="card"><h4>任务 7：再次实验</h4><p>用修改后的模型重新做任务 3。</p>
+<p><strong>观察</strong>：是变好了，还是你只是在拟合噪声？</p></div>
+</div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>对关键决策点，先想清楚每种选择会发生什么。</p>
+<div class="tabs" data-group="tb2"><button class="tab on" data-pane="tb2-0">如果我跟随拥挤因子</button><button class="tab" data-pane="tb2-1">@@如果我选择冷门角落</button><button class="tab" data-pane="tb2-2">@@如果我什么都不做（持现金）</button><button class="tab" data-pane="tb2-3">@@如果我把成本降低一半</button><button class="tab" data-pane="tb2-4">@@如果监管进一步限制高频</button><button class="tab" data-pane="tb2-5">@@如果我把规模扩大十倍</button></div>
+<div class="pane on" id="tb2-0"><p><strong>短期</strong>：可能还有一段收益，因为趋势自我强化。</p>
+<p><strong>中期</strong>：收益被摊薄，波动上升。</p>
+<p><strong>长期</strong>：在某个时点遭遇集体撤退，回撤幅度远超模型预期，因为你和其他人持有相同头寸。</p>
+<p><strong>关键风险</strong>：相关性上升会同时打击所有同类策略，分散化在这一刻失效。</p></div><div class="pane" id="tb2-1"><p><strong>短期</strong>：可能长期不涨，机会成本高。</p>
+<p><strong>中期</strong>：如果冷门有结构性原因（流动性差、容量小），可能永远不会被修复。</p>
+<p><strong>长期</strong>：如果真的被低估且机制成立，收益丰厚且不易被抢。</p>
+<p><strong>关键风险</strong>：分不清"被低估"和"被正确定价"。冷门常常是有原因的。</p></div><div class="pane" id="tb2-2"><p><strong>短期</strong>：避免了损失，也避免了收益。成本是机会成本。</p>
+<p><strong>中期</strong>：在负和市场中，不交易其实是<strong>优势策略</strong>——你不付抽水费。</p>
+<p><strong>长期</strong>：除非有更好的配置，否则承担通胀与机会成本。</p>
+<p><strong>关键洞察</strong>：在负和博弈里，"不参与"不是一个消极选择，而是一个有正期望的选择。</p></div><div class="pane" id="tb2-3"><p><strong>直接效果</strong>：年化收益直接提升（等于成本拖累的一半）。</p>
+<p><strong>连锁效果</strong>：可以承受更低的 alpha 策略 → 策略池扩大 → 分散化改善。</p>
+<p><strong>关键洞察</strong>：<strong>降低成本是唯一确定的 alpha</strong>。所有其他 alpha 都有衰减风险，成本优势没有。</p></div><div class="pane" id="tb2-4"><p><strong>直接影响</strong>：速度套利类策略收益消失，部分机构规模收缩。</p>
+<p><strong>连锁反应</strong>：市场流动性结构改变（高频本来是流动性的重要提供者），价差可能扩大，反过来影响所有参与者。</p>
+<p><strong>观察点</strong>：2026 年 6 月清退高速通道、7 月 30 日局域网转广域网之后，实际的价差与成交量结构变化。</p></div><div class="pane" id="tb2-5"><p><strong>乐观情形</strong>：策略容量充裕，收益基本维持。</p>
+<p><strong>现实情形</strong>：交易冲击成本上升，实际收益下降 50%–75%。</p>
+<p><strong>关键提问</strong>：这个策略的容量上限是多少？现有资金占了几成？</p>
+<p><strong>危险信号</strong>：管理人不断提高规模上限却从不封盘。
+@@</p></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>判断标准</th>
+<th>能做什么</th>
+<th>标志性能力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>新手</strong></td>
+<td>能区分投资与投机，知道交易成本存在</td>
+<td>用低成本工具长期持有，避免高频交易</td>
+<td>知道自己在负和环境中</td>
+</tr>
+<tr>
+<td class="k"><strong>中级</strong></td>
+<td>能说清收益来源，能算清成本与容量</td>
+<td>评估策略的可持续性，识别拥挤信号</td>
+<td>会做决策日志并据此改进</td>
+</tr>
+<tr>
+<td class="k"><strong>高级</strong></td>
+<td>能构建博弈模型，能做反事实推演</td>
+<td>判断策略衰减，动态调整配置</td>
+<td>能预测而非仅解释</td>
+</tr>
+<tr>
+<td class="k"><strong>专家</strong></td>
+<td>能发现新变量与隐藏结构</td>
+<td>创造新的策略范式</td>
+<td>能识别系统级漏洞</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note blue"><b>升级的真正标志</b><p>不是知道更多概念，而是<strong>能提前判断而不是事后解释</strong>。</p>
+<p>新手看到策略失效后能说出原因；专家在失效前就能识别信号。</p></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>目标</strong>：亲手验证一次"负和抽水"的威力，成本接近 0。</p>
+<h3>步骤</h3>
+<p><strong>第 1 步（5 分钟）</strong>：查清你的实际单边交易成本</p>
+<p>打开你的券商 App，找到费率设置。记录：佣金率、印花税（卖出 0.05%）、过户费。</p>
+<p>三项加起来就是你的<strong>单边显性成本</strong>。再加 5–10bp 估计滑点（冲击成本）。</p>
+<p><strong>第 2 步（5 分钟）</strong>：算你的年换手率</p>
+<p>查看过去一年的总成交金额（买入+卖出），除以你的平均持仓市值。</p>
+<p>这个数字可能让你吃惊——很多散户的年双边换手率在 1000% 以上。</p>
+<p><strong>第 3 步（5 分钟）</strong>：打开上面的「工具 4」，把你的数字填进去</p>
+<p>记下年化成本拖累。</p>
+<p><strong>第 4 步（10 分钟）</strong>：算一个反事实</p>
+<p>假设你的年化收益（未扣成本）是 10%。扣除成本拖累后是多少？</p>
+<p>再假设：如果你把换手率降低到 1/3，成本拖累会变成多少？你的净收益会提高多少？</p>
+<p><strong>第 5 步（5 分钟）</strong>：写下一句结论</p>
+<p>用一句话写下你的发现。例如：</p>
+<blockquote>
+<p>"我的年双边换手率是 <strong><em>%，年化成本拖累 </em></strong>%。如果我减少 ___% 的交易频率，我的净收益会提高 ___ 个百分点，这比选到一只好股票容易得多。"</p>
+</blockquote>
+<h3>为什么这个练习有效</h3>
+<p>它把"负和博弈"从一个抽象概念，变成你账户里可测量的数字。</p>
+<p><strong>大多数人从未算过这笔账。</strong> 算过之后，你的交易频率会永久改变。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天实践计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>任务</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>算清自己的成本结构与换手率</td>
+<td>一份成本清单</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>给现有持仓做"对手分析"：收益从谁那里来</td>
+<td>每个持仓的收益来源判断</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>学凯尔模型，用工具 1 估算一个标的的冲击成本</td>
+<td>一份流动性评估</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>建立决策日志模板并开始记录</td>
+<td>日志文件</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>找 3 个已失效的知名策略/因子，分析失效机制</td>
+<td>一份失效案例对比</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>用工具 2 玩少数者博弈，记录你的直觉与实际的差距</td>
+<td>一段反思笔记</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>综合前 6 天，写下你的"市场观"（一页纸）</td>
+<td>一页纸的个人市场模型</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天能力构建计划</h2>
+<div class="tabs" data-group="tb3"><button class="tab on" data-pane="tb3-0">第 1 周 · 建立成本与博弈意识</button><button class="tab" data-pane="tb3-1">@@第 2 周 · 掌握拥挤与衰减</button><button class="tab" data-pane="tb3-2">@@第 3 周 · 建立自己的监控系统</button><button class="tab" data-pane="tb3-3">@@第 4 周 · 系统化与输出</button></div>
+<div class="pane on" id="tb3-0"><ul>
+<li>完成 7 天计划</li>
+<li>读凯尔（1985）原始论文的引言与方法部分（不必懂全部数学）</li>
+<li>搞懂一个概念：为什么噪声交易者让市场更好</li>
+</ul></div><div class="pane" id="tb3-1"><ul>
+<li>深入研究少数者博弈与 El Farol 问题</li>
+<li>读 McLean &amp; Pontiff (2016)，理解 26% 与 58% 的来源</li>
+<li>选一个公开因子，自己计算它与同类的滚动相关性</li>
+</ul></div><div class="pane" id="tb3-2"><ul>
+<li>建立收益率与相关性监控（Excel 也行）</li>
+<li>为每个策略/持仓设定失效判断线</li>
+<li>用工具 3 做一次策略生命周期推演</li>
+</ul></div><div class="pane" id="tb3-3"><ul>
+<li>把前三周的内容整理成一份可执行的检查清单</li>
+<li>复盘：你改变了哪些具体行为？</li>
+<li>写下下一阶段的探索方向
+@@</li>
+</ul></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>最值得掌握的 10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>立即能用来判断什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>凯尔模型</strong></td>
+<td>λ = σv/(2σu)，价格冲击来自信息不对称</td>
+<td>你的交易成本合理吗</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>少数者博弈</strong></td>
+<td>赢的条件是与众不同，所以与众不同本身会被消灭</td>
+<td>这个策略还有多少人在用</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>Grossman-Stiglitz 悖论</strong></td>
+<td>完全有效的市场逻辑上不可能存在</td>
+<td>为什么 alpha 一定存在，也一定会衰减</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>逆向选择</strong></td>
+<td>你的订单在泄露信息</td>
+<td>大单该怎么执行</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>复制动态</strong></td>
+<td>高收益策略的资金份额会增长，直到收益被摊平</td>
+<td>策略能活多久</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>负和博弈</strong></td>
+<td>抽水让整体亏损大于盈利</td>
+<td>交易频率该多低</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>容量约束</strong></td>
+<td>规模本身会损害收益</td>
+<td>这个策略能装多少钱</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>凯利公式</strong></td>
+<td>最优下注比例由赔率与胜率共同决定</td>
+<td>该下多少注</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>结果论</strong></td>
+<td>决策质量 ≠ 结果质量</td>
+<td>该不该因为亏钱就改策略</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>拥挤的阈值效应</strong></td>
+<td>拥挤不是线性影响，跨过临界点会加速坍塌</td>
+<td>现在离临界点还有多远</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<p>打印出来，贴在交易台前。</p>
+<details><summary>关于收益来源</summary><div class="dbody"><ol>
+<li>这笔收益是从谁的手里转移过来的？</li>
+<li>对方为什么会让渡这笔收益？</li>
+<li>如果对方变得更聪明，这笔收益会怎样？</li>
+<li>这个逻辑有经济学解释，还是只是统计巧合？</li>
+<li>它在什么市场环境下会失效？</li>
+</ol></div></details>
+<details><summary>关于拥挤与衰减</summary><div class="dbody"><ol start="6">
+<li>有多少资金在跑相似的逻辑？</li>
+<li>同类策略的收益相关性最近是上升还是下降？</li>
+<li>我的滑点趋势是在恶化吗？</li>
+<li>这个策略"人尽皆知"了吗？</li>
+<li>如果所有人同时撤退，我的损失会是多少？</li>
+</ol></div></details>
+<details><summary>关于成本与容量</summary><div class="dbody"><ol start="11">
+<li>我的年双边换手率是多少？</li>
+<li>单边总成本（含冲击）是多少？</li>
+<li>年化成本拖累是多少？</li>
+<li>这个策略的容量上限是多少？我占了几成？</li>
+<li>规模翻倍后，收益会变成多少？</li>
+</ol></div></details>
+<details><summary>关于决策质量</summary><div class="dbody"><ol start="16">
+<li>我是根据过程还是结果在评估这笔交易？</li>
+<li>上次亏损时，我的第一反应是找原因还是找借口？</li>
+<li>如果我今天没有这个持仓，我还会买它吗？</li>
+<li>我的决策日志记了多久了？</li>
+<li>我能说出自己最常犯的三个错误吗？</li>
+</ol></div></details>
+<details><summary>关于系统与监管</summary><div class="dbody"><ol start="21">
+<li>监管最近有什么动作会影响我的策略？</li>
+<li>这个策略的收益有多少依赖速度优势？</li>
+<li>如果交易成本上升 50%，它还能活吗？</li>
+<li>我的收益有多少来自市场 beta，多少来自真正的 alpha？</li>
+<li>我在这个博弈里的结构性优势是什么？它会持续多久？</li>
+</ol></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索方向</h2>
+<h3>如果你想继续深入</h3>
+<div class="grid g2">
+<div class="card"><h4>理论方向</h4><ul>
+<li>凯尔模型的非高斯扩展（2025 年有重要推进，放宽了正态分布假设，结论是<strong>知情者必须主动随机化</strong>才能生存）</li>
+<li>多知情者模型（Holden &amp; Subrahmanyam, 1992）：竞争会加速信息揭示</li>
+<li>演化博弈论与市场生态</li>
+</ul></div>
+<div class="card"><h4>实证方向</h4><ul>
+<li>因子拥挤度的可测代理变量</li>
+<li>VPIN 等订单流毒性指标的实际预警能力</li>
+<li>中国监管政策对市场微观结构的量化影响</li>
+</ul></div>
+<div class="card"><h4>实践方向</h4><ul>
+<li>交易成本分析（TCA）系统的搭建</li>
+<li>最优执行算法（TWAP/VWAP/IS）的实证比较</li>
+<li>决策日志的量化分析</li>
+</ul></div>
+<div class="card"><h4>跨域方向</h4><ul>
+<li>生态学：生态位分化 ↔ 策略分化</li>
+<li>信息论：信道容量 ↔ 市场信息传输</li>
+<li>认知科学：决策偏差 ↔ 市场系统性错误定价</li>
+</ul></div>
+</div>
+<h3>三个具体的下一步</h3>
+<ol>
+<li>
+<p><strong>精读凯尔 1985 年论文</strong>。不用全懂数学，重点是理解三类参与者的设定与均衡的直觉。</p>
+</li>
+<li>
+<p><strong>给自己做一次完整的策略体检</strong>：用第 26 节的 25 个问题过一遍，把答不上来的记下来——那些就是你的知识缺口。</p>
+</li>
+<li>
+<p><strong>建立自己的成本-拥挤-容量三维监控表</strong>。不用复杂，Excel 就够。关键是<strong>持续记录</strong>，因为博弈类指标的价值全在时间序列里。</p>
+</li>
+</ol>
+<div class="note green"><b>最后一句</b><p>博弈论给量化的最大礼物，不是某个能赚钱的公式，而是一种<strong>视角</strong>：</p>
+<blockquote>
+<p>你的收益不取决于你有多聪明，取决于你坐在哪张桌子上、桌上有多少人、以及他们会不会在你之前离场。</p>
+</blockquote>
+<p>这个视角无法让你一夜暴富，但它能让你在别人狂热时不至于冲进去，在别人恐慌时不至于跟着跑。在这个负和的游戏里，<strong>先不亏，就已经赢过大多数人了。</strong></p></div>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<h3>标记约定</h3>
+<div class="grid g3">
+<div class="card"><h4>【事实】</h4><p>有公开的一手来源（监管公告、原始学术文献、公司披露），或被多方独立来源一致确认。</p></div>
+<div class="card"><h4>【分析】</h4><p>来自权威机构或专业媒体的分析判断，逻辑可追溯，但不是原始数据。</p></div>
+<div class="card"><h4>【推论】</h4><p>由事实与机制推导得出，是本手册作者的理解，可能有偏差。</p></div>
+<div class="card"><h4>【假设】</h4><p>尚未验证的机制性猜想，用于组织思路，不应作为决策依据。</p></div>
+<div class="card"><h4>【待验证】</h4><p>来源单一、口径不明、或转载链条过长。使用时请自行核实。</p></div>
+</div>
+<h3>主要来源清单</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">凯尔 λ = σv/(2σu)、线性均衡、TWAP 最优性</td>
+<td>原始学术文献</td>
+<td>Kyle, A. S. (1985), <em>Continuous Auctions and Insider Trading</em>, Econometrica 53(6)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">序贯交易与价差分解</td>
+<td>原始学术文献</td>
+<td>Glosten &amp; Milgrom (1985)；Easley, Kiefer, O'Hara &amp; Paperman (1996)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">VPIN 订单流毒性</td>
+<td>原始学术文献</td>
+<td>Easley, Lopez de Prado &amp; O'Hara (2012), <em>Flow Toxicity and Liquidity in a High-Frequency World</em>, RFS 25(5)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Grossman-Stiglitz 悖论</td>
+<td>原始学术文献</td>
+<td>Grossman &amp; Stiglitz (1980), <em>On the Impossibility of Informationally Efficient Markets</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">少数者博弈与 El Farol 问题</td>
+<td>原始学术文献</td>
+<td>Arthur, W. B. (1994), AER 84；Challet &amp; Zhang (1997)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">因子样本外衰减 26%、发表后 58%</td>
+<td>原始学术文献</td>
+<td>McLean &amp; Pontiff (2016)，追踪 97 个收益预测因子</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">多知情者竞争加速信息揭示</td>
+<td>原始学术文献</td>
+<td>Holden &amp; Subrahmanyam (1992), Journal of Finance 47(1)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">非高斯分布下知情者必须随机化</td>
+<td>原始学术文献</td>
+<td>Kühn &amp; Lorenz (2025), Mathematics and Financial Economics</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">量化私募规模超 1.8 万亿、占比 3% 市值贡献 30–40% 成交</td>
+<td>第三方数据平台转引</td>
+<td>转引自上海证券报 2026-07-10 报道</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2026 二季度量化股票多头规模 1.83 万亿、百亿量化 71 家</td>
+<td>百度百科（引用第三方）</td>
+<td>百科条目引用，原始口径不明</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2025 年 45 家百亿量化平均收益 37.6%、散户人均亏 2.1 万</td>
+<td>学术研究团队</td>
+<td>南京大学安同良教授团队研究，经媒体报道</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">"非对称收割""坟包收割"等定性</td>
+<td>学术观点</td>
+<td>安同良团队研究结论，属学术定性非监管认定</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">高频认定标准：每秒 300 笔 / 单日 2 万笔</td>
+<td>监管规则</td>
+<td>沪深北交易所《程序化交易管理实施细则》，2025-07-07 实施</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2026-06 清退量化专属高速通道</td>
+<td>公开报道</td>
+<td>多家媒体报道，含证监会主席公开表态</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2026-07-30 交易所机房行情接入由局域网转广域网</td>
+<td>公开报道</td>
+<td>央视网 2026-07-30 报道</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">90% 量化机构使用相似量价因子、70% 止损阈值差 &lt;3%</td>
+<td>百科转引</td>
+<td>百度百科"量化资金"条目引用，原始来源不明</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">散户亏损比例 79%–82%、上半年平均收益 −23.6%</td>
+<td>机构抽样统计</td>
+<td>中证协联合头部券商抽样，经媒体报道</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">交易频率与收益负相关（月换手 &gt;300% 年化低 12–18 个百分点）</td>
+<td>数据库研究</td>
+<td>CSMAR 2015–2022，经二手转引</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">股市是负和博弈的论证</td>
+<td>媒体分析</td>
+<td>央视网财经、人民网财经频道分析文章</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">结果论（resulting）与决策日志</td>
+<td>专著与访谈</td>
+<td>Annie Duke, <em>Thinking in Bets</em> / <em>Quit</em>，及其公开访谈</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">策略信号有效性 12 个月内下降、动量约 10 个月</td>
+<td>二手转引</td>
+<td>breakingalpha.io 引用研究，未追溯到原始论文</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">Alpha 衰减速度每年 36bp（美国）/16bp（欧洲）</td>
+<td>二手转引</td>
+<td>引用 Maven Securities 文档</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<h3>本手册中可由代码复现的数字</h3>
+<p>以下数字来自本页交互模型，可用页面内脚本验证：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>数字</th>
+<th>公式</th>
+<th>验证方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">凯尔 λ = 2.50e-7</td>
+<td>λ = σv/(2σu) = 1/(2×2,000,000)</td>
+<td>工具 1，默认参数</td>
+</tr>
+<tr>
+<td class="k">100 万股冲击 0.25 元</td>
+<td>λ × 1,000,000 = 0.25</td>
+<td>工具 1，默认参数</td>
+</tr>
+<tr>
+<td class="k">剩余 alpha 42%</td>
+<td>exp(−0.868×1) ≈ 0.42</td>
+<td>工具 3，拥挤度 = 1</td>
+</tr>
+<tr>
+<td class="k">k = 0.868</td>
+<td>−ln(0.42)，由"发表后低 58%"标定</td>
+<td>工具 3 的模型常数</td>
+</tr>
+<tr>
+<td class="k">年化成本拖累 0.72%</td>
+<td>6 × 0.0012 = 0.0072</td>
+<td>工具 4，换手 600%、成本 12bp</td>
+</tr>
+</tbody>
+</table></div>
+<h3>免责声明</h3>
+<p>本手册用于<strong>认知框架构建与知识学习</strong>，不构成任何投资建议、策略推荐或收益承诺。</p>
+<p>文中涉及的机构、产品、监管政策均为公开信息整理，具体机构行为是否合规须以监管认定为准。标注<span class="tag t-chk">待验证</span>的数据请自行核实后再使用。</p>
+<p>量化交易涉及重大风险。历史业绩不代表未来表现，负和博弈环境中多数参与者长期亏损是结构性事实。<strong>任何策略在上真金白银之前，都应假设它可能无效。</strong></p>
+</section>
+<footer>  <p>《量化交易与博弈论的关系 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 7 分 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《量化交易与博弈论的关系》主题脚本
+   四个可调模型：
+     1. 凯尔 λ        — 订单流的价格冲击
+     2. 少数者博弈    — 策略拥挤与可预测性消灭
+     3. Alpha 衰减    — 拥挤度对超额收益的侵蚀
+     4. 负和抽水      — 换手率与交易成本拖累
+   自包含 IIFE，与页面通用脚本隔离。
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ══════════════════════════════════════════════════════════
+     工具 1 · 凯尔 λ = σv / (2σu)
+     ══════════════════════════════════════════════════════════ */
+  (function kyle() {
+    var sv = $('ky_sv'), su = $('ky_su'), pr = $('ky_p');
+    if (!sv || !su || !pr) return;
+    var svO = $('ky_svO'), suO = $('ky_suO'), prO = $('ky_pO');
+    var lEl = $('ky_l'), lhEl = $('ky_lh'), impEl = $('ky_imp'), imp2El = $('ky_imp2');
+    var vEl = $('ky_v'), vhEl = $('ky_vh');
+
+    function upd() {
+      var sigmaV = parseFloat(sv.value);              // 元/股
+      var sigmaU = parseFloat(su.value) * 1e4;        // 万股 → 股
+      var price = parseFloat(pr.value);               // 元
+
+      svO.textContent = sigmaV.toFixed(1);
+      suO.textContent = Math.round(parseFloat(su.value));
+      prO.textContent = Math.round(price);
+
+      // λ = σv / (2σu)
+      var lambda = sigmaV / (2 * sigmaU);
+      var impact = lambda * 1e6;                      // 100 万股净买入
+      var pct = impact / price * 100;
+
+      lEl.textContent = lambda.toExponential(2);
+      lhEl.textContent = '每 1 股净买入推动价格上升 ' + lambda.toExponential(2) + ' 元';
+      impEl.textContent = impact.toFixed(3) + ' 元';
+      imp2El.textContent = '占股价 ' + pct.toFixed(2) + '%';
+
+      var label, hint;
+      if (pct < 0.5) {
+        label = '良好'; hint = '冲击成本可接受，容量较宽';
+        vEl.style.color = 'var(--green)';
+      } else if (pct < 2) {
+        label = '一般'; hint = '冲击开始显著，大单需要拆分执行';
+        vEl.style.color = 'var(--amber)';
+      } else if (pct < 5) {
+        label = '较差'; hint = '单笔大单会明显推价，必须用算法执行';
+        vEl.style.color = 'var(--amber)';
+      } else {
+        label = '很差'; hint = '流动性稀薄，策略容量将受严格限制';
+        vEl.style.color = 'var(--red)';
+      }
+      vEl.textContent = label;
+      vhEl.textContent = hint;
+    }
+
+    [sv, su, pr].forEach(function (el) {
+      el.addEventListener('input', upd);
+    });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 2 · 少数者博弈
+     每轮各参与者用累计得分最高的策略行动，站在少数一方者得分。
+     ══════════════════════════════════════════════════════════ */
+  (function minorityGame() {
+    var nEl = $('mg_n'), mEl = $('mg_m');
+    if (!nEl || !mEl) return;
+    var nO = $('mg_nO'), mO = $('mg_mO');
+    var cv = $('mgChart');
+    var volEl = $('mg_vol'), volhEl = $('mg_volh');
+    var randEl = $('mg_rand'), vEl = $('mg_v'), vhEl = $('mg_vh');
+    var ctx = cv ? cv.getContext('2d') : null;
+
+    var N_LIST = [11, 51, 101, 201, 501];
+    var T = 400;       // 模拟轮数
+    var S = 2;         // 每个参与者持有的策略数
+
+    function run(N, M) {
+      var histSize = 1 << M;                  // 2^M
+      var mask = histSize - 1;
+      var strat = [], score = [];
+      var i, s, h;
+
+      for (i = 0; i < N; i++) {
+        var rows = [];
+        for (s = 0; s < S; s++) {
+          var row = new Int8Array(histSize);
+          for (h = 0; h < histSize; h++) row[h] = Math.random() < 0.5 ? -1 : 1;
+          rows.push(row);
+        }
+        strat.push(rows);
+        score.push(new Float64Array(S));
+      }
+
+      var history = 0;
+      var series = new Float64Array(T);
+      var sum = 0, sumSq = 0;
+
+      for (var t = 0; t < T; t++) {
+        var A = 0, best = new Int8Array(N);
+        for (i = 0; i < N; i++) {
+          var b = 0;
+          if (S > 1 && score[i][1] > score[i][0]) b = 1;
+          best[i] = b;
+          A += strat[i][b][history];
+        }
+        // 收益：站在少数一方得正分
+        for (i = 0; i < N; i++) {
+          score[i][best[i]] += -strat[i][best[i]][history] * A / N;
+        }
+
+        var ratio = A / N;
+        series[t] = ratio;
+        sum += ratio;
+        sumSq += ratio * ratio;
+
+        var bit = A > 0 ? 1 : 0;
+        history = ((history << 1) | bit) & mask;
+      }
+
+      var mean = sum / T;
+      var variance = sumSq / T - mean * mean;
+      return { series: series, vol: Math.sqrt(Math.max(0, variance)) };
+    }
+
+    function draw(res, N) {
+      if (!ctx) return;
+      var W = cv.width, H = cv.height;
+      ctx.clearRect(0, 0, W, H);
+      var pad = { l: 40, r: 12, t: 14, b: 24 };
+      var mid = pad.t + (H - pad.t - pad.b) / 2;
+      var halfH = (H - pad.t - pad.b) / 2;
+
+      // 网格与刻度
+      ctx.strokeStyle = '#eef1f5'; ctx.lineWidth = 1;
+      [0.25, 0.5, 0.75].forEach(function (f) {
+        var y = pad.t + (H - pad.t - pad.b) * f;
+        ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+      });
+      // 50% 中线（多数方恰好一半 = 无偏）
+      ctx.strokeStyle = '#e2e6ec'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(pad.l, mid); ctx.lineTo(W - pad.r, mid); ctx.stroke();
+      ctx.fillStyle = '#7c848f'; ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('0', pad.l - 6, mid + 4);
+      ctx.fillText('+25%', pad.l - 6, pad.t + 14);
+      ctx.fillText('-25%', pad.l - 6, H - pad.b - 4);
+
+      // 随机基准带（±1σ = 1/√N）
+      var sigma = 1 / Math.sqrt(N);
+      ctx.fillStyle = 'rgba(29,78,216,.07)';
+      ctx.fillRect(pad.l, mid - sigma * halfH / 0.4, W - pad.r - pad.l, 2 * sigma * halfH / 0.4);
+
+      // 时间序列
+      var scale = halfH / 0.4;    // y 轴范围 ±0.4
+      ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      for (var t = 0; t < T; t++) {
+        var x = pad.l + t / (T - 1) * (W - pad.l - pad.r);
+        var y = mid - Math.max(-0.4, Math.min(0.4, res.series[t])) * scale;
+        if (t === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = '#7c848f'; ctx.font = '10.5px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('第 1 轮', pad.l + 26, H - 7);
+      ctx.fillText('第 ' + T + ' 轮', W - pad.r - 34, H - 7);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillText('蓝带 = 纯随机时的 ±1σ（' + (sigma * 100).toFixed(1) + '%）', pad.l + 4, pad.t + 10);
+    }
+
+    function upd() {
+      var ni = parseInt(nEl.value, 10) - 1;
+      ni = Math.max(0, Math.min(N_LIST.length - 1, ni));
+      var N = N_LIST[ni];
+      var M = parseInt(mEl.value, 10);
+
+      nO.textContent = N;
+      mO.textContent = M;
+
+      var res = run(N, M);
+      draw(res, N);
+
+      var rand = 1 / Math.sqrt(N);            // 纯随机基准波动
+      volEl.textContent = (res.vol * 100).toFixed(2) + '%';
+      volhEl.textContent = '系统性偏离 50% 的幅度（N=' + N + '，M=' + M + '）';
+      randEl.textContent = (rand * 100).toFixed(2) + '%';
+
+      var ratio = res.vol / rand, label, hint;
+      if (ratio < 0.75) {
+        label = '自组织收敛'; hint = '参与者行为相互抵消，市场比随机更"平"';
+        vEl.style.color = 'var(--green)';
+      } else if (ratio < 1.05) {
+        label = '接近随机'; hint = '可预测性已被套利压力消灭';
+        vEl.style.color = 'var(--accent)';
+      } else {
+        label = '偏离放大'; hint = '参与者太少或策略太弱，波动反而更高';
+        vEl.style.color = 'var(--amber)';
+      }
+      vEl.textContent = label;
+      vhEl.textContent = hint;
+    }
+
+    [nEl, mEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 3 · Alpha 衰减
+     remain = exp(-k · crowding)，k 由"发表后收益低 58%"标定
+     ══════════════════════════════════════════════════════════ */
+  (function alphaDecay() {
+    var cEl = $('ad_c'), aEl = $('ad_a');
+    if (!cEl || !aEl) return;
+    var cO = $('ad_cO'), aO = $('ad_aO');
+    var remEl = $('ad_rem'), remhEl = $('ad_remh');
+    var newEl = $('ad_new'), newhEl = $('ad_newh');
+    var costEl = $('ad_cost'), costhEl = $('ad_costh');
+
+    var K = -Math.log(0.42);   // ≈ 0.8675，锚点：拥挤度 1 时剩余 42%
+
+    function upd() {
+      var c = parseFloat(cEl.value);
+      var alpha = parseFloat(aEl.value);
+
+      cO.textContent = c.toFixed(2);
+      aO.textContent = Math.round(alpha);
+
+      var remain = Math.exp(-K * c);
+      var after = alpha * remain;
+      // 参考成本：年双边换手 600%、单边 12bp → 0.72%
+      var cost = 6 * 0.0012 * 100;
+      var net = after - cost;
+
+      remEl.textContent = (remain * 100).toFixed(1) + '%';
+      remhEl.textContent = remain > 0.8 ? '基本未被侵蚀'
+        : remain > 0.5 ? '已损失约一半'
+        : remain > 0.25 ? '损失超过七成' : '基本只剩残余';
+
+      newEl.textContent = after.toFixed(2) + '%';
+      newhEl.textContent = '原始 ' + alpha.toFixed(0) + '% → 衰减后 ' + after.toFixed(2) + '%';
+
+      costEl.textContent = net.toFixed(2) + '%';
+      costhEl.textContent = '已扣除年双边换手 600%、单边 12bp 的 0.72% 成本';
+
+      if (net <= 0) costEl.style.color = 'var(--red)';
+      else if (net < after * 0.5) costEl.style.color = 'var(--amber)';
+      else costEl.style.color = '';
+    }
+
+    [cEl, aEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     工具 4 · 负和抽水
+     年化拖累 = 年双边换手倍数 × 单边成本
+     ══════════════════════════════════════════════════════════ */
+  (function negativeSum() {
+    var tEl = $('ns_t'), cEl = $('ns_c');
+    if (!tEl || !cEl) return;
+    var tO = $('ns_tO'), cO = $('ns_cO');
+    var dragEl = $('ns_drag'), draghEl = $('ns_dragh');
+    var needEl = $('ns_need'), sharpeEl = $('ns_sharpe'), sharpehEl = $('ns_sharpeh');
+
+    var VOL = 0.20;   // 假设年化波动 20%
+
+    function upd() {
+      var turn = parseFloat(tEl.value);      // %
+      var bp = parseFloat(cEl.value);        // bp
+
+      tO.textContent = Math.round(turn) + '%';
+      cO.textContent = Math.round(bp);
+
+      // 600% × 12bp：6 × 0.0012 = 0.0072 → 0.72%
+      var drag = turn / 100 * bp / 10000 * 100;
+      var sharpe = drag / 100 / VOL;
+
+      dragEl.textContent = drag.toFixed(2) + '%';
+      draghEl.textContent = '每天约 ' + (drag / 244).toFixed(3) + '%（按 244 个交易日）';
+      needEl.textContent = drag.toFixed(2) + '%';
+
+      sharpeEl.textContent = sharpe.toFixed(2) + ' 点';
+      sharpehEl.textContent = sharpe < 0.1 ? '几乎无感'
+        : sharpe < 0.3 ? '已吃掉可观的一部分'
+        : sharpe < 0.6 ? '严重拖累' : '足以让多数策略失去意义';
+
+      sharpeEl.style.color = sharpe < 0.1 ? 'var(--green)'
+        : sharpe < 0.3 ? 'var(--amber)' : 'var(--red)';
+    }
+
+    [tEl, cEl].forEach(function (el) { el.addEventListener('input', upd); });
+    upd();
+  })();
+
+})();
+</script>
+</body>
+</html>

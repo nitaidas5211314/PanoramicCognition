@@ -1,0 +1,2902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>《高勝算決策》 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>決策科學 × 機率思維</small></div>
+  <nav id="nav">
+    <div class="navgroup">正文</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">入口</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s3"><i>03</i>世界地图（9 层）</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">行动</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <div class="navgroup">反事实</div>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">训练</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30 分钟最小实践</a>
+    <a href="#s23"><i>23</i>7 天计划</a>
+    <a href="#s24"><i>24</i>30 天计划</a>
+    <div class="navgroup">参考</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>《高勝算決策》</h1>
+  <p class="sub">把「不要用結果論成敗」這句話，<strong>從一句道德勸誡，還原成一道可以計算的統計題</strong></p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>杜克說「不要用結果評判決策」，這句話是對的——但她從沒算過一次結果到底能告訴你多少。</strong></p>
+<p>算出來的答案是：<strong>幾乎什麼都沒告訴你。</strong></p>
+<p>一個真正的好決策（勝率 55%，而壞決策 45%），成功一次之後，你對「這是好決策」的把握只從 50% 升到 <strong>55%</strong>——單次結果的信息量是 <strong>±5 個百分點</strong>。而同樣這個好決策，單次結果難看的機率是 <strong>45%</strong>。就算你連做 10 次、拿多數結果去判，能判對的機率也只有 <strong>62.1%</strong>。</p>
+<p>所以「結果論」不是一種道德缺陷，也不是意志力薄弱的表現。<strong>它是一個採樣問題</strong>：你的人生給你的樣本量，從來達不到分辨決策品質所需的量級。要證明「我比瞎猜強 5 個百分點」，需要 <strong>620 次獨立決策</strong>；要區分一個 55% 的人和一個 45% 的人，需要觀察他 <strong>163 次</strong>。</p>
+<p>這個數字改變了整本書的讀法。杜克給的不是一套「應該怎樣」的勸誡，而是一套<strong>在樣本量不足的前提下仍然能運作的替代儀器</strong>：校準、下注、求真小組、心理時間旅行。這四樣東西之所以有效，是因為它們<strong>都不依賴結果</strong>。</p>
+<p>這份手冊要做的事，就是把這四樣儀器各自的精度、代價和失效邊界，一個一個算清楚。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p><strong>《高勝算決策》（Thinking in Bets）是 Annie Duke 2018 年的書。它的領域是「不確定性下的決策品質」——不是教你怎麼預測得更準，是教你怎麼在預測不準的情況下，仍然能分辨自己判斷的好壞。</strong></p>
+<p>用 15 個問題把它框定：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>問題</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">研究什麼</td>
+<td>資訊不完備時，如何評估與改進「決策」本身，而不是評估結果</td>
+</tr>
+<tr>
+<td class="k">邊界</td>
+<td>決策品質可評估、結果受運氣影響、且會重複發生的情境；一次性、無法重複的事件不在射程內</td>
+</tr>
+<tr>
+<td class="k">核心對象</td>
+<td>一個<strong>信念</strong>（你對世界的判斷）如何轉化為一個<strong>下注</strong>（資源的投入）</td>
+</tr>
+<tr>
+<td class="k">參與者</td>
+<td>你自己、你的判斷對手（未來的你、和你意見不同的人）、求真小組、下注市場</td>
+</tr>
+<tr>
+<td class="k">關鍵變數</td>
+<td>決策品質、結果、運氣、校準度、群體獨立性、現時偏誤強度</td>
+</tr>
+<tr>
+<td class="k">可觀察</td>
+<td>結果、你的下注行為、你事先寫下的機率</td>
+</tr>
+<tr>
+<td class="k">不可觀察但可推斷</td>
+<td>決策品質本身、運氣在結果中的佔比、未翻開的資訊</td>
+</tr>
+<tr>
+<td class="k">誰影響誰</td>
+<td>信念影響決策；決策與運氣共同決定結果；結果反過來（錯誤地）影響你對決策品質的判斷</td>
+</tr>
+<tr>
+<td class="k">因果</td>
+<td>決策品質<strong>是</strong>結果的一個原因，但只解釋結果方差的一小部分</td>
+</tr>
+<tr>
+<td class="k">只是相關</td>
+<td>「成功」與「決策好」高度相關但遠非同義；相關強度取決於運氣佔比</td>
+</tr>
+<tr>
+<td class="k">表層現象</td>
+<td>事後批評、自利歸因、贏了就是對的、輸了就是蠢的</td>
+</tr>
+<tr>
+<td class="k">底層機制</td>
+<td>結果是「決策品質」與「運氣」兩個變數的疊加，而你只能觀察到疊加後的總和</td>
+</tr>
+<tr>
+<td class="k">反饋</td>
+<td>結果 → 歸因 → 信念更新 → 下一輪決策（這是學習回路，也是偏誤注入點）</td>
+</tr>
+<tr>
+<td class="k">時間延遲</td>
+<td>重大決策的結果往往數年後才顯現，而回饋周期長達數年 → 學習信號極稀</td>
+</tr>
+<tr>
+<td class="k">正負反饋</td>
+<td>正：準確的歸因提升決策品質。負：結果論讓你學會「上次這樣做贏了」，把運氣固化為策略</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>這份手冊與《停損的勝算》的分工</strong>：杜克的另一本書《Quit》回答「什麼時候該停」，這本《Thinking in Bets》回答「你憑什麼判斷該不該停」。前者是行動規則，後者是計量儀器。沒有後者，前者的每個門檻（kill criteria、停損線）都只是拍腦袋的數字。</p>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<h3>因為你的學習機制有一個結構性缺口</h3>
+<p>人類學習的基本假設是「做對了得到好結果，做錯了得到壞結果，所以能學」。這個假設在<strong>結果能可靠反映決策品質</strong>時成立。它不成立。</p>
+<p>用一個數字說明這個缺口有多大<span class="tag t-inf">推论</span>：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>你的決策是…</th>
+<th>真實勝率</th>
+<th>單次結果難看的機率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">略好於亂猜</td>
+<td>55%</td>
+<td><strong>45%</strong></td>
+</tr>
+<tr>
+<td class="k">明顯好</td>
+<td>65%</td>
+<td>35%</td>
+</tr>
+<tr>
+<td class="k">相當好</td>
+<td>70%</td>
+<td>30%</td>
+</tr>
+<tr>
+<td class="k">非常好</td>
+<td>80%</td>
+<td>20%</td>
+</tr>
+</tbody>
+</table></div>
+<p>一個勝率 70% 的「相當好」決策，每三次就有一次結果難看。如果你按結果評價它，你會在三分之一的時間裡否定一個正確的策略。</p>
+<p><span class="tag t-inf">推论</span>而如果你的反應是「結果不好就改策略」，你改掉的正是那個對的策略。<strong>結果論最隱蔽的傷害不是讓你不開心，是讓你在正確的路上反覆掉頭。</strong></p>
+<div class="note red"><b>最反直覺的一條</b><p><strong>過度自信不只是難看，它讓你比「什麼都不說」更糟。</strong></p>
+<p>Brier 分數（衡量機率預測品質，越低越好）的基準線是 0.25，等於「永遠說 50%」。一個典型的過度自信者——嘴上說 90% 把握，實際只對 62%——他的 Brier 是 <strong>0.3140</strong>，<strong>比什麼都不說還差</strong>。同一批判斷，如果他老實說 62%，Brier 降到 0.2356。</p>
+<p>說得越滿，你離「沉默」越遠——而且是往壞的方向。</p></div>
+<h3>因為這個缺口可以被儀器補上</h3>
+<p>杜克那句「把信念當成下注」的真正含義，不是一個人生態度，而是一個<strong>操作</strong>：把「我認為 X」轉換成「我認為 X，機率 70%，願意按這個機率下注」。</p>
+<p>一旦你報出數字，就同時產生了三件事：</p>
+<ol>
+<li><strong>可證偽</strong>：70% 是一個能被現實否證的斷言（波普爾意義上的）</li>
+<li><strong>可計分</strong>：事情發生與否，加上你的報價，就是一條可入帳的記錄</li>
+<li><strong>可校準</strong>：累積足夠多條記錄後，你能算出一條校準曲線——「我說 70% 的時候，實際發生了幾成」</li>
+</ol>
+<p><span class="tag t-ana">分析</span>第三件事才是關鍵。它意味著<strong>你可以在完全不依賴結果的情況下改進決策品質</strong>——因為校準記錄的樣本單位是「一個判斷」，不是「一個人生專案」。你一天可以做二十個判斷，但一年做不了二十個重大決策。</p>
+<p>這是這本書最實用的一層：<strong>它把學習的樣本量擴大了兩個數量級。</strong></p>
+<h3>因為代價是不對稱的</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>你做的事</th>
+<th>短期代價</th>
+<th>長期收益</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">說「我不確定」</td>
+<td>看起來不專業、失去一次決斷的表演</td>
+<td>決策品質提升，別人校準你的話更準</td>
+</tr>
+<tr>
+<td class="k">說「我 70% 確定」</td>
+<td>要承擔被記帳的風險</td>
+<td>獲得校準曲線，一年內可修正系統性偏誤</td>
+</tr>
+<tr>
+<td class="k">追求確定的答案</td>
+<td>感覺安全</td>
+<td>樣本量永遠不夠，學不到東西</td>
+</tr>
+<tr>
+<td class="k">按結果評價自己</td>
+<td>情緒起伏</td>
+<td>學會一堆運氣</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图（9 层）</h2>
+<p>一個決策從「世界」走到「你」再走回「世界」，要穿過九層。<strong>你只能直接觀察到其中一層（結果層）</strong>，而這一層恰好是信息汙染最嚴重的一層。</p>
+<svg viewBox="0 0 680 530" width="100%" role="img" aria-label="决策的九层世界地图">
+  <text x="40" y="26" font-size="13" font-weight="700" fill="#0f172a">一次決策穿過的九層：你只看得到第 4 層</text>
+  <text x="40" y="44" font-size="10.5" fill="#64748b">越靠上越不可觀察；箭頭表示影響方向，不是時間順序</text>
+
+  <rect x="40" y="56" width="600" height="42" rx="6" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="56" y="74" font-size="12" font-weight="700" fill="#334155">1 · 運氣層</text>
+  <text x="56" y="90" font-size="10.5" fill="#64748b">純隨機：牌面、天氣、對手的失誤、時代的風向。不可預測，只可承受</text>
+
+  <rect x="40" y="106" width="600" height="42" rx="6" fill="#f5f3ff" stroke="#ddd6fe"/>
+  <text x="56" y="124" font-size="12" font-weight="700" fill="#5b21b6">2 · 隱藏資訊層</text>
+  <text x="56" y="140" font-size="10.5" fill="#6d28d9">存在的、但你看不到的部分。牌桌上的底牌，談判對手的底價。它決定了你「知不知道自己不知道」</text>
+
+  <rect x="40" y="156" width="600" height="42" rx="6" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="56" y="174" font-size="12" font-weight="700" fill="#1d4ed8">3 · 世界狀態層</text>
+  <text x="56" y="190" font-size="10.5" fill="#2563eb">未來實際會怎麼展開。你的決策在這裡與其他所有變數相遇</text>
+
+  <rect x="40" y="206" width="600" height="42" rx="6" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="56" y="224" font-size="12" font-weight="700" fill="#047857">4 · 結果層 ← 你唯一看得見的一層</text>
+  <text x="56" y="240" font-size="10.5" fill="#059669">成功或失敗。它是「決策品質 × 運氣」的疊加值，而它把兩者混在了一起</text>
+
+  <rect x="40" y="256" width="600" height="42" rx="6" fill="#fffbeb" stroke="#fde68a"/>
+  <text x="56" y="274" font-size="12" font-weight="700" fill="#b45309">5 · 下注層</text>
+  <text x="56" y="290" font-size="10.5" fill="#d97706">你的決策本身：投入了多少資源、按什麼賠率、在什麼資訊下。這一層可觀察、可改進</text>
+
+  <rect x="40" y="306" width="600" height="42" rx="6" fill="#ecfeff" stroke="#a5f3fc"/>
+  <text x="56" y="324" font-size="12" font-weight="700" fill="#0e7490">6 · 信念層</text>
+  <text x="56" y="340" font-size="10.5" fill="#0891b2">你腦中關於世界的地圖。關鍵：它天生是「先相信、後驗證」，順序與理性相反</text>
+
+  <rect x="40" y="356" width="600" height="42" rx="6" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="56" y="374" font-size="12" font-weight="700" fill="#b91c1c">7 · 校準層</text>
+  <text x="56" y="390" font-size="10.5" fill="#dc2626">你的「把握程度」與「實際命中率」之間的落差。這一層可測量、可訓練，是唯一不依賴結果的儀器</text>
+
+  <rect x="40" y="406" width="600" height="42" rx="6" fill="#eef2ff" stroke="#c7d2fe"/>
+  <text x="56" y="424" font-size="12" font-weight="700" fill="#4338ca">8 · 群體層</text>
+  <text x="56" y="440" font-size="10.5" fill="#6366f1">他人的判斷。它的糾錯力 = (1 − 相關性 ρ) × 獨立增益。同質化的小組，等於一個人</text>
+
+  <rect x="40" y="456" width="600" height="42" rx="6" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="56" y="474" font-size="12" font-weight="700" fill="#c2410c">9 · 時間層</text>
+  <text x="56" y="490" font-size="10.5" fill="#ea580c">未來的你。他會以 β≈0.7 的折扣看待你為他爭取的一切，所以會否掉 30% 長期看值得做的事</text>
+</svg>
+<p><strong>為什麼是這九層</strong>：第 1、2 層是「你不能控制的」；第 3、4 層是「你只能觀察結果的」；第 5、6 層是「你能控制的」；第 7 層是「你能測量的」；第 8 層是「你能借力的」；第 9 層是「會背叛你的」。</p>
+<p><span class="tag t-inf">推论</span>把這九層排出來，書裡所有工具的位置就清楚了：<strong>它們全部作用於第 5–9 層，完全放棄了對第 1–4 層的控制企圖。</strong> 這不是悲觀，這是把力氣放在有效的地方。</p>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<div class="grid g3">
+<div class="card"><h4>結果論 resulting</h4><p>用結果的好壞去評判決策的好壞。撲克圈的說法，現在是所有行業的通病。它的殺傷力來自統計學：單次結果的信息量只有 ±5pp。</p></div>
+<div class="card"><h4>對賭思維 thinking in bets</h4><p>把每個決策顯式地當成一次對未來的下注。「我有多確定？」取代「我對不對？」——前者可測量，後者不可。</p></div>
+<div class="card"><h4>求真團體 truthseeking pod</h4><p>一小群人，章程明確：優先追求準確，而不是維護彼此的自我。書裡的處方，但代價被低估了——見第 08、20 節。</p></div>
+<div class="card"><h4>把信念當賭注</h4><p>把你的把握程度報成數字，並接受被記帳。這是整本書的地基，其他工具都從這裡長出來。</p></div>
+<div class="card"><h4>心理時間旅行</h4><p>把視角移到十年後，用未來的眼光評判現在的決定。10-10-10、反向回顧、事前驗屍都屬於這一族。</p></div>
+<div class="card"><h4>10-10-10</h4><p>同一個決定，分別問「10 分鐘後、10 個月後、10 年後我會怎麼想」。它的價值可以算：恰好等於 1 − β。</p></div>
+<div class="card"><h4>反向回顧 backcasting</h4><p>從一個成功的未來往回推，找出必須發生的關鍵步驟。與事前驗屍互為鏡像。</p></div>
+<div class="card"><h4>事前驗屍 premortem</h4><p>假設計畫已經徹底失敗，然後寫下失敗的原因。用「已失敗」的框架繞開樂觀偏誤。</p></div>
+<div class="card"><h4>尤利西斯合約</h4><p>在理性時刻預先綁定未來的自己（把自己綁在桅杆上）。用來對抗現時偏誤與傾斜。</p></div>
+<div class="card"><h4>傾斜 tilt</h4><p>情緒接管決策的狀態，撲克圈術語。表現為報復性加注、翻本心態、連續錯誤。</p></div>
+<div class="card"><h4>自利性偏差</h4><p>成功歸因於能力，失敗歸因於運氣。它讓結果反饋變成一面只照好話的鏡子。</p></div>
+<div class="card"><h4>決策髒話罐</h4><p>杜克的具體做法：每次說出「我早就知道」就往罐裡丟錢。用外部成本給後見之明偏差定價。</p></div>
+</div>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>是誰</th>
+<th>在這個系統裡的作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>作者</strong></td>
+<td>Annie Duke</td>
+<td>賓州大學認知心理學博士（博士期間拿過 NSF 研究基金）、2004 年 WSOP 金手鍊、錦標賽獎金累計 400 萬美元以上；2012 年退役後轉做決策顧問，為財星 500 強高管提供諮詢</td>
+</tr>
+<tr>
+<td class="k"><strong>開場案例的主角</strong></td>
+<td>Pete Carroll</td>
+<td>西雅圖海鷹隊總教練。第 49 屆超級盃最後 26 秒的傳球決定，成了全書的開場與最主要的案例</td>
+</tr>
+<tr>
+<td class="k"><strong>得梅因賭局的賭徒</strong></td>
+<td>John Hennigan（「Johnny World」）</td>
+<td>撲克名人堂成員。跟朋友賭 3 萬美元能不能在愛荷華州得梅因住滿 30 天，第 2 天就放棄</td>
+</tr>
+<tr>
+<td class="k"><strong>預測研究的實證支柱</strong></td>
+<td>Philip Tetlock &amp; Barbara Mellers</td>
+<td>賓州大學。Tetlock 1984–2003 追蹤 284 位專家的約 2.8 萬條預測，發現平均不如瞎猜；2011–2015 的 Good Judgment Project 贏下 IARPA 競賽</td>
+</tr>
+<tr>
+<td class="k"><strong>信念形成的研究者</strong></td>
+<td>Daniel Gilbert</td>
+<td>哈佛心理學家。證實人對新資訊的預設反應是「先相信」，之後才（很少地）驗證</td>
+</tr>
+<tr>
+<td class="k"><strong>後見之明的發現者</strong></td>
+<td>Baruch Fischhoff</td>
+<td>1975 年提出「潛變決定論」。他的實驗構成了全書第 3 章的實證基礎</td>
+</tr>
+<tr>
+<td class="k"><strong>規範的來源</strong></td>
+<td>Robert K. Merton</td>
+<td>科學社會學的 CUDOS 規範：共有性、普遍性、無私利性、有條理的懷疑——被杜克移植成求真小組的章程</td>
+</tr>
+<tr>
+<td class="k"><strong>另一個你</strong></td>
+<td>未來的你</td>
+<td>以 β≈0.7 的折扣看待你為他爭取的一切。他不是你的盟友，是需要被合約約束的談判對手</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<p><strong>這個領域只有三個基本變數，其餘全是它們的函數。</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>變數</th>
+<th>含義</th>
+<th>可觀察？</th>
+<th>在你的控制下？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>決策品質 Q</strong></td>
+<td>在當時資訊下，這個下注有多合理</td>
+<td><strong>不可觀察</strong></td>
+<td>是</td>
+</tr>
+<tr>
+<td class="k"><strong>運氣 L</strong></td>
+<td>世界擲出的那一下</td>
+<td>不可觀察（只能統計推斷）</td>
+<td>否</td>
+</tr>
+<tr>
+<td class="k"><strong>結果 R</strong></td>
+<td>你看到的那一個數字</td>
+<td><strong>可觀察</strong></td>
+<td>否</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span>關係可以寫成最簡形式：</p>
+<blockquote>
+<p><strong>R = Q + L</strong>（在標準化尺度上）</p>
+</blockquote>
+<p>杜克反覆說的就是這句話的另一種表述：<strong>R 是 Q 和 L 的和，而你只能觀察 R。</strong> 當 Var(L) 相對 Var(Q) 很大時，R 幾乎不攜帶 Q 的信息。</p>
+<p>推導出的次級變數：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>次級變數</th>
+<th>定義</th>
+<th>典型值</th>
+<th>為什麼重要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>信噪比</strong></td>
+<td>Var(Q) / Var(R)</td>
+<td>重大決策裡通常 <strong>&lt; 0.2</strong></td>
+<td>決定「結果」這個信號值不值得看</td>
+</tr>
+<tr>
+<td class="k"><strong>校準落差</strong></td>
+<td>你報的機率 − 實際命中率</td>
+<td>受過訓練者接近 0；一般人 +15pp 以上</td>
+<td>第 7 層的核心指標，可訓練</td>
+</tr>
+<tr>
+<td class="k"><strong>群體相關性 ρ</strong></td>
+<td>成員判斷中共享誤差的比例</td>
+<td>同業小組常 <strong>&gt; 0.5</strong></td>
+<td>決定求真小組值多少錢</td>
+</tr>
+<tr>
+<td class="k"><strong>現時偏誤 β</strong></td>
+<td>對「非現在」的一切打的折扣</td>
+<td>0.6 – 0.8</td>
+<td>決定你會否掉多少長期正確的事</td>
+</tr>
+<tr>
+<td class="k"><strong>判別樣本 n</strong></td>
+<td>你累積的獨立決策次數</td>
+<td>重大決策：<strong>每年個位數</strong></td>
+<td>決定你能不能靠結果學習</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note amber"><b>一句話記住這一節</b><p><strong>Q 不可觀察、L 不可控制、R 不可信。三個變數裡唯一有用的那個，恰恰是你唯一量不到的那個。</strong>整本書的工具，本質上都是在給 Q 找替代的測量方式。</p></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<p><strong>這個系統裡只有一條強因果鏈，而它恰好是一條錯的鏈：結果 → 歸因。</strong> 真正該被建立的那條——決策品質 → 學習——反而弱得幾乎不存在。</p>
+<svg viewBox="0 0 680 400" width="100%" role="img" aria-label="决策系统的因果图">
+  <text x="40" y="26" font-size="13" font-weight="700" fill="#0f172a">因果圖：實線是世界的運作方式，紅色虛線是偏誤的注入路徑</text>
+
+  <rect x="40" y="56" width="150" height="56" rx="8" fill="#ecfeff" stroke="#22d3ee"/>
+  <text x="115" y="80" font-size="12" font-weight="700" fill="#0e7490" text-anchor="middle">信念</text>
+  <text x="115" y="97" font-size="10" fill="#0891b2" text-anchor="middle">你對世界的地圖</text>
+
+  <rect x="265" y="56" width="150" height="56" rx="8" fill="#fffbeb" stroke="#f59e0b"/>
+  <text x="340" y="80" font-size="12" font-weight="700" fill="#b45309" text-anchor="middle">決策 Q</text>
+  <text x="340" y="97" font-size="10" fill="#d97706" text-anchor="middle">你下注的品質</text>
+
+  <rect x="490" y="56" width="150" height="56" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-dasharray="5 4"/>
+  <text x="565" y="80" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">運氣 L</text>
+  <text x="565" y="97" font-size="10" fill="#64748b" text-anchor="middle">世界擲出的那一下</text>
+
+  <rect x="490" y="186" width="150" height="56" rx="8" fill="#ecfdf5" stroke="#10b981"/>
+  <text x="565" y="210" font-size="12" font-weight="700" fill="#047857" text-anchor="middle">結果 R</text>
+  <text x="565" y="227" font-size="10" fill="#059669" text-anchor="middle">你唯一看得見的</text>
+
+  <rect x="250" y="300" width="176" height="54" rx="8" fill="#fef2f2" stroke="#ef4444"/>
+  <text x="338" y="323" font-size="12" font-weight="700" fill="#b91c1c" text-anchor="middle">歸因判斷</text>
+  <text x="338" y="340" font-size="10" fill="#dc2626" text-anchor="middle">「我當時對還是錯？」</text>
+
+  <line x1="190" y1="84" x2="265" y2="84" stroke="#0e7490" stroke-width="1.8"/>
+  <polygon points="265,84 256,79 256,89" fill="#0e7490"/>
+  <text x="227" y="76" font-size="9.5" fill="#0e7490" text-anchor="middle">決定</text>
+
+  <line x1="415" y1="100" x2="490" y2="196" stroke="#f59e0b" stroke-width="1.8"/>
+  <polygon points="490,196 486,186 481,193" fill="#f59e0b"/>
+  <text x="440" y="140" font-size="9.5" fill="#b45309">貢獻部分</text>
+
+  <line x1="565" y1="112" x2="565" y2="186" stroke="#94a3b8" stroke-width="1.8"/>
+  <polygon points="565,186 560,176 570,176" fill="#94a3b8"/>
+  <text x="612" y="152" font-size="9.5" fill="#64748b" text-anchor="middle">貢獻</text>
+  <text x="612" y="165" font-size="9.5" fill="#64748b" text-anchor="middle">大部分</text>
+
+  <path d="M565 242 L565 327 L426 327" stroke="#ef4444" stroke-width="2.4" fill="none"/>
+  <polygon points="426,327 436,322 436,332" fill="#ef4444"/>
+  <text x="500" y="318" font-size="10" fill="#dc2626" font-weight="700" text-anchor="middle">看上去像因果的相關</text>
+
+  <path d="M250 327 L115 327 L115 112" stroke="#ef4444" stroke-width="2.4" fill="none" stroke-dasharray="7 5"/>
+  <polygon points="115,112 110,122 120,122" fill="#ef4444"/>
+  <text x="150" y="350" font-size="10" fill="#dc2626" font-weight="700">偏誤注入：把運氣寫進你的世界地圖</text>
+
+  <path d="M340 300 L340 240 L490 240" stroke="#94a3b8" stroke-width="1.4" fill="none" stroke-dasharray="4 4"/>
+  <polygon points="490,240 480,235 480,245" fill="#94a3b8"/>
+  <text x="392" y="262" font-size="9.5" fill="#64748b">事後重構（會被結果改寫）</text>
+
+  <text x="40" y="388" font-size="10.5" fill="#64748b">紅環存在 → 你學到的是「上次這樣做贏了」；紅環斷開 → 你學到的才是「上次的判斷好在哪」。</text>
+</svg>
+<p><strong>三條因果關係的性質完全不同：</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>因果路徑</th>
+<th>強度</th>
+<th>性質</th>
+<th>能不能改</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">信念 → 決策</td>
+<td>強</td>
+<td>直接、即時</td>
+<td>能（這是改進的入口）</td>
+</tr>
+<tr>
+<td class="k">決策 + 運氣 → 結果</td>
+<td>決策只解釋一小部分方差</td>
+<td>疊加，無法分離</td>
+<td><strong>不能</strong>（這是最關鍵的限制）</td>
+</tr>
+<tr>
+<td class="k">結果 → 你的歸因 → 信念</td>
+<td><strong>極強且自動</strong></td>
+<td>大腦預設執行，不需要許可</td>
+<td><strong>能，但需要外部工具</strong>（這是全書的戰場）</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span>第三條路徑之所以最強，是因為它<strong>不需要你同意就會發生</strong>。第 4 章講的自利性偏差（成功歸我、失敗歸天）不是一種選擇，是大腦的預設歸因方式。你沒有「要不要用結果論」的選項——你只有「要不要用工具把它擋住」的選項。</p>
+<p><span class="tag t-fact">事实</span>後見之明偏差的實證起點是 Baruch Fischhoff 1975 年的實驗：給參與者一段歷史或臨床事件描述、四個可能結局，其中一組被告知某個結局是「真」的。結果是，<strong>被告知結局的那一組，給該結局分配的機率顯著更高——超過 70% 的人在明知結局可能不為真的情況下仍然如此</strong>。更關鍵的是：即使明確要求他們「假裝不知道結果」，他們也做不到，且<strong>堅信自己表現得很客觀</strong>。</p>
+<div class="note purple"><b>這條鏈的推論</b><p><strong>後見之明偏差不是「記性不好」，是「記憶被重寫」。</strong></p>
+<p>Fischhoff 的第四個研究用尼克森訪問中國和蘇聯的真實事件：訪問前讓參與者估計各種結果的機率，訪問後 2 週到 6 個月再問「你當初估的是多少」。參與者系統性地把「後來發生的事」記成「當初就覺得會發生」，同時<strong>確信自己在準確回憶</strong>。</p>
+<p>所以「把決策寫下來」不是為了自律，是因為<strong>不寫下來，你的記憶會被結果覆寫，事後你連自己的原始判斷都拿不回來</strong>。</p></div>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<h3>五個跨域同構：同一個數學結構，在五個領域有五個名字</h3>
+<p>這是最能暴露「決策科學其實不是一門新學科」的一節。</p>
+<h4>同構 1 · Brier 分數 ↔ 天氣預報 ↔ 機器學習校準</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>領域</th>
+<th>名字</th>
+<th>做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">決策科學</td>
+<td>校準（calibration）</td>
+<td>說 70% 的判斷，實際發生 70%</td>
+</tr>
+<tr>
+<td class="k">氣象學</td>
+<td>Brier 分數</td>
+<td>1950 年代 Murphy 等人建立的「適當評分規則」</td>
+</tr>
+<tr>
+<td class="k">機器學習</td>
+<td>溫度縮放（temperature scaling）</td>
+<td>神經網路準確率高但<strong>校準差</strong>——Guo 等 2017 年證明現代深度網路系統性過度自信，用一個參數把它壓回校準</td>
+</tr>
+<tr>
+<td class="k">預測市場</td>
+<td>隱含機率</td>
+<td>合約價格直接就是群體的校準後機率</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span>這四個是同一件事：<strong>測量「你說的機率」和「實際頻率」之間的距離。</strong> 你的大腦就是一個校準很差的分類器——Guo 等人的結論（高準確率 + 低校準度）套在人身上完全成立。</p>
+<h4>同構 2 · 孔多塞陪審團定理 ↔ 集成學習 ↔ 群體智慧 ↔ 民主理論</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>領域</th>
+<th>名字</th>
+<th>數學內容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">政治哲學</td>
+<td>孔多塞陪審團定理（1785）</td>
+<td>n 個獨立、各自準確率 p &gt; 0.5 的投票者，多數投票準確率隨 n 上升</td>
+</tr>
+<tr>
+<td class="k">機器學習</td>
+<td>集成方法（bagging / 隨機森林）</td>
+<td>多個弱學習器投票，誤差下降——<strong>前提是誤差不相關</strong></td>
+</tr>
+<tr>
+<td class="k">統計學</td>
+<td>群體智慧</td>
+<td>Galton 1907 年的牛隻稱重實驗</td>
+</tr>
+<tr>
+<td class="k">社會心理學</td>
+<td>群體極化</td>
+<td>反例：同質群體不但不糾錯，還會走向極端</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span><strong>這四個合起來給出了求真小組的真實定價。</strong> 集成學習的教科書第一課就是「基學習器的誤差必須不相關」——而在人的世界裡，這個條件極難滿足：「求真小組」的成員往往來自同一行業、讀同一批文章、有同一套偏見。第 20 節的模型會把 ρ 的殺傷力算給你看。</p>
+<h4>同構 3 · 現時偏誤 β-δ ↔ 承諾裝置 ↔ 上癮 ↔ 氣候政策</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>領域</th>
+<th>名字</th>
+<th>表現</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">行為經濟學</td>
+<td>準雙曲折現（Laibson 1997）</td>
+<td>β ≈ 0.6–0.8，δ ≈ 0.96–0.99／年</td>
+</tr>
+<tr>
+<td class="k">個人理財</td>
+<td>自動扣款、鎖定型儲蓄</td>
+<td>把未來的自己綁住</td>
+</tr>
+<tr>
+<td class="k">公共政策</td>
+<td>「明日多儲蓄」計畫（Thaler &amp; Benartzi）</td>
+<td>用未來加薪承諾提高儲蓄率</td>
+</tr>
+<tr>
+<td class="k">氣候政治</td>
+<td>減排的拖延</td>
+<td>成本在當下，收益在百年後——同一個折扣結構</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span>尤利西斯把自己綁在桅杆上、你把手機放進定時鎖盒、政府設計碳稅的漸進路徑，是<strong>同一個數學問題的三個解法</strong>：主體知道自己未來的偏好會反轉，所以事前約束它。</p>
+<h4>同構 4 · 結果論 ↔ 倖存者偏差 ↔ 發表偏倚 ↔ 回測過擬合</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>領域</th>
+<th>名字</th>
+<th>機制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">決策科學</td>
+<td>結果論</td>
+<td>用結果評價決策</td>
+</tr>
+<tr>
+<td class="k">二戰統計</td>
+<td>倖存者偏差（Wald）</td>
+<td>只看到飛回來的飛機，看不到被擊落的</td>
+</tr>
+<tr>
+<td class="k">醫學研究</td>
+<td>發表偏倚</td>
+<td>陽性結果被發表，陰性結果進抽屜</td>
+</tr>
+<tr>
+<td class="k">量化投資</td>
+<td>回測過擬合</td>
+<td>在歷史上找到的策略，在未來失效</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span><strong>這四個是同一種病的四個器官。</strong> 共同結構：你觀察到的樣本不是隨機樣本，而是<strong>經過「結果」這個篩子過濾後的樣本</strong>。杜克說「不要 resulting」，和 Wald 說「要看彈孔在哪」是同一句話。</p>
+<h4>同構 5 · 「想賭一把嗎？」 ↔ 預測市場 ↔ 可證偽性</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>領域</th>
+<th>名字</th>
+<th>機制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">決策科學</td>
+<td>「Wanna bet?」</td>
+<td>逼你把模糊的信念變成明確的數字</td>
+</tr>
+<tr>
+<td class="k">經濟學</td>
+<td>預測市場</td>
+<td>用真金白銀聚合資訊</td>
+</tr>
+<tr>
+<td class="k">科學哲學</td>
+<td>波普爾的可證偽性</td>
+<td>不可否證的命題不是科學命題</td>
+</tr>
+<tr>
+<td class="k">認知科學</td>
+<td>「下注是一種對廢話徵的稅」</td>
+<td>有代價的斷言才有信息量</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span><strong>「想賭一把嗎」之所以有效，是因為它同時施加了三個約束</strong>：逼你給數字（可測量）、讓你有損失風險（可激勵）、把斷言暴露給反例（可否證）。一件事同時做到這三點，它就自動從「意見」升級成「預測」。</p>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>學習迴路為什麼是壞的：噪聲梯度</h3>
+<p>機器學習裡有個概念叫「噪聲梯度」——如果每次更新參數時用的梯度是對真實梯度加了噪聲的估計，學習會偏。噪聲越大，收斂越慢、越容易卡在錯的地方。</p>
+<p><strong>結果反饋就是一個噪聲梯度。</strong> 逐層拆開：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>步驟</th>
+<th>理想情況</th>
+<th>實際情況</th>
+<th>偏差來源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1. 觀察結果</td>
+<td>看到 R</td>
+<td>看到 R</td>
+<td>無</td>
+</tr>
+<tr>
+<td class="k">2. 分解 R</td>
+<td>分離出 Q 與 L</td>
+<td><strong>做不到</strong></td>
+<td>結構性：R = Q + L，只有一個方程，兩個未知數</td>
+</tr>
+<tr>
+<td class="k">3. 歸因</td>
+<td>按資訊集而非結果判斷</td>
+<td>按結果反推</td>
+<td>自利性偏差、後見之明</td>
+</tr>
+<tr>
+<td class="k">4. 更新信念</td>
+<td>修正「我對世界的判斷」</td>
+<td>修正「我的做法」</td>
+<td>把運氣固化成策略</td>
+</tr>
+<tr>
+<td class="k">5. 沉澱</td>
+<td>學到可遷移的原則</td>
+<td>學到具體的招式</td>
+<td>過擬合</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note blue"><b>第二次世界大戰的維修建議</b><p>Wald 面對彈孔分布圖時說的重點是：<strong>要加固的不是被擊中的地方，是那些「沒被擊中的地方」</strong>——因為被擊中那裡的飛機沒飛回來。</p>
+<p>杜克面對的是一模一樣的結構：<strong>你要學的不是「結果好的時候我做了什麼」，是「結果不好的那些平行世界裡，我做對了什麼」。</strong> 但那些平行世界你看不到，這正是為什麼需要用「決策日記」把它們人工記錄下來。</p></div>
+<h3>為什麼不做任何事，偏誤也會自動累積</h3>
+<p>系統有三個自我強化的回路，都不需要你的參與：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>回路</th>
+<th>機制</th>
+<th>後果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>歸因回路</strong></td>
+<td>成功 → 我很行 → 繼續同樣的做法 → 偶爾又成功 → 更確信</td>
+<td>把運氣當成能力，策略固化</td>
+</tr>
+<tr>
+<td class="k"><strong>敘事回路</strong></td>
+<td>結果 → 找故事解釋 → 故事比真相好記 → 下次用故事而非機率做決策</td>
+<td>用因果敘事替代機率評估</td>
+</tr>
+<tr>
+<td class="k"><strong>同質化回路</strong></td>
+<td>和想法相近的人待在一起舒服 → 小組趨同 → ρ 上升 → 糾錯力下降</td>
+<td>求真小組退化成回音室</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span>第三個回路最隱蔽：<strong>它是「求真小組」這個處方本身的內建失效模式。</strong> 你越是刻意組建一個「能讓你暢所欲言」的小組，就越可能選出跟自己接近的人，ρ 就越高，小組的糾錯力就越接近零。第 20 節會給出這條曲線。</p>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<p><strong>這門學科的歷史是兩百四十年。杜克不是在發明一個新想法，她是在把兩個原本不相往來的傳統接在一起：一個是數學的（怎麼給不確定性定價），一個是心理學的（人實際上怎麼搞砸它）。</strong></p>
+<svg viewBox="0 0 680 320" width="100%" role="img" aria-label="决策科学的时间演化">
+  <text x="40" y="24" font-size="13" font-weight="700" fill="#0f172a">從孔多塞到對賭思維：240 年，三條線終於匯到一處</text>
+
+  <line x1="40" y1="160" x2="648" y2="160" stroke="#cbd5e1" stroke-width="2"/>
+  <polygon points="648,160 638,155 638,165" fill="#cbd5e1"/>
+
+  <g font-size="10">
+    <circle cx="70" cy="160" r="5" fill="#6366f1"/>
+    <text x="70" y="140" font-size="11" font-weight="700" fill="#4338ca" text-anchor="middle">1785</text>
+    <text x="70" y="127" font-size="10" fill="#6366f1" text-anchor="middle">孔多塞定理</text>
+
+    <circle cx="150" cy="160" r="5" fill="#6366f1"/>
+    <text x="150" y="182" font-size="11" font-weight="700" fill="#4338ca" text-anchor="middle">1907</text>
+    <text x="150" y="196" font-size="10" fill="#6366f1" text-anchor="middle">Galton 群體智慧</text>
+
+    <circle cx="228" cy="160" r="5" fill="#0891b2"/>
+    <text x="228" y="140" font-size="11" font-weight="700" fill="#0e7490" text-anchor="middle">1950s</text>
+    <text x="228" y="127" font-size="10" fill="#0891b2" text-anchor="middle">Brier/Murphy 評分</text>
+
+    <circle cx="300" cy="160" r="5" fill="#0891b2"/>
+    <text x="300" y="182" font-size="11" font-weight="700" fill="#0e7490" text-anchor="middle">1974</text>
+    <text x="300" y="196" font-size="10" fill="#0891b2" text-anchor="middle">特沃斯基 &amp; 卡尼曼</text>
+
+    <circle cx="368" cy="160" r="5" fill="#dc2626"/>
+    <text x="368" y="140" font-size="11" font-weight="700" fill="#b91c1c" text-anchor="middle">1975</text>
+    <text x="368" y="127" font-size="10" fill="#dc2626" text-anchor="middle">Fischhoff 後見之明</text>
+
+    <circle cx="432" cy="160" r="5" fill="#dc2626"/>
+    <text x="432" y="182" font-size="11" font-weight="700" fill="#b91c1c" text-anchor="middle">1984–2003</text>
+    <text x="432" y="196" font-size="10" fill="#dc2626" text-anchor="middle">Tetlock 2.8 萬條預測</text>
+
+    <circle cx="510" cy="160" r="5" fill="#059669"/>
+    <text x="510" y="140" font-size="11" font-weight="700" fill="#047857" text-anchor="middle">2011–2015</text>
+    <text x="510" y="127" font-size="10" fill="#059669" text-anchor="middle">IARPA 預測競賽</text>
+
+    <circle cx="580" cy="160" r="5" fill="#b45309"/>
+    <text x="580" y="182" font-size="11" font-weight="700" fill="#b45309" text-anchor="middle">2018</text>
+    <text x="580" y="196" font-size="10" fill="#d97706" text-anchor="middle">對賭思維</text>
+  </g>
+
+  <rect x="40" y="226" width="196" height="60" rx="6" fill="#eef2ff" stroke="#c7d2fe"/>
+  <text x="52" y="244" font-size="10.5" font-weight="700" fill="#4338ca">數學線</text>
+  <text x="52" y="260" font-size="10" fill="#6366f1">怎麼給不確定性定價、</text>
+  <text x="52" y="274" font-size="10" fill="#6366f1">怎麼計分、怎麼聚合</text>
+
+  <rect x="248" y="226" width="196" height="60" rx="6" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="260" y="244" font-size="10.5" font-weight="700" fill="#b91c1c">心理學線</text>
+  <text x="260" y="260" font-size="10" fill="#dc2626">人實際上怎麼搞砸它：</text>
+  <text x="260" y="274" font-size="10" fill="#dc2626">偏差、故事、自我保護</text>
+
+  <rect x="456" y="226" width="184" height="60" rx="6" fill="#fffbeb" stroke="#fde68a"/>
+  <text x="468" y="244" font-size="10.5" font-weight="700" fill="#b45309">匯流點</text>
+  <text x="468" y="260" font-size="10" fill="#d97706">兩條線在「校準」這個</text>
+  <text x="468" y="274" font-size="10" fill="#d97706">可測量指標上交會</text>
+</svg>
+<h3>三個關鍵轉折</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>轉折</th>
+<th>之前</th>
+<th>之後</th>
+<th>為什麼關鍵</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>1930s：機率從頻率走向主觀</strong></td>
+<td>機率是「事件發生的長期頻率」——你沒法對「我這個決定好不好」報機率</td>
+<td>主觀機率：機率是「信念的度量」——萬事皆可報機率</td>
+<td>沒有這一步，「我 70% 確定」在數學上是不合法的</td>
+</tr>
+<tr>
+<td class="k"><strong>1974 起：偏差清單建立</strong></td>
+<td>理性人假設</td>
+<td>特沃斯基與卡尼曼證明系統性偏誤</td>
+<td>給出了敵人清單，但<strong>沒有給出解法</strong>——偏差是無法靠意志克服的</td>
+</tr>
+<tr>
+<td class="k"><strong>2011–2015：校準被證明可訓練</strong></td>
+<td>「聰明人預測更準」</td>
+<td>GJP 證明<strong>一般人可以勝過有機密情報的分析師</strong></td>
+<td>這是全書的實證地基：決策品質不是天賦，是可訓練的技能</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-fact">事实</span>Tetlock 1984–2003 的長期研究追蹤了 <strong>284 位專家</strong>（學者、政府分析師、記者、顧問），收集約 <strong>2.8 萬條</strong>關於政治與經濟事件的機率預測。結論是：<strong>平均而言，專家的預測不如簡單的統計外推，很多問題上甚至不如瞎猜。</strong> 而媒體曝光度最高的專家，往往準確度最低。</p>
+<p><span class="tag t-fact">事实</span>2011 年，美國情報高級研究計畫署（IARPA）啟動預測競賽（Aggregative Contingent Estimation），五個大學團隊參賽。Tetlock 與 Mellers 的 Good Judgment Project 每年都贏；到第二年，該項目 <strong>前 2% 的預測者（superforecasters）在同樣的問題上超過了美國情報界的官方預測</strong>——而情報界握有志願者沒有的機密資訊。由於優勢過於明顯，IARPA 在競賽中途砍掉了其他所有團隊。</p>
+<div class="note green"><b>這一段歷史的真正含義</b><p><strong>「準確」被證明是一個可訓練的技能，而不是一種稟賦。</strong></p>
+<p>superforecasters 不是資歷最深的人，不是被引用最多的人，也不集中在任何單一學科。他們的共同點是一組習慣：<strong>用數字說話（「我押 64%」而不是「這可能會發生」）、頻繁小步更新、舒適地說「我不知道」、區分「我有資訊優勢的問題」和「我沒有的問題」。</strong></p>
+<p>這些全部是<strong>可練習的行為</strong>。這是整本書最重要的樂觀結論。</p></div>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<p><strong>為什麼明知結果論不對，整個社會還在獎勵它？因為對幾乎所有人來說，結果論在短期是理性的。</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>他的激勵</th>
+<th>結果論對他有什麼好處</th>
+<th>代價由誰承擔</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">媒體評論員</td>
+<td>點擊量、事後的正確感</td>
+<td>「我早就說了吧」比「我當時估 60%」好賣一萬倍</td>
+<td>讀者的世界觀</td>
+</tr>
+<tr>
+<td class="k">基金經理</td>
+<td>季度排名、資金流入</td>
+<td>好業績歸自己，壞業績歸市場</td>
+<td>投資人的長期收益</td>
+</tr>
+<tr>
+<td class="k">企業高管</td>
+<td>董事會、股價</td>
+<td>成功歸戰略，失敗歸「黑天鵝」</td>
+<td>股東與員工</td>
+</tr>
+<tr>
+<td class="k">政治人物</td>
+<td>選票</td>
+<td>事後宣稱「一切盡在預料中」可建立權威</td>
+<td>公共決策品質</td>
+</tr>
+<tr>
+<td class="k">你自己</td>
+<td>自尊</td>
+<td>成功證明我聰明，失敗證明我倒霉</td>
+<td>你的學習能力</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-ana">分析</span><strong>這張表解釋了為什麼「求真小組」在組織裡如此罕見。</strong> 它不是一個認知問題，是一個政治問題：<strong>準確性與可辯護性在短期是衝突的。</strong> 說「我當時估 60%」的人，比說「我早就知道」的人更難在會議上贏。</p>
+<h3>三種定價機制的效力對比</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>機制</th>
+<th>如何給準確性定價</th>
+<th>效力</th>
+<th>為什麼</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">事後批評</td>
+<td>無</td>
+<td>極低</td>
+<td>沒有代價，人人都能做，且會被後見之明汙染</td>
+</tr>
+<tr>
+<td class="k">名譽</td>
+<td>弱</td>
+<td>低</td>
+<td>延遲且模糊，且「敢於斷言」本身也帶來名譽</td>
+</tr>
+<tr>
+<td class="k"><strong>下注</strong></td>
+<td><strong>直接、即時、對稱</strong></td>
+<td><strong>高</strong></td>
+<td>你報 70%，就必須接受「賠率 0.43 : 1」的價格；錯了立刻付錢</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span><strong>下注之所以是這個系統裡唯一有效的定價機制，是因為它是唯一對稱的。</strong> 「我早就說過」在語言裡是免費的；「我押 70%」在數學上是收費的。</p>
+<div class="note amber"><b>杜克的說法：下注是對廢話徵的稅</b><p>這句話的數學含義在下面這個表裡——假設你的真實命中率是 55%，而你報出的機率是 p，對手按你的報價給公平賠率：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>你報的機率</th>
+<th>公平賠率</th>
+<th>你的每注期望</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">55%</td>
+<td>0.82 : 1</td>
+<td><strong>0.00%</strong>（盈虧平衡）</td>
+</tr>
+<tr>
+<td class="k">60%</td>
+<td>0.67 : 1</td>
+<td>−8.33%</td>
+</tr>
+<tr>
+<td class="k">70%</td>
+<td>0.43 : 1</td>
+<td><strong>−21.43%</strong></td>
+</tr>
+<tr>
+<td class="k">80%</td>
+<td>0.25 : 1</td>
+<td>−31.25%</td>
+</tr>
+<tr>
+<td class="k">90%</td>
+<td>0.11 : 1</td>
+<td>−38.89%</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>報得越高，賠率越低，而你的命中率追不上報價——這是一條單向輸送帶。</strong> 55% 的人報 70%，每注虧掉本金的 21.43%。這不是道德問題，是算術。</p></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<h3>校準數據是怎麼產生的</h3>
+<p>書裡所有工具最終都服務於一件事：<strong>把不可觀察的決策品質 Q，轉換成可累積的校準記錄。</strong> 這條流水線長這樣：</p>
+<svg viewBox="0 0 680 300" width="100%" role="img" aria-label="从判断到校准曲线的信息流">
+  <text x="40" y="24" font-size="13" font-weight="700" fill="#0f172a">從一個模糊的信念，到一條校準曲線：信息流要過五道閘</text>
+
+  <rect x="40" y="46" width="112" height="52" rx="8" fill="#ecfeff" stroke="#22d3ee"/>
+  <text x="96" y="68" font-size="11" font-weight="700" fill="#0e7490" text-anchor="middle">私有判斷</text>
+  <text x="96" y="84" font-size="9.5" fill="#0891b2" text-anchor="middle">「我覺得會成」</text>
+
+  <rect x="176" y="46" width="112" height="52" rx="8" fill="#fffbeb" stroke="#f59e0b"/>
+  <text x="232" y="68" font-size="11" font-weight="700" fill="#b45309" text-anchor="middle">報出數字</text>
+  <text x="232" y="84" font-size="9.5" fill="#d97706" text-anchor="middle">「我 70% 確定」</text>
+
+  <rect x="312" y="46" width="112" height="52" rx="8" fill="#eef2ff" stroke="#818cf8"/>
+  <text x="368" y="68" font-size="11" font-weight="700" fill="#4338ca" text-anchor="middle">寫入日記</text>
+  <text x="368" y="84" font-size="9.5" fill="#6366f1" text-anchor="middle">結果出現前存檔</text>
+
+  <rect x="448" y="46" width="112" height="52" rx="8" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="504" y="68" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">事件落定</text>
+  <text x="504" y="84" font-size="9.5" fill="#64748b" text-anchor="middle">發生 / 未發生</text>
+
+  <rect x="584" y="46" width="56" height="52" rx="8" fill="#ecfdf5" stroke="#10b981"/>
+  <text x="612" y="72" font-size="11" font-weight="700" fill="#047857" text-anchor="middle">記分</text>
+  <text x="612" y="87" font-size="9.5" fill="#059669" text-anchor="middle">Brier</text>
+
+  <g stroke="#cbd5e1" stroke-width="1.6" fill="none">
+    <line x1="152" y1="72" x2="176" y2="72"/><polygon points="176,72 167,68 167,76" fill="#cbd5e1"/>
+    <line x1="288" y1="72" x2="312" y2="72"/><polygon points="312,72 303,68 303,76" fill="#cbd5e1"/>
+    <line x1="424" y1="72" x2="448" y2="72"/><polygon points="448,72 439,68 439,76" fill="#cbd5e1"/>
+    <line x1="560" y1="72" x2="584" y2="72"/><polygon points="584,72 575,68 575,76" fill="#cbd5e1"/>
+  </g>
+
+  <text x="96" y="118" font-size="9.5" fill="#dc2626" text-anchor="middle">↑ 閘 1：說不出口</text>
+  <text x="232" y="118" font-size="9.5" fill="#dc2626" text-anchor="middle">↑ 閘 2：不願被記帳</text>
+  <text x="368" y="118" font-size="9.5" fill="#dc2626" text-anchor="middle">↑ 閘 3：事後改記憶</text>
+
+  <rect x="40" y="146" width="600" height="52" rx="8" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="56" y="166" font-size="11" font-weight="700" fill="#b91c1c">三道閘的共同點：每一道都只需要你自己放棄，而不需要任何成本</text>
+  <text x="56" y="185" font-size="10.5" fill="#dc2626">所以它們一定會被放棄——除非你把「報數字 + 當場記下」做成不需要意志力的預設動作</text>
+
+  <rect x="40" y="216" width="290" height="62" rx="8" fill="#f5f3ff" stroke="#ddd6fe"/>
+  <text x="56" y="236" font-size="11" font-weight="700" fill="#5b21b6">彙總後的產出：校準曲線</text>
+  <text x="56" y="254" font-size="10" fill="#6d28d9">橫軸：你報的機率　縱軸：實際發生頻率</text>
+  <text x="56" y="270" font-size="10" fill="#6d28d9">這條線是你唯一能拿到、且不依賴結果的成績單</text>
+
+  <rect x="350" y="216" width="290" height="62" rx="8" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="366" y="236" font-size="11" font-weight="700" fill="#c2410c">為什麼它把樣本量放大兩個數量級</text>
+  <text x="366" y="254" font-size="10" fill="#ea580c">重大決策：一年個位數 → 樣本永遠不夠</text>
+  <text x="366" y="270" font-size="10" fill="#ea580c">日常判斷：一天二十個 → 半年就有幾千條記錄</text>
+</svg>
+<p><span class="tag t-inf">推论</span>這張圖標出了整本書最關鍵的設計：<strong>校準記錄的計數單位是「判斷」，不是「專案」。</strong></p>
+<p>一年做十個重大決策的人，一輩子也累積不到統計顯著所需的樣本（第 20 節會算出這個數字：要證明自己比瞎猜強 5pp 需要 620 次獨立決策）。但同一個人如果每天對天氣、對會議能否準時結束、對郵件回覆時間報出機率，<strong>半年就能累積上千條計分記錄</strong>——足以畫出一條有意義的校準曲線，找出自己的系統性偏誤。</p>
+<p>這是這本書裡最被低估的一句話：<strong>你不需要等人生給你足夠的樣本，你可以自己製造樣本。</strong></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p><strong>按「重要性 × 槓桿率 × 可操作性 ÷ 學習成本」排序。前十個裡有七個今天就能開始，且成本接近零。</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>槓桿點</th>
+<th>為什麼有效（機制）</th>
+<th>今天能做嗎</th>
+<th>主要障礙</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>把信念報成數字</strong></td>
+<td>把不可證偽的「我認為」變成可證偽的「我 70% 認為」；這是所有其他工具的地基</td>
+<td>✅</td>
+<td>社交成本：看起來不果斷</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>決策日記（在結果出現前寫）</strong></td>
+<td>對抗後見之明偏差的唯一有效手段——Fischhoff 證明記憶會被覆寫，寫下來的才拿得回來</td>
+<td>✅</td>
+<td>需要養成觸發條件</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>校準記分</strong></td>
+<td>唯一不依賴結果的成績單；把樣本量放大兩個數量級</td>
+<td>✅</td>
+<td>需要累積，回報延遲</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>事前驗屍（premortem）</strong></td>
+<td>用「已經失敗了」的框架繞開樂觀偏誤；把想像中的失敗變成可規避的清單</td>
+<td>✅</td>
+<td>需要真的寫，不能只在腦子裡過</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>10-10-10</strong></td>
+<td>抵消現時偏誤；把未來自己的偏好提前納入談判</td>
+<td>✅</td>
+<td>容易流於形式</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>求真小組 + 獨立性維護</strong></td>
+<td>借用他人獨立誤差來修正自己；<strong>效果 = (1−ρ) × 獨立增益</strong></td>
+<td>⚠️ 需要人</td>
+<td>找人不難，維持 ρ 低很難</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>「想賭一把嗎？」</strong></td>
+<td>一句話施加三重約束：逼數字、加代價、找反例</td>
+<td>✅</td>
+<td>對人際關係有摩擦</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>按資訊集複盤，而非按結果</strong></td>
+<td>斷開「結果 → 歸因」這條偏誤注入鏈</td>
+<td>✅</td>
+<td>需要日記做前置條件</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>尤利西斯合約</strong></td>
+<td>用事前承諾約束必然會變心的未來自己；可挽回 1−β ≈ 30% 的長期正確決策</td>
+<td>✅</td>
+<td>需要預見自己會變心</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>決策髒話罐</strong></td>
+<td>給後見之明偏差定一個外部價格，讓它從「無意識」變成「有成本」</td>
+<td>✅</td>
+<td>只能治自己的，治不了別人的</td>
+</tr>
+</tbody>
+</table></div>
+<h3>為什麼第 1 個是第 1 個</h3>
+<p><strong>因為它把其他九個都變成可能。</strong></p>
+<p>沒有一個數字，第 2 條的日記沒有可核對的內容；第 3 條的記分無從下手；第 6 條的小組只能交換意見而不是交換機率；第 8 條的複盤沒有客觀對象。</p>
+<p><span class="tag t-inf">推论</span>而第 1 條之所以排在「決策日記」前面，是因為它<strong>更難</strong>。寫日記只要習慣，報數字要承擔社交風險。真正卡住人的是那句「我有 70% 的把握」——<strong>說出來的瞬間，你從一個有見地的人變成了一個可能出錯的人。</strong></p>
+<div class="note red"><b>這一節最容易搞反的地方</b><p>很多人把「敢於決斷」當成一種美德。在資訊不完備的環境裡，<strong>「敢於報出一個會被記帳的機率」才是美德，「敢於斷言一個不可證偽的結論」只是表演。</strong></p>
+<p>分辨方法：把這句話寫下來，問「一年後如果我錯了，這句話會被拿出來嗎？」不會被拿出來的，就是表演。</p></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<p><strong>十二條，按「殺傷力 × 隱蔽性」排列。前四條是這本書的主戰場。</strong></p>
+<details><summary>① 結果論 resulting ── 用結果評判決策</summary><div class="dbody"><p><strong>長什麼樣</strong>：「這筆投資虧了，當時的決定真蠢。」</p>
+<p><strong>機制</strong>：它是兩個變數（決策品質、運氣）和成一個結果之後的必然誤讀。因為 R = Q + L 只有一個方程，你卻想解出兩個未知數，大腦用了一個偷懶的近似：假設 L = 0。</p>
+<p><strong>量化</strong>：一個勝率 55% 的好決策，單次結果難看的機率是 45%。就算拿 10 次結果去判，判對的機率也只有 62.1%（第 20 節模型一）。</p>
+<p><strong>解藥</strong>：決策日記 + 按資訊集複盤。</p></div></details>
+<details><summary>② 後見之明偏差 ── 「我早就知道了」</summary><div class="dbody"><p><strong>長什麼樣</strong>：看完整場比賽後，覺得結局理所當然。</p>
+<p><strong>機制</strong>：記憶被結果重寫。Fischhoff 1975 年的實驗證明，即使明確要求參與者「假裝不知道結果」，<strong>超過 70% 的人仍然給已知結局分配了更高的機率，並堅信自己很客觀</strong>。他的第四個研究證明：參與者對自己「當初怎麼估的」的回憶，會被結果系統性地汙染。</p>
+<p><strong>解藥</strong>：寫下來。這是唯一有效的。<strong>不寫，你的原始判斷就永久丟失了。</strong></p></div></details>
+<details><summary>③ 自利性偏差 ── 成功歸我，失敗歸天</summary><div class="dbody"><p><strong>長什麼樣</strong>：「這次成功是因為我看得準，這次失敗是因為市場不理性。」</p>
+<p><strong>機制</strong>：它讓結果反饋變成一面只照好話的鏡子，學習回路因此斷掉一半。</p>
+<p><strong>量化</strong>：Svenson 1981 年的經典研究<span class="tag t-fact">事实</span>：<strong>93% 的美國受訪駕駛認為自己的駕駛技術高於平均</strong>（瑞典樣本 69%）。這在數學上不可能——平均之上不能有 93% 的人。</p>
+<p><strong>解藥</strong>：把歸因規則外部化：複盤時只問「當時我知道什麼、不知道什麼」，不問「我聰明還是倒霉」。</p></div></details>
+<details><summary>④ 動機性推理 ── 先有結論，再找理由</summary><div class="dbody"><p><strong>長什麼樣</strong>：你已經站好隊，之後所有資訊都被用來支持這一隊。</p>
+<p><strong>機制</strong>：人的預設是「先接受、後驗證」（Daniel Gilbert 的研究<span class="tag t-ana">分析</span>）。智力不但不能防止它，<strong>還會加劇它</strong>——因為聰明人更擅長為既定結論編造好理由。這與能力正相關，不是負相關。</p>
+<p><strong>解藥</strong>：求真小組的章程。改的不是你的推理能力，是<strong>改變你的獎勵結構</strong>：在小組裡，準確比正確更值錢。</p></div></details>
+<details><summary>⑤ WYSIATI ── What You See Is All There Is</summary><div class="dbody"><p><strong>長什麼樣</strong>：手上的資訊就這麼多，於是就按這麼多資訊下了結論，且毫無不安。</p>
+<p><strong>機制</strong>：大腦不會為「我不知道的部分」標註空白。你的自信程度取決於到手資訊的連貫性，而不是它的完整性。<strong>一個編得通的故事，比一個殘缺的真相更讓人自信。</strong></p>
+<p><strong>解藥</strong>：事前驗屍。主動生成「我沒看到什麼」。</p></div></details>
+<details><summary>⑥ 優於平均效應 ── 不可能所有人都高於平均</summary><div class="dbody"><p><strong>長什麼樣</strong>：「我對風險的判斷比大多數人準。」</p>
+<p><strong>機制</strong>：自我保護機制下的自我評價膨脹。93% 的駕駛研究是它的經典證據。</p>
+<p><strong>在決策上的具體形式</strong>：幾乎所有人都認為自己比別人更不容易被偏誤影響——<strong>包括「結果論」這個偏誤本身</strong>。</p>
+<p><strong>解藥</strong>：校準曲線。它是唯一不依賴自我評價的答案。</p></div></details>
+<details><summary>⑦ 對確定性的渴求 ── 大腦討厭「不知道」</summary><div class="dbody"><p><strong>長什麼樣</strong>：急於把「可能」壓縮成「一定」；討厭說「我不確定」。</p>
+<p><strong>機制</strong>：演化遺產——草叢裡有響動時，假設是老虎比假設是風更有利於生存。這個機制在需要精細機率判斷的環境裡完全失靈。</p>
+<p><strong>解藥</strong>：「我不確定」不是弱點，是精確度的表達。<strong>能說出「60%」的人，比只能說「我覺得會成」的人，掌握的資訊多得多。</strong></p></div></details>
+<details><summary>⑧ 傾斜 tilt ── 情緒接管決策</summary><div class="dbody"><p><strong>長什麼樣</strong>：輸了之後急於翻本，報復性加碼，連續犯錯。</p>
+<p><strong>機制</strong>：撲克圈的術語。情緒喚起會縮短時間視野，把「長期期望值」替換成「立刻把損失補回來」。</p>
+<p><strong>解藥</strong>：尤利西斯合約。<strong>在理性時刻預先設定「傾斜時必須執行的動作」</strong>（比如：連續輸三次就離場）。</p></div></details>
+<details><summary>⑨ 現時偏誤 ── 未來的我不是我</summary><div class="dbody"><p><strong>長什麼樣</strong>：「明天開始減肥/儲蓄/戒菸。」</p>
+<p><strong>機制</strong>：準雙曲折現 β-δ 模型。實證 β ≈ 0.6–0.8，δ ≈ 0.96–0.99／年。今天以外的<strong>一切</strong>都先打一個 β 的折扣。</p>
+<p><strong>量化</strong>：β = 0.7 意味著<strong>落在「理性門檻」與「短視門檻」之間的長期專案，會被系統性否掉整整 30%</strong>（第 20 節模型四）。</p>
+<p><strong>解藥</strong>：10-10-10 + 承諾裝置。加州大學的健身房研究（DellaVigna–Malmendier 2006）反推出來的 β 約為 0.5<span class="tag t-chk">待验证</span>——這意味著辦了卡卻不去的人，在當下的自己與長期的自己之間有一場持續的談判。</p></div></details>
+<details><summary>⑩ 群體同質化 ── 求真小組退化成回音室</summary><div class="dbody"><p><strong>長什麼樣</strong>：一個「暢所欲言」的小組，成員背景相近，最後總是得出同樣的結論。</p>
+<p><strong>機制</strong>：ρ 上升。群體的糾錯力 = (1−ρ) × 獨立增益，<strong>ρ 是這個公式裡唯一的敵人</strong>。</p>
+<p><strong>量化</strong>：7 人小組、每人準確率 60% 時，獨立情況下的準確率是 71.02%；一旦 ρ = 0.5，掉到 65.51%——<strong>相當於一個只有 5 個人的獨立小組</strong>（第 20 節模型三）。</p>
+<p><strong>解藥</strong>：刻意引入「結構性異議」（紅隊、魔鬼代言人），以及<strong>章程裡明寫「獎勵探索性思考、不獎勵確認性思考」</strong>。</p></div></details>
+<details><summary>⑪ 樣本量錯覺 ── 三戰三勝就以為自己找到了規律</summary><div class="dbody"><p><strong>長什麼樣</strong>：連續成功幾次後，把運氣當成能力。</p>
+<p><strong>機制</strong>：小樣本下，結果與決策品質的相關性極弱，但人的直覺會給它一個很高的權重。</p>
+<p><strong>量化</strong>（本手冊計算）：要把一個「好決策者」（60%）和一個「壞決策者」（40%）以 90% 的把握分開，需要觀察 <strong>41 次</strong>；如果兩人只差 10pp（55% vs 45%），需要 <strong>163 次</strong>。</p>
+<p><strong>解藥</strong>：問「這個判斷重複過幾次？」如果答案是「三次」，那基本上什麼都沒學到。</p></div></details>
+<details><summary>⑫ 敘事謬誤 ── 用故事取代機率</summary><div class="dbody"><p><strong>長什麼樣</strong>：用「因為他堅持不懈，所以成功了」解釋一個本質上是機率的事件。</p>
+<p><strong>機制</strong>：故事比機率好記、好傳播、好賣。<strong>注意</strong>：這正是本書自身的風險——杜克用了大量撲克故事，而故事天生是說服工具，不是證據。</p>
+<p><strong>解藥</strong>：把每個故事還原成「樣本量多少、運氣佔比多少」。見第 27 節「這本書的四個弱點」。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<p><strong>書裡的每一個抽象概念，都能沿著一條固定的樓梯走下來：抽象問題 → 底層機制 → 今天的一個動作。</strong> 這張圖就是那條樓梯。</p>
+<svg viewBox="0 0 680 372" width="100%" role="img" aria-label="抽象到机制到操作的三层映射">
+  <text x="40" y="24" font-size="13" font-weight="700" fill="#0f172a">三層映射：從一句聽起來對的話，到一個今天能做的動作</text>
+
+  <text x="140" y="48" font-size="10.5" font-weight="700" fill="#64748b" text-anchor="middle">抽象問題</text>
+  <text x="350" y="48" font-size="10.5" font-weight="700" fill="#64748b" text-anchor="middle">底層機制</text>
+  <text x="560" y="48" font-size="10.5" font-weight="700" fill="#64748b" text-anchor="middle">操作動作</text>
+
+  <rect x="40" y="58" width="200" height="66" rx="7" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="56" y="78" font-size="11" font-weight="700" fill="#b91c1c">結果好＝我對嗎？</text>
+  <text x="56" y="96" font-size="10" fill="#dc2626">書裡說「不對」，但沒說</text>
+  <text x="56" y="110" font-size="10" fill="#dc2626">差多少</text>
+
+  <rect x="248" y="58" width="204" height="66" rx="7" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="264" y="78" font-size="10.5" font-weight="700" fill="#c2410c">R = Q + L，只有一個方程</text>
+  <text x="264" y="95" font-size="10" fill="#ea580c">單次結果的信息量 ±10pp</text>
+  <text x="264" y="110" font-size="10" fill="#ea580c">判別樣本：10 次 → 73.3%</text>
+
+  <rect x="460" y="58" width="200" height="66" rx="7" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="476" y="78" font-size="10.5" font-weight="700" fill="#047857">決策日記</text>
+  <text x="476" y="95" font-size="10" fill="#059669">結果出現前寫下：我押什麼、</text>
+  <text x="476" y="110" font-size="10" fill="#059669">幾成把握、憑什麼</text>
+
+  <rect x="40" y="136" width="200" height="66" rx="7" fill="#ecfeff" stroke="#a5f3fc"/>
+  <text x="56" y="156" font-size="11" font-weight="700" fill="#0e7490">我有多確定？</text>
+  <text x="56" y="174" font-size="10" fill="#0891b2">「我覺得」是最常見的</text>
+  <text x="56" y="188" font-size="10" fill="#0891b2">回答，也是最無用的</text>
+
+  <rect x="248" y="136" width="204" height="66" rx="7" fill="#eef2ff" stroke="#c7d2fe"/>
+  <text x="264" y="156" font-size="10.5" font-weight="700" fill="#4338ca">校準落差 = 報價 − 命中率</text>
+  <text x="264" y="173" font-size="10" fill="#6366f1">說 90% 實際 62% → Brier 0.314</text>
+  <text x="264" y="188" font-size="10" fill="#6366f1">比「永遠說 50%」（0.25）還差</text>
+
+  <rect x="460" y="136" width="200" height="66" rx="7" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="476" y="156" font-size="10.5" font-weight="700" fill="#047857">校準記分</text>
+  <text x="476" y="173" font-size="10" fill="#059669">每天報 5–10 個機率，</text>
+  <text x="476" y="188" font-size="10" fill="#059669">月底畫校準曲線</text>
+
+  <rect x="40" y="214" width="200" height="66" rx="7" fill="#f5f3ff" stroke="#ddd6fe"/>
+  <text x="56" y="234" font-size="11" font-weight="700" fill="#5b21b6">別人能幫我嗎？</text>
+  <text x="56" y="252" font-size="10" fill="#6d28d9">書裡的處方是「找個</text>
+  <text x="56" y="266" font-size="10" fill="#6d28d9">求真小組」，但沒定價</text>
+
+  <rect x="248" y="214" width="204" height="66" rx="7" fill="#eef2ff" stroke="#c7d2fe"/>
+  <text x="264" y="234" font-size="10.5" font-weight="700" fill="#4338ca">糾錯力 = (1 − ρ) × 獨立增益</text>
+  <text x="264" y="251" font-size="10" fill="#6366f1">7 人、個人 60%：獨立 71.0%</text>
+  <text x="264" y="266" font-size="10" fill="#6366f1">ρ=0.5 → 65.5%，只值 5 個人</text>
+
+  <rect x="460" y="214" width="200" height="66" rx="7" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="476" y="234" font-size="10.5" font-weight="700" fill="#047857">小組 + 結構性異議</text>
+  <text x="476" y="251" font-size="10" fill="#059669">章程明寫：獎勵探索性思考，</text>
+  <text x="476" y="266" font-size="10" fill="#059669">不獎勵確認性思考</text>
+
+  <rect x="40" y="292" width="200" height="66" rx="7" fill="#fffbeb" stroke="#fde68a"/>
+  <text x="56" y="312" font-size="11" font-weight="700" fill="#b45309">未來的我會同意嗎？</text>
+  <text x="56" y="330" font-size="10" fill="#d97706">「明天開始」是一句</text>
+  <text x="56" y="344" font-size="10" fill="#d97706">永遠不會兌現的承諾</text>
+
+  <rect x="248" y="292" width="204" height="66" rx="7" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="264" y="312" font-size="10.5" font-weight="700" fill="#c2410c">準雙曲折現 β ≈ 0.7</text>
+  <text x="264" y="329" font-size="10" fill="#ea580c">非現在的一切先打 7 折</text>
+  <text x="264" y="344" font-size="10" fill="#ea580c">30% 長期正確的事被否掉</text>
+
+  <rect x="460" y="292" width="200" height="66" rx="7" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="476" y="312" font-size="10.5" font-weight="700" fill="#047857">10-10-10 + 尤利西斯合約</text>
+  <text x="476" y="329" font-size="10" fill="#059669">把三個時間尺度並排看，</text>
+  <text x="476" y="344" font-size="10" fill="#059669">並提前綁住會變心的自己</text>
+</svg>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<h3>五個動作，按「今天就能做」的難度排序</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>動作</th>
+<th>具體怎麼做</th>
+<th>產出</th>
+<th>卡在哪</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>① 說出一個數字</strong></td>
+<td>下次有人問你意見，把「我覺得可以」換成「我大概 70% 認為可以」</td>
+<td>一句可證偽的話</td>
+<td>社交壓力</td>
+</tr>
+<tr>
+<td class="k"><strong>② 開一頁決策日記</strong></td>
+<td>每次要做有代價的決定，先寫三行：我押什麼、幾成把握、憑什麼。<strong>結果出來前不許改</strong></td>
+<td>一條不可被記憶重寫的原始記錄</td>
+<td>忘記寫</td>
+</tr>
+<tr>
+<td class="k"><strong>③ 每天報 5 個機率</strong></td>
+<td>挑生活裡的小事：今天會不會下雨、會議會不會超時、快遞幾點到。報完過兩天對答案</td>
+<td>一個月後可用的校準數據</td>
+<td>覺得瑣碎</td>
+</tr>
+<tr>
+<td class="k"><strong>④ 給下一個計畫做事前驗屍</strong></td>
+<td>假設六個月後它已經徹底失敗，寫下三個原因。<strong>必須寫，不能只在腦子裡想</strong></td>
+<td>一張風險清單</td>
+<td>覺得晦氣</td>
+</tr>
+<tr>
+<td class="k"><strong>⑤ 找一個人定期互審</strong></td>
+<td>一個就夠。約定規則：只審過程不審結果，先說「當時你知道什麼」</td>
+<td>一個外部誤差源</td>
+<td>找不到人／怕得罪</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note blue"><b>一個容易被忽略的順序問題</b><p><strong>上面的順序不能換。</strong></p>
+<p>沒有 ①，②的日記沒有可核對的內容；沒有 ② 的原始記錄，③ 的校準數據只是一堆「我記得我當時感覺還挺準」；沒有 ① 的數字習慣，④ 的事前驗屍會變成一堆模糊的擔憂清單。</p>
+<p><strong>先從「說出一個數字」開始，是因為它把其他四件事從「感受」拉進了「計量」。</strong></p></div>
+<h3>一份可以照抄的決策日記格式</h3>
+<pre><code>日期：2026-10-05
+決定：接受 A 公司的 offer，放棄 B 公司的複試
+下注：我押「留在 A 兩年後，我不會後悔」——把握 65%
+理由（三條）：
+  1. A 的業務是我真正想做的方向
+  2. B 的複試還要三週，機會成本太高
+  3. A 的團隊有兩個我認識且信任的人
+我沒有考慮的：
+  · A 的現金流狀況（沒做功課）
+  · 如果我錯了呢？錯的話最可能錯在哪 → 我可能低估了「方向」在實際工作裡的權重
+複盤日期：2027-04-05（六個月後）
+複盤規則：只看「當時我知道什麼」，不看結果好不好
+</code></pre>
+<p><span class="tag t-ana">分析</span><strong>這份格式裡最重要的兩行是「我沒有考慮的」和「複盤規則」。</strong> 前者針對 WYSIATI——逼你把「不知道自己不知道的部分」顯式標出來。後者針對結果論——<strong>在寫的那一天就把複盤規則定死，不給六個月後的自己留下事後改口的空間。</strong></p>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<p><strong>四層能力，每層解鎖下一層。沒有「全部掌握」這回事——這是一個持續校準的過程，不是一個可以畢業的課程。</strong></p>
+<details><summary>L1 · 語言層 ── 把「我覺得」換成機率（1–2 週）</summary><div class="dbody"><p><strong>目標</strong>：讓「說出一個數字」變成默認反應。</p>
+<ul>
+<li>[ ] 能在被問到意見時，不假思索地給出一個機率</li>
+<li>[ ] 能區分「我對這件事沒把握」（資訊不足）和「這件事本身不確定」（世界本就不確定）</li>
+<li>[ ] 能在別人給出斷言時，自然地問一句「你大概幾成把握？」</li>
+<li>[ ] 不再把「我不確定」當成需要道歉的話</li>
+</ul>
+<p><strong>檢驗標準</strong>：一週內至少 20 次主動報出機率，且不覺得彆扭。</p></div></details>
+<details><summary>L2 · 記錄層 ── 建立不可被篡改的原始記錄（1–3 個月）</summary><div class="dbody"><p><strong>目標</strong>：讓校準曲線有數據可畫。</p>
+<ul>
+<li>[ ] 有固定的決策日記載體（紙本、筆記軟體、表格都行）</li>
+<li>[ ] 每個有代價的決定都在結果出現前寫下：押什麼、幾成、憑什麼</li>
+<li>[ ] 每天報 5 個小事機率並記分</li>
+<li>[ ] 會算自己的 Brier 分數</li>
+<li>[ ] 能畫出自己的校準曲線，並看出自己在哪個區間系統性過度自信</li>
+</ul>
+<p><strong>檢驗標準</strong>：累積 100 條以上計分記錄，且<strong>第一次看到自己「說 90% 卻只對 70%」的實證</strong>。</p>
+<p><strong>這一步最難的不是技術，是第一次看到那條曲線時的心理衝擊。</strong></p></div></details>
+<details><summary>L3 · 結構層 ── 改獎勵結構，而不是靠意志力（3–12 個月）</summary><div class="dbody"><p><strong>目標</strong>：讓準確性在環境裡比辯贏更值錢。</p>
+<ul>
+<li>[ ] 建立了至少一個一對一的定期互審關係</li>
+<li>[ ] 能主持一次「事前驗屍」，且真的產出了三條以上非顯而易見的風險</li>
+<li>[ ] 覆盤時能穩定做到「按資訊集而非結果」</li>
+<li>[ ] 對重要的重複性決策，設置了尤利西斯合約（預先承諾）</li>
+<li>[ ] 能識別並主動打破小組的同質化趨勢</li>
+</ul>
+<p><strong>檢驗標準</strong>：有一次「複盤結論是『決策對了，結果不好』」且你沒有因此改策略。</p></div></details>
+<details><summary>L4 · 系統層 ── 把對賭思維裝進組織（1 年以上）</summary><div class="dbody"><p><strong>目標</strong>：讓結果論在你的團隊裡不再是默認選項。</p>
+<ul>
+<li>[ ] 團隊會議上，重要判斷必須附機率</li>
+<li>[ ] 覆盤會的制度不允許用結果反推決策品質</li>
+<li>[ ] 有事前驗屍的固定環節</li>
+<li>[ ] 獎勵「修正自己的判斷」而不是「堅持自己的判斷」</li>
+<li>[ ] 能設計出讓不同意見安全表達的機制（而不只是嘴上鼓勵）</li>
+</ul>
+<p><strong>檢驗標準</strong>：組織裡有人因為<strong>準確地修正了自己</strong>而獲得認可，而不是因為「贏了」。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>我們把「校準」做成一個可以玩的競技場。</strong></p>
+<h3>世界設定：校準競技場</h3>
+<p>一片由 <strong>機率雲</strong> 構成的競技場。每次你報出一個機率，雲裡就凝結出一顆 <strong>結晶</strong>；事件落定時，結晶會變成兩種顏色之一——<strong>命中（金色）</strong> 或 <strong>落空（灰色）</strong>。</p>
+<p>你的分數不是「贏了多少次」，而是 <strong>你的結晶顏色分布與你說的機率有多吻合</strong>。一個總說 90% 卻只凝出七成金色的人，分數低於一個總說 60% 卻凝出六成金色的人。</p>
+<div class="grid g3">
+<div class="card"><h4>🎲 三個區域</h4><p><strong>語言區</strong>：把模糊判斷轉成數字。在這裡，說「我覺得」會被扣分。
+<strong>記錄區</strong>：在結果揭曉前存檔。這裡的時間是凍結的——任何人都無法修改已封存的記錄。
+<strong>鏡子區</strong>：唯一能看到自己校準曲線的地方。進入需要 100 條以上記錄。</p></div>
+<div class="card"><h4>⚡ 三種貨幣</h4><p><strong>結晶（Crystal）</strong>：準確的機率判斷。
+<strong>異議（Dissent）</strong>：在小組裡提出有理據的不同意見，即使最後你錯了也照樣獲得。
+<strong>修正（Revision）</strong>：公開修正自己的判斷——這是最高面額的貨幣。</p></div>
+<div class="card"><h4>🕳 三個陷阱</h4><p><strong>結果沼澤</strong>：掉進去的人會用結晶的顏色回溯評價自己當初的判斷。
+<strong>回音洞穴</strong>：一組成員互相附和時，競技場會悄悄降低該組的結晶價值（ρ 上升）。
+<strong>明日樞紐</strong>：一個永遠把你推向「明天再開始」的傳送門。</p></div>
+</div>
+<h3>等級與徽章</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>等級</th>
+<th>解鎖條件</th>
+<th>稱號</th>
+<th>徽章</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>主動報出 20 個機率</td>
+<td>報數者</td>
+<td>一枚無色結晶</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>累積 100 條計分記錄</td>
+<td>有帳的人</td>
+<td>第一條校準曲線</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>完成第一次事前驗屍</td>
+<td>掘墓人</td>
+<td>一把小鏟</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>一次「決策對、結果差」後沒有改策略</td>
+<td>抗沼澤者</td>
+<td>沼澤鞋</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>主持一次小組互審且維持了異議</td>
+<td>求真者</td>
+<td>一面鏡子</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>校準落差穩定收斂到 5pp 以內</td>
+<td>校準體</td>
+<td>一條貼著對角線的曲線</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>一次「準確地修正了自己的判斷」並被人看見</td>
+<td>修正者</td>
+<td>最高面額的貨幣</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<h3>日常任務（每天，5 分鐘）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任務</th>
+<th>做法</th>
+<th>計分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>報五個機率</strong></td>
+<td>對今天的小事報機率（天氣、會議、快遞、股票漲跌、朋友回訊時間）</td>
+<td>每條 +1 結晶</td>
+</tr>
+<tr>
+<td class="k"><strong>一筆覆盤</strong></td>
+<td>找出三天前報過的一個機率，對答案</td>
+<td>命中／落空各記一筆</td>
+</tr>
+<tr>
+<td class="k"><strong>一個「我不知道」</strong></td>
+<td>主動說出一次「這我不知道」，而不是給一個模糊的猜測</td>
+<td>+2 異議</td>
+</tr>
+</tbody>
+</table></div>
+<h3>週任務（每週，30 分鐘）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任務</th>
+<th>做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>校準掃描</strong></td>
+<td>畫出本週的分箱命中率，找出系統性偏離</td>
+</tr>
+<tr>
+<td class="k"><strong>一次事前驗屍</strong></td>
+<td>挑下週要做的一件事，寫三條失敗原因</td>
+</tr>
+<tr>
+<td class="k"><strong>一條異議</strong></td>
+<td>對某個你不同意的共識，寫出一條有理據的反對意見（不需要說出口）</td>
+</tr>
+</tbody>
+</table></div>
+<h3>月任務</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任務</th>
+<th>做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>Brier 月報</strong></td>
+<td>算出本月 Brier 分數，與上月比較</td>
+</tr>
+<tr>
+<td class="k"><strong>一次決策日記回顧</strong></td>
+<td>翻出三個月前的日記，按「資訊集」而非結果複盤</td>
+</tr>
+<tr>
+<td class="k"><strong>一次 10-10-10</strong></td>
+<td>對一個正在糾結的決定，寫下三個時間尺度的答案</td>
+</tr>
+</tbody>
+</table></div>
+<h3>主線任務（六個月）</h3>
+<div class="note green"><b>主線：拿到你自己的第一條校準曲線</b><ol>
+<li><strong>第 1–4 週</strong>：只做「報出數字」。目標是讓它變成習慣，不評價準確度。</li>
+<li><strong>第 5–12 週</strong>：開始記分。目標是累積 100 條。<strong>這段時間不要看結果，只記帳。</strong></li>
+<li><strong>第 13–16 週</strong>：畫出第一條校準曲線。找出你在哪個區間偏離對角線最遠。</li>
+<li><strong>第 17–20 週</strong>：針對那個區間做修正（例如：如果你在 80–100% 區間過度自信，強制把自己的高把握報價下調 15pp）。</li>
+<li><strong>第 21–24 週</strong>：重畫曲線，看修正是否生效。</li>
+</ol>
+<p><strong>完成標誌</strong>：你能說出「我在 X% 的判斷上，實際命中率是 Y%」——並且 Y 和 X 的差距比第一天小。</p></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p><strong>杜克說「不要用結果評判決策」。這句話是對的，但她沒算過一次結果到底能告訴你多少。</strong></p>
+<p>下面四個模型，把這本書裡四個最核心的斷言各自算一遍：結果的信號強度、校準的代價、求真小組的定價、時間折扣的帳單。<strong>每一個結論都是算出來的，不是引用來的。</strong></p>
+<div class="note amber"><b>先看這一句再看滑塊</b><p>四個模型的共同立場：<strong>把「決策」從故事裡剝離出來，只留下機率結構。</strong></p>
+<p>它們都不預測任何具體事件的結果，只回答一類問題：在給定的資訊與機率條件下，<strong>這套方法論本身能給你多少、代價是多少、什麼時候會失效。</strong> 這是刻意的簡化——正因為簡化，算出來的才是工具的純度，不摻雜你的行業知識。</p></div>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 1 · 結果的信噪比：一次結果到底值多少錢</h4></div>
+  <p class="tool-sub">設定：有兩種決策者——好的勝率 <b>p</b>，壞的勝率 <b>100−p</b>。事前你各給 50%。現在讓他做 <b>n</b> 次決策，按「成功過半就判為好決策」的規則去猜他是哪一種。<b>這條曲線就是「結果論」的實際精度：它告訴你，你的直覺從結果裡能提取多少信息。</b>單次結果的信息量由貝葉斯更新直接給出，n 次判別準確率由二項分布精確枚舉（非近似）。</p>
+  <canvas id="tbChart" height="214" style="height:214px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="tb_pG">好決策的真實勝率</label>
+    <input type="range" id="tb_pG" min="55" max="90" step="1" value="60">
+    <output id="tb_pGO">60%</output>
+  </div>
+  <div class="ctrl">
+    <label for="tb_n">觀察到的決策次數</label>
+    <input type="range" id="tb_n" min="1" max="300" step="1" value="10">
+    <output id="tb_nO">10 次</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">單次成功後，你對「這是好決策」的把握</div><div class="val" id="tb_post">60.0%</div><div class="hint">事前 50% → 只挪這麼多</div></div>
+    <div class="ro"><div class="lbl">一次結果的信息量</div><div class="val" id="tb_sig">±10.0 pp</div><div class="hint">這是一次結果的全部價值</div></div>
+    <div class="ro"><div class="lbl">好決策單次就失敗的機率</div><div class="val" id="tb_fail">40.0%</div><div class="hint">結果論的傷害面</div></div>
+    <div class="ro"><div class="lbl">n 次後的判別準確率</div><div class="val" id="tb_acc">73.3%</div><div class="hint">瞎猜是 50%</div></div>
+    <div class="ro"><div class="lbl">要判到 90% 準，需要多少次</div><div class="val" id="tb_need">41 次</div><div class="hint">你一年有幾次這種樣本</div></div>
+    <div class="ro"><div class="lbl">要判到 95% 準，需要多少次</div><div class="val" id="tb_need95">67 次</div><div class="hint">統計顯著的成本</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判斷</div>
+      <div class="val" id="tb_vd" style="font-size:15px">10 次結果只夠判到 73%——結果論不是懶，是樣本不夠</div>
+    </div>
+  </div>
+</div>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 2 · 賭注校準台：你報的機率，在賭桌上值多少錢</h4></div>
+  <p class="tool-sub">Brier 分數 = 平均「(你報的機率 − 實際結果)²」，越低越好。<b>0.25 是「永遠說 50%」的基準線</b>。左欄曲線是「在真實命中率固定為 a 的前提下，你報 c 會得到的 Brier」——它的最低點永遠在 c = a 處，也就是<b>完全誠實是你唯一的最優策略</b>。右欄是把它換算成賭桌語言：你報 p，對手就按 p 給你賠率，而你真實的命中率是 a。</p>
+  <canvas id="cbChart" height="210" style="height:210px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="cb_c">你報出的把握程度</label>
+    <input type="range" id="cb_c" min="50" max="99" step="1" value="90">
+    <output id="cb_cO">90%</output>
+  </div>
+  <div class="ctrl">
+    <label for="cb_a">你的實際命中率</label>
+    <input type="range" id="cb_a" min="30" max="99" step="1" value="62">
+    <output id="cb_aO">62%</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">你的 Brier 分數</div><div class="val" id="cb_brier">0.3140</div><div class="hint">0.25 是「什麼都不說」</div></div>
+    <div class="ro"><div class="lbl">老實報的 Brier（最優）</div><div class="val" id="cb_best">0.2356</div><div class="hint">報 c = 62% 時</div></div>
+    <div class="ro"><div class="lbl">過度自信的額外代價</div><div class="val" id="cb_gap">+0.0784</div><div class="hint">純粹是報高造成的</div></div>
+    <div class="ro"><div class="lbl">相對 0.25 基線</div><div class="val" id="cb_vs">劣於基線 +0.0640</div><div class="hint">比沉默更糟</div></div>
+    <div class="ro"><div class="lbl">賭桌賠率（賠 1 贏 x）</div><div class="val" id="cb_odds">0.11 : 1</div><div class="hint">對手按你的報價給</div></div>
+    <div class="ro"><div class="lbl">每注期望收益</div><div class="val" id="cb_ev">−31.1%</div><div class="hint">下注是對廢話徵的稅</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判斷</div>
+      <div class="val" id="cb_vd" style="font-size:15px">說 90% 實際只對 62%——你的 Brier 比沉默更差，每注虧掉本金的 31%</div>
+    </div>
+  </div>
+</div>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 3 · 求真小組的定價：ρ 是唯一真正的敵人</h4></div>
+  <p class="tool-sub">孔多塞式多數投票：n 名成員各自獨立判斷，取多數。<b>獨立時準確率隨人數上升——但這個結論建立在一個極難滿足的前提上：成員的誤差必須不相關。</b>本模型用 P(群體正確) = (1−ρ)·孔多塞 + ρ·單人，把「相關性」變成一個可以調的參數。—— 集成學習的教科書第一課（基學習器誤差需不相關），在人的世界裡是最大的難題。</p>
+  <canvas id="podChart" height="214" style="height:214px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="pod_n">小組成員數</label>
+    <input type="range" id="pod_n" min="1" max="21" step="2" value="7">
+    <output id="pod_nO">7 人</output>
+  </div>
+  <div class="ctrl">
+    <label for="pod_p">單個成員的判斷準確率</label>
+    <input type="range" id="pod_p" min="51" max="90" step="1" value="60">
+    <output id="pod_pO">60%</output>
+  </div>
+  <div class="ctrl">
+    <label for="pod_rho">成員間的相關性 ρ</label>
+    <input type="range" id="pod_rho" min="0" max="100" step="5" value="30">
+    <output id="pod_rhoO">30%</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">獨立時的群體準確率</div><div class="val" id="pod_ind">71.02%</div><div class="hint">理想的孔多塞上限</div></div>
+    <div class="ro"><div class="lbl">計入 ρ 後的真實準確率</div><div class="val" id="pod_act">67.71%</div><div class="hint">你能實際拿到的</div></div>
+    <div class="ro"><div class="lbl">相對單個成員的增益</div><div class="val" id="pod_gain">+7.71 pp</div><div class="hint">組小組的全部價值</div></div>
+    <div class="ro"><div class="lbl">被 ρ 吃掉的部分</div><div class="val" id="pod_lost">−30.0%</div><div class="hint">增益裡的縮水比例</div></div>
+    <div class="ro"><div class="lbl">這支小組實際值幾個獨立的人</div><div class="val" id="pod_equiv">5 人</div><div class="hint">人數的「名義 / 實際」落差</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判斷</div>
+      <div class="val" id="pod_vd" style="font-size:15px">7 人小組因 ρ=0.3 縮水到相當於 5 個獨立的人</div>
+    </div>
+  </div>
+</div>
+<div class="tool">
+  <div class="tool-hd"><h4>工具 4 · 心理時間旅行：10-10-10 的帳單有長</h4></div>
+  <p class="tool-sub">準雙曲折現模型（Laibson 1997）：今天的價值是 1，<b>今天以外的一切都先乘一個 β</b>，再按 δ 逐年衰減。實證區間 β ≈ 0.6–0.8、δ ≈ 0.96–0.99／年。左欄是折現曲線（橫軸為對數時間），右欄把 10-10-10 的三個尺度、隱式年化貼現率、以及<b>「短視的你会否掉多少長期正確的事」</b>一起算出來——後者恰好等於 1 − β。</p>
+  <canvas id="tttChart" height="214" style="height:214px;margin:4px 0 10px"></canvas>
+  <div class="ctrl">
+    <label for="ttt_beta">現時偏誤 β（對「非現在」的折扣）</label>
+    <input type="range" id="ttt_beta" min="50" max="100" step="1" value="70">
+    <output id="ttt_betaO">0.70</output>
+  </div>
+  <div class="ctrl">
+    <label for="ttt_delta">長期貼現因子 δ（每年）</label>
+    <input type="range" id="ttt_delta" min="90" max="99" step="0.5" value="98">
+    <output id="ttt_deltaO">0.98</output>
+  </div>
+  <div class="ctrl">
+    <label for="ttt_amt">名義金額</label>
+    <input type="range" id="ttt_amt" min="10" max="1000" step="10" value="100">
+    <output id="ttt_amtO">100</output>
+  </div>
+  <div class="readout">
+    <div class="ro"><div class="lbl">10 分鐘後的現值</div><div class="val" id="ttt_m10">70.00</div><div class="hint">折現因子 0.700</div></div>
+    <div class="ro"><div class="lbl">10 個月後的現值</div><div class="val" id="ttt_m10m">68.83</div><div class="hint">折現因子 0.688</div></div>
+    <div class="ro"><div class="lbl">10 年後的現值</div><div class="val" id="ttt_y10">57.20</div><div class="hint">折現因子 0.572</div></div>
+    <div class="ro"><div class="lbl">等一年的隱式年化貼現率</div><div class="val" id="ttt_rate">45.8%</div><div class="hint">你的大腦在要求的回報率</div></div>
+    <div class="ro"><div class="lbl">被短視否掉的長期正確專案</div><div class="val" id="ttt_fork">30%</div><div class="hint">= 1 − β，精確值</div></div>
+    <div class="ro" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">
+      <div class="lbl" style="min-width:52px">判斷</div>
+      <div class="val" id="ttt_vd" style="font-size:15px">β=0.70：未來的你只認 70% 的帳，10-10-10 就是那 30% 的找回器</div>
+    </div>
+  </div>
+</div>
+<h3>四個模型合起來說了什麼</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>模型</th>
+<th>它算出的數</th>
+<th>它推翻的說法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">① 結果的信噪比</td>
+<td>單次結果只值 <strong>±10pp</strong>；10 次結果判別準確率 <strong>73.3%</strong>；判到 90% 要 <strong>41 次</strong></td>
+<td>「多做幾次就知道了」——多做幾次遠遠不夠</td>
+</tr>
+<tr>
+<td class="k">② 賭注校準台</td>
+<td>說 90% 實際 62% → Brier <strong>0.3140</strong>，<strong>比沉默（0.25）更差</strong>；每注虧 <strong>−31.1%</strong></td>
+<td>「保持自信沒壞處」——過度自信有明確的價格</td>
+</tr>
+<tr>
+<td class="k">③ 求真小組</td>
+<td>ρ=0.3 時 7 人小組縮水 <strong>30%</strong>，只值 <strong>5 個獨立的人</strong></td>
+<td>「多找幾個人一起想就更準」——同質化的小組接近無效</td>
+</tr>
+<tr>
+<td class="k">④ 心理時間旅行</td>
+<td>折現率在「等一年」處是 <strong>45.8%</strong>；短視否掉 <strong>30%</strong> 的長期正確專案</td>
+<td>「以後再說」——「以後」是一台有明確折舊率的機器</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note red"><b>把四個數字連起來看</b><p><strong>它們是同一件事的四個側面：你在四個不同的地方，都在用不夠的資訊做判斷。</strong></p>
+<p>結果不夠（±10pp）、自知不夠（校準落差）、他人不夠（ρ 吃掉增益）、未來的自己也不夠（β=0.7）。</p>
+<p>杜克的書之所以把「把信念當賭注」放在第一位，就是因為<strong>只有這一招能同時作用於這四個缺口</strong>——它逼你報數字（補自知）、留記錄（補結果）、逼別人表態（補群體）、留給未來的自己一份證據（補時間）。</p></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>級別</th>
+<th>名稱</th>
+<th>核心能力</th>
+<th>典型時間</th>
+<th>通過標準</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>L1</strong></td>
+<td>報數者</td>
+<td>把「我覺得」換成機率</td>
+<td>1–2 週</td>
+<td>一週內 20 次主動報出機率，不覺得彆扭</td>
+</tr>
+<tr>
+<td class="k"><strong>L2</strong></td>
+<td>有帳的人</td>
+<td>建立不可篡改的原始記錄</td>
+<td>1–3 個月</td>
+<td>100 條以上計分記錄 + 第一條校準曲線</td>
+</tr>
+<tr>
+<td class="k"><strong>L3</strong></td>
+<td>抗沼澤者</td>
+<td>在結果不好時不改對的策略</td>
+<td>3–12 個月</td>
+<td>一次「決策對、結果差」後沒有改策略</td>
+</tr>
+<tr>
+<td class="k"><strong>L4</strong></td>
+<td>修正者</td>
+<td>改環境的獎勵結構</td>
+<td>1 年以上</td>
+<td>有人因為<strong>準確地修正了自己</strong>而獲得認可</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span><strong>L2 到 L3 之間有一道坎，而且它不是技能坎，是情緒坎。</strong> 第一次看到自己的校準曲線時，你會發現「說 80% 把握的事，實際只對了 62%」。那一刻有兩個出口：一是調低報價（進入 L3），二是繼續報高但不再記分（退回 L1）。</p>
+<div class="note amber"><b>這條路上最常見的三種中途放棄</b><ol>
+<li><strong>記了三週就停了</strong>——因為還沒看到曲線，回報太遠。對策：每天只報 5 個<strong>小事</strong>機率（天氣、快遞），讓記分密度足夠高。</li>
+<li><strong>日記寫了但回頭不看</strong>——對策：在寫的那天就定好複盤日期，寫進日曆。</li>
+<li><strong>複盤時還是按結果評價</strong>——對策：複盤表上只留兩欄「當時我知道什麼」「當時我不知道什麼」，<strong>不設「結果」欄</strong>。</li>
+</ol></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30 分钟最小实践</h2>
+<p><strong>成本接近零，今天就能做，產出可驗證。</strong></p>
+<h3>任務：建立你的第一份「決策日記」，並完成一次事前驗屍</h3>
+<p><strong>總共 30 分鐘，分三塊。</strong></p>
+<h4>第一塊（10 分鐘）· 找出一個正在糾結的決定</h4>
+<p>不是回憶過去，是<strong>現在正在糾結的</strong>那件事。例如：
+- 要不要接這個專案
+- 要不要換工作
+- 要不要繼續投這個方向
+- 要不要結束一段關係</p>
+<p>寫下三行：</p>
+<pre><code>我押的是什麼：
+把握幾成（必須是一個數字）：
+憑什麼（三條理由）：
+</code></pre>
+<h4>第二塊（10 分鐘）· 事前驗屍</h4>
+<p><strong>假設六個月後，這件事已經徹底失敗了。</strong> 現在寫下三個失敗的原因。</p>
+<p>規則：
+- 必須寫下來，不能只在腦子裡過（Fischhoff 的實驗證明「只在腦子裡」會被結果覆寫）
+- 三條裡至少一條要涉及<strong>你現在不知道的東西</strong>（針對 WYSIATI）
+- 寫完之後，為每條標一個：<strong>可預防 / 只能監測 / 只能接受</strong></p>
+<h4>第三塊（10 分鐘）· 定好複盤規則</h4>
+<p>寫下兩行：</p>
+<pre><code>複盤日期：（六個月後的那一天，寫進日曆）
+複盤規則：只看「當時我知道什麼、不知道什麼」，不看結果好不好。
+</code></pre>
+<div class="note green"><b>為什麼是這三塊，而不是別的</b><p><strong>第一塊針對「說不出數字」</strong>——把你從模糊判斷推進到可計量的斷言。
+<strong>第二塊針對 WYSIATI 和樂觀偏誤</strong>——逼你生成「我沒看到的部分」。
+<strong>第三塊針對後見之明偏差</strong>——它必須在<strong>結果出現前</strong>寫下，否則六個月後的你會有 100 種方式重新解讀今天。</p>
+<p>三塊分別對應第 07 節那三條因果路徑：信念 → 決策（第一塊）、決策 + 運氣 → 結果（第二塊）、結果 → 歸因（第三塊）。</p>
+<p><strong>驗證方法</strong>：六個月後打開這份日記，如果你發現「我當時的把握是 65%，而現在的結果是失敗」，而你<strong>沒有因此認為自己當初很蠢</strong>——這次實踐成功了。</p></div>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7 天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>任務</th>
+<th>時間</th>
+<th>產出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>D1</strong></td>
+<td>說出 5 個機率（天氣、會議、快遞、股價、朋友回訊）。<strong>只說，不評分</strong></td>
+<td>5 分鐘</td>
+<td>5 個數字</td>
+</tr>
+<tr>
+<td class="k"><strong>D2</strong></td>
+<td>對昨天 5 個機率對答案。算一下命中幾個</td>
+<td>5 分鐘</td>
+<td>第一組數據</td>
+</tr>
+<tr>
+<td class="k"><strong>D3</strong></td>
+<td>對一個正在糾結的決定做完整決策日記（押什麼、幾成、憑什麼）</td>
+<td>15 分鐘</td>
+<td>一條日記</td>
+</tr>
+<tr>
+<td class="k"><strong>D4</strong></td>
+<td>對 D3 的決定做一次事前驗屍，寫三條失敗原因並分類</td>
+<td>15 分鐘</td>
+<td>一張風險清單</td>
+</tr>
+<tr>
+<td class="k"><strong>D5</strong></td>
+<td>對一個你不同意的共識，寫下一條有理據的反對意見（不必說出口）</td>
+<td>10 分鐘</td>
+<td>一條異議</td>
+</tr>
+<tr>
+<td class="k"><strong>D6</strong></td>
+<td>對一個糾結的決定做 10-10-10：10 分鐘後／10 個月後／10 年後我會怎麼想</td>
+<td>10 分鐘</td>
+<td>三個答案</td>
+</tr>
+<tr>
+<td class="k"><strong>D7</strong></td>
+<td>回顧一週：5 天報了多少個機率？算一下這週的命中率與報價的差距</td>
+<td>20 分鐘</td>
+<td>第一張粗糙的校準表</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note blue"><b>第 7 天你會看到什麼</b><p><strong>大概率的結果是：你報價的平均值高於你的實際命中率 10pp 以上。</strong></p>
+<p>這不是你的錯，這是人類的基準線。重要的是<strong>你第一次看到了自己的數字</strong>——從這一天起，校準變成一個可測量的量，而不是一個自我感覺。</p></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30 天计划</h2>
+<p><strong>四個階段，每週一個，逐步把「報數字」變成默認反應。</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>週</th>
+<th>主題</th>
+<th>具體動作</th>
+<th>週末產出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>第 1 週</strong></td>
+<td><strong>只說數字</strong></td>
+<td>每天 5 個小事機率 + 對答案。不評價、不修正，只記錄</td>
+<td>35 條記錄</td>
+</tr>
+<tr>
+<td class="k"><strong>第 2 週</strong></td>
+<td><strong>開帳本</strong></td>
+<td>把記錄整理成分箱（0–50 / 50–60 / 60–70 / 70–80 / 80–90 / 90–100），算每箱的實際命中率</td>
+<td>第一張分箱表</td>
+</tr>
+<tr>
+<td class="k"><strong>第 3 週</strong></td>
+<td><strong>找出偏誤區間</strong></td>
+<td>找出偏離對角線最遠的那一箱。針對它設計一條修正規則（例如：80% 以上一律下調 15pp 再報）</td>
+<td>一條個人修正規則</td>
+</tr>
+<tr>
+<td class="k"><strong>第 4 週</strong></td>
+<td><strong>帶上別人</strong></td>
+<td>找一個人（一個就夠）做一次互審。規則：只審過程不審結果，先說「當時你知道什麼」</td>
+<td>一次互審記錄</td>
+</tr>
+</tbody>
+</table></div>
+<h3>30 天後應該達到的狀態</h3>
+<ul>
+<li>[ ] 累積 <strong>140 條以上</strong> 計分記錄（每天 5 條 × 28 天）</li>
+<li>[ ] 知道自己在哪個置信區間<strong>系統性過度自信</strong>，以及大概過度多少</li>
+<li>[ ] 有一條自己寫的修正規則，並在執行</li>
+<li>[ ] 機制上做到「決策日記 + 事前驗屍 + 定期互審」三件套</li>
+<li>[ ] <strong>能在被問到意見時，自然地說出「我大概 70% 認為…」</strong></li>
+</ul>
+<div class="note amber"><b>一個提醒</b><p><strong>第 1 週是最容易放棄的。</strong></p>
+<p>因為這一週你只得到一堆數字，看不到任何意義。但這正是整件事的關鍵——<strong>校準的數據必須先累積，才有曲線可看。</strong> 這一週的價值不在「學到什麼」，而在「建立起那個每天產生數據的動作」。動作養成了，後面三週是自動的。</p></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<p><strong>這本書的方法論，本質上由十個可複用的模型構成。按「可複用度」排序。</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句話</th>
+<th>最適合用的場景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>把信念當賭注</strong></td>
+<td>把「我認為」換成「我 70% 認為」</td>
+<td>任何你要說服別人或自己的場合</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>結果 ≠ 決策品質</strong></td>
+<td>R = Q + L，你只觀察得到 R</td>
+<td>覆盤、評價他人、自我檢討</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>校準曲線</strong></td>
+<td>你說 70% 的事，實際發生幾成</td>
+<td>任何需要長期改進判斷力的領域</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>事前驗屍</strong></td>
+<td>假設已經失敗，寫下原因</td>
+<td>專案啟動、重大投入之前</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>10-10-10</strong></td>
+<td>三個時間尺度並排看</td>
+<td>情緒強烈的決定、糾結不下的選擇</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>「想賭一把嗎？」</strong></td>
+<td>逼出數字、加上代價、暴露反例</td>
+<td>會議上有人給出不可證偽的斷言時</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>按資訊集複盤</strong></td>
+<td>只問「當時知道什麼」，不問「結果好不好」</td>
+<td>團隊覆盤、專案檢討</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>求真小組 + 結構性異議</strong></td>
+<td>改獎勵結構，讓準確比贏更值錢</td>
+<td>團隊決策、投資委員會</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>尤利西斯合約</strong></td>
+<td>在理性時刻綁住會變心的自己</td>
+<td>儲蓄、戒斷、長期專案</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>決策髒話罐</strong></td>
+<td>給「我早就知道」定一個價格</td>
+<td>個人習慣矯正、團隊文化</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="tag t-inf">推论</span><strong>如果只能帶走一個，帶第 1 個。</strong> 因為它把其他九個都變成可能——沒有數字，校準無從記分，複盤無從核對，小組只能交換意見而不是交換機率。</p>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<p><strong>15 個問題。前 5 個關於你自己，中間 5 個關於你的判斷，後 5 個關於你的環境。</strong></p>
+<details><summary>關於你自己</summary><div class="dbody"><ol>
+<li>我上一次說出「我大概 X% 認為」是什麼時候？</li>
+<li>我報出的平均把握程度，和我實際的命中率，差多少？</li>
+<li>我最近一次「決策對、結果差」是什麼？我有沒有因此改掉那個對的策略？</li>
+<li>我上次主動說「這我不知道」是什麼時候？</li>
+<li>我上一次刻意改變自己的想法，是為了什麼？</li>
+</ol></div></details>
+<details><summary>關於你的判斷</summary><div class="dbody"><ol start="6">
+<li>我這週做了幾個有代價的決定？其中幾個在結果出現前被寫下來過？</li>
+<li>我手邊的判斷，重複驗證過幾次？如果少於 30 次，我能從中學到什麼？</li>
+<li>我上一個成功的判斷，運氣佔幾成？我怎麼知道的？</li>
+<li>我正在糾結的決定，10 分鐘後／10 個月後／10 年後我會怎麼想？</li>
+<li>我最近的三條「理所當然」，來源是什麼？我驗證過嗎？</li>
+</ol></div></details>
+<details><summary>關於你的環境</summary><div class="dbody"><ol start="11">
+<li>我身邊有幾個人，會在正確的時候反對得我心服？</li>
+<li>我和我經常討論的人，是不是讀同一批文章、來自同一個行業？</li>
+<li>我的複盤會上，有沒有一個環節是「不許提結果」的？</li>
+<li>我的團隊獎勵「準確地修正自己」還是「堅持到底」？</li>
+<li>有沒有哪個決定，我應該現在就先用合約綁住未來的自己？</li>
+</ol></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<h3>這本書的四個弱點（你應該知道的部分）</h3>
+<p><strong>一份手冊如果不講清它的來源有什麼問題，就只是另一種形式的廣告。</strong></p>
+<details><summary>弱點 ① · 故事多，數據少</summary><div class="dbody"><p>杜克用了大量撲克和體育的軼事。軼事的問題不是無效，而是<strong>它天生是說服工具，不是證據</strong>——一個精心挑選的故事能證明任何命題。</p>
+<p>最典型的就是開場的 Super Bowl 案例：她引用 Brian Burke 和 FiveThirtyEight 的分析（傳球的期望值與衝球接近，抄截率約 2%），但<strong>這個案例是她從幾萬個教練決策中挑出來的</strong>。我們看不到那些「決策正確且結果也好」的案例，因為它們不會上新聞。</p>
+<p><strong>對策</strong>：把本書的每個故事還原成「樣本量多少、運氣佔比多少」再接受它。</p></div></details>
+<details><summary>弱點 ② · 對「主觀機率」的合法性缺乏討論</summary><div class="dbody"><p>「我 70% 確定」在數學上依賴主觀機率（de Finetti、Savage）的框架。<strong>但主觀機率有一個致命問題：它不能被客觀檢驗「你當初該報多少」。</strong></p>
+<p>你報 70%，事情發生了。有人會說你報低了，有人會說你運氣好。<strong>單次事件沒有頻率可對照。</strong> 校準只有在大量可比較的判斷上才成立——而杜克幾乎沒強調這個前提。</p>
+<p><strong>對策</strong>：把「報數字」限定在<strong>重複發生的判斷類型</strong>上。一次性的重大決策報數字仍然有用（逼你精確化），但別指望它能被校準。</p></div></details>
+<details><summary>弱點 ③ · 求真小組在權力不對等的環境裡失效</summary><div class="dbody"><p>書裡的建議默認了「小組成員是平等的，且表達異議沒有代價」。</p>
+<p>但在真實的公司裡，<strong>異議有明確的職涯價格</strong>。一個下屬在會上說「CEO 這個判斷我押 55%」，這句話的成本遠高於在撲克桌上說同一句話。<strong>杜克沒有處理權力這個變量。</strong></p>
+<p><strong>對策</strong>：結構性異議必須由機制保護（匿名、外部顧問、預先設定的紅隊），而不是靠「鼓勵暢所欲言」。</p></div></details>
+<details><summary>弱點 ④ · 「不要用結果評價」在有些場景是危險的</summary><div class="dbody"><p><strong>結果不好，有時恰恰說明決策有問題。</strong></p>
+<p>在訊號強的場景（比如流水線質檢、可重複的 A/B 測試、有明確基準的重複博弈），結果就是決策品質的高保真信號。此時堅持「不要 resulting」會變成拒絕學習。</p>
+<p>杜克自己也承認「結果即反饋」，但她沒有給出<strong>「什麼時候該相信結果」的判別標準</strong>。</p>
+<p><strong>對策</strong>：用一個簡單的判斷——<strong>問「這個決策重複過多少次」。</strong> 重複次數低（&lt; 30）→ 結果幾乎沒有信息，不要用結果評價。重複次數高（&gt; 數百）→ 結果是有效信號，必須用它評價。</p></div></details>
+<h3>三個可以繼續往下的方向</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>方向</th>
+<th>是什麼</th>
+<th>從哪裡開始</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><strong>校準訓練</strong></td>
+<td>把「預測」當成可以練的技能，用預測平台做有計分的練習</td>
+<td>Tetlock &amp; Gardner《Superforecasting》</td>
+</tr>
+<tr>
+<td class="k"><strong>機率認識論</strong></td>
+<td>「主觀機率」到底合法在哪裡，以及它如何與波普爾的可證偽性相容</td>
+<td>de Finetti / Savage 的主觀機率；另見 Taleb 對這一整條路線的批評</td>
+</tr>
+<tr>
+<td class="k"><strong>團隊決策的機制設計</strong></td>
+<td>怎麼在權力不對等的組織裡，真的讓異議安全</td>
+<td>Tetlock 的狐狸/刺蝟之分；紅隊實踐；預測市場在企業裡的應用</td>
+</tr>
+</tbody>
+</table></div>
+<h3>一句話收尾</h3>
+<p><strong>這本書教的不是「怎麼做對的決定」，是「怎麼在永遠搞不清對不對的時候，仍然能持續變好」。</strong></p>
+<p>前面那件事做不到——世界上沒有足夠的樣本量讓你確定自己對。後面那件事做得到，而且有儀器：<strong>一個數字、一頁日記、一條曲線，和一兩個願意在你錯的時候說出來的人。</strong></p>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>內容</th>
+<th>來源類型</th>
+<th>具體來源</th>
+<th>標記</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">《高勝算決策》= Annie Duke《Thinking in Bets》(2018)，采實文化繁體中文版</td>
+<td>出版資訊</td>
+<td>采實文化「翻轉學」系列 2018 年出版；簡體版《對賭》中信出版社 2018 年 12 月，譯者李光輝</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Annie Duke：賓州大學認知心理學博士、2004 年 WSOP 金手鍊、錦標賽獎金累計 400 萬美元以上</td>
+<td>人物履歷</td>
+<td>多來源一致（出版社作者簡介、百科條目）</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">第 49 屆超級盃：剩 26 秒、2nd &amp; goal、1 碼線、海鷹落後 4 分、剩 1 次暫停</td>
+<td>賽事記錄</td>
+<td>多家體育媒體賽後報導</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">1 碼線傳球被抄截率約 2%（此前 15 個賽季）</td>
+<td>量化分析</td>
+<td>Brian Burke 的模擬分析；書中亦引用此數</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">2000 年以來 1 碼線：衝球使用率 74.0%、成功率 53.9%；傳球成功率 48.3%</td>
+<td>統計彙總</td>
+<td>Sports Illustrated 2015 年 2 月的統計分析</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">後見之明偏差：告知「真實結果」後，&gt;70% 的參與者給該結果更高的機率，且堅信自己客觀</td>
+<td>心理學實驗</td>
+<td>Fischhoff (1975)，「潛變決定論」；後續多次複現</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">自利性偏差的駕駛研究：93% 美國受訪者、69% 瑞典受訪者認為自己技術高於平均</td>
+<td>心理學實驗</td>
+<td>Svenson (1981)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Tetlock：1984–2003 年追蹤 284 位專家的約 2.8 萬條預測，平均不如瞎猜</td>
+<td>長期實證研究</td>
+<td>Tetlock《Expert Political Judgment》(2005)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">GJP 2011–2015 贏得 IARPA 競賽；前 2% 的預測者超過情報界官方預測</td>
+<td>實證研究</td>
+<td>Good Judgment Project 結果；Tetlock &amp; Gardner《Superforecasting》(2015)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">準雙曲折現：β ≈ 0.6–0.8，δ ≈ 0.96–0.99／年</td>
+<td>行為經濟學參數</td>
+<td>Laibson (1997) 模型與美國實證估計區間</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">健身房研究反推 β ≈ 0.5</td>
+<td>田野研究</td>
+<td>DellaVigna &amp; Malmendier (2006)</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">神經網路準確率高但校準差，需事後校準</td>
+<td>機器學習研究</td>
+<td>Guo et al. (2017)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">單次結果信息量 ±5pp、n 次判別準確率、判到 90% 所需樣本數 41／88</td>
+<td><strong>本手冊計算</strong></td>
+<td>二項分布精確枚舉（對稱雙決策者模型、先驗 50/50）</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">證明「比瞎猜強 5pp」需 620 次獨立決策</td>
+<td><strong>本手冊計算</strong></td>
+<td>精確二項檢定，單側 α = 0.05、功效 0.80</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">校準落差對應的 Brier 值（0.3140 / 0.2356 / 0.2500 基線）</td>
+<td><strong>本手冊計算</strong></td>
+<td>Brier 分數定義直接代入</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">賭桌期望值 −38.9%（報 90%、實中 62%）</td>
+<td><strong>本手冊計算</strong></td>
+<td>按報價給公平賠率的期望值公式</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">求真小組：ρ 對群體準確率的線性縮減、7 人組 ρ=0.3 只值 5 人</td>
+<td><strong>本手冊計算</strong></td>
+<td>P = (1−ρ)·孔多塞(n, p) + ρ·p</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">折現因子、隱式年化貼現率 45.8%、短視否掉 1 − β 比例的長期專案</td>
+<td><strong>本手冊計算</strong></td>
+<td>準雙曲折現 β-δ 模型直接代入</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>標記約定</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>標記</th>
+<th>含義</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k"><span class="tag t-fact">事实</span></td>
+<td>一手資料或多方獨立來源一致</td>
+</tr>
+<tr>
+<td class="k"><span class="tag t-ana">分析</span></td>
+<td>權威機構或研究者的判斷與推測</td>
+</tr>
+<tr>
+<td class="k"><span class="tag t-inf">推论</span></td>
+<td>本手冊的推導與計算結果（含所有數值模擬）</td>
+</tr>
+<tr>
+<td class="k"><span class="tag t-hyp">假设</span></td>
+<td>未經驗證的猜想，用於建模</td>
+</tr>
+<tr>
+<td class="k"><span class="tag t-chk">待验证</span></td>
+<td>單一來源或轉載鏈過長，需自行複核</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note amber"><b>關於本手冊的計算</b><p>第 20 節四個模型與正文中所有標<span class="tag t-inf">推论</span>的數字，均由本手冊自行計算。方法分別是：二項分布精確枚舉（非正態近似）、Brier 分數定義、孔多塞定理加相關性線性插值、準雙曲折現模型。<strong>計算的目的是給出工具本身的純度，不構成對任何具體事件的預測。</strong></p></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手冊是對 Annie Duke《高勝算決策》（Thinking in Bets）及相關研究的結構化整理與延伸計算，不是原書的替代品，也不代表原作者或出版社的觀點。</p>
+<p><strong>手冊中的閱讀順序</strong>：第 00–02 節是入口，第 03–06 節是世界模型，第 07–12 節是機制，第 13–14 節是決策，第 15–19 節是行動，第 20 節是量化核心，第 21–24 節是訓練，第 25–27 節是參考。如果只讀三節，建議讀 <strong>00（結論）、07（因果結構）、20（量化）</strong>。</p>
+<p><strong>手冊不提供</strong>：具體的投資建議、對任何個別決策的推薦、對任何預測的背書。所有機率數字都是為了展示方法論的精度，不是為了預測你的具體情況。</p>
+<p><strong>一個必要的提醒</strong>：這份手冊本身也在使用它批評的工具——它用故事（超級盃、得梅因賭局）來增加可讀性，用精心挑選的案例來支撐論點。第 27 節列出了這本書的四個弱點，<strong>同樣的標準應該被用在這份手冊上</strong>。</p>
+<p><strong>最後</strong>：書裡最實用的一句話是「我不確定」。這份手冊對自己的判斷是——它算出的那些數字，會隨著你使用的模型假設變化而變化；但「你的樣本量永遠不夠」這個結構性結論，不會。</p>
+</section>
+<footer>  <p>《《高勝算決策》 · 全景认知与实践操作手册》 · 生成于 2026-09-16 · 耗时 17 分 53 秒 · 数据截至 2026 年 9 月</p>
+  <p>这份手册的目标不是让你变成一个永远正确的人——那不可能。目标是让你在样本量永远不够的人生里，仍然有一台能校准自己的仪器。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* 《高勝算決策》主题脚本 —— 四组可调模型
+   1) 結果的信噪比    2) 賭注校準台    3) 求真小組的定價    4) 心理時間旅行
+   全部为纯计算 + Canvas 绘制，无外部依赖。 */
+(function () {
+  'use strict';
+
+  // ══════════ 通用 ══════════
+  function $(id) { return document.getElementById(id); }
+  function set(id, s) { var e = $(id); if (e) e.textContent = s; }
+  var C = {
+    ink: '#0f172a', mut: '#64748b', line: '#e2e8f0',
+    blue: '#2563eb', amber: '#d97706', green: '#059669',
+    red: '#dc2626', purple: '#7c3aed', slate: '#94a3b8'
+  };
+  function label(ctx, t, x, y, color, size, align, weight) {
+    ctx.fillStyle = color || C.mut;
+    ctx.font = (weight || '400') + ' ' + (size || 11) + 'px -apple-system,"PingFang SC","Helvetica Neue",Arial,sans-serif';
+    ctx.textAlign = align || 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(t, x, y);
+  }
+  function prep(cv, h) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = cv.clientWidth || cv.parentNode.clientWidth || 600;
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(h * dpr);
+    cv.style.height = h + 'px';
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    return { ctx: ctx, w: w, h: h };
+  }
+  function grid(ctx, x0, y0, x1, y1, rows) {
+    ctx.strokeStyle = C.line; ctx.lineWidth = 1;
+    for (var i = 0; i <= rows; i++) {
+      var y = y0 + (y1 - y0) * i / rows;
+      ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+    }
+  }
+
+  // ══════════ 数值工具：ln Γ、二项 PMF、孔多塞 ══════════
+  function lgamma(x) {
+    var g = [676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059,
+             12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    if (x < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * x)) - lgamma(1 - x);
+    x -= 1;
+    var a = 0.99999999999980993, t = x + 7.5;
+    for (var i = 0; i < 8; i++) a += g[i] / (x + i + 1);
+    return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
+  }
+  function binomPMF(n, p) {
+    var out = new Float64Array(n + 1);
+    if (p <= 0) { out[0] = 1; return out; }
+    if (p >= 1) { out[n] = 1; return out; }
+    var k0 = Math.floor((n + 1) * p); if (k0 > n) k0 = n; if (k0 < 0) k0 = 0;
+    out[k0] = Math.exp(lgamma(n + 1) - lgamma(k0 + 1) - lgamma(n - k0 + 1) +
+                       k0 * Math.log(p) + (n - k0) * Math.log(1 - p));
+    for (var k = k0; k > 0; k--) out[k - 1] = out[k] * k / (n - k + 1) * (1 - p) / p;
+    for (var j = k0; j < n; j++) out[j + 1] = out[j] * (n - j) / (j + 1) * p / (1 - p);
+    return out;
+  }
+  function condorcet(n, p) {
+    if (n <= 1) return p;
+    var m = binomPMF(n, p), s = 0, half = Math.floor(n / 2);
+    for (var k = half + 1; k <= n; k++) s += m[k];
+    return s;
+  }
+  // 判别准确率：两个对称决策者 pG / 1-pG，先验各半，成功过半判为「好」
+  function accN(n, pG) {
+    var pB = 1 - pG, mG = binomPMF(n, pG), mB = binomPMF(n, pB);
+    var a = 0, half = n / 2;
+    for (var k = 0; k <= n; k++) a += (k > half ? 0.5 * mG[k] : 0.5 * mB[k]);
+    return a;
+  }
+  var accCache = {};
+  function needN(pG, target) {
+    var key = pG + '|' + target;
+    if (accCache[key]) return accCache[key];
+    var lo = 1, hi = 4000;
+    if (accN(hi, pG) < target) { accCache[key] = null; return null; }
+    while (lo < hi) { var mid = (lo + hi) >> 1; if (accN(mid, pG) >= target) hi = mid; else lo = mid + 1; }
+    accCache[key] = lo;
+    return lo;
+  }
+  var pct = function (x, d) { return (x * 100).toFixed(d === undefined ? 2 : d); };
+  var sgn = function (x, d) { return (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(d === undefined ? 2 : d); };
+
+  // ══════════════════════════════════════════════
+  // 模型一 · 結果的信噪比
+  // ══════════════════════════════════════════════
+  var tbChart = $('tbChart');
+  function renderTB() {
+    var pG = +$('tb_pG').value / 100, n = +$('tb_n').value;
+    set('tb_pGO', (pG * 100).toFixed(0) + '%');
+    set('tb_nO', n + ' 次');
+
+    var acc = accN(n, pG);
+    var n90 = needN(pG, 0.90), n95 = needN(pG, 0.95);
+
+    set('tb_post', pct(pG, 1) + '%');
+    set('tb_sig', '±' + ((pG - 0.5) * 100).toFixed(1) + ' pp');
+    set('tb_fail', pct(1 - pG, 1) + '%');
+    set('tb_acc', pct(acc, 1) + '%');
+    set('tb_need', n90 ? n90 + ' 次' : '> 4000 次');
+    set('tb_need95', n95 ? n95 + ' 次' : '> 4000 次');
+
+    var vd;
+    if (acc < 0.60) vd = n + ' 次结果只有 ' + pct(acc, 1) + '% 的判别力——几乎等于瞎猜，你却在用它下结论';
+    else if (acc < 0.80) vd = n + ' 次结果只够判到 ' + pct(acc, 1) + '%——结果论不是懒，是样本不够';
+    else if (acc < 0.95) vd = n + ' 次结果能判到 ' + pct(acc, 1) + '%，但这要求你做满 ' + n + ' 次同质的重复决策';
+    else vd = '要 ' + n + ' 次才判到 ' + pct(acc, 1) + '%——绝大多数人一辈子攒不到这个样本量';
+    set('tb_vd', vd);
+
+    var p = prep(tbChart, 214); if (!p) return;
+    var ctx = p.ctx, w = p.w, h = p.h;
+    var x0 = 46, x1 = w - 14, y0 = 22, y1 = h - 46;
+    var lo = 0.5, hi = 1.0;
+    var X = function (k) { return x0 + (Math.log(k) / Math.log(300)) * (x1 - x0); };
+    var Y = function (v) { return y1 - (v - lo) / (hi - lo) * (y1 - y0); };
+
+    grid(ctx, x0, y0, x1, y1, 5);
+    [0.5, 0.6, 0.7, 0.8, 0.9, 1.0].forEach(function (v) {
+      label(ctx, (v * 100) + '%', x0 - 6, Y(v), C.mut, 9.5, 'right');
+    });
+    [1, 3, 10, 30, 100, 300].forEach(function (k) {
+      label(ctx, String(k), X(k), y1 + 13, C.mut, 9.5, 'center');
+    });
+    label(ctx, '累積的決策次數（對數尺度）', (x0 + x1) / 2, y1 + 31, C.mut, 10, 'center');
+
+    // 瞎猜基线
+    ctx.strokeStyle = C.slate; ctx.lineWidth = 1.4; ctx.setLineDash([5, 4]);
+    ctx.beginPath(); ctx.moveTo(x0, Y(0.5)); ctx.lineTo(x1, Y(0.5)); ctx.stroke();
+    ctx.setLineDash([]);
+    label(ctx, '瞎猜 = 50%', x0 + 6, Y(0.5) - 9, C.slate, 9.5, 'left');
+
+    // 判别准确率曲线
+    ctx.strokeStyle = C.blue; ctx.lineWidth = 2.2; ctx.beginPath();
+    var started = false;
+    for (var k = 1; k <= 300; k++) {
+      var v = accN(k, pG);
+      if (!started) { ctx.moveTo(X(k), Y(v)); started = true; } else ctx.lineTo(X(k), Y(v));
+    }
+    ctx.stroke();
+
+    // 90% / 95% 参考线
+    [[0.90, C.amber, '90%'], [0.95, C.green, '95%']].forEach(function (t) {
+      ctx.strokeStyle = t[1]; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(x0, Y(t[0])); ctx.lineTo(x1, Y(t[0])); ctx.stroke();
+      ctx.setLineDash([]);
+      label(ctx, t[2], x1 - 4, Y(t[0]) - 9, t[1], 9.5, 'right');
+    });
+
+    // 当前点
+    var cx = X(n), cy = Y(acc);
+    ctx.fillStyle = C.red;
+    ctx.beginPath(); ctx.arc(cx, cy, 5, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.6; ctx.stroke();
+    label(ctx, n + ' 次 → ' + pct(acc, 1) + '%',
+          cx > (x0 + x1) / 2 ? cx - 10 : cx + 10, cy - 12, C.red, 10.5,
+          cx > (x0 + x1) / 2 ? 'right' : 'left', '700');
+
+    // 标注
+    label(ctx, '好決策勝率 ' + pct(pG, 0) + '% / 壞決策 ' + pct(1 - pG, 0) + '%',
+          x0, y0 - 11, C.ink, 11, 'left', '700');
+  }
+
+  // ══════════════════════════════════════════════
+  // 模型二 · 賭注校準台
+  // ══════════════════════════════════════════════
+  var cbChart = $('cbChart');
+  function brier(c, a) { return a * (1 - c) * (1 - c) + (1 - a) * c * c; }
+  function renderCB() {
+    var c = +$('cb_c').value / 100, a = +$('cb_a').value / 100;
+    set('cb_cO', (c * 100).toFixed(0) + '%');
+    set('cb_aO', (a * 100).toFixed(0) + '%');
+
+    var b = brier(c, a), best = a * (1 - a), gap = b - best;
+    var odds = (1 - c) / c, ev = a * odds - (1 - a);
+
+    set('cb_brier', b.toFixed(4));
+    set('cb_best', best.toFixed(4));
+    set('cb_gap', '+' + gap.toFixed(4));
+    set('cb_vs', (b >= 0.25 ? '劣於基線 +' : '優於基線 −') + Math.abs(b - 0.25).toFixed(4));
+    set('cb_odds', odds.toFixed(2) + ' : 1');
+    set('cb_ev', sgn(ev * 100, 1) + '%');
+
+    var vd;
+    var d = c - a;
+    if (d > 0.10) vd = '說 ' + pct(c, 0) + '% 實際只對 ' + pct(a, 0) + '%——Brier 比沉默更差，每注虧掉本金的 ' + Math.abs(ev * 100).toFixed(0) + '%';
+    else if (d > 0.03) vd = '輕度過度自信（+' + (d * 100).toFixed(0) + 'pp）——把報價下調到 ' + pct(a, 0) + '% 就回到最優';
+    else if (d < -0.03) vd = '過度謙虛（' + (d * 100).toFixed(0) + 'pp）——你低估了自己，報 ' + pct(a, 0) + '% 才是最優';
+    else vd = '校準良好（落差 ' + Math.abs(d * 100).toFixed(1) + 'pp）——報價與命中率基本吻合';
+    set('cb_vd', vd);
+
+    var p = prep(cbChart, 210); if (!p) return;
+    var ctx = p.ctx, w = p.w, h = p.h;
+    var x0 = 48, x1 = w - 14, y0 = 22, y1 = h - 46;
+    var lo = 0.5, hi = 1.0, vlo = 0, vhi = 0.46;
+    var X = function (v) { return x0 + (v - lo) / (hi - lo) * (x1 - x0); };
+    var Y = function (v) { return y1 - (v - vlo) / (vhi - vlo) * (y1 - y0); };
+
+    grid(ctx, x0, y0, x1, y1, 4);
+    [0, 0.1, 0.2, 0.3, 0.4].forEach(function (v) { label(ctx, v.toFixed(1), x0 - 6, Y(v), C.mut, 9.5, 'right'); });
+    [0.5, 0.6, 0.7, 0.8, 0.9, 1.0].forEach(function (v) { label(ctx, (v * 100) + '%', X(v), y1 + 13, C.mut, 9.5, 'center'); });
+    label(ctx, '你報出的把握程度', (x0 + x1) / 2, y1 + 31, C.mut, 10, 'center');
+    label(ctx, 'Brier 分數', x0, y0 - 12, C.mut, 10, 'left');
+
+    // 0.25 基线
+    ctx.strokeStyle = C.slate; ctx.lineWidth = 1.4; ctx.setLineDash([5, 4]);
+    ctx.beginPath(); ctx.moveTo(x0, Y(0.25)); ctx.lineTo(x1, Y(0.25)); ctx.stroke();
+    ctx.setLineDash([]);
+    label(ctx, '0.25 = 永遠說 50%', x1 - 4, Y(0.25) - 9, C.slate, 9.5, 'right');
+
+    // Brier(c, a) 曲线
+    ctx.strokeStyle = C.blue; ctx.lineWidth = 2.2; ctx.beginPath();
+    for (var i = 0; i <= 120; i++) {
+      var cc = lo + (hi - lo) * i / 120, yy = Y(brier(cc, a));
+      if (i === 0) ctx.moveTo(X(cc), yy); else ctx.lineTo(X(cc), yy);
+    }
+    ctx.stroke();
+
+    // 最优点
+    ctx.fillStyle = C.green;
+    ctx.beginPath(); ctx.arc(X(a), Y(best), 5, 0, 6.2832); ctx.fill();
+    label(ctx, '最優：誠實報 ' + pct(a, 0) + '%', X(a) + 8, Y(best) + 13, C.green, 10, 'left', '700');
+
+    // 当前点
+    ctx.fillStyle = C.red;
+    ctx.beginPath(); ctx.arc(X(c), Y(b), 5, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.6; ctx.stroke();
+    label(ctx, c > 0.82 ? '你的報價 ' + pct(c, 0) + '%' : '你的報價 ' + pct(c, 0) + '%',
+          X(c) + (c > 0.82 ? -8 : 8), Y(b) - 13, C.red, 10.5,
+          c > 0.82 ? 'right' : 'left', '700');
+
+    label(ctx, '實際命中率 ' + pct(a, 0) + '%', x0, y0 - 11, C.ink, 11, 'left', '700');
+  }
+
+  // ══════════════════════════════════════════════
+  // 模型三 · 求真小組的定價
+  // ══════════════════════════════════════════════
+  var podChart = $('podChart');
+  function renderPOD() {
+    var n = +$('pod_n').value, p = +$('pod_p').value / 100, rho = +$('pod_rho').value / 100;
+    set('pod_nO', n + ' 人');
+    set('pod_pO', (p * 100).toFixed(0) + '%');
+    set('pod_rhoO', (rho * 100).toFixed(0) + '%');
+
+    var ind = condorcet(n, p);
+    var act = (1 - rho) * ind + rho * p;
+    var gain = act - p, gainIdeal = ind - p;
+    var lost = gainIdeal > 0 ? 1 - gain / gainIdeal : 0;
+
+    set('pod_ind', pct(ind) + '%');
+    set('pod_act', pct(act) + '%');
+    set('pod_gain', sgn(gain * 100) + ' pp');
+    set('pod_lost', '−' + pct(lost, 1));
+
+    // 等效独立人数
+    var eq = null;
+    for (var k = 1; k <= 401; k += 2) { if (condorcet(k, p) >= act - 1e-12) { eq = k; break; } }
+    set('pod_equiv', eq ? eq + ' 人' : '> 401 人');
+
+    var vd;
+    if (rho >= 0.9) vd = 'ρ=' + pct(rho, 0) + '：全組共享同一個盲區，' + n + ' 人小組等於一個人';
+    else if (lost >= 0.5) vd = n + ' 人小組因 ρ=' + pct(rho, 0) + ' 縮水 ' + pct(lost, 0) + '，只值 ' + (eq || '?') + ' 個獨立的人';
+    else if (lost >= 0.2) vd = n + ' 人小組因 ρ=' + pct(rho, 0) + ' 縮水到相當於 ' + (eq || '?') + ' 個獨立的人——增益打了 ' + pct(1 - lost, 0) + ' 折';
+    else vd = '相關性很低——' + n + ' 人小組基本拿到了孔多塞上限，增益 ' + sgn(gain * 100) + 'pp';
+    set('pod_vd', vd);
+
+    var pp = prep(podChart, 214); if (!pp) return;
+    var ctx = pp.ctx, w = pp.w, h = pp.h;
+    var x0 = 46, x1 = w - 14, y0 = 22, y1 = h - 46;
+    var NMAX = 21, vlo = 0.5, vhi = 1.0;
+    var X = function (v) { return x0 + (v - 1) / (NMAX - 1) * (x1 - x0); };
+    var Y = function (v) { return y1 - (v - vlo) / (vhi - vlo) * (y1 - y0); };
+
+    grid(ctx, x0, y0, x1, y1, 5);
+    [0.5, 0.6, 0.7, 0.8, 0.9, 1.0].forEach(function (v) { label(ctx, (v * 100) + '%', x0 - 6, Y(v), C.mut, 9.5, 'right'); });
+    [1, 3, 5, 7, 9, 11, 15, 21].forEach(function (v) { label(ctx, String(v), X(v), y1 + 13, C.mut, 9.5, 'center'); });
+    label(ctx, '小組成員數', (x0 + x1) / 2, y1 + 31, C.mut, 10, 'center');
+
+    // 单人水平
+    ctx.strokeStyle = C.slate; ctx.lineWidth = 1.4; ctx.setLineDash([5, 4]);
+    ctx.beginPath(); ctx.moveTo(x0, Y(p)); ctx.lineTo(x1, Y(p)); ctx.stroke();
+    ctx.setLineDash([]);
+    label(ctx, '單個成員 ' + pct(p, 0) + '%', x1 - 4, Y(p) - 9, C.slate, 9.5, 'right');
+
+    // 独立曲线
+    ctx.strokeStyle = C.green; ctx.lineWidth = 2.2; ctx.beginPath();
+    for (var k2 = 1; k2 <= NMAX; k2 += 2) {
+      var v2 = condorcet(k2, p), xx = X(k2), yy = Y(v2);
+      if (k2 === 1) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
+    }
+    ctx.stroke();
+    label(ctx, 'ρ=0（理想獨立）', X(15) + 4, Y(condorcet(15, p)) - 12, C.green, 10, 'left', '700');
+
+    // 实际曲线
+    ctx.strokeStyle = C.red; ctx.lineWidth = 2.4; ctx.beginPath();
+    for (var k3 = 1; k3 <= NMAX; k3 += 2) {
+      var v3 = (1 - rho) * condorcet(k3, p) + rho * p, xx3 = X(k3), yy3 = Y(v3);
+      if (k3 === 1) ctx.moveTo(xx3, yy3); else ctx.lineTo(xx3, yy3);
+    }
+    ctx.stroke();
+    label(ctx, 'ρ=' + pct(rho, 0) + '（你的小組）', X(15) + 4,
+          Y((1 - rho) * condorcet(15, p) + rho * p) + 12, C.red, 10, 'left', '700');
+
+    // 当前点
+    ctx.fillStyle = C.red;
+    ctx.beginPath(); ctx.arc(X(n), Y(act), 5, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.6; ctx.stroke();
+    label(ctx, n + ' 人 → ' + pct(act, 1) + '%', X(n) + 8, Y(act) + 12,
+          C.red, 10.5, 'left', '700');
+  }
+
+  // ══════════════════════════════════════════════
+  // 模型四 · 心理時間旅行
+  // ══════════════════════════════════════════════
+  var tttChart = $('tttChart');
+  function renderTTT() {
+    var beta = +$('ttt_beta').value / 100;
+    var delta = +$('ttt_delta').value / 100;
+    var amt = +$('ttt_amt').value;
+    set('ttt_betaO', beta.toFixed(2));
+    set('ttt_deltaO', delta.toFixed(2));
+    set('ttt_amtO', String(amt));
+
+    var D = function (t) { return t <= 0 ? 1 : beta * Math.pow(delta, t); };
+    var t10m = 10 / (365 * 24 * 60), t10mo = 10 / 12, t10y = 10;
+
+    set('ttt_m10', (amt * D(t10m)).toFixed(2));
+    set('ttt_m10m', (amt * D(t10mo)).toFixed(2));
+    set('ttt_y10', (amt * D(t10y)).toFixed(2));
+    var r1 = Math.pow(1 / D(1), 1) - 1;
+    set('ttt_rate', pct(r1, 1) + '%');
+    set('ttt_fork', pct(1 - beta, 0) + '%');
+
+    var vd;
+    var fork = 1 - beta;
+    if (fork >= 0.45) vd = 'β=' + beta.toFixed(2) + '：未來的你只認 ' + pct(beta, 0) + ' 的帳，' + pct(fork, 0) + ' 的長期正確專案會被現在的你否掉——先上承諾裝置';
+    else if (fork >= 0.15) vd = 'β=' + beta.toFixed(2) + '：' + pct(fork, 0) + ' 的長期正確專案被否掉，10-10-10 就是那 ' + pct(fork, 0) + ' 的找回器';
+    else if (fork > 0.02) vd = 'β=' + beta.toFixed(2) + '：現時偏誤很輕，你基本上能和未來的自己達成一致（僅否掉 ' + pct(fork, 0) + '）';
+    else vd = 'β=' + beta.toFixed(2) + '：無現時偏誤，未來與現在等價——這是一條純指數折現曲線';
+    set('ttt_vd', vd);
+
+    var p = prep(tttChart, 214); if (!p) return;
+    var ctx = p.ctx, w = p.w, h = p.h;
+    var x0 = 46, x1 = w - 14, y0 = 22, y1 = h - 46;
+    // 时间轴：1 分钟 → 30 年，对数
+    var TMIN = 1 / (365 * 24 * 60), TMAX = 30;
+    var lmin = Math.log(TMIN), lmax = Math.log(TMAX);
+    var X = function (t) { return x0 + (Math.log(t) - lmin) / (lmax - lmin) * (x1 - x0); };
+    var Y = function (v) { return y1 - v * (y1 - y0); };
+
+    grid(ctx, x0, y0, x1, y1, 4);
+    [0, 0.25, 0.5, 0.75, 1.0].forEach(function (v) { label(ctx, v.toFixed(2), x0 - 6, Y(v), C.mut, 9.5, 'right'); });
+    var ticks = [[1 / (365 * 24 * 60), '1分'], [1 / 24, '1時'], [1, '1天'], [1 / 12, '1月'], [1, '1年'], [10, '10年'], [30, '30年']];
+    ticks.forEach(function (t) { label(ctx, t[1], X(t[0]), y1 + 13, C.mut, 9.5, 'center'); });
+    label(ctx, '延遲時間（對數尺度）', (x0 + x1) / 2, y1 + 31, C.mut, 10, 'center');
+
+    // 参考：纯指数（β=1）
+    ctx.strokeStyle = C.slate; ctx.lineWidth = 1.6; ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    for (var i = 0; i <= 160; i++) {
+      var t = Math.exp(lmin + (lmax - lmin) * i / 160), v = Math.pow(delta, t);
+      var xx = X(t), yy = Y(v);
+      if (i === 0) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+    label(ctx, 'β=1（理性人：δ 的純指數）', X(3) + 4, Y(Math.pow(delta, 3)) + 13, C.slate, 9.5, 'left');
+
+    // 准双曲曲线
+    ctx.strokeStyle = C.purple; ctx.lineWidth = 2.4; ctx.beginPath();
+    for (var j = 0; j <= 160; j++) {
+      var t2 = Math.exp(lmin + (lmax - lmin) * j / 160), v2 = beta * Math.pow(delta, t2);
+      var xx2 = X(t2), yy2 = Y(v2);
+      if (j === 0) ctx.moveTo(xx2, yy2); else ctx.lineTo(xx2, yy2);
+    }
+    ctx.stroke();
+
+    // β 断层：今天与「明天」之间的断崖
+    var fx = x0 + 6;
+    ctx.strokeStyle = C.red; ctx.lineWidth = 1.8;
+    ctx.beginPath(); ctx.moveTo(fx, Y(1)); ctx.lineTo(fx, Y(beta)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(fx - 3.5, Y(1) + 5); ctx.lineTo(fx, Y(1)); ctx.lineTo(fx + 3.5, Y(1) + 5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(fx - 3.5, Y(beta) - 5); ctx.lineTo(fx, Y(beta)); ctx.lineTo(fx + 3.5, Y(beta) - 5); ctx.stroke();
+    label(ctx, 'β 斷層', fx + 7, (Y(1) + Y(beta)) / 2, C.red, 9.5, 'left', '700');
+
+    // 三个 10-10-10 点
+    [[t10m, '10 分鐘', C.amber], [t10mo, '10 個月', C.blue], [t10y, '10 年', C.green]].forEach(function (pt) {
+      var px = X(pt[0]), py = Y(D(pt[0]));
+      ctx.fillStyle = pt[2];
+      ctx.beginPath(); ctx.arc(px, py, 4.5, 0, 6.2832); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.4; ctx.stroke();
+      label(ctx, pt[1] + ' ' + (amt * D(pt[0])).toFixed(1), px, py - 12, pt[2], 10, 'center', '700');
+    });
+  }
+
+  // ══════════ 绑定与初始化 ══════════
+  var bindings = [
+    ['tb_pG', renderTB], ['tb_n', renderTB],
+    ['cb_c', renderCB], ['cb_a', renderCB],
+    ['pod_n', renderPOD], ['pod_p', renderPOD], ['pod_rho', renderPOD],
+    ['ttt_beta', renderTTT], ['ttt_delta', renderTTT], ['ttt_amt', renderTTT]
+  ];
+  bindings.forEach(function (b) {
+    var el = $(b[0]);
+    if (el) el.addEventListener('input', b[1]);
+  });
+
+  function renderAll() { renderTB(); renderCB(); renderPOD(); renderTTT(); }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderAll);
+  } else {
+    renderAll();
+  }
+  window.addEventListener('resize', renderAll);
+  window.addEventListener('load', renderAll);
+})();
+</script>
+</body>
+</html>
