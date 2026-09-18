@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>猎鹿博弈（Stag Hunt）：信任决定均衡选择 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Stag Hunt × Risk vs Payoff Dominance</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <div class="navgroup">实践系统</div>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>猎鹿博弈（Stag Hunt）：信任决定均衡选择</h1>
+  <p class="sub">两个纳什均衡并存——<strong>猎鹿收益占优、猎兔风险占优</strong>；选哪一个，由「你多信对方会来」决定，不是由道德口号决定。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>猎鹿博弈（Stag Hunt）</strong>（亦称保证型博弈 / assurance game、信任困境）：两人可合作猎鹿（高收益但需对方配合），或独自猎兔（低收益但安全）。存在<strong>两个纯策略纳什均衡</strong>——(鹿,鹿) <strong>收益占优（payoff dominant）</strong>，(兔,兔) <strong>风险占优（risk dominant）</strong>；另有一个混合纳什。默认 Skyrms 教学矩阵：鹿–鹿 <strong>4</strong>、兔–兔 <strong>3</strong>、单方猎鹿 <strong>0</strong>、单方猎兔 <strong>3</strong> → 只有当你相信对方选鹿的概率 (q \ge q^*=0.75) 时，猎鹿才划算。<span class="tag t-fact">事实</span></p>
+<p>卢梭《论人类不平等的起源》里的打猎寓言是叙事源头；现代形式化强调：理性并不自动选帕累托更优的均衡——<strong>战略不确定性</strong>把人推向安全的低均衡。<span class="tag t-fact">事实</span>（Skyrms, <em>The Stag Hunt and the Evolution of Social Structure</em>, 2004）</p>
+<p>与囚徒困境的锋利分野：PD 唯一 NE 是相互背叛；猎鹿的两个 NE <strong>都是互不背叛的稳定点</strong>——卡住的不是「防人剥削」，而是「没人敢先给对方信心」。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「合作好不好」，而是：<strong>当高效合作与安全自保同为均衡时，信任（信念）如何决定均衡选择，以及何种结构能把社会从猎兔推到猎鹿</strong>。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：2×2 猎鹿支付、(q^*)、Harsanyi–Selten 风险占优、收益占优、吸引盆、保证/承诺装置、演化与配对结构（Skyrms）、与 PD / Chicken / 纯协调的判定。</li>
+<li><strong>在界外</strong>：具体项目排期话术、某次融资谈判脚本——除非压成「(R,T,P,S) / 信念 (q) / 垫高失败残值」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>收益占优 vs 风险占优下的均衡选择与信任门槛</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到支付矩阵 + 信念/演化规则可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>(R,T,P,S)、(q^*)、风险/收益占优、吸引盆</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>猎人、团队成员、标准采纳者、国家、算法 agent</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>对方合作信念 (q)、失败残值 (S)、合作红利 (R-P)、沟通/承诺</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>先例、押金、分阶段交付、公开时程、共同期限</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>对方真实 (q)、主观风险厌恶、高阶信念</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>支付 → (q^*)；信念 (q) → 最优反应；结构 → 吸引盆大小</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>(q \ge q^*) ⇒ 猎鹿最优；((P-S)&gt;(R-T)) ⇒ 兔风险占优</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「大家口头说要合作」≠ 已越过 (q^*)<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>项目搁浅、标准锁定在次优、联盟迟迟不开工</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>协调失败：双方都愿合作，却因互不确信而选安全</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。成功猎鹿沉淀信任；失败强化猎兔惯例</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。信任与先例要时间积累</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>信任正反馈锁定高效均衡；一次背信可负反馈跌回猎兔</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>猎鹿问的不是「合作值不值」，而是：<strong>你对对方会来的把握，有没有跨过那个可算的门槛 (q^*)</strong>。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它是社会契约的最小模型</h4><p>Skyrms 主张：自然状态≈风险占优的猎兔，社会契约≈收益占优的猎鹿——问题是<strong>如何迁移</strong>，不是「要不要合作」。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它纠正「饼够大就会自动合作」</h4><p>默认矩阵里 4&gt;3，但 (q^*=0.75)：报酬本身推不动任何人；安全格常常赢。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它开相反的药方</h4><p>PD 要监督与惩罚；猎鹿要<strong>保证、承诺、先例、垫高失败残值</strong>——药开错，越治越僵。<span class="tag t-inf">推论</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把猎鹿当成囚徒困境：加码惩罚「不合作」，却忘了双方已经都在均衡里——真正缺的是让 (q) 越过 (q^*) 的保证装置。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看猎鹿如何从支付格长成信任操作系统。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="shArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 机制设计 · 押金/分阶段/公共焦点把 q 推过 q*</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 社会结构 · 配对相关、社群、网络（Skyrms）</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 实验核校 · Van Huyck / Battalio 协调失败与优化激励</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 均衡选择 · Harsanyi–Selten 风险占优 vs 收益占优</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 信念门槛 · q* = (P−S)/(R−S+P−T)</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 吸引盆 · 猎兔盆 0.75 vs 猎鹿盆 0.25（默认）</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 双纯 NE · (鹿,鹿) 收益占优；(兔,兔) 风险占优</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 支付矩阵 · R&gt;T≥P&gt;S（经典 4,3,3,0）</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 合作需求 · 对齐才有高收益，不对齐有安全退路</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L3→L5</strong>：先承认两个稳定点，再算 (q^<em>)。进阶卡在 </em><em>L8–L9</em>*：信任不是口号，是结构与装置。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到可操作判别。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="200" y="16" width="280" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">猎鹿支付矩阵 (R,T,P,S)</text>
+
+  <rect x="40" y="100" width="180" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">收益占优 (鹿,鹿)</text><text x="130" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">R≥R，Pareto 更优</text>
+  <rect x="250" y="100" width="180" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">风险占优 (兔,兔)</text><text x="340" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">偏差损失积更大</text>
+  <rect x="460" y="100" width="180" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="550" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">信念门槛 q*</text><text x="550" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">(P−S)/(R−S+P−T)</text>
+
+  <line x1="280" y1="60" x2="130" y2="100" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="90" y="200" width="200" height="48" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="190" y="230" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">q &lt; q* → 猎兔最优</text>
+  <rect x="390" y="200" width="200" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="490" y="230" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">q ≥ q* → 猎鹿最优</text>
+
+  <line x1="340" y1="152" x2="190" y2="200" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <line x1="340" y1="152" x2="490" y2="200" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="140" y="290" width="400" height="48" rx="8" fill="#f8f9fb" stroke="#c9cdd4"/><text x="340" y="320" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">杠杆：抬高 R · 垫高 S · 抬高对方可见承诺 → 降低 q*</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>动机</th>
+<th>在系统中的作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">潜在合作方</td>
+<td>既要红利又怕独自扛损</td>
+<td>信念 (q) 的载体</td>
+</tr>
+<tr>
+<td class="k">召集人 / 锚点</td>
+<td>降低战略不确定性</td>
+<td>公共信号、共同期限</td>
+</tr>
+<tr>
+<td class="k">担保方</td>
+<td>垫高失败残值 (S) 或惩罚背信</td>
+<td>改变 (q^*) 本身</td>
+</tr>
+<tr>
+<td class="k">先例 / 惯例</td>
+<td>把历史成功变成共同知识</td>
+<td>抬高先验 (q)</td>
+</tr>
+<tr>
+<td class="k">旁观者 / 市场</td>
+<td>解读「谁先承诺」</td>
+<td>声誉反馈</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号</th>
+<th>默认</th>
+<th>方向直觉</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">双方猎鹿支付</td>
+<td>(R)</td>
+<td>4</td>
+<td>越大 → (q^*) 越低</td>
+</tr>
+<tr>
+<td class="k">对方猎鹿你猎兔</td>
+<td>(T)</td>
+<td>3</td>
+<td>越大 → 猎兔越诱人（抬高 (q^*)）</td>
+</tr>
+<tr>
+<td class="k">双方猎兔支付</td>
+<td>(P)</td>
+<td>3</td>
+<td>安全基准；越大越难启动合作</td>
+</tr>
+<tr>
+<td class="k">你猎鹿对方猎兔</td>
+<td>(S)</td>
+<td>0</td>
+<td>失败残值；垫高可降低 (q^*)</td>
+</tr>
+<tr>
+<td class="k">对方选鹿信念</td>
+<td>(q)</td>
+<td>—</td>
+<td>(q\ge q^*) 才选鹿</td>
+</tr>
+<tr>
+<td class="k">门槛信念</td>
+<td>(q^*)</td>
+<td>0.75</td>
+<td>((P-S)/(R-S+P-T))</td>
+</tr>
+<tr>
+<td class="k">猎鹿吸引盆</td>
+<td>(1-q^*)</td>
+<td>0.25</td>
+<td>默认小于猎兔盆</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note green"><b>默认数字纪律</b><p>全文默认 Skyrms 矩阵 (R=4,T=3,P=3,S=0) → (q^<em>=0.75)，猎兔吸引盆 </em><em>0.75</em><em>，猎鹿吸引盆 </em><em>0.25</em>*；均匀信念 (q=0.5) 时 (E(\text{鹿})=2 &lt; E(\text{兔})=3)。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="90" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">支付 (R,T,P,S)</text>
+  <rect x="200" y="30" width="140" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="270" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">算出 q*</text>
+  <rect x="380" y="30" width="140" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="450" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">信念 q vs q*</text>
+  <rect x="520" y="30" width="140" height="50" rx="8" fill="#15181d"/><text x="590" y="60" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">选鹿或选兔</text>
+  <line x1="160" y1="55" x2="200" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="340" y1="55" x2="380" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="450" y1="55" x2="520" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+
+  <rect x="80" y="140" width="160" height="50" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="160" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">战略不确定性高</text>
+  <rect x="320" y="140" width="160" height="50" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="400" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">落入猎兔均衡</text>
+  <rect x="500" y="140" width="160" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="580" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">先例锁定低效</text>
+  <line x1="160" y1="80" x2="160" y2="140" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+  <line x1="240" y1="165" x2="320" y2="165" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+  <line x1="480" y1="165" x2="500" y2="165" stroke="#b8730a" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+
+  <rect x="200" y="230" width="280" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="340" y="260" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">保证装置抬高可见 q / 垫高 S → 跃迁到猎鹿</text>
+  <line x1="590" y1="80" x2="340" y2="230" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cA)"/>
+</svg>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>风险占优 ≠ 道德上「胆小」</strong>：它是偏差损失积的比较——默认离开 (兔,兔) 的损失积 (9)，离开 (鹿,鹿) 仅 (1)。<span class="tag t-fact">事实</span></li>
+<li><strong>PD 的影子</strong>：若把「未来重复」折进支付，许多 PD 在策略空间上会<strong>变形为猎鹿</strong>——合作问题从「防剥削」变成「给信心」。<span class="tag t-ana">分析</span>（Skyrms）</li>
+<li><strong>谢林点只在对称时够用</strong>：猎鹿常有支付不对称或战略不确定性，单靠标签焦点不够，需要保证装置。<span class="tag t-ana">分析</span></li>
+<li><strong>实验并不总选风险占优</strong>：Rankin–Van Huyck–Battalio 等显示，相似猎鹿序列下惯例可偏向<strong>收益占优</strong>；优化激励强弱也会改结果。<span class="tag t-fact">事实</span>【待验证：具体实验室份额外推到田野】</li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>默认支付矩阵（行玩家支付）：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>对方猎鹿</th>
+<th>对方猎兔</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">你猎鹿</td>
+<td>(R=4)</td>
+<td>(S=0)</td>
+</tr>
+<tr>
+<td class="k">你猎兔</td>
+<td>(T=3)</td>
+<td>(P=3)</td>
+</tr>
+</tbody>
+</table></div>
+<ol>
+<li><strong>两个纯 NE</strong>：双方都选鹿；双方都选兔。单方面偏离都会吃亏。  </li>
+<li><strong>混合 NE</strong>：双方以概率 (q^*=0.75) 选鹿（在此无差异）。  </li>
+<li><strong>最优反应</strong>：(E(\text{鹿})=qR+(1-q)S)，(E(\text{兔})=qT+(1-q)P)；当 (q \ge q^*) 选鹿。  </li>
+<li><strong>风险占优判定（对称 2×2）</strong>：比较离开两均衡的偏差损失积——((P-S)^2) vs ((R-T)^2)；默认 (9&gt;1)，(兔,兔) 风险占优。<span class="tag t-fact">事实</span>（Harsanyi &amp; Selten, 1988）</li>
+</ol>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="20" y="40" width="120" height="70" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="80" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">t0 陌生</text><text x="80" y="90" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">q 低 → 猎兔</text>
+  <rect x="180" y="40" width="120" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="240" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">t1 试探</text><text x="240" y="90" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">小额保证</text>
+  <rect x="340" y="40" width="120" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="400" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">t2 先例</text><text x="400" y="90" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">成功抬高 q</text>
+  <rect x="500" y="40" width="160" height="70" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="580" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">t3 猎鹿惯例</text><text x="580" y="90" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">吸引盆翻转</text>
+  <line x1="140" y1="75" x2="180" y2="75" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tA)"/>
+  <line x1="300" y1="75" x2="340" y2="75" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tA)"/>
+  <line x1="460" y1="75" x2="500" y2="75" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tA)"/>
+  <text x="340" y="160" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">一次重大背信可沿虚线跌回 t0（负反馈）</text>
+  <path d="M580 110 Q340 200 80 110" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5 4"/>
+</svg>
+<p>复制子直觉：猎鹿策略频率 (p) 高于 (q^<em>) 时倾向爬向 1，低于则滑向 0——</em><em>门槛本身就是分水岭</em>*。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>行动</th>
+<th>私人激励</th>
+<th>集体后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">坚持猎兔</td>
+<td>最坏也是 (P)，安全</td>
+<td>社会剩余停在低均衡</td>
+</tr>
+<tr>
+<td class="k">单方猎鹿</td>
+<td>冒 (S) 的风险</td>
+<td>若对方跟进则双方得 (R)</td>
+</tr>
+<tr>
+<td class="k">提供可见保证</td>
+<td>短期成本（押金/曝光）</td>
+<td>抬高对方 (q)，促成跃迁</td>
+</tr>
+<tr>
+<td class="k">伪装高 (q)</td>
+<td>诱对方先动</td>
+<td>一次背信摧毁吸引盆</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0f8a4d"/></marker>
+    <marker id="fB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="40" y="30" width="160" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="120" y="55" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">合作红利池</text><text x="120" y="75" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">潜在 2R vs 2P</text>
+  <rect x="260" y="30" width="160" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="55" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">信任 / 信念 q</text><text x="340" y="75" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">不可直接观测</text>
+  <rect x="480" y="30" width="160" height="60" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="560" y="55" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">保证装置</text><text x="560" y="75" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">押金·分期·锚点</text>
+  <line x1="200" y1="60" x2="260" y2="60" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#fA)"/>
+  <line x1="420" y1="60" x2="480" y2="60" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#fA)"/>
+
+  <rect x="150" y="140" width="380" height="80" rx="8" fill="#f8f9fb" stroke="#c9cdd4"/><text x="340" y="175" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">信息流：可见承诺 → 抬高对方 q → 解锁红利池</text>
+  <text x="340" y="200" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">抽水方向：战略不确定性把剩余抽回猎兔均衡（虚线）</text>
+  <path d="M120 90 Q120 180 150 180" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#fB)"/>
+</svg>
+<p>默认剩余缺口：全猎鹿人均 4，全猎兔人均 3，<strong>每人少 1、合计少 2</strong>——不是因为有人背叛，而是因为没人敢信。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何有效</th>
+<th>成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>算清并公示 (q^*)</td>
+<td>把「感觉不放心」变成可争论的数</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>垫高失败残值 (S)</td>
+<td>直接降低 (q^<em>)（(S:0\to1) → (q^</em>:0.75\to0.667)）</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>抬高合作红利 (R)</td>
+<td>(R=6) 时 (q^*=0.50)，风险占优打平</td>
+<td>中高</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>可见的单方保证</td>
+<td>抬高对方主观 (q)，不改矩阵也能跃迁</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>分阶段小猎鹿</td>
+<td>用小成功抬先验，再开大项目</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>共同期限 / 召集人</td>
+<td>降低战略不确定性（谢林式焦点）</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>配对相关（只与同类合作）</td>
+<td>Skyrms：社会结构可放大猎鹿吸引盆</td>
+<td>高</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>降低安全选项 (P) 的相对吸引力</td>
+<td>使「待着不动」变贵</td>
+<td>政策级</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>优化激励设计（实验启示）</td>
+<td>加大「对最佳反应的金钱激励」可改协调结果</td>
+<td>中<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>防止一次背信清零</td>
+<td>保护吸引盆，避免跌回 t0</td>
+<td>中</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱 1 · 「饼够大就会自动合作」</summary><div class="dbody"><p>4&gt;3 仍可能全员猎兔。报酬占优不解战略不确定性。</p></div></details>
+<details><summary>陷阱 2 · 把猎鹿当成囚徒困境</summary><div class="dbody"><p>PD 唯一 NE 是背叛；猎鹿两个 NE 都「不背叛」。药方相反。</p></div></details>
+<details><summary>陷阱 3 · 以为风险占优=胆小可耻</summary><div class="dbody"><p>风险占优是偏差损失积比较，不是性格审判。</p></div></details>
+<details><summary>陷阱 4 · 口头承诺当 \(q\) 已够</summary><div class="dbody"><p>未经代价的话不抬 (q)；要看可见沉没成本。</p></div></details>
+<details><summary>陷阱 5 · 只做大项目不做小保证</summary><div class="dbody"><p>(q^*) 高时，一步到位的大猎鹿最容易集体失败。</p></div></details>
+<details><summary>陷阱 6 · 迷信「理论必选风险占优」</summary><div class="dbody"><p>实验室惯例可偏向收益占优；田野外推须标<span class="tag t-chk">待验证</span>。</p></div></details>
+<details><summary>陷阱 7 · 忽略 \(S\)（失败残值）</summary><div class="dbody"><p>同样 (R,P)，垫高 (S) 比空喊愿景更能降门槛。</p></div></details>
+<details><summary>陷阱 8 · 把 Chicken 的「示弱」逻辑套过来</summary><div class="dbody"><p>Chicken 怕双硬；猎鹿怕「我硬（猎鹿）你软（猎兔）」。结构不同。</p></div></details>
+<details><summary>陷阱 9 · 人数一多仍用两人 \(q^*\)</summary><div class="dbody"><p>多方猎鹿门槛通常更苛刻——一人缺席可毁局。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱 10 · 用惩罚当唯一工具</summary><div class="dbody"><p>惩罚适合 PD 剥削；猎鹿更需要保证与先例。惩罚过猛可能摧毁试探性合作。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="mA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="30" y="20" width="180" height="240" rx="10" fill="#f8f9fb" stroke="#c9cdd4"/>
+  <text x="120" y="50" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">抽象</text>
+  <text x="120" y="100" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">双 NE</text>
+  <text x="120" y="140" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">q* 门槛</text>
+  <text x="120" y="180" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">风险 vs 收益占优</text>
+  <text x="120" y="220" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">吸引盆</text>
+
+  <rect x="250" y="20" width="180" height="240" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="340" y="50" text-anchor="middle" fill="#1d4ed8" font-size="12" font-family="sans-serif">机制</text>
+  <text x="340" y="100" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">战略不确定性</text>
+  <text x="340" y="140" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">保证 / 先例</text>
+  <text x="340" y="180" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">配对结构</text>
+  <text x="340" y="220" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">优化激励</text>
+
+  <rect x="470" y="20" width="180" height="240" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="560" y="50" text-anchor="middle" fill="#0f8a4d" font-size="12" font-family="sans-serif">操作</text>
+  <text x="560" y="100" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">标 R,T,P,S</text>
+  <text x="560" y="140" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">算 q* 与盆</text>
+  <text x="560" y="180" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">设计垫高 S</text>
+  <text x="560" y="220" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">小步先例</text>
+
+  <line x1="210" y1="140" x2="250" y2="140" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#mA)"/>
+  <line x1="430" y1="140" x2="470" y2="140" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#mA)"/>
+</svg>
+<p>现实同构：联合研发、开源标准采纳、联盟作战、夫妻共同创业、「谁先全职投入」——高效结果都需要对方配合，单独行动有安全退路。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>理论构件</th>
+<th>行动翻译</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">收益占优</td>
+<td>写清「做成了每人多得多少」</td>
+</tr>
+<tr>
+<td class="k">风险占优</td>
+<td>写清「对方不来时你最坏多少」</td>
+</tr>
+<tr>
+<td class="k">(q^*)</td>
+<td>开会先报门槛，再谈愿景</td>
+</tr>
+<tr>
+<td class="k">垫高 (S)</td>
+<td>预留残值、可撤销试点、保险</td>
+</tr>
+<tr>
+<td class="k">可见保证</td>
+<td>押金、公开里程碑、第三方托管</td>
+</tr>
+<tr>
+<td class="k">吸引盆</td>
+<td>用小成功扩大猎鹿盆，再加码</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>枝 1 · 矩阵识别</summary><div class="dbody"><p>能在 5 分钟内判定：猎鹿 / PD / Chicken / 纯协调。</p></div></details>
+<details><summary>枝 2 · 门槛计算</summary><div class="dbody"><p>熟记 (q^*=(P-S)/(R-S+P-T))，能手算默认 0.75。</p></div></details>
+<details><summary>枝 3 · 占优判别</summary><div class="dbody"><p>会用偏差损失积比较风险占优；能指出何时 (R=6) 打平。</p></div></details>
+<details><summary>枝 4 · 装置设计</summary><div class="dbody"><p>能提出至少两种降低 (q^*) 或抬高 (q) 的装置。</p></div></details>
+<details><summary>枝 5 · 实验素养</summary><div class="dbody"><p>知道实验室不总选风险占优，外推标<span class="tag t-chk">待验证</span>。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>把团队协作当成开放世界：主线任务是「把 (q) 推过 (q^<em>)」；支线是「垫高 (S)」「攒先例」；Boss 是「一次背信清零」。死亡不是背叛惩罚，而是</em><em>永久停在猎兔村</em>*。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">手算默认 (q^*)</td>
+<td>写出 0.75 与 EU 对照</td>
+</tr>
+<tr>
+<td class="k">改一个参数降门槛</td>
+<td>报告新 (q^*)</td>
+</tr>
+<tr>
+<td class="k">写一份保证清单</td>
+<td>≥3 条可见装置</td>
+</tr>
+<tr>
+<td class="k">案例建模</td>
+<td>1 则真实合作卡顿标成猎鹿</td>
+</tr>
+<tr>
+<td class="k">与 PD 对照卡</td>
+<td>半页差异</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若把 R 从 4 提到 6</button><button class="tab" data-pane="tb1-1">若把失败残值 S 从 0 垫到 1</button><button class="tab" data-pane="tb1-2">若信念卡在 q=0.50</button><button class="tab" data-pane="tb1-3">若误开 PD 药方</button></div>
+<div class="pane on" id="tb1-0"><p>(q^*=(3-0)/(6-0+3-3)=0.50)；偏差损失积打平——风险占优不再单方面偏向猎兔。合作启动显著更容易。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-1"><p>(q^*=2/3\approx0.667)；猎鹿盆从 0.25 扩到 ≈0.333。不必把饼做很大，先垫摔下去的位置。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-2"><p>(E(\text{鹿})=2&lt;E(\text{兔})=3)——理性选兔。喊「大家要有信心」无效，除非改支付或提供可见证据抬 (q)。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-3"><p>加强惩罚「不合作」却不提供保证：试探性猎鹿被吓回去，吸引盆更偏向猎兔。<span class="tag t-hyp">假设</span></p></div>
+<h3>可调模型 1 · 支付矩阵 → q*、吸引盆、风险占优</h3>
+<p>拖动 (R,T,P,S)（约束保持猎鹿型：(R&gt;T\ge P&gt;S) 尽量由滑块范围守护）。默认 (4,3,3,0) → (q^*=0.75)，猎兔风险占优，盆 0.75 / 0.25。</p>
+<div class="tool" id="tool_mx">
+  <div class="ctrl">
+    <label>双方猎鹿 R <output id="mx_rO">4.0</output></label>
+    <input type="range" id="mx_r" min="2" max="12" step="0.1" value="4"/>
+    <label>你兔对方鹿 T <output id="mx_tO">3.0</output></label>
+    <input type="range" id="mx_t" min="1" max="10" step="0.1" value="3"/>
+    <label>双方猎兔 P <output id="mx_pO">3.0</output></label>
+    <input type="range" id="mx_p" min="1" max="10" step="0.1" value="3"/>
+    <label>你鹿对方兔 S <output id="mx_sO">0.0</output></label>
+    <input type="range" id="mx_s" min="-2" max="5" step="0.1" value="0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">q*<strong id="mx_q">0.75</strong></div>
+    <div class="ro">猎鹿盆<strong id="mx_bs">0.25</strong></div>
+    <div class="ro">猎兔盆<strong id="mx_bh">0.75</strong></div>
+    <div class="ro">风险占优<strong id="mx_rd">猎兔</strong></div>
+    <div id="mx_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="mx_vh">默认：q*=0.75；损失积 兔9 vs 鹿1 → 猎兔风险占优；猎兔盆 0.75</span></div>
+  </div>
+  <canvas id="mxChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · 信念 q：最优反应何时翻到猎鹿</h3>
+<p>对方以概率 (q) 选鹿：比较 (E(\text{鹿})) 与 (E(\text{兔}))。默认支付下阈值 0.75；拖动 (q) 看翻转。</p>
+<div class="tool" id="tool_bl">
+  <div class="ctrl">
+    <label>信念 q（对方猎鹿） <output id="bl_qO">0.50</output></label>
+    <input type="range" id="bl_q" min="0" max="1" step="0.01" value="0.50"/>
+    <label>R <output id="bl_rO">4.0</output></label>
+    <input type="range" id="bl_r" min="2" max="12" step="0.1" value="4"/>
+    <label>T <output id="bl_tO">3.0</output></label>
+    <input type="range" id="bl_t" min="1" max="10" step="0.1" value="3"/>
+    <label>P <output id="bl_pO">3.0</output></label>
+    <input type="range" id="bl_p" min="1" max="10" step="0.1" value="3"/>
+    <label>S <output id="bl_sO">0.0</output></label>
+    <input type="range" id="bl_s" min="-2" max="5" step="0.1" value="0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">阈值 q*<strong id="bl_star">0.75</strong></div>
+    <div class="ro">E(鹿)<strong id="bl_es">2.00</strong></div>
+    <div class="ro">E(兔)<strong id="bl_eh">3.00</strong></div>
+    <div class="ro">最优<strong id="bl_br">猎兔</strong></div>
+    <div id="bl_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="bl_vh">q=0.50 &lt; q*=0.75 → E(鹿)=2.00 &lt; E(兔)=3.00 → 最优猎兔</span></div>
+  </div>
+  <canvas id="blChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 垫高残值 vs 做大饼：两种降门槛路径</h3>
+<p>固定 (T=3,P=3)，比较「抬高 (R)」与「垫高 (S)」对 (q^*) 的效果。默认对照：(R=4,S=0) → 0.75；目标线可看何时降到 0.50。</p>
+<div class="tool" id="tool_lv">
+  <div class="ctrl">
+    <label>合作红利 R <output id="lv_rO">4.0</output></label>
+    <input type="range" id="lv_r" min="3" max="12" step="0.1" value="4"/>
+    <label>失败残值 S <output id="lv_sO">0.0</output></label>
+    <input type="range" id="lv_s" min="-1" max="2.5" step="0.1" value="0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">当前 q*<strong id="lv_q">0.75</strong></div>
+    <div class="ro">仅抬 R→6<strong id="lv_r6">0.50</strong></div>
+    <div class="ro">仅垫 S→1<strong id="lv_s1">0.67</strong></div>
+    <div class="ro">相对默认 Δ<strong id="lv_d">0.00</strong></div>
+    <div id="lv_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="lv_vh">当前 q*=0.75；对照「R=6→0.50」「S=1→0.67」——垫高残值与做大饼都有效</span></div>
+  </div>
+  <canvas id="lvChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 配对相关 ρ：熟人圈如何放大猎鹿</h3>
+<p>简化 Skyrms 直觉：若你选鹿，对方也选鹿的条件概率为 (r=\rho+(1-\rho)p_{\mathrm{pop}})（(\rho) 为同型配对强度，(p_{\mathrm{pop}}) 为种群猎鹿比例）。当 (r\ge q^<em>) 时，猎鹿在局部可自我维持。默认 (q^</em>=0.75)，(p_{\mathrm{pop}}=0.40)，(\rho=0.40) → (r=0.64) 仍低于门槛；(\rho=0.90) → (r=0.94) 可维持。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool_as">
+  <div class="ctrl">
+    <label>同型配对 ρ <output id="as_rhoO">0.40</output></label>
+    <input type="range" id="as_rho" min="0" max="1" step="0.01" value="0.40"/>
+    <label>种群猎鹿比 p <output id="as_pO">0.40</output></label>
+    <input type="range" id="as_p" min="0" max="1" step="0.01" value="0.40"/>
+    <label>门槛 q* <output id="as_qO">0.75</output></label>
+    <input type="range" id="as_q" min="0.3" max="0.95" step="0.01" value="0.75"/>
+  </div>
+  <div class="readout">
+    <div class="ro">条件 r<strong id="as_r">0.64</strong></div>
+    <div class="ro">相对门槛<strong id="as_gap">-0.11</strong></div>
+    <div class="ro">局部可维持<strong id="as_ok">否</strong></div>
+    <div id="as_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="as_vh">r=ρ+(1−ρ)p=0.64 &lt; q*=0.75 → 局部猎鹿尚不可维持；提高 ρ 或 p</span></div>
+  </div>
+  <canvas id="asChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>识别猎鹿 vs PD / Chicken</td>
+<td>说出 NE 个数与危险点</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>手算 (q^*)、吸引盆、风险占优</td>
+<td>与滑块一致</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>设计降门槛装置</td>
+<td>给出 R 路径与 S 路径各一</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>案例建模与实验外推批评</td>
+<td>标<span class="tag t-chk">待验证</span>处说得清</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>纸上写出默认矩阵，标两个纯 NE 与 (q^*=0.75)（8 分钟）。  </li>
+<li>手算 (R=6) 与 (S=1) 的新 (q^*)（0.50 与 ≈0.67），用模型 1/3 核对（8 分钟）。  </li>
+<li>模型 2：把 (q) 从 0.50 拖到 0.80，确认翻转在 0.75（7 分钟）。  </li>
+<li>选一件身边「大家都想做成却迟迟不开工」的事，用一句话判定是否猎鹿，并写一条保证装置（7 分钟）。  </li>
+</ol>
+<p>产出：一张手算矩阵 + 一句案例判定——成本接近 0，可验证。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>矩阵与双 NE</td>
+<td>自造 1 个猎鹿矩阵</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>(q^*) 公式</td>
+<td>5 组参数表</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>风险 vs 收益占优</td>
+<td>半页判别卡</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>与 PD / Chicken 对照</td>
+<td>三列差异表</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>保证装置</td>
+<td>清单 ≥5 条</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>现实案例</td>
+<td>1 则新闻/职场建模</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘</td>
+<td>技能树自测</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>成果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>静态猎鹿熟练</td>
+<td>10 个矩阵速判</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>占优与实验文献</td>
+<td>阅读笔记 1 页</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>装置与先例设计</td>
+<td>团队试点方案</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>社会结构 / 配对</td>
+<td>Skyrms 要点卡 + 1 应用</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>猎鹿支付</td>
+<td>(R&gt;T\ge P&gt;S)；默认 4,3,3,0</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>双纯 NE</td>
+<td>(鹿,鹿) 与 (兔,兔)</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>信念门槛</td>
+<td>(q^*=(P-S)/(R-S+P-T))</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>收益占优</td>
+<td>(鹿,鹿) Pareto 优于 (兔,兔)</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>风险占优</td>
+<td>偏差损失积更大者；(兔,兔) 常胜</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>吸引盆</td>
+<td>猎兔盆 (q^<em>)，猎鹿盆 (1-q^</em>)</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>保证装置</td>
+<td>抬 (q) 或改 (S,R) 以降门槛</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>垫高残值</td>
+<td>(S\uparrow) ⇒ (q^*\downarrow)</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>配对相关</td>
+<td>(\rho) 提高条件合作概率</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>与 PD 分流</td>
+<td>NE 个数与药方方向是第一刀</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 我面对的是猎鹿还是 PD？</summary><div class="dbody"><p>看「相互不合作」是否为唯一 NE：是 → 偏 PD；若相互合作与相互安全都是 NE → 偏猎鹿。</p></div></details>
+<details><summary>Q2 现在该不该先动猎鹿？</summary><div class="dbody"><p>估 (q) 与 (q^<em>)；(q&lt;q^</em>) 时先动是亏的——先改装置再先动。</p></div></details>
+<details><summary>Q3 如何降低 q*？</summary><div class="dbody"><p>优先垫高 (S)、抬高 (R)；其次降低 (P) 的相对吸引力。</p></div></details>
+<details><summary>Q4 口头说「我一定来」够不够？</summary><div class="dbody"><p>不够。需要可见沉没成本、第三方或分阶段交付。</p></div></details>
+<details><summary>Q5 风险占优是否总赢？</summary><div class="dbody"><p>理论选择准则偏向它时更「安全」；实验中惯例可偏向收益占优——分清规范与描述。<span class="tag t-fact">事实</span>【待验证外推】</p></div></details>
+<details><summary>Q6 和谢林点什么关系？</summary><div class="dbody"><p>谢林点帮对称协调收敛；猎鹿常需额外保证，因失败代价不对称地砸在「先信者」身上。</p></div></details>
+<details><summary>Q7 人数变多怎么办？</summary><div class="dbody"><p>多方猎鹿通常提高有效门槛；更依赖召集人、公共监控与小圈子试点。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q8 商业合伙怎么用？</summary><div class="dbody"><p>标定「做成分红 / 对方不投入时你的沉没」；用分期出资与回购条款垫高 (S)、抬可见 (q)。</p></div></details>
+<details><summary>Q9 为何「愿景大会」常失败？</summary><div class="dbody"><p>只抬叙事中的 (R)，不碰 (q) 与 (S)；听众理性地继续猎兔。</p></div></details>
+<details><summary>Q10 数字不可信怎么办？</summary><div class="dbody"><p>先做不等式（(q) 是否可能 ≥ 粗估 (q^*)），再做点估计；二手实验份额标<span class="tag t-chk">待验证</span>。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>深入：Skyrms《The Stag Hunt and the Evolution of Social Structure》；Harsanyi &amp; Selten《A General Theory of Equilibrium Selection in Games》。  </li>
+<li>并列手册：囚徒困境、协调与谢林点、鹰鸽/Chicken、可信承诺。  </li>
+<li>批评线：把一切集体行动失败都猎鹿化的过度建模；实验到田野的外部效度。<span class="tag t-ana">分析</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">卢梭猎鹿寓言与现代博弈形式化</td>
+<td>一手/经典</td>
+<td>Rousseau <em>Discourse on Inequality</em>；Skyrms 论文/书 (2001/2004)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">默认支付与风险占优叙述</td>
+<td>教材/讲义</td>
+<td>Skyrms <em>The Stag Hunt</em>；中英文维基 Stag hunt</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">(q^*) 与收益/风险占优定义</td>
+<td>经典文献</td>
+<td>Harsanyi &amp; Selten (1988)；风险占优条目</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">实验室协调与优化激励</td>
+<td>实验论文</td>
+<td>Battalio–Samuelson–Van Huyck；Rankin–Van Huyck–Battalio (GEB 2000)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">田野份额外推</td>
+<td>转述</td>
+<td>本手册不引用单一田野百分比</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">配对相关 ρ 公式</td>
+<td>简化推论</td>
+<td>教学用 Skyrms 直觉近似，非完整演化模型</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">本手册默认数值</td>
+<td>教学标定</td>
+<td>自洽手算 + 可调模型</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或可复算；<span class="tag t-ana">分析</span>权威框架下的判断；<span class="tag t-inf">推论</span>由模型推出；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或转载链长。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是认知与决策框架教程，<strong>不是</strong>管理咨询、法律、投资或政策建议。真实组织中的支付、信息与约束远比 2×2 矩阵复杂；任何把寓言或实验直接当作行动指令的做法都超出本文范围。读者须自行承担应用风险。</p>
+</section>
+<footer>  <p>《猎鹿博弈（Stag Hunt）：信任决定均衡选择 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 6 分 37 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《猎鹿博弈 Stag Hunt》主题脚本
+   四个可调模型：
+     1. 支付矩阵 → q* / 吸引盆 / 风险占优
+     2. 信念 q 与最优反应
+     3. 垫高 S vs 做大 R
+     4. 配对相关 ρ
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function clampLabel(ctx, lab, x, y, align, pl, w) {
+    var lw = ctx.measureText(lab).width;
+    ctx.textAlign = align;
+    var lx = align === 'left' ? Math.min(x, w - lw - 6) : Math.max(x, pl + 6);
+    ctx.fillText(lab, lx, y);
+  }
+  function r2(x) { return (Math.round(x * 100) / 100).toFixed(2); }
+  function r1(x) { return (Math.round(x * 10) / 10).toFixed(1); }
+
+  function qStar(R, T, P, S) {
+    var den = R - S + P - T;
+    if (Math.abs(den) < 1e-12) return NaN;
+    return (P - S) / den;
+  }
+  function lossProd(R, T, P, S) {
+    var leaveStag = (R - T) * (R - T);
+    var leaveHare = (P - S) * (P - S);
+    return { leaveStag: leaveStag, leaveHare: leaveHare };
+  }
+
+  /* ── 1. Matrix explorer ── */
+  (function mx() {
+    var rEl = $('mx_r'), tEl = $('mx_t'), pEl = $('mx_p'), sEl = $('mx_s');
+    if (!rEl || !tEl || !pEl || !sEl) return;
+    var cv = $('mxChart');
+
+    function upd() {
+      var R = parseFloat(rEl.value), T = parseFloat(tEl.value);
+      var P = parseFloat(pEl.value), S = parseFloat(sEl.value);
+      var q = qStar(R, T, P, S);
+      var lp = lossProd(R, T, P, S);
+      var hareRD = lp.leaveHare > lp.leaveStag;
+      var stagRD = lp.leaveStag > lp.leaveHare;
+      var rdLab = hareRD ? '猎兔' : (stagRD ? '猎鹿' : '打平');
+      var col = hareRD ? C.amber : (stagRD ? C.green : C.blue);
+      var qOk = isFinite(q) && q >= 0 && q <= 1;
+      var qCl = qOk ? Math.max(0, Math.min(1, q)) : 0.5;
+      var bs = qOk ? (1 - qCl) : NaN;
+      var bh = qOk ? qCl : NaN;
+
+      txt($('mx_rO'), r1(R));
+      txt($('mx_tO'), r1(T));
+      txt($('mx_pO'), r1(P));
+      txt($('mx_sO'), r1(S));
+      txt($('mx_q'), qOk ? r2(qCl) : '—');
+      txt($('mx_bs'), qOk ? r2(bs) : '—');
+      txt($('mx_bh'), qOk ? r2(bh) : '—');
+      txt($('mx_rd'), rdLab);
+      tint($('mx_rd'), col);
+
+      var msg;
+      if (!qOk) {
+        msg = '分母接近 0 或 q* 越界：请调整支付，保持猎鹿型 R>T≥P>S。';
+        col = C.red;
+      } else {
+        msg = 'q*=' + r2(qCl) + '；损失积 兔' + r1(lp.leaveHare) + ' vs 鹿' + r1(lp.leaveStag) +
+          ' → ' + rdLab + '风险占优；猎兔盆 ' + r2(bh);
+      }
+      txt($('mx_vh'), msg);
+      tint($('mx_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr;
+      var items = [
+        { lab: '猎鹿吸引盆', v: qOk ? bs : 0, c: C.green },
+        { lab: '猎兔吸引盆', v: qOk ? bh : 0, c: C.amber }
+      ];
+      var maxV = Math.max(0.01, items[0].v, items[1].v);
+      var barH = 36, gap = 22, startY = pt + 28;
+      items.forEach(function (it, i) {
+        var y = startY + i * (barH + gap);
+        var len = (it.v / maxV) * bw;
+        ctx.fillStyle = it.c;
+        ctx.fillRect(pl, y, Math.max(2, len), barH);
+        ctx.fillStyle = C.ink;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(it.lab, pl, y - 4);
+        var lab = (it.v * 100).toFixed(0) + '%';
+        ctx.fillStyle = C.ink2;
+        clampLabel(ctx, lab, pl + len + 8, y + barH / 2 + 4, 'left', pl, w);
+      });
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('吸引盆对照（混合均衡两侧）', pl + bw / 2, y1 + 31);
+    }
+    bind(['mx_r', 'mx_t', 'mx_p', 'mx_s'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 2. Belief best response ── */
+  (function bl() {
+    var qEl = $('bl_q'), rEl = $('bl_r'), tEl = $('bl_t'), pEl = $('bl_p'), sEl = $('bl_s');
+    if (!qEl || !rEl) return;
+    var cv = $('blChart');
+
+    function upd() {
+      var q = parseFloat(qEl.value), R = parseFloat(rEl.value), T = parseFloat(tEl.value);
+      var P = parseFloat(pEl.value), S = parseFloat(sEl.value);
+      var star = qStar(R, T, P, S);
+      var eS = q * R + (1 - q) * S;
+      var eH = q * T + (1 - q) * P;
+      var preferStag = eS >= eH;
+      var col = preferStag ? C.green : C.amber;
+
+      txt($('bl_qO'), r2(q));
+      txt($('bl_rO'), r1(R));
+      txt($('bl_tO'), r1(T));
+      txt($('bl_pO'), r1(P));
+      txt($('bl_sO'), r1(S));
+      txt($('bl_star'), isFinite(star) ? r2(star) : '—');
+      txt($('bl_es'), r2(eS));
+      txt($('bl_eh'), r2(eH));
+      txt($('bl_br'), preferStag ? '猎鹿' : '猎兔');
+      tint($('bl_br'), col);
+
+      var cmp = preferStag ? '≥' : '<';
+      var msg = 'q=' + r2(q) + (isFinite(star) ? (' ' + (q >= star ? '≥' : '<') + ' q*=' + r2(star)) : '') +
+        ' → E(鹿)=' + r2(eS) + ' ' + cmp + ' E(兔)=' + r2(eH) + ' → 最优' + (preferStag ? '猎鹿' : '猎兔');
+      txt($('bl_vh'), msg);
+      tint($('bl_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 44, pr = 16, pt = 16, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var minY = Math.min(0, S, P, T, R) - 0.5;
+      var maxY = Math.max(S, P, T, R) + 0.5;
+      function sx(qq) { return pl + qq * bw; }
+      function sy(v) { return y1 - ((v - minY) / (maxY - minY)) * bh; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth = 1;
+      for (var i = 0; i <= 4; i++) {
+        var yy = pt + (bh * i) / 4;
+        ctx.beginPath();
+        ctx.moveTo(pl, yy);
+        ctx.lineTo(pl + bw, yy);
+        ctx.stroke();
+      }
+
+      // E(stag) and E(hare) lines
+      ctx.strokeStyle = C.green;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(S));
+      ctx.lineTo(sx(1), sy(R));
+      ctx.stroke();
+      ctx.strokeStyle = C.amber;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(P));
+      ctx.lineTo(sx(1), sy(T));
+      ctx.stroke();
+
+      if (isFinite(star) && star >= 0 && star <= 1) {
+        ctx.strokeStyle = C.blue;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(sx(star), pt);
+        ctx.lineTo(sx(star), y1);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = C.blue;
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('q*', sx(star), pt + 10);
+      }
+
+      ctx.fillStyle = C.ink;
+      ctx.beginPath();
+      ctx.arc(sx(q), sy(eS), 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = C.ink2;
+      ctx.beginPath();
+      ctx.arc(sx(q), sy(eH), 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('绿=E(鹿) 琥珀=E(兔)', pl + bw, pt + 10);
+      ctx.textAlign = 'center';
+      ctx.fillText('信念 q → 期望支付', pl + bw / 2, y1 + 31);
+    }
+    bind(['bl_q', 'bl_r', 'bl_t', 'bl_p', 'bl_s'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 3. R vs S levers ── */
+  (function lv() {
+    var rEl = $('lv_r'), sEl = $('lv_s');
+    if (!rEl || !sEl) return;
+    var cv = $('lvChart');
+    var T = 3, P = 3;
+
+    function upd() {
+      var R = parseFloat(rEl.value), S = parseFloat(sEl.value);
+      var q = qStar(R, T, P, S);
+      var q0 = qStar(4, T, P, 0);
+      var qR6 = qStar(6, T, P, 0);
+      var qS1 = qStar(4, T, P, 1);
+      var dlt = (isFinite(q) && isFinite(q0)) ? (q - q0) : NaN;
+      var col = (isFinite(q) && q <= 0.5) ? C.green : (isFinite(q) && q < 0.75 ? C.blue : C.amber);
+
+      txt($('lv_rO'), r1(R));
+      txt($('lv_sO'), r1(S));
+      txt($('lv_q'), isFinite(q) ? r2(q) : '—');
+      txt($('lv_r6'), r2(qR6));
+      txt($('lv_s1'), r2(qS1));
+      txt($('lv_d'), isFinite(dlt) ? ((dlt >= 0 ? '+' : '') + r2(dlt)) : '—');
+      tint($('lv_q'), col);
+
+      txt($('lv_vh'),
+        '当前 q*=' + (isFinite(q) ? r2(q) : '—') +
+        '；对照「R=6→' + r2(qR6) + '」「S=1→' + r2(qS1) +
+        '」——垫高残值与做大饼都有效');
+      tint($('lv_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr;
+      var vals = [
+        { lab: '当前', v: isFinite(q) ? q : 0, c: col },
+        { lab: '默认 0.75', v: 0.75, c: C.ink3 },
+        { lab: 'R=6', v: qR6, c: C.green },
+        { lab: 'S=1', v: qS1, c: C.blue }
+      ];
+      var maxV = 1;
+      var barH = 22, gap = 12, startY = pt + 20;
+      vals.forEach(function (it, i) {
+        var y = startY + i * (barH + gap);
+        var len = (it.v / maxV) * bw;
+        ctx.fillStyle = it.c;
+        ctx.fillRect(pl, y, Math.max(2, len), barH);
+        ctx.fillStyle = C.ink;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(it.lab, pl, y - 3);
+        var lab = r2(it.v);
+        ctx.fillStyle = C.ink2;
+        clampLabel(ctx, lab, pl + len + 8, y + barH / 2 + 4, 'left', pl, w);
+      });
+      // 0.5 reference
+      var x05 = pl + 0.5 * bw;
+      ctx.strokeStyle = C.red;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(x05, pt);
+      ctx.lineTo(x05, y1);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = C.red;
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('0.50', x05, pt + 10);
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('q* 越低越好（门槛）', pl + bw / 2, y1 + 31);
+    }
+    bind(['lv_r', 'lv_s'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 4. Assortative matching ── */
+  (function as() {
+    var rhoEl = $('as_rho'), pEl = $('as_p'), qEl = $('as_q');
+    if (!rhoEl || !pEl || !qEl) return;
+    var cv = $('asChart');
+
+    function upd() {
+      var rho = parseFloat(rhoEl.value), p = parseFloat(pEl.value), qstar = parseFloat(qEl.value);
+      var r = rho + (1 - rho) * p;
+      var gap = r - qstar;
+      var ok = r >= qstar;
+      var col = ok ? C.green : C.amber;
+
+      txt($('as_rhoO'), r2(rho));
+      txt($('as_pO'), r2(p));
+      txt($('as_qO'), r2(qstar));
+      txt($('as_r'), r2(r));
+      txt($('as_gap'), (gap >= 0 ? '+' : '') + r2(gap));
+      txt($('as_ok'), ok ? '是' : '否');
+      tint($('as_ok'), col);
+
+      txt($('as_vh'),
+        'r=ρ+(1−ρ)p=' + r2(r) + (ok ? ' ≥ ' : ' < ') + 'q*=' + r2(qstar) +
+        ' → 局部猎鹿' + (ok ? '可维持' : '尚不可维持') + (ok ? '' : '；提高 ρ 或 p'));
+      tint($('as_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+
+      function sx(x) { return pl + x * bw; }
+      function sy(v) { return y1 - v * bh; }
+
+      // r vs rho curve at fixed p
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (var i = 0; i <= 100; i++) {
+        var rr = i / 100;
+        var rv = rr + (1 - rr) * p;
+        var x = sx(rr), y = sy(rv);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // q* horizontal
+      ctx.strokeStyle = C.amber;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(qstar));
+      ctx.lineTo(pl + bw, sy(qstar));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = C.ink;
+      ctx.beginPath();
+      ctx.arc(sx(rho), sy(r), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('曲线：固定 p 下 r(ρ)', pl, pt + 12);
+      ctx.textAlign = 'right';
+      ctx.fillText('琥珀线 = q*', pl + bw, pt + 12);
+      ctx.textAlign = 'center';
+      ctx.fillText('同型配对强度 ρ', pl + bw / 2, y1 + 31);
+    }
+    bind(['as_rho', 'as_p', 'as_q'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+})();
+</script>
+</body>
+</html>

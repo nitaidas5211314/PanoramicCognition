@@ -804,11 +804,14 @@
     {
       "slug": "猎鹿博弈（Stag Hunt）：信任决定均衡选择，风险占优 vs 收益占优",
       "title": "猎鹿博弈（Stag Hunt）：信任决定均衡选择，风险占优 vs 收益占优",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 03:59:08",
+      "finished": "2026-09-19 04:05:45",
+      "duration_sec": 397,
+      "outputs": [
+        "reports/猎鹿博弈（Stag Hunt）：信任决定均衡选择，风险占优 vs 收益占优.html",
+        "reports/猎鹿博弈（Stag Hunt）：信任决定均衡选择，风险占优 vs 收益占优.md"
+      ],
       "error": null
     },
     {
@@ -1879,7 +1882,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 03:58",
+  "updated": "2026-09-19 04:05",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
