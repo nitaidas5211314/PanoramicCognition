@@ -1038,11 +1038,14 @@
     {
       "slug": "全局博弈（Global Games）：加入微小私有噪声可消除多重均衡，为货币危机、银行挤兑给出唯一临界点",
       "title": "全局博弈（Global Games）：加入微小私有噪声可消除多重均衡，为货币危机、银行挤兑给出唯一临界点",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 06:22:17",
+      "finished": "2026-09-19 06:47:06",
+      "duration_sec": 1489,
+      "outputs": [
+        "reports/全局博弈（Global Games）：加入微小私有噪声可消除多重均衡，为货币危机、银行挤兑给出唯一临界点.html",
+        "reports/全局博弈（Global Games）：加入微小私有噪声可消除多重均衡，为货币危机、银行挤兑给出唯一临界点.md"
+      ],
       "error": null
     },
     {
@@ -1933,7 +1936,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 06:21",
+  "updated": "2026-09-19 06:47",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

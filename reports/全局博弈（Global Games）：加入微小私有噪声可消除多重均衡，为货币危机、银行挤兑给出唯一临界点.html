@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>全局博弈：微小私有噪声选出唯一临界点 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Global Games × Equilibrium Selection</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <div class="navgroup">实践系统</div>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>全局博弈：微小私有噪声选出唯一临界点</h1>
+  <p class="sub">完全信息下，货币攻击和银行挤兑在中间一段基本面上<strong>两个均衡都成立</strong>；每人只多一点私有噪声，迭代剔除就把这段压成<strong>一个可计算的临界点</strong>。</p>
+  <div class="meta">
+    <span class="chip b">30 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>全局博弈（global game）</strong>不是「全球博弈」，也不是全局最优。Carlsson 与 van Damme（1993）的定义是：真实支付从<strong>一整类博弈</strong>里随机抽出（参数 (\theta)），每人只看到带噪声的私有信号 (x_i=\theta+\sigma\varepsilon_i)。<span class="tag t-fact">事实</span></p>
+<p>完全信息时，货币钉住和活期存款合同在中间一段基本面上有<strong>两个纯策略均衡</strong>——全体攻击 / 全体不攻击，或全体挤兑 / 全体等待。任意小的私有噪声破坏「(\theta) 是共同知识」之后，迭代剔除严格劣势策略只留下<strong>一个阈值</strong>：攻击（或挤兑）当且仅当信号低于临界点。<span class="tag t-fact">事实</span>（Morris &amp; Shin, <em>AER</em> 1998；Goldstein &amp; Pauzner, <em>Journal of Finance</em> 2005）</p>
+<p>本手册用的政权/挤兑教学式：成功当且仅当攻击比例 (\alpha\ge\theta)，攻击的成本收益比是 (c\in(0,1))。平坦先验、噪声趋于 0 时，<strong>基本面临界点 (\theta^∗=1-c)</strong>，与噪声分布的形状无关。默认 (c=0.30) → (\theta^∗=0.70)：(\theta\le 0.70) 崩，(\theta&gt;0.70) 守住。<span class="tag t-fact">事实</span>（拉普拉斯信念；Frankel, Morris &amp; Pauzner 2003 的噪声无关选择）</p>
+<p>把噪声从 0 再拧大一点，<strong>崩不崩的基本面分界仍是 (\theta^∗)</strong>；移动的是边际投机者的<strong>信号阈值</strong> (x^∗=\theta^∗-\sigma\Phi^{-1}(c))。默认 (c=0.30)、(\sigma=0.20) → (x^∗=0.8049)。<span class="tag t-inf">推论</span></p>
+<p>真正把多重均衡请回来的，通常不是「噪声太小」，而是<strong>公共信号太准</strong>。线性投资例子里，唯一性条件是 (\gamma(\sigma,\tau)\le 2\pi\approx 6.2832)。<span class="tag t-fact">事实</span>（Morris &amp; Shin 综述，公共 vs 私有信息）</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「危机会不会来」的新闻判断，而是：<strong>当行动的收益取决于别人是否一起行动时，信息结构如何把「一整段都可能」收成「一个临界点」，以及这个临界点对成本、储备和公共广播怎么反应。</strong></p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：二元行动、战略互补、占优区夹着多重均衡区、私有/公共信号、拉普拉斯阈值、货币攻击、银行挤兑、债务展期、实验里的阈值策略。</li>
+<li><strong>在界外</strong>：某国下周会不会贬值、某家银行的资本充足率测算、交易指令。那些要换数据，不能用本手册的 (c) 直接下单。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>不完备信息如何从多重均衡里选出唯一阈值</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「支付 + 信号结构」可写成阈值策略为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>(\theta)、信号 (x_i)、成本比 (c)、临界点 (\theta^∗) 或 (\kappa)、精度比 (\gamma)</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>投机者、储户、央行/银行、大交易者、发布公共信号的人</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(c)、私有噪声 (\sigma)、公共噪声 (\tau)、储备如何移动临界质量</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>利差、交易成本、提前支取罚则、官方声明、价格</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>高阶信念、别人眼中的 (\theta)、真实临界质量函数 (a(\theta))</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>(c) 定 (\theta^∗)；公共精度定唯一还是多重；储备改的是战略反应不只是会计</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>(c\uparrow\Rightarrow\theta^∗\downarrow\Rightarrow) 协调型危机区间变窄</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「声明很响」与「危机变少」不一定同向：过准的公共信号可能恢复多重均衡<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>几乎一样的基本面，有的钉住崩了、有的没崩；挤兑来得像突然</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>共同知识断裂后，占优区从两端迭代咬到唯一切换点</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。攻击成功本身制造更差的信号，引来更多攻击</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。储备、合同、信息制度先定，危在实现 (\theta) 时才显现</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>协调成功是正反馈；提高 (c) 或私有信息精度是把正反馈压回阈值的负向杠杆</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>噪声的作用不是「让人看不清所以乱选」，而是<strong>拆掉共同知识</strong>，让占优区的逻辑能一路传到中间，留下一个与 (c) 绑定的临界点。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它把「太阳黑子」变成可比较的政策</h4><p>Obstfeld（1996）式自我兑现危机在中间区两个均衡都对，政策几乎无法比较。Morris &amp; Shin（1998）指出：唯一均衡依赖热钱规模和投机成本，才能讨论「加交易成本 / 加储备」<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它给银行挤兑一个概率</h4><p>Diamond–Dybvig（1983）说明挤兑可以是均衡，但算不出概率，也就无法问「银行究竟是否提高了福利」。Goldstein &amp; Pauzner（2005）用噪声信号得到唯一阈值，挤兑概率随短期支付 (r_1) 上升<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它警告「公开得越清楚越好」</h4><p>私人信号把均衡收成一个；<strong>过准的公共信号</strong>可以把 (\gamma) 推过 (2\pi)，多重均衡回来。价格若把信息聚合得太干净，也会起同样的作用（Angeletos &amp; Werning, <em>AER</em> 2006）<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="note red"><b>最贵的一次方向搞反</b><p>「信息越完美，越回到多重均衡」是错的。极限里<strong>任意小的私有噪声仍然唯一</strong>。请回多重均衡的是公共广播压过了私有信号，不是噪声消失。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层：从「别人做我才划算」长到「信息制度是政策」。</p>
+<svg viewBox="0 0 680 530" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ggMap" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 信息制度 · 公共广播的精度本身就是政策变量</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 失效边界 · 内生价格、非单调互补、任意高阶信念扰动</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 应用 · 货币攻击、挤兑、债务展期、最后贷款人</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 唯一阈值 · 政权模型 θ*=1−c；线性模型 κ=Φ(√γ(κ−y))</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 拉普拉斯捷径 · 临界点上把对手比例看成均匀分布</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 迭代剔除 · 占优区从两端咬进多重均衡区</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 共同知识断裂 · 私有噪声 x=θ+σε</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 三重区域 · θ 很差占优攻击 / 中间多重 / 很好占优不攻击</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 战略互补 · 别人攻击，我攻击的收益才上升</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门停在 <strong>L2→L6</strong>：先承认多重，再算 (\theta^∗=1-c)。进阶停在 <strong>L8–L9</strong>：唯一性是信息结构的性质，不是博弈矩阵的内在属性。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>六个词必须分开，否则滑块会读反。</p>
+<svg viewBox="0 0 680 340" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ggCpt" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="230" y="16" width="220" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">支付参数 θ</text>
+  <rect x="24" y="100" width="190" height="56" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="119" y="124" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">三重区域</text><text x="119" y="142" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">完全信息 · 中间多重</text>
+  <rect x="244" y="100" width="190" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="339" y="124" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">私有信号 x</text><text x="339" y="142" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">拆共同知识</text>
+  <rect x="464" y="100" width="190" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="559" y="124" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">θ* = 1 − c</text><text x="559" y="142" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">基本面分界 · 不随 σ</text>
+  <rect x="80" y="210" width="220" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="190" y="234" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">信号阈值 x*</text><text x="190" y="252" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">随 σ 与 c 移动</text>
+  <rect x="380" y="210" width="220" height="56" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="490" y="234" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">γ ≦ 2π ?</text><text x="490" y="252" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">公共太准 → 多重回来</text>
+  <line x1="300" y1="60" x2="119" y2="100" stroke="#1d4ed8" stroke-width="1.4" marker-end="url(#ggCpt)"/>
+  <line x1="340" y1="60" x2="339" y2="100" stroke="#1d4ed8" stroke-width="1.4" marker-end="url(#ggCpt)"/>
+  <line x1="380" y1="60" x2="559" y2="100" stroke="#1d4ed8" stroke-width="1.4" marker-end="url(#ggCpt)"/>
+  <line x1="339" y1="156" x2="190" y2="210" stroke="#b8730a" stroke-width="1.4" marker-end="url(#ggCpt)"/>
+  <line x1="559" y1="156" x2="490" y2="210" stroke="#d5342c" stroke-width="1.4" marker-end="url(#ggCpt)"/>
+  <text x="340" y="310" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">θ* 回答「基本面多差会崩」；x* 回答「看到多差的信号才动手」；γ 回答「这套唯一性还在不在」。</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>在系统里的作用</th>
+<th>不要和谁混</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">共同知识</td>
+<td>中间区能支撑任意自洽信念的前提</td>
+<td>不是「大家都听说了」</td>
+</tr>
+<tr>
+<td class="k">占优区</td>
+<td>迭代的锚：一端必须攻击，一端必须不动</td>
+<td>不是风险偏好</td>
+</tr>
+<tr>
+<td class="k">拉普拉斯信念</td>
+<td>临界人把攻击比例看成 (U[0,1]) 的捷径</td>
+<td>不是真的均匀先验于 (\theta)</td>
+</tr>
+<tr>
+<td class="k">(\theta^∗)</td>
+<td>崩与不崩的基本面分界</td>
+<td>不是信号阈值 (x^∗)</td>
+</tr>
+<tr>
+<td class="k">(\gamma)</td>
+<td>私有噪声相对公共噪声有多大</td>
+<td>不是相关系数</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>在系统里做什么</th>
+<th>杠杆在哪</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">连续统小投机者 / 储户</td>
+<td>看私有信号，玩阈值策略</td>
+<td>几乎不能单方面改 (\theta^∗)，但大众的 (c) 能</td>
+</tr>
+<tr>
+<td class="k">大交易者</td>
+<td>可见的头寸改变小玩家的临界信念</td>
+<td>Corsetti、Dasgupta、Morris、Shin（2004）：一个大玩家可以移动小玩家的攻击区<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">央行 / 财政部</td>
+<td>定钉住、储备、利率差（攻击的机会成本）</td>
+<td>储备改 (a(\theta))，不只是「多一笔子弹」</td>
+</tr>
+<tr>
+<td class="k">银行 / 合约设计者</td>
+<td>定短期支付 (r_1)</td>
+<td>流动性保险越大，挤兑阈值越差<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">公共信号发布者</td>
+<td>官方数据、价格、全员大会</td>
+<td>精度过高会破坏唯一性</td>
+</tr>
+<tr>
+<td class="k">实验被试</td>
+<td>检验人是否真的玩阈值</td>
+<td>Heinemann、Nagel、Ockenfels（<em>Econometrica</em> 2004）</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<p>政权/挤兑模型（本手册模型 A）约定：</p>
+<ul>
+<li>攻击成功 (\iff \alpha\ge\theta)。(\theta\le 0)：无人攻击也崩，攻击严格占优。(\theta\ge 1)：全体攻击也不崩，不攻击严格占优。(0&lt;\theta&lt;1)：完全信息下两个均衡。</li>
+<li>攻击的净收益：成功得 1，再减去成本比 (c\in(0,1))；不攻击得 0。无差异条件是成功概率 (=c)。</li>
+<li>平坦先验下，边际信号的排名信念是均匀的，故 (P(\text{成功}\mid\text{边际})=1-\theta^∗)。令其等于 (c)：</li>
+</ul>
+<p>[
+\theta^∗=1-c
+]</p>
+<p>有限高斯噪声 (\sigma&gt;0) 时，基本面分界<strong>仍是</strong> (\theta^∗)；信号阈值</p>
+<p>[
+x^∗=(1-c)-\sigma\,\Phi^{-1}(c)
+]</p>
+<p>(c&lt;0.5) 时 (\Phi^{-1}(c)&lt;0)，故 (x^∗&gt;\theta^∗)：边际投机者要看到<strong>比临界基本面更强</strong>的信号才肯停手。默认 (c=0.30)、(\sigma=0.20)：(\Phi^{-1}(0.30)=-0.5244)，(x^∗=0.8049)。<span class="tag t-inf">推论</span></p>
+<p>线性投资模型（模型 B，用来讨论公共信号）是另一套支付：投资收益 (\theta+\ell-1)，不投资得 0。这里 (\theta) <strong>越高越该投资</strong>，和「(\theta) 越高钉住越稳」符号相反，两套滑块不能混读。公共信号均值 (y)、标准差 (\tau)，私有噪声标准差 (\sigma) 时</p>
+<p>[
+\gamma=\frac{\sigma^2(\sigma^2+\tau^2)}{\tau^4(\sigma^2+2\tau^2)},\qquad \kappa=\Phi\big(\sqrt{\gamma}(\kappa-y)\big)
+]</p>
+<p>(\gamma\le 2\pi) 时切换点唯一；否则对某些 (y) 有多个 (\kappa)。<span class="tag t-fact">事实</span>（Morris &amp; Shin 综述 Proposition 3.1 的条件；方程形式按正态后验推导，见文末来源表）</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>默认</th>
+<th>动一下会发生什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">(c)</td>
+<td>0.30</td>
+<td>(\theta^∗) 从 0.70 线性下降；(c=0.50) 时 (\theta^∗=0.50)</td>
+</tr>
+<tr>
+<td class="k">(\sigma)</td>
+<td>0.20</td>
+<td>只移动 (x^∗)，不移动 (\theta^∗)</td>
+</tr>
+<tr>
+<td class="k">基本面均值 (\mu)</td>
+<td>0.50</td>
+<td>决定危机概率的位置，不改 (\theta^∗)</td>
+</tr>
+<tr>
+<td class="k">公共标准差 (\tau)</td>
+<td>0.70</td>
+<td>变小（更准）会把 (\gamma) 推向 (2\pi)</td>
+</tr>
+<tr>
+<td class="k">公共均值 (y)</td>
+<td>0.60</td>
+<td>模型 B：(y) 越高，投资切换点 (\kappa) 越低</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<p>实线是直接因果，红色虚线是危机自己喂自己的反馈。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ggCs" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="ggCf" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="30" y="30" width="150" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="105" y="57" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">攻击成本 c</text>
+  <rect x="250" y="30" width="160" height="44" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="330" y="57" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">临界点 θ*=1−c</text>
+  <rect x="480" y="30" width="160" height="44" rx="8" fill="#15181d"/><text x="560" y="57" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">协调型危机区间</text>
+  <line x1="180" y1="52" x2="246" y2="52" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#ggCs)"/>
+  <line x1="410" y1="52" x2="476" y2="52" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#ggCs)"/>
+  <text x="214" y="44" fill="#1d4ed8" font-size="11" font-family="sans-serif">降低</text>
+  <text x="430" y="44" fill="#1d4ed8" font-size="11" font-family="sans-serif">缩窄</text>
+
+  <rect x="30" y="130" width="170" height="44" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="115" y="157" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">储备 / 最后贷款人</text>
+  <rect x="250" y="130" width="170" height="44" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="335" y="157" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">临界质量 a(θ)</text>
+  <line x1="200" y1="152" x2="246" y2="152" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#ggCs)"/>
+  <path d="M420 152 C 470 152, 470 74, 480 74" fill="none" stroke="#1d4ed8" stroke-width="1.4" marker-end="url(#ggCs)"/>
+
+  <rect x="30" y="230" width="170" height="44" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="115" y="257" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">私有噪声 σ</text>
+  <rect x="250" y="230" width="170" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="335" y="257" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">信号阈值 x*</text>
+  <line x1="200" y1="252" x2="246" y2="252" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#ggCs)"/>
+  <text x="400" y="248" fill="#454c56" font-size="12" font-family="sans-serif">θ* 不动（平坦先验）</text>
+
+  <rect x="30" y="300" width="200" height="40" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="130" y="325" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">攻击成功 → 更差的信号</text>
+  <path d="M230 320 C 400 340, 560 120, 560 78" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ggCf)"/>
+</svg>
+<div class="note amber"><b>储备的战略效应</b><p>Morris &amp; Shin 指出：有些「加强防御」的比较静态<strong>只通过改变投机者的均衡策略</strong>起作用，而不是在相关状态下真的多挡住了一次攻击。把储备只当成会计库存，会算错杠杆。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<p>同一套「带噪声的协调」在别的名字下重复出现。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>这边的名字</th>
+<th>那边的名字</th>
+<th>同构在哪</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">拉普拉斯信念</td>
+<td>拉普拉斯不充分理由原则</td>
+<td>临界人把未知比例设成均匀；Morris–Shin 故意用这个名字</td>
+</tr>
+<tr>
+<td class="k">二人全局博弈的选择</td>
+<td>Harsanyi–Selten 风险占优</td>
+<td>两人时阈值就是风险占优的切换点<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">(\theta^∗=1-c)</td>
+<td>渗流 / 相变临界</td>
+<td>都是「质量越过一点，宏观状态翻转」</td>
+</tr>
+<tr>
+<td class="k">货币攻击</td>
+<td>挤兑、债务展期、政权更迭</td>
+<td>都是「临界质量 vs 基本面」；符号约定要先对齐</td>
+</tr>
+<tr>
+<td class="k">公共信号过准</td>
+<td>价格把信息聚合干净</td>
+<td>Angeletos–Werning：市场越能汇总信息，太阳黑子可能回来</td>
+</tr>
+<tr>
+<td class="k">谢林点</td>
+<td>全局博弈选择</td>
+<td>谢林在多重均衡<strong>里面</strong>找焦点；全局博弈把多重<strong>消掉</strong>。方向相反</td>
+</tr>
+<tr>
+<td class="k">无穷迭代剔除</td>
+<td>实验室里的浅层推理</td>
+<td>阈值策略对「别人随机」也是最优反应，所以不做无穷层也能靠近<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<div class="note purple"><b>势博弈的旁路</b><p>对称二元行动、支付只依赖别人选 1 的比例时，博弈是势博弈。势最大化与拉普拉斯行动对齐——所以「对不完备信息稳健」和「势最大」在这个类里是同一件事。<span class="tag t-ana">分析</span>（Morris–Shin 综述对 Ui 2001 的转述）</p></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>四步，缺一不可。</p>
+<ol>
+<li><strong>两端被钉死。</strong> (\theta) 足够差，攻击是占优策略；足够好，不攻击是占优策略。没有这两个锚，迭代没有起点。</li>
+<li><strong>噪声切断共同知识。</strong> 看到 (x) 的人知道 (\theta) 在附近，但不知道别人看到的是否也这么好，更不知道别人是否知道自己知道。高阶信念不能再任意指定。</li>
+<li><strong>迭代向内咬。</strong> 若别人在「极差」才攻击，那么「略好一点」时攻击也变成劣势，以此类推。连续统、战略互补、噪声很小时，咬到的极限与噪声分布形状无关。</li>
+<li><strong>临界人用均匀排名。</strong> 在切换点上，你在人群里的排名是均匀的，于是攻击比例 (\sim U[0,1])。这就是拉普拉斯捷径：不必真的做无穷轮删除，直接对均匀比例求最优反应。</li>
+</ol>
+<div class="flow"><span>占优区锚定</span><i>→</i><span>私有噪声</span><i>→</i><span class="hi">迭代剔除</span><i>→</i><span class="hi">θ*=1−c</span><i>→</i><span>政策可比较</span></div>
+<p>银行挤兑比货币攻击多一个坎：支付不是全程战略互补（上面有一个「再差也没人跑」的区域结构不同）。Goldstein &amp; Pauzner 仍得到唯一对称切换均衡，但不能把货币模型的证明原样贴过去。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 250" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ggTm" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="36" y1="46" x2="650" y2="46" stroke="#1d4ed8" stroke-width="2" marker-end="url(#ggTm)"/>
+  <circle cx="56" cy="46" r="5" fill="#1d4ed8"/><text x="56" y="78" text-anchor="middle" fill="#15181d" font-size="11" font-weight="700" font-family="sans-serif">1988</text><text x="56" y="96" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">风险占优</text>
+  <circle cx="140" cy="46" r="5" fill="#1d4ed8"/><text x="140" y="78" text-anchor="middle" fill="#15181d" font-size="11" font-weight="700" font-family="sans-serif">1993</text><text x="140" y="96" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">CvD 奠基</text>
+  <circle cx="230" cy="46" r="5" fill="#b8730a"/><text x="230" y="78" text-anchor="middle" fill="#15181d" font-size="11" font-weight="700" font-family="sans-serif">1996</text><text x="230" y="96" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">Obstfeld 多重</text>
+  <circle cx="320" cy="46" r="5" fill="#d5342c"/><text x="320" y="78" text-anchor="middle" fill="#15181d" font-size="11" font-weight="700" font-family="sans-serif">1998</text><text x="320" y="96" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">货币攻击唯一</text>
+  <circle cx="410" cy="46" r="5" fill="#1d4ed8"/><text x="410" y="78" text-anchor="middle" fill="#15181d" font-size="11" font-weight="700" font-family="sans-serif">2000</text><text x="410" y="96" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">定理 2 被纠正</text>
+  <circle cx="500" cy="46" r="5" fill="#0f8a4d"/><text x="500" y="78" text-anchor="middle" fill="#15181d" font-size="11" font-weight="700" font-family="sans-serif">2004</text><text x="500" y="96" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">HNO 实验</text>
+  <circle cx="590" cy="46" r="5" fill="#d5342c"/><text x="590" y="78" text-anchor="middle" fill="#15181d" font-size="11" font-weight="700" font-family="sans-serif">2005–07</text><text x="590" y="96" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">挤兑·价格·稳健性</text>
+  <text x="40" y="150" fill="#15181d" font-size="12" font-family="sans-serif">1993 Carlsson &amp; van Damme，Econometrica：2×2 全局博弈在噪声消失时选出风险占优。</text>
+  <text x="40" y="172" fill="#15181d" font-size="12" font-family="sans-serif">1998 Morris &amp; Shin，AER：投机者有微小私有噪声时，钉住有唯一临界点。</text>
+  <text x="40" y="194" fill="#15181d" font-size="12" font-family="sans-serif">2004 HNO，Econometrica：约 92% 的策略符合非劣势阈值；比较静态跟全局博弈走，数值并不贴死。</text>
+  <text x="40" y="216" fill="#15181d" font-size="12" font-family="sans-serif">2006–07 价格内生信息与 Weinstein–Yildiz：选择结果依附于信息结构，不是矩阵的固有标签。</text>
+</svg>
+<p>Heinemann（2000）指出 Morris &amp; Shin（1998）定理 2 的方程 (f(\theta^∗)=e^∗-2t) <strong>写错了</strong>。正确的极限条件是 ((1-a(\theta^∗))(e^∗-\zeta(\theta^∗))=t)：边际投机者对「放弃 / 捍卫」并不总是各赋 1/2，还要乘上临界质量留下的成功概率。<span class="tag t-fact">事实</span>（Morris–Shin 综述的更正；教学模型 (a(\theta)=\theta)、成功收益恒为 1 时，它退回 (\theta^∗=1-t)）</p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>谁</th>
+<th>表面目标</th>
+<th>隐藏激励</th>
+<th>对临界点的含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">投机者</td>
+<td>攻击的期望收益 &gt; 0</td>
+<td>要猜别人是否攻击，不是只猜 (\theta)</td>
+<td>(c)（利差、税费、保证金）直接进 (\theta^∗)</td>
+</tr>
+<tr>
+<td class="k">提前支取的储户</td>
+<td>锁定 (r_1)</td>
+<td>别人也跑时，晚取更亏</td>
+<td>(r_1) 越高，(\theta^∗) 越糟<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">央行</td>
+<td>守住钉住</td>
+<td>声明要响，但响过头会变成过准公共信号</td>
+<td>透明度不是单调的「越多越好」</td>
+</tr>
+<tr>
+<td class="k">银行股东</td>
+<td>用活期合同提供流动性</td>
+<td>流动性溢价的代价是内生挤兑概率</td>
+<td>最优合同仍可能容忍正的恐慌概率<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">大玩家</td>
+<td>用可见仓位赚钱</td>
+<td>小玩家会把大玩家的行动当信号</td>
+<td>市场结构改变小玩家临界点</td>
+</tr>
+<tr>
+<td class="k">研究者</td>
+<td>要可比较的比较静态</td>
+<td>多重均衡模型无法做政策排序</td>
+<td>唯一性是分析工具，不是道德结论</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<p>攻击的「抽水」不是手续费那么简单：成功时，钉住与影子价之差从捍卫者转到攻击者；失败时，成本 (t) 沉没。公共价格若把 (\theta) 报得太清楚，信息流本身会改变博弈有几个均衡。</p>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ggFl" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="ggFlR" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="24" y="36" width="150" height="64" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="99" y="64" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">投机者 / 储户</text><text x="99" y="84" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">私有信号 x_i</text>
+  <rect x="250" y="36" width="170" height="64" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="335" y="62" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">摩擦抽水</text><text x="335" y="82" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">交易成本 t · 利差 · 罚则</text>
+  <rect x="490" y="24" width="166" height="40" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="573" y="49" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">成功：贬值差归攻击者</text>
+  <rect x="490" y="76" width="166" height="40" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="573" y="101" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">失败：t 沉没，钉住还在</text>
+  <line x1="174" y1="68" x2="246" y2="68" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#ggFl)"/>
+  <line x1="420" y1="52" x2="486" y2="44" stroke="#d5342c" stroke-width="1.5" marker-end="url(#ggFlR)"/>
+  <line x1="420" y1="84" x2="486" y2="96" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#ggFl)"/>
+  <rect x="180" y="160" width="320" height="52" rx="8" fill="#15181d"/><text x="340" y="182" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">缓冲池：外汇储备 / 银行可变现资产</text><text x="340" y="200" text-anchor="middle" fill="#c9cdd4" font-size="11" font-family="sans-serif">它移动 a(θ)，从而移动均衡里的 θ*</text>
+  <line x1="335" y1="100" x2="335" y2="156" stroke="#1d4ed8" stroke-width="1.4" marker-end="url(#ggFl)"/>
+  <rect x="24" y="230" width="632" height="48" rx="8" fill="#f8f9fb" stroke="#c9cdd4"/><text x="40" y="258" fill="#15181d" font-size="12" font-family="sans-serif">旁路：价格、官宣、全员会 = 公共信号 y。τ 太小（太准）时，抽水公式还在，但均衡个数不再是 1。</text>
+</svg>
+<p>货币用比率 (c=t/(\text{成功收益})) 就够，不必先换成 ¥。若成功收益是一笔名义差额，(c) 是这笔差额里被成本吃掉的份额。挤兑的对应抽水是：早取的人拿走 (r_1)，晚取的人分剩余——早取权就是从耐心储户身上抽的流动性。</p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序。分数是教学用排序，不是实证权重。<span class="tag t-ana">分析</span></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何有效</th>
+<th>分数直觉</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>先画三重区域</td>
+<td>没有占优锚，就没有迭代，谈不上临界点</td>
+<td>最高：低成本且防伪</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>把行动成本写成 (c)，算 (\theta^∗=1-c)</td>
+<td>一个数吃掉「热钱贵不贵」</td>
+<td>(c:0.30\to0.40) 时 (\theta^∗:0.70\to0.60)</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>用「只计 (\theta\le 0)」当基准</td>
+<td>协调超额才是这套模型多出来的部分</td>
+<td>默认参数下超额 74.99pp</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>先问 (\gamma) 是否 (\le 2\pi)</td>
+<td>唯一性没了，后面的单一点全部作废</td>
+<td>公共精度是开关</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>提高坏行动的 (c)（税、罚则、利差）</td>
+<td>缩小恐慌区，<strong>不修复</strong> (\theta\le 0) 的破产</td>
+<td>政策级，但公式直接</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>私有信息保持够准</td>
+<td>(\sigma) 相对 (\tau) 小，(\gamma) 才下得来</td>
+<td>比「多发公告」更反直觉</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>记住选择不稳健于任意信念扰动</td>
+<td>Weinstein &amp; Yildiz（2007）：换高阶信念，理性化结果可以翻</td>
+<td>防止把 (\theta^∗) 当成物理常数</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>储备 / 最后贷款人改 (a(\theta))</td>
+<td>战略效应可能大于会计效应</td>
+<td>要写进临界质量，不能只写余额</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>识别有没有大玩家</td>
+<td>可见仓位会移动小玩家阈值</td>
+<td>市场结构先于公式</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>合同里的短期支付 (r_1)</td>
+<td>流动性收益与挤兑概率交换</td>
+<td>Goldstein–Pauzner：最优处恐慌概率仍可为正</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱 1 · 「global = 全球」</summary><div class="dbody"><p>Global 指支付从一类博弈里抽取，不是国际金融专有名词。国内供应商切换、产品发布会，结构同构就能用。</p></div></details>
+<details><summary>陷阱 2 · 噪声越小越多重</summary><div class="dbody"><p>极限定理说的是：私有噪声趋于 0，均衡<strong>仍然唯一</strong>，并且选择结果与噪声形状无关。多重是完全信息（共同知识）的性质。</p></div></details>
+<details><summary>陷阱 3 · 把 \(x^∗\) 当成 \(\theta^∗\)</summary><div class="dbody"><p>默认 (c=0.30)、(\sigma=0.20) 时基本面分界是 0.7000，信号阈值是 0.8049。用信号阈值去报「基本面低于多少会崩」，会偏 0.1049。</p></div></details>
+<details><summary>陷阱 4 · 只报危机概率，不报基准</summary><div class="dbody"><p>(\mu=0.50)、(s=0.30)、(c=0.25) 时，只计基本面破产是 4.78%，算上协调是 79.77%。不减基准，79.77% 看起来像命运，其实大部分是恐慌区。</p></div></details>
+<details><summary>陷阱 5 · 税率能治破产</summary><div class="dbody"><p>(c) 从 0.25 到 0.40，基本面基准仍是 4.78%，协调超额从 74.99pp 降到 58.28pp。税挪的是恐慌区，不是 (\theta\le 0)。</p></div></details>
+<details><summary>陷阱 6 · 公告越精确越好</summary><div class="dbody"><p>模型 B 里 (\tau\downarrow) 会抬 (\gamma)。过了 (2\pi)，比较静态从「一个点」退回「几个点都可能」。透明度有副作用。</p></div></details>
+<details><summary>陷阱 7 · 两套 \(\theta\) 符号混用</summary><div class="dbody"><p>模型 A：(\theta) 越高越稳。模型 B：(\theta) 越高越该投资。公共信号变好时 (\kappa) 下降，是「更愿意投资」，不是「更愿意攻击货币」。</p></div></details>
+<details><summary>陷阱 8 · 把 1998 年定理 2 的原式当真</summary><div class="dbody"><p>(f(\theta^∗)=e^∗-2t) 已被 Heinemann（2000）指出有误。引用前用 ((1-a(\theta^∗))(e^∗-\zeta(\theta^∗))=t)。</p></div></details>
+<details><summary>陷阱 9 · 实验贴合 = 理论已证实到小数点</summary><div class="dbody"><p>HNO（2004）：(T=20) 时不能拒绝私人信息阈值等于均衡；(T=50) 时阈值显著低于均衡（双侧 F，1%）。比较静态对，数值有系统偏差。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 10 · 唯一阈值对一切信息结构稳健</summary><div class="dbody"><p>只对「全局博弈式」的相关噪声稳健。Weinstein &amp; Yildiz（2007）说明：在更广的高阶信念扰动下，理性化行动可以是你想要的任何一个。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 11 · 银行模型可以照抄货币证明</summary><div class="dbody"><p>挤兑支付不满足全程行动单调。Goldstein–Pauzner 用均匀噪声等额外结构才得到唯一切换。看到「银行」两个字就套 (\theta^∗=1-c)，是类比不是证明。</p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ggLv" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="24" y="24" width="190" height="220" rx="10" fill="#f8f9fb" stroke="#c9cdd4"/>
+  <text x="119" y="52" text-anchor="middle" fill="#15181d" font-size="14" font-weight="700" font-family="sans-serif">抽象</text>
+  <text x="40" y="88" fill="#454c56" font-size="12" font-family="sans-serif">共同知识</text>
+  <text x="40" y="114" fill="#454c56" font-size="12" font-family="sans-serif">风险占优</text>
+  <text x="40" y="140" fill="#454c56" font-size="12" font-family="sans-serif">拉普拉斯行动</text>
+  <text x="40" y="166" fill="#454c56" font-size="12" font-family="sans-serif">迭代剔除</text>
+  <text x="40" y="192" fill="#454c56" font-size="12" font-family="sans-serif">高阶信念</text>
+  <rect x="244" y="24" width="190" height="220" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="339" y="52" text-anchor="middle" fill="#15181d" font-size="14" font-weight="700" font-family="sans-serif">机制</text>
+  <text x="260" y="88" fill="#15181d" font-size="12" font-family="sans-serif">私有噪声拆锚</text>
+  <text x="260" y="114" fill="#15181d" font-size="12" font-family="sans-serif">两端占优区</text>
+  <text x="260" y="140" fill="#15181d" font-size="12" font-family="sans-serif">均匀排名</text>
+  <text x="260" y="166" fill="#15181d" font-size="12" font-family="sans-serif">θ* 与 x* 分离</text>
+  <text x="260" y="192" fill="#15181d" font-size="12" font-family="sans-serif">γ 越过 2π</text>
+  <rect x="464" y="24" width="190" height="220" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="559" y="52" text-anchor="middle" fill="#15181d" font-size="14" font-weight="700" font-family="sans-serif">操作</text>
+  <text x="480" y="88" fill="#15181d" font-size="12" font-family="sans-serif">写出 c，算 1−c</text>
+  <text x="480" y="114" fill="#15181d" font-size="12" font-family="sans-serif">对照 θ≤0 的基准</text>
+  <text x="480" y="140" fill="#15181d" font-size="12" font-family="sans-serif">分辨公告是否过准</text>
+  <text x="480" y="166" fill="#15181d" font-size="12" font-family="sans-serif">税只缩恐慌区</text>
+  <text x="480" y="192" fill="#15181d" font-size="12" font-family="sans-serif">标出模型失效条件</text>
+  <line x1="214" y1="120" x2="244" y2="120" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#ggLv)"/>
+  <line x1="434" y1="120" x2="464" y2="120" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#ggLv)"/>
+</svg>
+<p>一张可带走的对照：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>你看到的现象</th>
+<th>先问的机制问题</th>
+<th>今天能写下来的操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">「基本面差不多，结果天差地别」</td>
+<td>当时在不在 ((0,\theta^∗)) 恐慌区</td>
+<td>估一个 (c)，画出 0 与 (1-c)</td>
+</tr>
+<tr>
+<td class="k">官方把数据一次报完，市场反而更跳</td>
+<td>公共精度是否压过私有</td>
+<td>粗算 (\sigma/\tau)，看 (\gamma) 靠近哪一侧</td>
+</tr>
+<tr>
+<td class="k">加了税，破产的还是破产</td>
+<td>税不进入 (\theta\le 0)</td>
+<td>把两种概率分开报</td>
+</tr>
+<tr>
+<td class="k">实验室里人不做无穷推理</td>
+<td>阈值策略对随机信念也稳健</td>
+<td>用比较静态检验，不要求小数点贴合</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<p>不要从「预测下一次危机」开始。从<strong>把一次协调写成三个区域</strong>开始。</p>
+<ol>
+<li>写出坏行动（攻击、挤兑、集体跳槽、集体不交货）的成本比 (c)。分子是失败或行动本身的代价，分母是大家都做成功时的收益。保持 (c\in(0,1))，否则占优区的故事要重写。</li>
+<li>计算 (\theta^∗=1-c)。这是教学模型的基本面分界，不是信号。</li>
+<li>单列基准：若协调完全不起作用，只有「再差也崩」的那一截（模型里 (\theta\le 0)）。你的故事若说不出这一截的概率，就还没资格谈恐慌溢价。</li>
+<li>问信息从哪来。若所有人都盯着同一个数（价格、全员信、官宣），先怀疑唯一性，再引用 (\theta^∗)。</li>
+<li>只改一个杠杆做反事实：加 (c)，或把公共信号变模糊一点、把私有信号变具体一点。一次只动一个，否则比较静态无法归因。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 · 会画区域</summary><div class="dbody"><p>给定「多差就一定崩、多好就一定不崩」，画出中间段。说得出：完全信息下中间段两个均衡都成立。</p></div></details>
+<details><summary>L2 · 会算 θ*</summary><div class="dbody"><p>把成本收益比估进 (0,1)，写出 (\theta^∗=1-c)。能解释为什么它不依赖 (\sigma)（平坦先验极限）。</p></div></details>
+<details><summary>L3 · 会分开 x*</summary><div class="dbody"><p>用 (x^∗=\theta^∗-\sigma\Phi^{-1}(c))。(c=0.5) 时两者重合；(c=0.3)、(\sigma=0.2) 时差 0.1049。</p></div></details>
+<details><summary>L4 · 会做基准对照</summary><div class="dbody"><p>正态基本面下同时报 (P(\theta\le 0)) 与 (P(\theta\le\theta^∗))。差额叫协调超额，不叫「模型预测的危机」。</p></div></details>
+<details><summary>L5 · 会检查唯一性开关</summary><div class="dbody"><p>会算 (\gamma)，知道 (2\pi\approx 6.2832) 是分界。能举出 (\sigma=1)、(\tau=0.40)、(y=0.50) 时 (\gamma=34.3277)，三个 (\kappa)：0.0018、0.5000、0.9982。</p></div></details>
+<details><summary>L6 · 会指出失效</summary><div class="dbody"><p>内生价格、挤兑支付非单调、高阶信念的任意扰动、实验数值偏差。四条里能默写两条，才算能用这套模型跟人争论。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是<strong>临界点测绘员</strong>。地图上只有三种地形：占优攻击、恐慌带、占优安全。装备不是预言水晶，是四把尺子：(c)、(\sigma)、基准概率、(\gamma)。</p>
+<ul>
+<li>安全区：你能在 10 分钟内写出 (\theta^∗) 并指出它不等于 (x^∗)。</li>
+<li>迷雾：公共信号很响，你还没算 (\gamma) 就引用了唯一阈值。</li>
+<li>Boss 1：过准的价格。它看起来像「市场有效」，实际是多重均衡的传送门。</li>
+<li>Boss 2：Weinstein–Yildiz。你把 (\theta^∗) 刻在石头上，它提醒你石头只在一种信息结构里成立。</li>
+<li>得分：每做一次「危机概率 − 基本面基准」，记 1 分。只报一个百分比，记 0 分。</li>
+</ul>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>完成标准</th>
+<th>时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">区域草图</td>
+<td>一张纸上有 0、(1-c)、1 三个刻度</td>
+<td>15 分钟</td>
+</tr>
+<tr>
+<td class="k">默认复算</td>
+<td>(c=0.30) 得 0.70；(c=0.30,\sigma=0.20) 得 (x^∗=0.8049)</td>
+<td>15 分钟</td>
+</tr>
+<tr>
+<td class="k">基准卡</td>
+<td>写出 4.78% vs 79.77% 这一对，并换一个 (c) 再算</td>
+<td>20 分钟</td>
+</tr>
+<tr>
+<td class="k">信息结构卡</td>
+<td>判断手头问题更像私有噪声还是公共广播</td>
+<td>20 分钟</td>
+</tr>
+<tr>
+<td class="k">失效清单</td>
+<td>四条失效条件写出适用的那一条</td>
+<td>15 分钟</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">把 c 从 0.25 提到 0.40</button><button class="tab" data-pane="tb1-1">把 c 拧到 0.50</button><button class="tab" data-pane="tb1-2">公共信号压过私有</button><button class="tab" data-pane="tb1-3">只信基本面</button></div>
+<div class="pane on" id="tb1-0"><p>固定 (\mu=0.50)、(s=0.30)。(\theta^∗) 从 0.75 降到 0.60。危机概率从 79.77% 降到 63.06%。基本面基准始终 4.78%。协调超额从 74.99pp 降到 58.28pp，少 16.71pp。税没有治疗破产。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-1"><p>(\Phi^{-1}(0.50)=0)，于是对任意 (\sigma)，(x^∗=\theta^∗=0.5000)。噪声不再分开信号和基本面。这是检查公式是否写反的锚点。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-2"><p>(\sigma=1.00)、(\tau=0.40)、(y=0.50)：(\gamma=34.3277&gt;6.2832)，切换点 0.0018、0.5000、0.9982 三个都成立。此时再报「唯一临界点」是错的。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-3"><p>同一正态下，忽略协调会把 79.77% 说成 4.78%，少报 74.99 个百分点。这不是预测精度问题，是漏了一个通道。<span class="tag t-inf">推论</span></p></div>
+<h3>可调模型 1 · 拉普拉斯临界点 θ* = 1 − c</h3>
+<p>拖动攻击成本比 (c)。默认 0.30 → (\theta^∗=0.70)。色带：(\theta\le 0) 占优攻击，((0,\theta^∗]) 被选为崩，((\theta^∗,1)) 被选为守，(\theta\ge 1) 占优不攻击。</p>
+<div class="tool" id="tool_rg">
+  <div class="ctrl">
+    <label>成本比 c <output id="rg_cO">0.30</output></label>
+    <input type="range" id="rg_c" min="0.05" max="0.95" step="0.01" value="0.30"/>
+  </div>
+  <div class="readout">
+    <div class="ro">θ*<strong id="rg_th">0.70</strong></div>
+    <div class="ro">崩的宽度<strong id="rg_atk">0.70</strong></div>
+    <div class="ro">守的宽度<strong id="rg_safe">0.30</strong></div>
+    <div id="rg_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="rg_vh">c=0.30 → θ*=0.70；完全信息多重区间 (0, 1)；平坦先验极限下 θ≤0.70 崩、θ&gt;0.70 守住</span></div>
+  </div>
+  <canvas id="rgChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · 有限噪声：θ* 不动，x* 动</h3>
+<p>平坦先验 + 高斯私有噪声。默认 (c=0.30)、(\sigma=0.20)：(\theta^∗=0.7000)，(z=\Phi^{-1}(c)=-0.5244)，(x^∗=0.8049)，差距 +0.1049。把 (c) 拖到 0.50，差距应为 0。</p>
+<div class="tool" id="tool_ns">
+  <div class="ctrl">
+    <label>成本比 c <output id="ns_cO">0.30</output></label>
+    <input type="range" id="ns_c" min="0.05" max="0.95" step="0.01" value="0.30"/>
+    <label>私有噪声 σ <output id="ns_sO">0.20</output></label>
+    <input type="range" id="ns_s" min="0.05" max="0.80" step="0.01" value="0.20"/>
+  </div>
+  <div class="readout">
+    <div class="ro">θ*<strong id="ns_th">0.7000</strong></div>
+    <div class="ro">x*<strong id="ns_x">0.8049</strong></div>
+    <div class="ro">Φ⁻¹(c)<strong id="ns_z">-0.5244</strong></div>
+    <div class="ro">x*−θ*<strong id="ns_gap">+0.1049</strong></div>
+    <div id="ns_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ns_vh">θ*=0.7000 不随 σ 变；x*=0.8049；Φ⁻¹(c)=-0.5244；信号比基本面 高 0.1049</span></div>
+  </div>
+  <canvas id="nsChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 危机概率对照「只计破产」</h3>
+<p>(\theta\sim N(\mu,s^2))。危机 (=P(\theta\le 1-c))，基准 (=P(\theta\le 0))。默认 (\mu=0.50)、(s=0.30)、(c=0.25)：基准 4.78%，全局博弈 79.77%，超额 74.99pp。</p>
+<div class="tool" id="tool_cr">
+  <div class="ctrl">
+    <label>基本面均值 μ <output id="cr_muO">0.50</output></label>
+    <input type="range" id="cr_mu" min="-0.20" max="1.20" step="0.01" value="0.50"/>
+    <label>基本面标准差 s <output id="cr_sO">0.30</output></label>
+    <input type="range" id="cr_s" min="0.10" max="0.80" step="0.01" value="0.30"/>
+    <label>成本比 c <output id="cr_cO">0.25</output></label>
+    <input type="range" id="cr_c" min="0.05" max="0.95" step="0.01" value="0.25"/>
+  </div>
+  <div class="readout">
+    <div class="ro">θ*<strong id="cr_th">0.75</strong></div>
+    <div class="ro">基本面基准<strong id="cr_fund">4.78%</strong></div>
+    <div class="ro">全局博弈<strong id="cr_gg">79.77%</strong></div>
+    <div class="ro">协调超额<strong id="cr_ex">74.99pp</strong></div>
+    <div id="cr_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="cr_vh">基本面基准 4.78% · 全局博弈 79.77% · 协调超额 74.99pp（θ*=0.75）</span></div>
+  </div>
+  <canvas id="crChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 公共信号会不会把唯一性拆掉</h3>
+<p>线性投资模型。默认 (\sigma=0.40)、(\tau=0.70)、(y=0.60)：(\gamma=0.3800)，与 (2\pi) 的比值 0.0605，唯一，(\kappa=0.4674)。把 (\sigma) 加大或 (\tau) 减小，直到判定变成「多重」。</p>
+<div class="tool" id="tool_pb">
+  <div class="ctrl">
+    <label>私有噪声 σ <output id="pb_sigO">0.40</output></label>
+    <input type="range" id="pb_sig" min="0.10" max="1.50" step="0.01" value="0.40"/>
+    <label>公共噪声 τ <output id="pb_tauO">0.70</output></label>
+    <input type="range" id="pb_tau" min="0.25" max="1.20" step="0.01" value="0.70"/>
+    <label>公共均值 y <output id="pb_yO">0.60</output></label>
+    <input type="range" id="pb_y" min="0.05" max="0.95" step="0.01" value="0.60"/>
+  </div>
+  <div class="readout">
+    <div class="ro">γ<strong id="pb_g">0.3800</strong></div>
+    <div class="ro">γ / 2π<strong id="pb_ratio">0.0605</strong></div>
+    <div class="ro">均衡<strong id="pb_mode">唯一</strong></div>
+    <div class="ro">κ<strong id="pb_k">0.4674</strong></div>
+    <div id="pb_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="pb_vh">γ=0.3800 ≤ 2π=6.2832（比值 0.0605）→ 唯一均衡，κ=0.4674</span></div>
+  </div>
+  <canvas id="pbChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>你能做什么</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1 识区</td>
+<td>画出占优 / 多重 / 占优</td>
+<td>能指出完全信息的病在中间段</td>
+</tr>
+<tr>
+<td class="k">2 算点</td>
+<td>写出 (\theta^∗=1-c) 与 (x^∗)</td>
+<td>默认数字 0.70 与 0.8049 手算一致</td>
+</tr>
+<tr>
+<td class="k">3 对照</td>
+<td>危机概率减去基本面基准；会看 (\gamma)</td>
+<td>4.78% 与 79.77% 成对出现</td>
+</tr>
+<tr>
+<td class="k">4 知道边界</td>
+<td>能拒绝误用：内生价格、挤兑非单调、信念扰动、实验偏差</td>
+<td>拿一篇评论说出它攻击的是哪条假设</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<p>成本接近 0。产出是一张可核对的半页纸。</p>
+<ol>
+<li>选一件本周的协调事：集体切换供应商、产品是否按期发布、或一条「挤兑/钉住」新闻。不要选纯囚徒困境（唯一均衡是背叛的那种）。</li>
+<li>用 5 分钟画三个区域：怎样算「差到不必等人也该跑」，怎样算「好到跑了也没用」。</li>
+<li>用 10 分钟估 (c)（失败代价 / 成功收益），写 (\theta^∗=1-c)。若 (c) 不在 (0,1)，写下为什么这件事实在不适合本模型。</li>
+<li>用 10 分钟写信息从哪来：各人各看各的，还是全员盯着同一个数。若是后者，在纸上写「先不要引用唯一临界点」。</li>
+<li>用 5 分钟写一个杠杆：提高坏行动的成本，或让私有信息更具体、公共广播别压过它。</li>
+</ol>
+<p>验收：纸上有 (\theta^∗=1-c) 的算术，有一行基准（「若不存在协调，概率会是什么」），有一个只动一个旋钮的反事实。对得上就算完成，不要求预测成真。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>动作</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>读定义：global ≠ 全球</td>
+<td>用自己的话写三句</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>手算 (\theta^∗=1-c) 三个 c（0.2 / 0.3 / 0.5）</td>
+<td>0.80 / 0.70 / 0.50</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>手算一组 (x^∗)（c=0.3, σ=0.2）</td>
+<td>0.8049，并写差距来源</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>做基准对照（μ=0.5, s=0.3, c=0.25）</td>
+<td>4.78% vs 79.77%</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>把 c 改成 0.40 重算</td>
+<td>超额变为 58.28pp</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>算一组 (\gamma)（σ=0.4, τ=0.7 与 σ=1, τ=0.4）</td>
+<td>0.3800 唯一；34.3277 多重</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>选一条失效文献，写它否定的假设</td>
+<td>半页笔记</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>焦点</th>
+<th>完成线</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">第 1 周</td>
+<td>模型 A 的区域、(\theta^∗)、(x^∗)</td>
+<td>能不看笔记推出 (1-\theta^∗=c)</td>
+</tr>
+<tr>
+<td class="k">第 2 周</td>
+<td>基准对照与「税不治破产」</td>
+<td>能解释 16.71pp 从哪来</td>
+</tr>
+<tr>
+<td class="k">第 3 周</td>
+<td>模型 B 与 (2\pi)</td>
+<td>能让滑块从唯一跨到多重，并读出三个 (\kappa)</td>
+</tr>
+<tr>
+<td class="k">第 4 周</td>
+<td>一篇应用 + 一篇批评</td>
+<td>货币或挤兑一篇，Weinstein–Yildiz 或 Angeletos–Werning 一篇，各写「它保留了哪条假设」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>式子 / 判据</th>
+<th>用来做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>完全信息三重区域</td>
+<td>(\theta\le 0) 占优攻击；(\theta\ge 1) 占优不攻击</td>
+<td>先承认多重，再谈选择</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>拉普拉斯临界点</td>
+<td>(\theta^∗=1-c)</td>
+<td>政权/挤兑教学式的基本面分界</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>信号阈值</td>
+<td>(x^∗=(1-c)-\sigma\Phi^{-1}(c))</td>
+<td>解释人在什么信号上动手</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>噪声无关</td>
+<td>(\sigma\to 0) 时选择不依赖噪声分布形状</td>
+<td>知道极限的稳健性边界</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>基准对照</td>
+<td>(P(\theta\le\theta^∗)-P(\theta\le 0))</td>
+<td>把协调通道从破产里拆出来</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>货币攻击正确式</td>
+<td>((1-a(\theta^∗))(e^∗-\zeta(\theta^∗))=t)</td>
+<td>避免引用 1998 年写错的定理 2</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>公共信息开关</td>
+<td>(\gamma\le 2\pi\approx 6.2832)</td>
+<td>判断唯一性是否还在</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>线性切换方程</td>
+<td>(\kappa=\Phi(\sqrt{\gamma}(\kappa-y)))</td>
+<td>读公共均值如何移动投资点</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>挤兑比较静态</td>
+<td>(\theta^∗(r_1)) 随短期支付上升</td>
+<td>流动性保险的代价</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>信念扰动定理</td>
+<td>更广的高阶信念可选出不同理性化行动</td>
+<td>防止把阈值当成物理常数</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>这件事情究竟是协调，还是囚徒困境？</summary><div class="dbody"><p>若唯一均衡已经是「都背叛」，全局博弈没有多重可消。先判定博弈类型。</p></div></details>
+<details><summary>占优区在哪里？</summary><div class="dbody"><p>写不出「差到必须跑」和「好到不必跑」，就没有迭代的锚，(\theta^∗) 是装饰。</p></div></details>
+<details><summary>c 估的是比率还是情绪？</summary><div class="dbody"><p>分子分母要能指认。估不出就标<span class="tag t-hyp">假设</span>，不要写成<span class="tag t-fact">事实</span>。</p></div></details>
+<details><summary>你报的是 θ* 还是 x*？</summary><div class="dbody"><p>听者若拿去对基本面数据，要用 (\theta^∗)。信号规则才用 (x^∗)。</p></div></details>
+<details><summary>基准减了没有？</summary><div class="dbody"><p>任何危机概率旁边应有 (P(\theta\le 0)) 或你问题里真正的「必然崩」区域。</p></div></details>
+<details><summary>公共信号准到什么程度？</summary><div class="dbody"><p>价格、官宣、全员信若是共同知识级的精确，先算 (\gamma) 再谈唯一。</p></div></details>
+<details><summary>储备是会计还是战略？</summary><div class="dbody"><p>多出来的子弹若只在均衡策略里起作用，比较静态要写成「信心」，不要写成「挡住了那一次」。</p></div></details>
+<details><summary>有没有大玩家？</summary><div class="dbody"><p>有可见大额仓位时，小玩家的临界点不是连续统公式的原样。</p></div></details>
+<details><summary>支付是否全程互补？</summary><div class="dbody"><p>挤兑、有的政治模型不是。证明不能自动迁移。</p></div></details>
+<details><summary>你要的稳健是哪一种？</summary><div class="dbody"><p>对噪声形状稳健（Frankel–Morris–Pauzner）≠ 对任意高阶信念稳健（Weinstein–Yildiz）。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>原文：Carlsson &amp; van Damme（1993）；Morris &amp; Shin（1998）；Morris &amp; Shin 综述 <em>Global Games: Theory and Applications</em>。</li>
+<li>应用：Goldstein &amp; Pauzner（2005）挤兑；Rochet &amp; Vives（2004）最后贷款人；Corsetti 等（2004）大交易者。</li>
+<li>批评与边界：Heinemann（2000）对定理 2 的更正；HNO（2004）实验；Angeletos &amp; Werning（2006）价格；Weinstein &amp; Yildiz（2007）结构定理。</li>
+<li>并列手册：猎鹿博弈（风险占优）、协调与谢林点、共同知识、选美博弈。</li>
+<li>不要做的事：用本页默认的 0.70 或 79.77% 去评论某一个真实市场。那些数是教学标定。<span class="tag t-ana">分析</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">全局博弈定义与风险占优选择</td>
+<td>经典论文</td>
+<td>Carlsson &amp; van Damme, Econometrica 61(5), 1993, 989–1018</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">货币攻击唯一均衡</td>
+<td>经典论文</td>
+<td>Morris &amp; Shin, AER 88(3), 1998, 587–597</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">定理 2 原式有误及正确条件</td>
+<td>综述转述 Heinemann 2000</td>
+<td>Morris &amp; Shin, <em>Global Games: Theory and Applications</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">噪声无关的极限选择</td>
+<td>经典论文</td>
+<td>Frankel, Morris &amp; Pauzner, JET 2003</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">挤兑概率与 (r_1)</td>
+<td>经典论文</td>
+<td>Goldstein &amp; Pauzner, Journal of Finance 60(3), 2005, 1293–1327</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">实验：92% 非劣势阈值；T 与 Z 解释 83.8% / 加入控制后 91.4%；T=50 时拒绝均衡数值</td>
+<td>实验论文</td>
+<td>Heinemann, Nagel &amp; Ockenfels, Econometrica 72(5), 2004, 1583–1599</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">内生价格恢复多重</td>
+<td>经典论文</td>
+<td>Angeletos &amp; Werning, AER 2006, <em>Crises and Prices</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">高阶信念扰动</td>
+<td>经典论文</td>
+<td>Weinstein &amp; Yildiz, Econometrica 2007</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">大交易者</td>
+<td>经典论文</td>
+<td>Corsetti, Dasgupta, Morris &amp; Shin, 2004</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">最后贷款人</td>
+<td>经典论文</td>
+<td>Rochet &amp; Vives, JEEA 2004</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">(\gamma) 的闭式与 (\kappa=\Phi(\sqrt{\gamma}(\kappa-y)))</td>
+<td>由综述线性例子推导</td>
+<td>正态后验 + 投资收益 (\theta+\ell-1)；唯一性 (\gamma\le 2\pi) 与综述一致</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">默认数值 0.8049、4.78%、79.77%、74.99pp、0.3800、0.4674、34.3277</td>
+<td>本手册标定</td>
+<td>Acklam 分位 + Abramowitz–Stegun 7.1.26；与页面脚本同一实现</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">杠杆排序分数</td>
+<td>教学判断</td>
+<td>重要性×杠杆×可操作÷学习成本</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">真实危机的频率、某一钉住的临界储备</td>
+<td>未引用</td>
+<td>本手册不报</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>论文可核对或本页可复算；<span class="tag t-ana">分析</span>框架内判断；<span class="tag t-inf">推论</span>由模型推出；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或转述链长。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是博弈论认知框架，<strong>不是</strong>投资建议、外汇或存款建议，也不是央行或银行监管意见。文中的 (\theta^∗)、危机概率和 (\gamma) 都是教学模型在指定参数下的输出。默认分布 (\theta\sim N(0.50,0.30^2)) 不是任何货币或银行的基本面。文中不报价格涨跌；若读者自行把结果套到行情，涨红跌绿、货币用 ¥ 的市场惯例与本文的红（危机/攻击）绿（守住）不是同一套语义。真实合同的支付往往不满足全程战略互补，公共价格也会内生。把 0.70 或 79.77% 写成对现实事件的预测，超出本文范围。</p>
+</section>
+<footer>  <p>《全局博弈：微小私有噪声选出唯一临界点 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 24 分 49 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《全局博弈 Global Games》主题脚本
+   四个可调模型：
+     1. 政权/挤兑：拉普拉斯临界点 θ* = 1 − c
+     2. 有限噪声：基本面临界点不动，信号阈值 x* 移动
+     3. 危机概率 vs 只计基本面破产的基准
+     4. 公共 vs 私有精度：γ ≦ 2π 才唯一
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d',
+    wash: 'rgba(213,52,44,0.13)', washG: 'rgba(15,138,77,0.12)'
+  };
+  var TWOPI = 2 * Math.PI;
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function clampLabel(ctx, lab, x, y, align, pl, w) {
+    var lw = ctx.measureText(lab).width;
+    ctx.textAlign = align;
+    var lx = align === 'left' ? Math.min(x, w - lw - 6) : Math.max(x, pl + 6);
+    ctx.fillText(lab, lx, y);
+  }
+  function r2(x) { return (Math.round(x * 100) / 100).toFixed(2); }
+  function r4(x) { return (Math.round(x * 10000) / 10000).toFixed(4); }
+  function pct(x) { return (x * 100).toFixed(2) + '%'; }
+
+  function normInv(p) {
+    var a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02,
+      1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
+    var b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+      6.680131188771972e+01, -1.328068155288572e+01];
+    var c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
+      -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+    var d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00,
+      3.754408661907416e+00];
+    var pl = 0.02425, ph = 1 - pl, q, r, x;
+    if (p <= 0) return -8;
+    if (p >= 1) return 8;
+    if (p < pl) {
+      q = Math.sqrt(-2 * Math.log(p));
+      x = (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
+        ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    } else if (p <= ph) {
+      q = p - 0.5; r = q * q;
+      x = (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q /
+        (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+    } else {
+      q = Math.sqrt(-2 * Math.log(1 - p));
+      x = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
+        ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    }
+    return x;
+  }
+  /* Abramowitz–Stegun 7.1.26 */
+  function Phi(x) {
+    var t = 1 / (1 + 0.2316419 * Math.abs(x));
+    var dens = 0.3989422804014327 * Math.exp(-x * x / 2);
+    var p = dens * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+    return x >= 0 ? 1 - p : p;
+  }
+  function gammaOf(sig, tau) {
+    var s2 = sig * sig, t2 = tau * tau;
+    return (s2 * (s2 + t2)) / (t2 * t2 * (s2 + 2 * t2));
+  }
+  function rootsOf(g, y) {
+    var sg = Math.sqrt(Math.max(g, 0));
+    function f(k) { return Phi(sg * (k - y)) - k; }
+    var roots = [], N = 8000, prevK = 0, prev = f(0);
+    if (Math.abs(prev) < 1e-6) roots.push(0);
+    for (var i = 1; i <= N; i++) {
+      var k = i / N, v = f(k);
+      if (prev * v < 0) {
+        var lo = prevK, hi = k, flo = prev;
+        for (var it = 0; it < 50; it++) {
+          var mid = (lo + hi) / 2, fm = f(mid);
+          if (flo * fm <= 0) hi = mid; else { lo = mid; flo = fm; }
+        }
+        roots.push((lo + hi) / 2);
+      } else if (Math.abs(v) < 1e-8) roots.push(k);
+      prev = v; prevK = k;
+    }
+    var out = [];
+    roots.forEach(function (r) {
+      if (!out.length || Math.abs(r - out[out.length - 1]) > 1e-3) out.push(r);
+    });
+    return out;
+  }
+
+  /* ── 1. Laplacian threshold ── */
+  (function rg() {
+    var cEl = $('rg_c');
+    if (!cEl) return;
+    var cv = $('rgChart');
+    function upd() {
+      var c = parseFloat(cEl.value);
+      var th = 1 - c;
+      txt($('rg_cO'), r2(c));
+      txt($('rg_th'), r2(th));
+      txt($('rg_atk'), r2(th));
+      txt($('rg_safe'), r2(c));
+      var msg = 'c=' + r2(c) + ' → θ*=' + r2(th) + '；完全信息多重区间 (0, 1)；平坦先验极限下 θ≤' + r2(th) + ' 崩、θ>' + r2(th) + ' 守住';
+      txt($('rg_vh'), msg);
+      tint($('rg_vh'), C.ink2);
+      tint($('rg_th'), C.red);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 16, pr = 16, y1 = h - 46;
+      var bw = w - pl - pr;
+      var x0 = -0.25, x1 = 1.25;
+      function sx(v) { return pl + (v - x0) / (x1 - x0) * bw; }
+      var top = 28, barH = 46;
+      function band(a, b, col) {
+        var xa = sx(Math.max(x0, a)), xb = sx(Math.min(x1, b));
+        ctx.fillStyle = col;
+        ctx.fillRect(xa, top, Math.max(1, xb - xa), barH);
+      }
+      band(x0, 0, '#7f1d1d');
+      band(0, th, C.red);
+      band(th, 1, C.green);
+      band(1, x1, '#14532d');
+      ctx.fillStyle = '#fff';
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'center';
+      if (sx(0) - sx(x0) > 36) ctx.fillText('占优攻击', (sx(x0) + sx(0)) / 2, top + 28);
+      if (sx(th) - sx(0) > 52) ctx.fillText('被选中：崩', (sx(0) + sx(th)) / 2, top + 28);
+      if (sx(1) - sx(th) > 52) ctx.fillText('被选中：守', (sx(th) + sx(1)) / 2, top + 28);
+      if (sx(x1) - sx(1) > 36) ctx.fillText('占优不攻击', (sx(1) + sx(x1)) / 2, top + 28);
+
+      ctx.strokeStyle = C.ink;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(sx(th), top - 4);
+      ctx.lineTo(sx(th), top + barH + 8);
+      ctx.stroke();
+      ctx.fillStyle = C.ink;
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('θ*=' + r2(th), sx(th), top + barH + 24);
+
+      var ticks = [-0.2, 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2];
+      ctx.strokeStyle = C.axis;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pl, y1);
+      ctx.lineTo(pl + bw, y1);
+      ctx.stroke();
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ticks.forEach(function (t) {
+        var x = sx(t);
+        ctx.strokeStyle = C.axis;
+        ctx.beginPath();
+        ctx.moveTo(x, y1);
+        ctx.lineTo(x, y1 + 5);
+        ctx.stroke();
+        ctx.fillStyle = C.ink3;
+        ctx.textAlign = 'center';
+        ctx.fillText(t.toFixed(1), x, y1 + 13);
+      });
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('基本面 θ（越高越强）', pl + bw / 2, y1 + 31);
+    }
+    bind(['rg_c'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 2. Finite noise: x* moves, θ* fixed ── */
+  (function ns() {
+    var cEl = $('ns_c'), sEl = $('ns_s');
+    if (!cEl || !sEl) return;
+    var cv = $('nsChart');
+    function upd() {
+      var c = Math.min(0.98, Math.max(0.02, parseFloat(cEl.value)));
+      var sig = Math.max(0.05, parseFloat(sEl.value));
+      var th = 1 - c;
+      var z = normInv(c);
+      var xs = th - sig * z;
+      var gap = xs - th;
+      txt($('ns_cO'), r2(parseFloat(cEl.value)));
+      txt($('ns_sO'), r2(sig));
+      txt($('ns_th'), r4(th));
+      txt($('ns_x'), r4(xs));
+      txt($('ns_z'), r4(z));
+      txt($('ns_gap'), (gap >= 0 ? '+' : '') + r4(gap));
+      tint($('ns_th'), C.red);
+      tint($('ns_x'), C.blue);
+      var msg = 'θ*=' + r4(th) + ' 不随 σ 变；x*=' + r4(xs) + '；Φ⁻¹(c)=' + r4(z) + '；信号比基本面 ' + (gap >= 0 ? '高 ' : '低 ') + r4(Math.abs(gap));
+      txt($('ns_vh'), msg);
+      tint($('ns_vh'), C.ink2);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 46, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var x0 = -0.15, x1 = 1.35, y0 = -0.05, y1v = 1.15;
+      function sx(v) { return pl + (v - x0) / (x1 - x0) * bw; }
+      function sy(v) { return y1 - (v - y0) / (y1v - y0) * bh; }
+
+      ctx.fillStyle = C.wash;
+      ctx.fillRect(sx(x0), sy(y1v), Math.max(0, sx(th) - sx(x0)), sy(y0) - sy(y1v));
+
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth = 1;
+      for (var t = 0; t <= 1.2; t += 0.2) {
+        ctx.beginPath();
+        ctx.moveTo(pl, sy(t));
+        ctx.lineTo(pl + bw, sy(t));
+        ctx.stroke();
+      }
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(pl, y1);
+      ctx.lineTo(pl + bw, y1);
+      ctx.moveTo(pl, pt);
+      ctx.lineTo(pl, y1);
+      ctx.stroke();
+
+      ctx.strokeStyle = C.amber;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(0));
+      ctx.lineTo(sx(1), sy(1));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      var started = false;
+      for (var i = 0; i <= 80; i++) {
+        var thv = x0 + (x1 - x0) * i / 80;
+        var al = Phi((xs - thv) / sig);
+        var X = sx(thv), Y = sy(al);
+        if (!started) { ctx.moveTo(X, Y); started = true; }
+        else ctx.lineTo(X, Y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = C.red;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(sx(th), pt);
+      ctx.lineTo(sx(th), y1);
+      ctx.stroke();
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('α 与临界质量', pl + bw, pt + 2);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = C.blue;
+      ctx.fillText('攻击比例', pl + 6, pt + 2);
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      [0, 0.5, 1].forEach(function (tv) {
+        ctx.fillText(tv.toFixed(1), pl - 6, sy(tv) + 4);
+      });
+      ctx.textAlign = 'center';
+      [0, 0.35, 0.7, 1.05].forEach(function (tv) {
+        ctx.fillText(tv.toFixed(2), sx(tv), y1 + 13);
+      });
+      ctx.fillText('基本面 θ', pl + bw / 2, y1 + 31);
+    }
+    bind(['ns_c', 'ns_s'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 3. Crisis prob vs fundamentals-only baseline ── */
+  (function cr() {
+    var muEl = $('cr_mu'), sEl = $('cr_s'), cEl = $('cr_c');
+    if (!muEl || !sEl || !cEl) return;
+    var cv = $('crChart');
+    function upd() {
+      var mu = parseFloat(muEl.value);
+      var s = Math.max(0.05, parseFloat(sEl.value));
+      var c = parseFloat(cEl.value);
+      var th = 1 - c;
+      var pFund = Phi((0 - mu) / s);
+      var pGG = Phi((th - mu) / s);
+      var ex = pGG - pFund;
+      txt($('cr_muO'), r2(mu));
+      txt($('cr_sO'), r2(s));
+      txt($('cr_cO'), r2(c));
+      txt($('cr_th'), r2(th));
+      txt($('cr_fund'), pct(pFund));
+      txt($('cr_gg'), pct(pGG));
+      txt($('cr_ex'), (ex * 100).toFixed(2) + 'pp');
+      tint($('cr_fund'), C.ink2);
+      tint($('cr_gg'), C.red);
+      tint($('cr_ex'), ex > 0.01 ? C.red : C.green);
+      var msg = '基本面基准 ' + pct(pFund) + ' · 全局博弈 ' + pct(pGG) + ' · 协调超额 ' + (ex * 100).toFixed(2) + 'pp（θ*=' + r2(th) + '）';
+      txt($('cr_vh'), msg);
+      tint($('cr_vh'), C.ink2);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 16, pr = 16, y1 = h - 46;
+      var bw = w - pl - pr;
+      var items = [
+        { lab: '只计基本面破产 θ≤0', v: pFund, col: C.ink3 },
+        { lab: '全局博弈危机 θ≤θ*', v: pGG, col: C.red }
+      ];
+      var maxV = Math.max(0.08, items[0].v, items[1].v);
+      var barH = 36, gap = 18, startY = 36;
+      items.forEach(function (it, i) {
+        var y = startY + i * (barH + gap);
+        var len = (it.v / maxV) * (bw - 70);
+        ctx.fillStyle = C.ink;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(it.lab, pl, y - 4);
+        ctx.fillStyle = it.col;
+        ctx.fillRect(pl, y, Math.max(2, len), barH);
+        var lab = (it.v * 100).toFixed(2) + '%';
+        ctx.fillStyle = C.ink2;
+        ctx.font = '12px sans-serif';
+        clampLabel(ctx, lab, pl + len + 8, y + barH / 2 + 4, 'left', pl, w);
+      });
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('危机概率对照（θ ~ 正态）', pl + bw / 2, y1 + 31);
+    }
+    bind(['cr_mu', 'cr_s', 'cr_c'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 4. Public vs private precision ── */
+  (function pb() {
+    var sEl = $('pb_sig'), tEl = $('pb_tau'), yEl = $('pb_y');
+    if (!sEl || !tEl || !yEl) return;
+    var cv = $('pbChart');
+    function upd() {
+      var sig = Math.max(0.08, parseFloat(sEl.value));
+      var tau = Math.max(0.2, parseFloat(tEl.value));
+      var y = parseFloat(yEl.value);
+      var g = gammaOf(sig, tau);
+      var ratio = g / TWOPI;
+      var unique = g <= TWOPI + 1e-9;
+      var roots = rootsOf(g, y);
+      var kLab = roots.length ? roots.map(function (r) { return r4(r); }).join(' · ') : '—';
+      txt($('pb_sigO'), r2(sig));
+      txt($('pb_tauO'), r2(tau));
+      txt($('pb_yO'), r2(y));
+      txt($('pb_g'), g >= 100 ? g.toFixed(1) : r4(g));
+      txt($('pb_ratio'), r4(ratio));
+      txt($('pb_mode'), unique ? '唯一' : '多重');
+      txt($('pb_k'), kLab);
+      tint($('pb_mode'), unique ? C.green : C.red);
+      tint($('pb_g'), unique ? C.green : C.red);
+      var msg = 'γ=' + (g >= 100 ? g.toFixed(1) : r4(g)) + (unique ? ' ≤ ' : ' > ') + '2π=' + TWOPI.toFixed(4) +
+        '（比值 ' + r4(ratio) + '）→ ' + (unique ? '唯一均衡' : '多重切换均衡') + '，κ=' + kLab;
+      txt($('pb_vh'), msg);
+      tint($('pb_vh'), unique ? C.green : C.red);
+
+      var cvg = fit(cv, 214);
+      if (!cvg) return;
+      clear(cvg);
+      var ctx = cvg.ctx, w = cvg.w, h = cvg.h;
+      var pl = 46, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      function sx(v) { return pl + v * bw; }
+      function sy(v) { return y1 - v * bh; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth = 1;
+      [0.25, 0.5, 0.75].forEach(function (t) {
+        ctx.beginPath();
+        ctx.moveTo(pl, sy(t));
+        ctx.lineTo(pl + bw, sy(t));
+        ctx.stroke();
+      });
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(pl, y1);
+      ctx.lineTo(pl + bw, y1);
+      ctx.moveTo(pl, pt);
+      ctx.lineTo(pl, y1);
+      ctx.stroke();
+
+      ctx.strokeStyle = C.ink3;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(0));
+      ctx.lineTo(sx(1), sy(1));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      var sg = Math.sqrt(Math.max(g, 0));
+      ctx.strokeStyle = unique ? C.blue : C.red;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (var i = 0; i <= 120; i++) {
+        var k = i / 120;
+        var br = Phi(sg * (k - y));
+        var X = sx(k), Y = sy(br);
+        if (i === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
+      }
+      ctx.stroke();
+
+      roots.forEach(function (r) {
+        var br = Phi(sg * (r - y));
+        ctx.fillStyle = unique ? C.green : C.amber;
+        ctx.beginPath();
+        ctx.arc(sx(r), sy(Math.max(0, Math.min(1, br))), 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(unique ? '最优反应（唯一）' : '最优反应（多交点）', pl + bw, pt + 2);
+      ctx.textAlign = 'right';
+      [0, 0.5, 1].forEach(function (tv) {
+        ctx.fillText(tv.toFixed(1), pl - 6, sy(tv) + 4);
+      });
+      ctx.textAlign = 'center';
+      [0, 0.25, 0.5, 0.75, 1].forEach(function (tv) {
+        ctx.fillText(tv.toFixed(2), sx(tv), y1 + 13);
+      });
+      ctx.fillText('后验切换点 κ', pl + bw / 2, y1 + 31);
+    }
+    bind(['pb_sig', 'pb_tau', 'pb_y'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+})();
+</script>
+</body>
+</html>
