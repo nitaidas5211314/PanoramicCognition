@@ -791,11 +791,14 @@
     {
       "slug": "鹰鸽博弈 - 懦夫博弈（Chicken）：冲突升级模型，先动者示弱可获益也可致灾",
       "title": "鹰鸽博弈 / 懦夫博弈（Chicken）：冲突升级模型，先动者示弱可获益也可致灾",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 03:50:08",
+      "finished": "2026-09-19 03:58:35",
+      "duration_sec": 507,
+      "outputs": [
+        "reports/鹰鸽博弈 - 懦夫博弈（Chicken）：冲突升级模型，先动者示弱可获益也可致灾.html",
+        "reports/鹰鸽博弈 - 懦夫博弈（Chicken）：冲突升级模型，先动者示弱可获益也可致灾.md"
+      ],
       "error": null
     },
     {
@@ -1876,7 +1879,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 03:49",
+  "updated": "2026-09-19 03:58",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

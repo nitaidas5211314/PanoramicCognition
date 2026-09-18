@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鹰鸽博弈 / 懦夫博弈（Chicken）：冲突升级模型 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Hawk–Dove × Chicken × Conflict Escalation</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践系统</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>鹰鸽博弈 / 懦夫博弈（Chicken）：冲突升级模型</h1>
+  <p class="sub">先动示弱可避灾也可被剥削——<strong>相互强硬不是均衡，却是最贵的事故通道</strong>；ESS 频率与混合纳什把「升级冲动」压回可计算的概率。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非政策建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>鹰鸽博弈（Hawk–Dove）</strong> 与 <strong>懦夫博弈（Chicken）</strong> 是同一族<strong>反协调博弈</strong>：两人争夺资源或面子，强硬（鹰 / 直行）遇上强硬会两败俱伤；一方强硬、一方示弱时强硬方赢、示弱方丢面子但活着。经典结论：<strong>相互强硬不是纳什均衡</strong>——均衡是「一人硬、一人软」的两个纯策略 NE，或双方以概率 (p^<em>=V/C)（资源价值 / 冲突成本）选强硬的混合 NE；在演化博弈中，该混合策略也是 </em><em>ESS</em>*。<span class="tag t-fact">事实</span></p>
+<p>默认教学参数：资源 (V=50)、冲突成本 (C=100) → 鹰频率 (p^<em>=0.50)，均衡期望支付 </em><em>12.5</em><em>（全鸽分享得 25，全鹰互伤得 −25）；鹰–鹰相遇率 (p^{</em>2}=0.25)。<span class="tag t-fact">事实</span></p>
+<p>与囚徒困境的锋利分野：PD 里「相互背叛」是唯一 NE；Chicken 里「相互冲撞」是最差结果却<strong>不是</strong> NE——真正危险的是<strong>信念错位与承诺装置</strong>把双方同时推向强硬。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「谁更勇敢」，而是：<strong>当相互升级代价极高时，理性（或演化）如何分配强硬与示弱，以及先动示弱何时避灾、何时被剥削</strong>。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：2×2 Hawk–Dove / Chicken 支付、混合 NE / ESS、(p^*=V/C)、复制子动力学、承诺（扔方向盘）、边缘政策同构、与 PD / 协调博弈的判定。</li>
+<li><strong>在界外</strong>：具体作战计划、某次谈判话术脚本——除非压成「(V,C) / 信念 (q) / 承诺是否可信」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>高代价冲突下强硬与示弱的均衡分配</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到支付矩阵 + 信念/演化规则可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>(V,C)、鹰/鸽或直行/转弯、混合 (p^*)、ESS、承诺</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>动物个体、谈判方、国家、司机、算法 agent</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(V/C)、对方强硬信念 (q)、承诺强度、信息噪声</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>封锁、最后通牒、公开时限、动员、肢体冲突</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实 (C)、决心、对事故概率的主观判断</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>(V,C) → (p^*)；信念 (q) → 最优反应；承诺 → 对方被迫示弱</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>(C&gt;V) ⇒ 混合 ESS；(V\ge C) ⇒ 纯鹰 ESS</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「姿态强硬」相关于危机结果，≠ 已进入正确博弈类<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>对峙、边缘试探、面子战、价格战互不相让</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>反协调：最好是对方软你硬；最差是双硬</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。声誉、报复、种群频率都反馈</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。信号解读与升级阶梯有时滞</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>误判可正反馈撞车；热线/降级阶梯可负反馈</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>Chicken 问的不是「你敢不敢硬」，而是：<strong>在对方也可能硬的世界里，你的最优强硬概率该是多少——以及你有没有把方向盘扔出窗外。</strong></p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它是冲突升级的最小模型</h4><p>用两个参数 (V,C) 就把「何时该硬、何时该软」压成可算的频率与临界信念。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它连接生物演化与人类危机</h4><p>Maynard Smith &amp; Price（1973）的动物冲突逻辑，与 Schelling 的边缘政策、古巴危机叙事同构。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它纠正对「示弱」的道德化</h4><p>先动示弱可以是理性避灾；也可以是被承诺装置剥削。关键是结构，不是勇气标签。<span class="tag t-inf">推论</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把 Chicken 当成 PD：以为「双硬」是稳定均衡而「必须更硬才能赢」。其实双硬不稳定——真正把双方锁死在冲撞上的，是错误信念、不可撤销承诺，或把博弈改写成了别的结构。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看鹰鸽/Chicken 如何从支付格长成冲突操作系统。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="hdL9" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 战略稳定 · 军控 / 热线 / 事故通道治理</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 边缘政策 · Schelling：留给机会的威胁</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 承诺装置 · 扔方向盘 / 烧桥 / 公开绑定受众</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 不完全信息 · 对方决心未知 → 信念 q 驱动</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 演化动态 · 复制子：ṗ ∝ p(1−p)(V−pC)</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 ESS · C&gt;V 时 p*=V/C；V≥C 时纯鹰</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 混合 NE · 两纯 NE + 一对称混合</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 反协调结构 · 最好你硬他软；最差双硬</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 支付原语 · HH=(V−C)/2，HD=V，DH=0，DD=V/2</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L1→L4</strong>：先会写矩阵、算 (p^<em>=V/C)；进阶卡在 </em><em>L6→L8</em>*：信念与承诺如何把「理论上不稳定的双硬」变成现实灾难。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到三层操作。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="hdCmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="hdCmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="120" y="16" width="440" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">V,C → p* / 信念 q → 硬或软 / 承诺改博弈</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">反协调 · ESS</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">p*=V/C · 无差异</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">估 V/C · 控承诺</text>
+
+  <line x1="300" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#hdCmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdCmA)"/>
+  <line x1="380" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#hdCmA)"/>
+
+  <rect x="40" y="180" width="180" height="70" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="208" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">资源价值 V</text><text x="130" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">冲突成本 C</text>
+  <rect x="250" y="180" width="180" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="208" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">混合频率 p*</text><text x="340" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">撞车率 p*²</text>
+  <rect x="460" y="180" width="180" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="208" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">示弱时机</text><text x="550" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">扔方向盘风险</text>
+
+  <path d="M130 250 V300 H340" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#hdCmB)"/>
+  <text x="200" y="290" fill="#d5342c" font-size="11" font-family="sans-serif">反馈：双硬事故抬高主观 C</text>
+
+  <rect x="100" y="320" width="480" height="40" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="340" y="345" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">跨域同构：动物争斗 · 核危机 · 谈判最后通牒 · 价格死磕</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>动机</th>
+<th>在系统中的作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">鹰 / 直行者</td>
+<td>独占资源或面子</td>
+<td>抬高冲突频率；对鸽剥削</td>
+</tr>
+<tr>
+<td class="k">鸽 / 转弯者</td>
+<td>避伤、保留基线支付</td>
+<td>降低撞车率；可能被剥削</td>
+</tr>
+<tr>
+<td class="k">承诺装置</td>
+<td>删除己方软化选项</td>
+<td>迫使对方进入「你硬我软」纯 NE</td>
+</tr>
+<tr>
+<td class="k">旁观者 / 受众</td>
+<td>声誉赏罚</td>
+<td>改变有效 (V)（面子）与 (C)（公开失败成本）</td>
+</tr>
+<tr>
+<td class="k">演化种群</td>
+<td>频率依赖选择</td>
+<td>把个体策略推到 ESS 附近</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+<th>杠杆方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">(V)</td>
+<td>资源/胜利价值</td>
+<td>↑ → (p^*)↑，更易强硬</td>
+</tr>
+<tr>
+<td class="k">(C)</td>
+<td>双硬时的伤害成本</td>
+<td>↑ → (p^*)↓，冲突减少</td>
+</tr>
+<tr>
+<td class="k">(p^*)</td>
+<td>ESS/混合 NE 强硬概率</td>
+<td>(C&gt;V) 时 (=V/C)</td>
+</tr>
+<tr>
+<td class="k">(q)</td>
+<td>你对对方强硬的信念</td>
+<td>(q&gt;q^*) 则应示弱</td>
+</tr>
+<tr>
+<td class="k">(p^{*2})</td>
+<td>随机配对下的撞车率</td>
+<td>衡量系统事故负荷</td>
+</tr>
+<tr>
+<td class="k">承诺强度</td>
+<td>无法软化的程度</td>
+<td>把博弈推向不对称纯 NE</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="hdCa" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="hdCb" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="120" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="80" y="58" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">V, C</text>
+  <rect x="180" y="30" width="120" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="240" y="58" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">p*=V/C</text>
+  <rect x="340" y="30" width="140" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="410" y="58" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">强硬频率</text>
+  <rect x="520" y="30" width="140" height="48" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="590" y="58" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">撞车率 p²</text>
+
+  <line x1="140" y1="54" x2="180" y2="54" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdCa)"/>
+  <line x1="300" y1="54" x2="340" y2="54" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdCa)"/>
+  <line x1="480" y1="54" x2="520" y2="54" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdCa)"/>
+
+  <rect x="20" y="130" width="160" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="100" y="158" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">信念 q vs q*</text>
+  <rect x="220" y="130" width="160" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="300" y="158" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">硬 / 软最优反应</text>
+  <rect x="420" y="130" width="220" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="530" y="158" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">不对称纯 NE 或混合</text>
+
+  <line x1="180" y1="154" x2="220" y2="154" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdCa)"/>
+  <line x1="380" y1="154" x2="420" y2="154" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdCa)"/>
+
+  <path d="M590 78 V110 H100 V130" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#hdCb)"/>
+  <text x="320" y="105" fill="#d5342c" font-size="11" font-family="sans-serif">事故抬升主观 C → 下一轮 p* 下降（负反馈）</text>
+
+  <rect x="80" y="220" width="520" height="56" rx="8" fill="#15181d"/><text x="340" y="242" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">承诺装置：删除「软」→ 对方若理性必软；双方同时承诺 → 灾难通道打开</text>
+  <text x="340" y="262" text-anchor="middle" fill="#a8b0ba" font-size="11" font-family="sans-serif">红色虚线 = 反馈；实线 = 因果主链</text>
+</svg>
+<p>因果主链：(C&gt;V) ⇒ 无纯策略 ESS ⇒ 混合 (p^<em>=V/C) ⇒ 期望冲突以 (p^{</em>2}) 发生。旁链：若你相信对方强硬概率 (q&gt;q^*)，最优反应是示弱——先动示弱可避灾。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>示弱 ≠ 弱者</strong>：在 (q) 高时示弱是最优反应；在对方已承诺时示弱是被迫理性。<span class="tag t-ana">分析</span></li>
+<li><strong>提高 (C) 比道德劝说更有效</strong>：冲突成本上升直接压低 (p^<em>) 与撞车率（(V=50,C:100→200) 时 (p^</em>:0.50→0.25)，撞车率 (0.25→0.0625)）。<span class="tag t-fact">事实</span></li>
+<li><strong>Chicken 与 Hawk–Dove 数学同构、叙事不同</strong>：生物侧强调频率依赖与 ESS；政治侧强调面子、承诺与边缘。<span class="tag t-fact">事实</span></li>
+<li><strong>与雪堆博弈（Snowdrift）常被并列</strong>：合作成本分摊的叙事不同，但 2×2 反协调骨架相近。<span class="tag t-chk">待验证</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<ol>
+<li><strong>支付生成</strong>：资源 (V)、互伤 (C) 写入 2×2。  </li>
+<li><strong>均衡筛选</strong>：(C&gt;V) 时两纯 NE + 混合；(V\ge C) 时纯鹰。  </li>
+<li><strong>信念层</strong>：一次性人类博弈靠 (q)；演化靠种群频率。  </li>
+<li><strong>承诺层</strong>：单方扔方向盘 → 逼出不对称纯 NE；双方扔 → 高概率灾难。  </li>
+<li><strong>反馈层</strong>：事故抬高主观 (C) 或制度惩罚 → 下一轮 (p^*) 下降。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="hdT" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="2"/>
+  <circle cx="80" cy="110" r="10" fill="#0f8a4d"/><text x="80" y="140" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">t0 全鸽</text>
+  <text x="80" y="156" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">可被鹰入侵</text>
+  <circle cx="220" cy="110" r="10" fill="#1d4ed8"/><text x="220" y="140" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">t1 鹰上升</text>
+  <text x="220" y="156" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">剥削鸽群</text>
+  <circle cx="360" cy="110" r="10" fill="#b8730a"/><text x="360" y="140" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">t2 近 p*</text>
+  <text x="360" y="156" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">无差异</text>
+  <circle cx="500" cy="110" r="10" fill="#d5342c"/><text x="500" y="140" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">t3 超调</text>
+  <text x="500" y="156" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">互伤过多</text>
+  <circle cx="620" cy="110" r="10" fill="#0f8a4d"/><text x="620" y="140" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">t∞ ESS</text>
+  <text x="620" y="156" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">p*=V/C</text>
+  <path d="M90 110 H210" fill="none" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdT)"/>
+  <path d="M230 110 H350" fill="none" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdT)"/>
+  <path d="M370 110 H490" fill="none" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdT)"/>
+  <path d="M510 110 H610" fill="none" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdT)"/>
+  <text x="340" y="40" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">复制子：鹰过多 → 期望低于鸽 → 频率回落</text>
+  <text x="340" y="58" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">E(H)−E(D) ∝ (V−pC)；符号决定涨跌</text>
+</svg>
+<p>人类危机时间线更短：对峙 → 信号试探 → 承诺/边缘 → 一方示弱或事故。古巴导弹危机常被当作动态 Chicken / 消耗战叙事（量化风险估计多为<span class="tag t-chk">待验证</span>）。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>想要什么</th>
+<th>扭曲风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">强硬派受众</td>
+<td>面子与威慑声誉</td>
+<td>抬高有效 (V)，逼领导人承诺</td>
+</tr>
+<tr>
+<td class="k">规避灾难派</td>
+<td>压低撞车概率</td>
+<td>被对手读成软弱可欺</td>
+</tr>
+<tr>
+<td class="k">第三方调停</td>
+<td>提高双方主观 (C)</td>
+<td>可能同时抬高 (V)（象征价值）</td>
+</tr>
+<tr>
+<td class="k">演化个体</td>
+<td>相对适应度</td>
+<td>短期互伤仍可被频率选择稳定</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="hdFl" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="40" y="30" width="140" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="110" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">资源池 V</text>
+  <rect x="270" y="30" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">对峙场</text>
+  <rect x="500" y="30" width="140" height="50" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="570" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">伤害池 C</text>
+
+  <line x1="180" y1="55" x2="270" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#hdFl)"/>
+  <line x1="410" y1="55" x2="500" y2="55" stroke="#d5342c" stroke-width="1.5" marker-end="url(#hdFl)"/>
+
+  <rect x="100" y="120" width="200" height="44" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="200" y="147" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">信号：动员 / 时限 / 姿态</text>
+  <rect x="380" y="120" width="200" height="44" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="480" y="147" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">信息：热线 / 核查 / 保证</text>
+
+  <rect x="140" y="190" width="400" height="44" rx="8" fill="#15181d"/><text x="340" y="217" text-anchor="middle" fill="#fff" font-size="12" font-family="sans-serif">抽水路径：双硬把价值从「可分配的 V」抽进「沉没的 C」</text>
+</svg>
+<p>信息流决定信念 (q)；资源流决定谁拿走 (V)；伤害流在双硬时把福利抽进废墟。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>诚实估计 (V/C)</td>
+<td>直接决定 (p^*) 与是否该硬</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>抬高双方主观 (C)</td>
+<td>制度/核查/军控压冲突频率</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>校准信念 (q)</td>
+<td>避免「以为对方会软」的对称硬</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>单方承诺的剂量</td>
+<td>可逼对方软，过量则互锁</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>给对方「软得有面子」的下台阶</td>
+<td>降低对方示弱的声誉成本</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>切断事故通道</td>
+<td>减少 Schelling 式「留给机会」的失控</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>受众管理</td>
+<td>防止国内政治把 (V) 虚高</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>重复互动阴影</td>
+<td>把一次性 Chicken 嵌进关系</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>第三方担保</td>
+<td>改变支付或提供保证</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>明确博弈类型</td>
+<td>先排除误用 PD/协调标签</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 把 Chicken 当成囚徒困境</summary><div class="dbody"><p>PD：双背叛是唯一 NE。Chicken：双硬最差但不是 NE。对策错了会「为稳定均衡而加码强硬」。</p></div></details>
+<details><summary>2. 「示弱=永远吃亏」</summary><div class="dbody"><p>仅当对方会软时，强硬才优；(q&gt;q^<em>) 时应软。默认经典参数 (q^</em>=0.50)。</p></div></details>
+<details><summary>3. 崇拜「扔方向盘」</summary><div class="dbody"><p>单方承诺有力；双方同时承诺是灾难配方。边缘政策成功时风险不兑现——幸存者偏差巨大。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>4. 忽略 \(V\ge C\) 的纯鹰区</summary><div class="dbody"><p>资源极贵或伤害被低估时，全强硬是 ESS——「和平混合」假设崩塌。</p></div></details>
+<details><summary>5. 用故事代替支付</summary><div class="dbody"><p>「像古巴」≠ 已标定 (V,C,q)。无数字的类比是修辞。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>6. 混淆 ESS 与福利最优</summary><div class="dbody"><p>ESS 期望支付常低于全鸽分享（默认 12.5 vs 25）——演化稳定 ≠ 集体最优。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>7. 以为混合策略要「掷硬币表演」</summary><div class="dbody"><p>混合 NE 是无差异条件；现实中可由多态种群或私有化随机化实现。</p></div></details>
+<details><summary>8. 把撞车率当成「对方坏」</summary><div class="dbody"><p>对称混合下撞车率 (p^{*2}) 是结构产物，不是单方道德失败。</p></div></details>
+<details><summary>9. 忽视受众抬高的面子 V</summary><div class="dbody"><p>公开羞辱对手等于抬高对方 (V)，可能抬高其强硬概率。</p></div></details>
+<details><summary>10. 线性外推历史危机</summary><div class="dbody"><p>动态 Chicken / 消耗战模型对古巴危机的风险数值高度依赖假设，宜标<span class="tag t-chk">待验证</span>。<span class="tag t-chk">待验证</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>机制</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">(V)</td>
+<td>胜利价值</td>
+<td>列出「赢了多得什么」</td>
+</tr>
+<tr>
+<td class="k">(C)</td>
+<td>双硬伤害</td>
+<td>列出「都硬会毁什么」</td>
+</tr>
+<tr>
+<td class="k">(p^*=V/C)</td>
+<td>强硬频率</td>
+<td>算该硬的先验比例</td>
+</tr>
+<tr>
+<td class="k">(q)</td>
+<td>对方强硬信念</td>
+<td>写三档：低/中/高</td>
+</tr>
+<tr>
+<td class="k">承诺</td>
+<td>删软选项</td>
+<td>检查是否已烧桥</td>
+</tr>
+<tr>
+<td class="k">下台阶</td>
+<td>降对方示弱成本</td>
+<td>设计可宣称的「胜利叙事」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>判定博弈类</strong>：是否反协调（双硬最差、一硬一软最好）？  </li>
+<li><strong>估 (V,C)</strong>：量级对即可；算 (p^*) 与撞车率。  </li>
+<li><strong>估 (q)</strong>：若 (q&gt;q^*)，准备有面子的示弱路径。  </li>
+<li><strong>管承诺</strong>：能逼对方软的最小承诺；禁止对称扔盘。  </li>
+<li><strong>抬 (C) / 降虚高 (V)</strong>：制度、核查、冷处理受众情绪。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>① 入门：会画矩阵</summary><div class="dbody"><p>默写 HH/HD/DH/DD，指出两个纯 NE 与混合。</p></div></details>
+<details><summary>② 熟练：会算 p* 与撞车率</summary><div class="dbody"><p>给定 (V,C)，30 秒内给出 (p^<em>)、(p^{</em>2})、ESS 支付。</p></div></details>
+<details><summary>③ 进阶：信念阈值</summary><div class="dbody"><p>用 (q^*=W/(L+W-S))（Chicken 标定）判断硬/软。</p></div></details>
+<details><summary>④ 专家：案例分流</summary><div class="dbody"><p>对新闻写出「Chicken / PD / 协调」对照表与可检验差异。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是「冲突降噪员」：每张对峙图先标 (V,C)，再选关卡——「频率关」（把 (p^*) 压下去）或「信念关」（校准 (q)）。双硬撞车扣大分；成功给对方下台阶加分。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>完成标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 默写支付</td>
+<td>写出默认 (V=50,C=100) 矩阵四格</td>
+</tr>
+<tr>
+<td class="k">T2 算 ESS</td>
+<td>(p^*=0.50)，支付 12.5，撞车 0.25</td>
+</tr>
+<tr>
+<td class="k">T3 改 C</td>
+<td>(C=200) 时 (p^*=0.25)，撞车 0.0625</td>
+</tr>
+<tr>
+<td class="k">T4 信念阈值</td>
+<td>经典 Chicken (q^<em>=0.50)；商务例 (L=100,W=40,S=10) → (q^</em>\approx0.308)</td>
+</tr>
+<tr>
+<td class="k">T5 案例分流</td>
+<td>自选一则对峙新闻，判定博弈类</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若把 C 翻倍</button><button class="tab" data-pane="tb1-1">若 V≥C</button><button class="tab" data-pane="tb1-2">若双方都扔方向盘</button><button class="tab" data-pane="tb1-3">若只给对方下台阶</button></div>
+<div class="pane on" id="tb1-0"><p>(V=50,C:100→200)：(p^*:0.50→0.25)，ESS 支付 (12.5→18.75)，撞车率 (0.25→0.0625)。抬高冲突成本既降频率又提高均衡福利。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-1"><p>(V=120,C=100)：纯鹰 ESS，期望支付 ((V-C)/2=10)。资源极贵或伤害被低估时，「和平混合」消失。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-2"><p>对称承诺删除「软」→ 只剩双硬通道；理论 Chicken 的「双硬非均衡」被装置改写为几乎必然灾难。<span class="tag t-ana">分析</span></p></div><div class="pane" id="tb1-3"><p>降低对方示弱的声誉成本 ≈ 降低其有效 (V) 或提高其软的支付 → 更容易落入「你硬他软」的安全纯 NE。<span class="tag t-inf">推论</span></p></div>
+<h3>可调模型 1 · 鹰鸽 ESS：V、C → p* / 支付 / 撞车率</h3>
+<p>默认 (V=50,C=100)：混合 ESS，(p^<em>=0.50)，期望支付 </em><em>12.5</em><em>，鹰–鹰相遇率 </em><em>0.25</em>*。全鸽分享得 25；全鹰互伤得 −25。</p>
+<div class="tool" id="tool_hd">
+  <div class="ctrl">
+    <label>资源价值 V <output id="hd_vO">50</output></label>
+    <input type="range" id="hd_v" min="5" max="150" step="1" value="50"/>
+    <label>冲突成本 C <output id="hd_cO">100</output></label>
+    <input type="range" id="hd_c" min="10" max="250" step="1" value="100"/>
+  </div>
+  <div class="readout">
+    <div class="ro">体制<strong id="hd_reg">混合 ESS</strong></div>
+    <div class="ro">p* 鹰<strong id="hd_p">0.50</strong></div>
+    <div class="ro">ESS 支付<strong id="hd_pay">12.5</strong></div>
+    <div class="ro">撞车率 p²<strong id="hd_crash">0.25</strong></div>
+    <div id="hd_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="hd_vh">C&gt;V → p*=V/C=0.50；期望支付 12.5；相对全鸽 25 损失 12.5（演化稳定≠集体最优）</span></div>
+  </div>
+  <canvas id="hdChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · Chicken 混合：撞车损失 L、胜利 W、示弱羞耻 S</h3>
+<p>支付约定：双直行 −L；你直行对方转弯得 +W、对方 −S；双方转弯 0。混合 NE：直行概率 (p^<em>=W/(L+W-S))。默认 (L=2,W=1,S=1) → (p^</em>=0.50)，撞车概率 <strong>0.25</strong>。</p>
+<div class="tool" id="tool_ck">
+  <div class="ctrl">
+    <label>双硬损失 L <output id="ck_lO">2.0</output></label>
+    <input type="range" id="ck_l" min="1" max="50" step="0.5" value="2"/>
+    <label>单方胜利 W <output id="ck_wO">1.0</output></label>
+    <input type="range" id="ck_w" min="0.5" max="20" step="0.5" value="1"/>
+    <label>示弱羞耻 S <output id="ck_sO">1.0</output></label>
+    <input type="range" id="ck_s" min="0" max="20" step="0.5" value="1"/>
+  </div>
+  <div class="readout">
+    <div class="ro">p* 直行<strong id="ck_p">0.50</strong></div>
+    <div class="ro">撞车 p²<strong id="ck_cr">0.25</strong></div>
+    <div class="ro">期望支付<strong id="ck_eu">-0.50</strong></div>
+    <div id="ck_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ck_vh">p*=W/(L+W−S)=0.50；独立混合下撞车率 0.25；均衡期望 −0.50</span></div>
+  </div>
+  <canvas id="ckChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 信念阈值：对方强硬概率 q 决定你该硬还是软</h3>
+<p>对方以概率 (q) 直行时：(E(\text{直行})= -q L+(1-q)W)，(E(\text{转弯})= -q S)。当 (q&gt;q^<em>=W/(L+W-S)) 时应转弯。默认经典参数 (q^</em>=0.50)；拖动你的信念看最优反应翻转。</p>
+<div class="tool" id="tool_bel">
+  <div class="ctrl">
+    <label>信念 q（对方直行） <output id="bl_qO">0.40</output></label>
+    <input type="range" id="bl_q" min="0" max="1" step="0.01" value="0.40"/>
+    <label>L <output id="bl_lO">2.0</output></label>
+    <input type="range" id="bl_l" min="1" max="50" step="0.5" value="2"/>
+    <label>W <output id="bl_wO">1.0</output></label>
+    <input type="range" id="bl_w" min="0.5" max="20" step="0.5" value="1"/>
+    <label>S <output id="bl_sO">1.0</output></label>
+    <input type="range" id="bl_s" min="0" max="20" step="0.5" value="1"/>
+  </div>
+  <div class="readout">
+    <div class="ro">阈值 q*<strong id="bl_star">0.50</strong></div>
+    <div class="ro">E(直行)<strong id="bl_es">-0.20</strong></div>
+    <div class="ro">E(转弯)<strong id="bl_ew">-0.40</strong></div>
+    <div class="ro">最优<strong id="bl_br">直行</strong></div>
+    <div id="bl_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="bl_vh">q=0.40 &lt; q*=0.50 → E(直行)=-0.20 &gt; E(转弯)=-0.40 → 最优直行</span></div>
+  </div>
+  <canvas id="blChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 承诺剂量：单方烧桥的期望值</h3>
+<p>你以强度 (\alpha)「扔方向盘」（对方相信你无法转弯的概率）。对方若理性：在 (\alpha) 高时选择转弯，你期望约 ((1-\varepsilon)W-\varepsilon L)（(\varepsilon) 为对方也已承诺的概率）。默认 (W=10,L=100,\varepsilon=0.05,\alpha=0.90)：有效 EV≈<strong>4.0</strong>（(\alpha\cdot[(1-\varepsilon)W-\varepsilon L]+(1-\alpha)\cdot(-W^2/L))）；若 (\varepsilon) 升到 0.30，有效 EV≈<strong>−20.8</strong>——对称承诺迅速变负。混合对照（取 (S=W)）为 <strong>−1.0</strong>。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool_cm">
+  <div class="ctrl">
+    <label>承诺可信度 α <output id="cm_aO">0.90</output></label>
+    <input type="range" id="cm_a" min="0" max="1" step="0.01" value="0.90"/>
+    <label>对方也承诺 ε <output id="cm_eO">0.05</output></label>
+    <input type="range" id="cm_e" min="0" max="0.80" step="0.01" value="0.05"/>
+    <label>胜利 W <output id="cm_wO">10</output></label>
+    <input type="range" id="cm_w" min="1" max="50" step="1" value="10"/>
+    <label>灾难 L <output id="cm_lO">100</output></label>
+    <input type="range" id="cm_l" min="10" max="500" step="5" value="100"/>
+  </div>
+  <div class="readout">
+    <div class="ro">承诺 EV<strong id="cm_ev">4.0</strong></div>
+    <div class="ro">混合对照<strong id="cm_mix">-1.0</strong></div>
+    <div class="ro">是否划算<strong id="cm_ok">是</strong></div>
+    <div id="cm_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="cm_vh">α=0.90、ε=0.05：有效 EV≈4.0 &gt; 混合对照 −1.0 → 单方承诺划算；抬高 ε 会翻转</span></div>
+  </div>
+  <canvas id="cmChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>识别 Chicken / HD 与 PD 差异</td>
+<td>指出双硬是否为 NE</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>手算 (p^*)、撞车率、ESS 支付</td>
+<td>与滑块一致</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>信念阈值与承诺剂量</td>
+<td>说出何时该软、何时不该扔盘</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>现实案例建模批评</td>
+<td>写出替代博弈类与证据</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>纸上写出 (V=50,C=100) 支付矩阵，标两个纯 NE 与混合 (p^*=0.5)（8 分钟）。  </li>
+<li>手算 (C=200) 时 (p^*=0.25)、撞车 (0.0625)、支付 18.75，用模型 1 核对（8 分钟）。  </li>
+<li>模型 3：把 (q) 从 0.40 拖到 0.60，记录最优反应翻转点是否在 0.50（7 分钟）。  </li>
+<li>选一件身边「互不相让」的事，用一句话判定是 Chicken 还是 PD（7 分钟）。  </li>
+</ol>
+<p>产出：一张手算矩阵 + 一句案例判定——成本接近 0，可验证。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>矩阵与 NE</td>
+<td>自造 1 个 Chicken 矩阵</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>ESS 公式</td>
+<td>5 组 (V,C) 表</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>与 PD 对照</td>
+<td>半页差异清单</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>信念阈值</td>
+<td>3 个 q 场景</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>承诺陷阱</td>
+<td>描述对称扔盘风险</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>现实案例</td>
+<td>1 则新闻建模</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘</td>
+<td>技能树自测</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>成果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>静态 HD/Chicken 熟练</td>
+<td>10 个矩阵速判</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>演化与复制子直觉</td>
+<td>手绘 p 轨迹草图</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>信念与承诺</td>
+<td>边缘政策对照卡</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>应用与批评</td>
+<td>谈判/价格战/外交各一页</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>Hawk–Dove 支付</td>
+<td>HH=(V−C)/2，HD=V，DH=0，DD=V/2</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>混合 ESS</td>
+<td>(C&gt;V) 时 (p^*=V/C)</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>纯鹰 ESS</td>
+<td>(V\ge C) 时全强硬</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>Chicken 混合</td>
+<td>(p^<em>=W/(L+W-S))，撞车 (p^{</em>2})</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>两纯 NE</td>
+<td>(硬,软) 与 (软,硬)</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>信念阈值</td>
+<td>(q&gt;q^*) ⇒ 示弱最优</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>复制子动态</td>
+<td>(\dot p \propto p(1-p)(V-pC))</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>承诺装置</td>
+<td>单方扔盘逼软；双方扔盘致灾</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>边缘政策同构</td>
+<td>共享失控风险 ≈ 动态 Chicken</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>与 PD 分流</td>
+<td>双硬是否为 NE 是第一刀</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 我面对的是 Chicken 还是 PD？</summary><div class="dbody"><p>看双硬（双背叛）是不是均衡：是 → 偏 PD；不是且一硬一软最好 → 偏 Chicken。</p></div></details>
+<details><summary>Q2 现在该示弱吗？</summary><div class="dbody"><p>估 (q) 与 (q^<em>)；(q&gt;q^</em>) 且能保留面子时，先动示弱是理性避灾。</p></div></details>
+<details><summary>Q3 如何压低冲突频率？</summary><div class="dbody"><p>优先抬高真实/主观 (C)（伤害、制裁、核查），其次降低虚高面子 (V)。</p></div></details>
+<details><summary>Q4 能不能扔方向盘？</summary><div class="dbody"><p>仅当对方尚未对称承诺、且你估 (\varepsilon) 足够低；否则 EV 快速变负。</p></div></details>
+<details><summary>Q5 ESS 支付为何低于全鸽？</summary><div class="dbody"><p>频率依赖稳定的是不可入侵性，不是社会剩余最大化；默认缺口 12.5 vs 25。</p></div></details>
+<details><summary>Q6 混合策略要公开随机吗？</summary><div class="dbody"><p>理论要求无差异；实践可用多态、私钥随机或行为噪声近似。</p></div></details>
+<details><summary>Q7 为何「加码强硬」常失败？</summary><div class="dbody"><p>若对方同步加码，你在推高 (p^{*2})；若已进入纯鹰区，没有「再硬一点就均衡」的空间。</p></div></details>
+<details><summary>Q8 和边缘政策什么关系？</summary><div class="dbody"><p>边缘政策是动态/概率化的 Chicken：用共享失控风险代替确定性互毁威胁。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q9 商务谈判怎么用？</summary><div class="dbody"><p>把「谈崩损失 L、多要到的条款 W、示弱面子 S」标定后算 (p^*)；给对方下台阶往往比互扔最后通牒便宜。</p></div></details>
+<details><summary>Q10 数字不可信怎么办？</summary><div class="dbody"><p>先做量级与不等式（(C&gt;V)？），再做点估计；二手危机概率一律<span class="tag t-chk">待验证</span>。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>深入：Maynard Smith《演化与博弈论》；War of Attrition；非对称 Hawk–Dove（资源持有者效应）。  </li>
+<li>并列手册：威慑与边缘政策、可信承诺、囚徒困境、协调与谢林点。  </li>
+<li>批评线：把国际危机过度 Chicken 化的史学争议；实验博弈中人是否真按混合 NE 行动。<span class="tag t-ana">分析</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Hawk–Dove 支付与 ESS (p^*=V/C)</td>
+<td>经典文献</td>
+<td>Maynard Smith &amp; Price (1973) <em>Nature</em>；Maynard Smith 教材章节</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">ESS 定义与 (C&gt;V) 混合 / (V&gt;C) 纯鹰</td>
+<td>教材/讲义</td>
+<td>Cannings 演化冲突讲义；UMD ESS 讲义</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Chicken 与 Hawk–Dove 同构表述</td>
+<td>百科/综述</td>
+<td>中英文维基「胆小鬼博弈 / Chicken (game)」</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">边缘政策「留给机会的威胁」</td>
+<td>一手文献</td>
+<td>Schelling (1959/1960) RAND 手稿与《冲突的战略》</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">古巴危机作动态 Chicken 的数值风险</td>
+<td>个案模型</td>
+<td>Duke/McAdams 等工作论文式重建</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">本手册默认数值（V=50,C=100 等）</td>
+<td>教学标定</td>
+<td>自洽手算 + 可调模型</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">承诺 EV 近似 (1−ε)W−εL</td>
+<td>简化推论</td>
+<td>用于剂量直觉，非完整贝叶斯危机模型</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或可复算；<span class="tag t-ana">分析</span>权威框架下的判断；<span class="tag t-inf">推论</span>由模型推出；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或转载链长。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是认知与决策框架教程，<strong>不是</strong>外交、军事、法律或投资建议。国际危机与商业冲突的真实支付、信息与约束远比 2×2 矩阵复杂；任何把历史类比直接当作行动指令的做法都超出本文范围。读者须自行承担应用风险。</p>
+</section>
+<footer>  <p>《鹰鸽博弈 / 懦夫博弈（Chicken）：冲突升级模型 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 8 分 27 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《鹰鸽博弈 / 懦夫博弈 Chicken》主题脚本
+   四个可调模型：
+     1. Hawk–Dove ESS（V,C）
+     2. Chicken 混合 NE（L,W,S）
+     3. 信念阈值 q*
+     4. 承诺剂量 α,ε
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function clampLabel(ctx, lab, x, y, align, pl, w) {
+    var lw = ctx.measureText(lab).width;
+    ctx.textAlign = align;
+    var lx = align === 'left' ? Math.min(x, w - lw - 6) : Math.max(x, pl + 6);
+    ctx.fillText(lab, lx, y);
+  }
+  function r1(x) { return (Math.round(x * 10) / 10).toFixed(1); }
+  function r2(x) { return (Math.round(x * 100) / 100).toFixed(2); }
+
+  /* ── 1. Hawk–Dove ESS ── */
+  (function hd() {
+    var vEl = $('hd_v'), cEl = $('hd_c');
+    if (!vEl || !cEl) return;
+    var cv = $('hdChart');
+
+    function upd() {
+      var V = parseFloat(vEl.value), Cc = parseFloat(cEl.value);
+      var pure = V >= Cc;
+      var p = pure ? 1 : V / Cc;
+      var pay = pure ? (V - Cc) / 2 : V * (Cc - V) / (2 * Cc);
+      var crash = p * p;
+      var allD = V / 2;
+      var col = pure ? C.red : C.blue;
+
+      txt($('hd_vO'), String(Math.round(V)));
+      txt($('hd_cO'), String(Math.round(Cc)));
+      txt($('hd_reg'), pure ? '纯鹰 ESS' : '混合 ESS');
+      txt($('hd_p'), r2(p));
+      txt($('hd_pay'), r1(pay));
+      txt($('hd_crash'), r2(crash));
+      tint($('hd_reg'), col);
+
+      var msg;
+      if (pure) {
+        msg = 'V≥C → 纯鹰 ESS；期望支付 (V−C)/2=' + pay.toFixed(1) +
+          '；撞车率 1.00（全员强硬相遇）';
+      } else {
+        msg = 'C>V → p*=V/C=' + p.toFixed(2) + '；期望支付 ' + pay.toFixed(1) +
+          '；相对全鸽 ' + allD.toFixed(1) + ' 损失 ' + (allD - pay).toFixed(1) +
+          '（演化稳定≠集体最优）';
+      }
+      txt($('hd_vh'), msg);
+      tint($('hd_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+
+      // bars: allD, ESS, allH
+      var allH = (V - Cc) / 2;
+      var vals = [allD, pay, allH];
+      var labs = ['全鸽 V/2', 'ESS', '全鹰 (V−C)/2'];
+      var colors = [C.green, col, C.red];
+      var minV = Math.min(0, allH, pay, allD);
+      var maxV = Math.max(0, allH, pay, allD, 1);
+      var span = maxV - minV || 1;
+      function sx(v) { return pl + ((v - minV) / span) * bw; }
+      var zeroX = sx(0);
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(zeroX, pt);
+      ctx.lineTo(zeroX, y1);
+      ctx.stroke();
+
+      var barH = 28, gap = 18;
+      var startY = pt + 20;
+      for (var i = 0; i < 3; i++) {
+        var y = startY + i * (barH + gap);
+        var x0 = zeroX, x1 = sx(vals[i]);
+        var left = Math.min(x0, x1), right = Math.max(x0, x1);
+        ctx.fillStyle = colors[i];
+        ctx.fillRect(left, y, Math.max(2, right - left), barH);
+        ctx.fillStyle = C.ink;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(labs[i], pl, y - 4);
+        var lab = vals[i].toFixed(1);
+        ctx.fillStyle = C.ink2;
+        clampLabel(ctx, lab, vals[i] >= 0 ? right + 8 : left - 8, y + barH / 2 + 4,
+          vals[i] >= 0 ? 'left' : 'right', pl, w);
+      }
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('期望支付对照', pl + bw / 2, y1 + 31);
+    }
+    bind(['hd_v', 'hd_c'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 2. Chicken mixed NE ── */
+  (function ck() {
+    var lEl = $('ck_l'), wEl = $('ck_w'), sEl = $('ck_s');
+    if (!lEl || !wEl || !sEl) return;
+    var cv = $('ckChart');
+
+    function upd() {
+      var L = parseFloat(lEl.value), W = parseFloat(wEl.value), S = parseFloat(sEl.value);
+      var den = L + W - S;
+      var p = den > 0 ? Math.max(0, Math.min(1, W / den)) : 1;
+      var crash = p * p;
+      var eu = -p * S; // at indifference
+      var col = crash >= 0.2 ? C.red : (crash >= 0.1 ? C.amber : C.green);
+
+      txt($('ck_lO'), L.toFixed(1));
+      txt($('ck_wO'), W.toFixed(1));
+      txt($('ck_sO'), S.toFixed(1));
+      txt($('ck_p'), r2(p));
+      txt($('ck_cr'), r2(crash));
+      txt($('ck_eu'), r2(eu));
+      tint($('ck_cr'), col);
+
+      txt($('ck_vh'),
+        'p*=W/(L+W−S)=' + p.toFixed(2) + '；独立混合下撞车率 ' + crash.toFixed(2) +
+        '；均衡期望 ' + eu.toFixed(2));
+      tint($('ck_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 44, pr = 16, pt = 16, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+
+      // outcome probabilities: SS crash p^2, win 2p(1-p)/2 each side display as three bars
+      var pCrash = crash;
+      var pAsym = 2 * p * (1 - p);
+      var pBothSoft = (1 - p) * (1 - p);
+      var items = [
+        { lab: '双硬撞车', v: pCrash, c: C.red },
+        { lab: '一硬一软', v: pAsym, c: C.amber },
+        { lab: '双方转弯', v: pBothSoft, c: C.green }
+      ];
+      var maxP = Math.max(0.01, pCrash, pAsym, pBothSoft);
+      var barH = 32, gap = 16;
+      var startY = pt + 24;
+      items.forEach(function (it, i) {
+        var y = startY + i * (barH + gap);
+        var len = (it.v / maxP) * bw;
+        ctx.fillStyle = it.c;
+        ctx.fillRect(pl, y, Math.max(2, len), barH);
+        ctx.fillStyle = C.ink;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(it.lab, pl, y - 4);
+        var lab = (it.v * 100).toFixed(1) + '%';
+        ctx.fillStyle = C.ink2;
+        clampLabel(ctx, lab, pl + len + 8, y + barH / 2 + 4, 'left', pl, w);
+      });
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('混合 NE 下三种结果概率', pl + bw / 2, y1 + 31);
+    }
+    bind(['ck_l', 'ck_w', 'ck_s'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 3. Belief threshold ── */
+  (function bel() {
+    var qEl = $('bl_q'), lEl = $('bl_l'), wEl = $('bl_w'), sEl = $('bl_s');
+    if (!qEl || !lEl || !wEl || !sEl) return;
+    var cv = $('blChart');
+
+    function upd() {
+      var q = parseFloat(qEl.value), L = parseFloat(lEl.value);
+      var W = parseFloat(wEl.value), S = parseFloat(sEl.value);
+      var den = L + W - S;
+      var qStar = den > 0 ? Math.max(0, Math.min(1, W / den)) : 1;
+      var eS = -q * L + (1 - q) * W;
+      var eW = -q * S;
+      var goStraight = eS >= eW;
+      var col = goStraight ? C.amber : C.green;
+
+      txt($('bl_qO'), q.toFixed(2));
+      txt($('bl_lO'), L.toFixed(1));
+      txt($('bl_wO'), W.toFixed(1));
+      txt($('bl_sO'), S.toFixed(1));
+      txt($('bl_star'), r2(qStar));
+      txt($('bl_es'), r2(eS));
+      txt($('bl_ew'), r2(eW));
+      txt($('bl_br'), goStraight ? '直行' : '转弯');
+      tint($('bl_br'), col);
+
+      var cmp = q < qStar - 1e-9 ? '<' : (q > qStar + 1e-9 ? '>' : '≈');
+      txt($('bl_vh'),
+        'q=' + q.toFixed(2) + ' ' + cmp + ' q*=' + qStar.toFixed(2) +
+        ' → E(直行)=' + eS.toFixed(2) + (goStraight ? ' ≥ ' : ' < ') +
+        'E(转弯)=' + eW.toFixed(2) + ' → 最优' + (goStraight ? '直行' : '转弯'));
+      tint($('bl_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 44, pr = 16, pt = 16, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+
+      // plot E(straight) and E(swerve) vs q in [0,1]
+      var samples = [];
+      var minY = Infinity, maxY = -Infinity;
+      for (var i = 0; i <= 40; i++) {
+        var qq = i / 40;
+        var ys = -qq * L + (1 - qq) * W;
+        var yw = -qq * S;
+        samples.push({ q: qq, s: ys, w: yw });
+        minY = Math.min(minY, ys, yw);
+        maxY = Math.max(maxY, ys, yw);
+      }
+      if (maxY === minY) { maxY += 1; minY -= 1; }
+      var pad = (maxY - minY) * 0.1;
+      minY -= pad; maxY += pad;
+      function X(qq) { return pl + qq * bw; }
+      function Y(v) { return y1 - ((v - minY) / (maxY - minY)) * bh; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth = 1;
+      for (var gline = 0; gline <= 4; gline++) {
+        var gy = pt + (bh * gline) / 4;
+        ctx.beginPath();
+        ctx.moveTo(pl, gy);
+        ctx.lineTo(pl + bw, gy);
+        ctx.stroke();
+      }
+
+      function strokeSeries(key, color) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        samples.forEach(function (pt2, idx) {
+          var x = X(pt2.q), y = Y(pt2[key]);
+          if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+      strokeSeries('s', C.amber);
+      strokeSeries('w', C.green);
+
+      // q* and current q markers
+      ctx.strokeStyle = C.blue;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(X(qStar), pt);
+      ctx.lineTo(X(qStar), y1);
+      ctx.stroke();
+      ctx.strokeStyle = C.red;
+      ctx.beginPath();
+      ctx.moveTo(X(q), pt);
+      ctx.lineTo(X(q), y1);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = C.blue;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('q*', X(qStar), pt + 10);
+      ctx.fillStyle = C.red;
+      ctx.fillText('q', X(q), pt + 10);
+
+      ctx.fillStyle = C.ink3;
+      ctx.textAlign = 'right';
+      ctx.fillText('琥珀=直行  绿=转弯', pl + bw, pt + 10);
+      ctx.fillStyle = C.ink3;
+      ctx.textAlign = 'center';
+      ctx.fillText('对方直行概率 q', pl + bw / 2, y1 + 31);
+      // tick labels
+      ctx.fillStyle = C.ink3;
+      ctx.font = '10px sans-serif';
+      [0, 0.5, 1].forEach(function (t) {
+        ctx.fillText(String(t), X(t), y1 + 13);
+      });
+    }
+    bind(['bl_q', 'bl_l', 'bl_w', 'bl_s'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 4. Commitment dose ── */
+  (function cm() {
+    var aEl = $('cm_a'), eEl = $('cm_e'), wEl = $('cm_w'), lEl = $('cm_l');
+    if (!aEl || !eEl || !wEl || !lEl) return;
+    var cv = $('cmChart');
+
+    function upd() {
+      var a = parseFloat(aEl.value), eps = parseFloat(eEl.value);
+      var W = parseFloat(wEl.value), L = parseFloat(lEl.value);
+      // Effective: with prob eps opponent also committed → crash -L;
+      // else opponent yields → W. α scales how often you actually lock in (display only for narrative)
+      var ev = (1 - eps) * W - eps * L;
+      // blend with soft option if α low: with (1-α) you play mixed-like soft value ≈ -W^2/L if S=W
+      var mix = L > 0 ? -(W * W) / L : 0;
+      var blended = a * ev + (1 - a) * mix;
+      var ok = blended > mix;
+      var col = ok ? C.green : C.red;
+
+      txt($('cm_aO'), a.toFixed(2));
+      txt($('cm_eO'), eps.toFixed(2));
+      txt($('cm_wO'), String(Math.round(W)));
+      txt($('cm_lO'), String(Math.round(L)));
+      txt($('cm_ev'), r1(blended));
+      txt($('cm_mix'), r1(mix));
+      txt($('cm_ok'), ok ? '是' : '否');
+      tint($('cm_ok'), col);
+
+      txt($('cm_vh'),
+        'α=' + a.toFixed(2) + '、ε=' + eps.toFixed(2) +
+        '：有效 EV≈α·[(1−ε)W−εL]+(1−α)·(−W²/L)=' + r1(blended) +
+        (ok ? ' > ' : ' ≤ ') + '混合对照 ' + r1(mix) +
+        (ok ? ' → 单方承诺划算' : ' → 不划算 / ε 过高'));
+      tint($('cm_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 44, pr = 16, pt = 16, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+
+      // EV vs ε curve at current α,W,L
+      var pts = [];
+      var minY = Infinity, maxY = -Infinity;
+      for (var i = 0; i <= 40; i++) {
+        var e = (i / 40) * 0.8;
+        var raw = (1 - e) * W - e * L;
+        var val = a * raw + (1 - a) * mix;
+        pts.push({ e: e, v: val });
+        minY = Math.min(minY, val, mix);
+        maxY = Math.max(maxY, val, mix);
+      }
+      if (maxY === minY) { maxY += 1; minY -= 1; }
+      var pad = (maxY - minY) * 0.12;
+      minY -= pad; maxY += pad;
+      function X(e) { return pl + (e / 0.8) * bw; }
+      function Y(v) { return y1 - ((v - minY) / (maxY - minY)) * bh; }
+
+      ctx.strokeStyle = C.grid;
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pt + (bh * gi) / 4;
+        ctx.beginPath();
+        ctx.moveTo(pl, gy);
+        ctx.lineTo(pl + bw, gy);
+        ctx.stroke();
+      }
+
+      // mix baseline
+      ctx.strokeStyle = C.ink3;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(pl, Y(mix));
+      ctx.lineTo(pl + bw, Y(mix));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      pts.forEach(function (pt2, idx) {
+        var x = X(pt2.e), y = Y(pt2.v);
+        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // current ε marker
+      ctx.fillStyle = C.red;
+      ctx.beginPath();
+      ctx.arc(X(eps), Y(blended), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('虚线=混合对照', pl + bw, pt + 10);
+      ctx.textAlign = 'center';
+      ctx.fillText('对方也承诺的概率 ε', pl + bw / 2, y1 + 31);
+      ctx.font = '10px sans-serif';
+      [0, 0.4, 0.8].forEach(function (t) {
+        ctx.fillText(String(t), X(t), y1 + 13);
+      });
+    }
+    bind(['cm_a', 'cm_e', 'cm_w', 'cm_l'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+})();
+</script>
+</body>
+</html>
