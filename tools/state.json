@@ -570,11 +570,14 @@
     {
       "slug": "子博弈精炼纳什均衡（SPNE）：用逆向归纳法剔除-不可置信的威胁-，动态博弈的核心解法",
       "title": "子博弈精炼纳什均衡（SPNE）：用逆向归纳法剔除\"不可置信的威胁\"，动态博弈的核心解法",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 01:22:40",
+      "finished": "2026-09-19 01:30:00",
+      "duration_sec": 440,
+      "outputs": [
+        "reports/子博弈精炼纳什均衡（SPNE）：用逆向归纳法剔除-不可置信的威胁-，动态博弈的核心解法.html",
+        "reports/子博弈精炼纳什均衡（SPNE）：用逆向归纳法剔除-不可置信的威胁-，动态博弈的核心解法.md"
+      ],
       "error": null
     },
     {
@@ -1825,7 +1828,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 01:21",
+  "updated": "2026-09-19 01:30",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
