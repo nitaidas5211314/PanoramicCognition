@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>重复博弈与阴影效应：未来够重，合作可内生 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Repeated Games × Shadow of the Future × Reciprocity</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与动力</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <div class="navgroup">陷阱与实践</div>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">路线与模型</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>重复博弈与阴影效应：未来够重，合作可内生</h1>
+  <p class="sub">一次性囚徒困境锁死背叛；当相遇会<strong>不定次数地继续</strong>且贴现 δ（或续局概率 w）足够高，冷酷触发 / TFT 等策略可使合作成为自执行均衡——这就是「未来的阴影」。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>阴影效应（shadow of the future）</strong>：在重复互动中，下一期（及更远）结果的权重越大，今天背叛的净收益越小——当贴现因子 (\delta)（或续局概率 (w)）跨过临界值，<strong>相互合作可以从自利中内生出来</strong>，不必假定利他。<span class="tag t-fact">事实</span></p>
+<p>标准教学参数 (T=5,R=3,P=1,S=0)：冷酷触发维持合作需 (\delta^<em>!=!\frac{T-R}{T-P}=\mathbf{0.50})；TFT 集体稳定需 (w^</em>!=!\max!\big(\frac{T-R}{T-P},\frac{T-R}{R-S}\big)=\mathbf{\tfrac{2}{3}})。<span class="tag t-fact">事实</span></p>
+<p>已知有限期且共同知识 → 逆向归纳每期都背叛；无限（或不确定终点）+ 足够耐心 → 无名氏定理：大量可行且个人理性支付可由 SPE 支撑。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「大家多见面就会变好」，而是：<strong>同一阶段博弈被嵌入时间后，策略空间从行动变成历史依存规则，激励相容集合如何扩张</strong>——以及扩张的边界（有限终点、噪声、不可观察、惩罚成本）。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：有限/无限重复、贴现与几何续局、grim / TFT / 慷慨变体、无名氏定理、阴影放大术（拉长关系、加密互动、改支付）、噪声下的报复螺旋。</li>
+<li><strong>在界外</strong>：一次性合同的法律细节、某次谈判话术、单边「道德说教」——除非压成「δ / 可观察性 / 惩罚可信度」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>重复如何把合作从「不可信」变成「均衡」</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到策略、贴现、信息与惩罚规则可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>(\delta)/(w)、历史依存策略、触发、可行支付集</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>耐心/短视个体、企业、国家、算法 agent</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(\delta^*)、诱惑差 (T-R)、惩罚深度、噪声、可识别性</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>违约记录、互动频率、合同期限、声誉评分</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实耐心、私有类型、误判概率信念</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>续局概率 → 偏离现值 → 是否激励相容</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>(\delta\ge\delta^*) ⇒ grim 下合作可 SPE；已知有限 (T) ⇒ 解开</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「认识很久」≠ 高 (\delta)；终点已知会毁掉阴影<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>壕沟「live and let live」、回头客诚信、寡头默契合谋</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>未来损失贴现值 ≥ 当期偏离增益</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。合作积累信任；一次误伤可螺旋报复</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。监测滞后、声誉传播延迟削弱阴影</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>报复螺旋正反馈；宽恕/对质负反馈</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>阴影不是「时间流逝」，而是<strong>未来后果仍落在同一对（或同一网络）参与人身上，且权重够重</strong>。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它给出合作的「最低耐心」</h4><p>把「要不要合作」压成可算的 (\delta^*)：诱惑越大、惩罚越弱，门槛越高。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它解释「同结构、异结果」</h4><p>同一 PD 矩阵：一次性锁死；不确定终点可合作；已知末日又解开——差在时间结构，不在道德。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它连接制度与演化</h4><p>无名氏定理说「耐心够 → 几乎什么都行」；锦标赛与噪声文献说「什么策略稳健」——设计与演化两条线。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「关系很长」当成高阴影，却忽略<strong>共同知识的终点</strong>（项目结题日、任期最后一年、清仓日）：有限次逆向归纳会从末日一路解开到第一天。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看「阴影」如何从支付矩阵长成制度与演化。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="shL9" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 机制设计 · 拉长关系 / 加密互动 / 改支付 / 提高可识别性</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 演化与噪声 · 慷慨 TFT / Pavlov · 锦标赛可重复性批评</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 间接互惠 · 声誉、形象分、网络阴影</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 无名氏定理 · δ→1 ⇒ 可行且个人理性支付可由 SPE 支撑</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 阴影核心 · δ / w 临界 · 偏离增益 vs 未来损失</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 策略族 · grim · TFT · 有限惩罚 · 宽恕</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 有限次悖论 · 共同知识终点 ⇒ 逆向归纳解开</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 阶段博弈 · PD：T&gt;R&gt;P&gt;S，一次性 NE=(D,D)</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 时间嵌入 · 重复次数 / 续局概率 / 贴现</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L3↔L5</strong>：先分清「有限已知终点」与「不确定终点」；进阶卡在 <strong>L6</strong>（均衡集合膨胀）与 <strong>L8</strong>（噪声下 TFT 脆弱）。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>抽象定义 → 机制门槛 → 可操作杠杆。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="shA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="shB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="160" y="16" width="360" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">阴影 = 未来后果的权重（δ / w）</text>
+
+  <rect x="40" y="100" width="180" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象：贴现 / 续局 / SPE</text>
+  <rect x="250" y="100" width="180" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制：触发 · IC · 惩罚可信</text>
+  <rect x="460" y="100" width="180" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作：拉长·加密·改矩阵</text>
+
+  <line x1="280" y1="60" x2="130" y2="100" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#shA)"/>
+  <line x1="340" y1="60" x2="340" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#shA)"/>
+  <line x1="400" y1="60" x2="550" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#shA)"/>
+
+  <rect x="40" y="200" width="180" height="64" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="228" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">δ* = (T−R)/(T−P)</text><text x="130" y="248" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">grim 合作门槛</text>
+  <rect x="250" y="200" width="180" height="64" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="228" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">w* = max(…)</text><text x="340" y="248" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">TFT 集体稳定</text>
+  <rect x="460" y="200" width="180" height="64" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="228" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">E[回合]=1/(1−w)</text><text x="550" y="248" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">几何续局期望长度</text>
+
+  <path d="M130,152 L130,200" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#shA)"/>
+  <path d="M340,152 L340,200" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#shA)"/>
+  <path d="M550,152 L550,200" stroke="#b8730a" stroke-width="1.5" marker-end="url(#shA)"/>
+
+  <text x="340" y="310" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">反馈：噪声误判 → 报复螺旋（削弱有效阴影）</text>
+  <line x1="200" y1="280" x2="480" y2="280" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#shB)"/>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>想要什么</th>
+<th>阴影里的位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">短视参与人</td>
+<td>当期 (T)</td>
+<td>(\delta) 低，合作撑不住</td>
+</tr>
+<tr>
+<td class="k">耐心参与人</td>
+<td>长期平均 (R)</td>
+<td>愿用惩罚换合作路径</td>
+</tr>
+<tr>
+<td class="k">监督者 / 平台</td>
+<td>可观察行动、可传播声誉</td>
+<td>把双边阴影扩成网络阴影</td>
+</tr>
+<tr>
+<td class="k">制度设计者</td>
+<td>改支付、改相遇结构</td>
+<td>直接抬 (\delta) 或降 (\delta^*)</td>
+</tr>
+<tr>
+<td class="k">噪声 / 误执行</td>
+<td>—</td>
+<td>制造「假背叛」，腐蚀 TFT</td>
+</tr>
+<tr>
+<td class="k">机会主义入侵者</td>
+<td>吃 ALLC</td>
+<td>迫使策略必须可激怒</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note purple"><b>识别优先于评判</b><p>先问：对方是「低 δ」还是「高噪声环境下的 Reciprocator」？对策完全不同——前者改结构，后者加宽恕。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号</th>
+<th>方向直觉</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">贴现因子</td>
+<td>(\delta\in(0,1))</td>
+<td>↑ → 阴影更长</td>
+<td>耐心；连续时间 (\delta=e^{-r\Delta t})</td>
+</tr>
+<tr>
+<td class="k">续局概率</td>
+<td>(w)</td>
+<td>↑ → 期望回合 (1/(1-w)) ↑</td>
+<td>Axelrod 常用记号</td>
+</tr>
+<tr>
+<td class="k">诱惑差</td>
+<td>(T-R)</td>
+<td>↑ → (\delta^*) ↑</td>
+<td>背叛多赚多少</td>
+</tr>
+<tr>
+<td class="k">合作相对惩罚</td>
+<td>(R-P)</td>
+<td>↑ → 惩罚更痛、门槛可降</td>
+<td>取决于标定</td>
+</tr>
+<tr>
+<td class="k">吸盘支付</td>
+<td>(S)</td>
+<td>↓ → TFT 对交替背叛更怕</td>
+<td>进 (w^*) 第二项</td>
+</tr>
+<tr>
+<td class="k">噪声率</td>
+<td>(\varepsilon)</td>
+<td>↑ → 有效合作难度 ↑</td>
+<td>需慷慨/悔恨变体</td>
+</tr>
+<tr>
+<td class="k">可观察性</td>
+<td>—</td>
+<td>↑ → 触发更可信</td>
+<td>私人监控削弱阴影</td>
+</tr>
+<tr>
+<td class="k">关系剩余寿命信念</td>
+<td>—</td>
+<td>有共同知识终点 → 解开</td>
+<td>比「感觉很长」更关键</td>
+</tr>
+</tbody>
+</table></div>
+<p>标准参数下冷酷门槛 (\delta^<em>=0.50)；TFT 门槛 (w^</em>=2/3)（期望约 <strong>3</strong> 回合）。(w=0.90) 时期望 <strong>10</strong> 回合；(w=0.95) 时期望 <strong>20</strong> 回合。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="120" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="80" y="57" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">高 δ / w</text>
+  <rect x="200" y="30" width="140" height="44" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="270" y="57" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">偏离净现值≤0</text>
+  <rect x="400" y="30" width="140" height="44" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="470" y="57" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">合作路径可 SPE</text>
+  <rect x="560" y="30" width="100" height="44" rx="8" fill="#15181d"/><text x="610" y="57" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#fff">内生合作</text>
+
+  <line x1="140" y1="52" x2="200" y2="52" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="340" y1="52" x2="400" y2="52" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="540" y1="52" x2="560" y2="52" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+
+  <rect x="20" y="140" width="120" height="44" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="80" y="167" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">已知有限 T</text>
+  <rect x="200" y="140" width="140" height="44" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="270" y="167" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">末日无惩罚</text>
+  <rect x="400" y="140" width="140" height="44" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="470" y="167" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#15181d">逆向归纳解开</text>
+  <rect x="560" y="140" width="100" height="44" rx="8" fill="#d5342c"/><text x="610" y="167" text-anchor="middle" font-size="12" font-weight="600" font-family="sans-serif" fill="#fff">全程 D</text>
+
+  <line x1="140" y1="162" x2="200" y2="162" stroke="#d5342c" stroke-width="1.5" marker-end="url(#cB)"/>
+  <line x1="340" y1="162" x2="400" y2="162" stroke="#d5342c" stroke-width="1.5" marker-end="url(#cB)"/>
+  <line x1="540" y1="162" x2="560" y2="162" stroke="#d5342c" stroke-width="1.5" marker-end="url(#cB)"/>
+
+  <text x="340" y="240" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">红虚线：噪声误判 → 报复 → 有效阴影缩短（即使名义 δ 很高）</text>
+  <path d="M80,90 C80,120 270,120 270,140" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#cB)"/>
+</svg>
+<p><strong>核心不等式（冷酷触发，平均支付归一化）</strong>：合作平均 (R)；一次偏离再永久惩罚的平均 ((1-\delta)T+\delta P)。激励相容当且仅当</p>
+<p>[
+R \ge (1-\delta)T + \delta P \quad\Longleftrightarrow\quad \delta \ge \frac{T-R}{T-P}.
+]</p>
+<p>标准参数：(\delta\ge 0.50)。用未归一化现值：(R/(1-\delta)) vs (T+\delta P/(1-\delta))，门槛相同。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="grid g2">
+<div class="card"><h4>δ 与「见面频率」是同一枚硬币</h4><p>连续时间 (\delta=e^{-r\Delta t})：利率 (r) 固定时，缩短互动间隔 (\Delta t) 等价于抬高 (\delta)。(r=10\%)/年、每年见一次 → (\delta\approx 0.905)；若改为每月一次（(r=5\%)）→ (\delta\approx 0.996)。<span class="tag t-inf">推论</span></p></div>
+<div class="card"><h4>惩罚深度与耐心可互换</h4><p>抬高 (R-P)（更痛的惩罚）或抬高 (\delta)，都能降低合作难度——制度上常是「监督罚款」与「长期关系」两条路。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>无名氏定理的「太多均衡」</h4><p>耐心极高时几乎任何可行个人理性支付都可 SPE——<strong>预测力变弱</strong>；阴影解释「可能」，不自动告诉你「会选哪条」。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>TFT ≠ 政策万能药</h4><p>Axelrod 锦标赛可复现 TFT 胜出，但后续研究显示：支付标定、噪声、对手种群一变，排名就变；零行列式策略在锦标赛里往往并不占优。<span class="tag t-chk">待验证</span>/<span class="tag t-ana">分析</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>三种时间结构</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>典型结论</th>
+<th>阴影状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">一次性</td>
+<td>PD 唯一 NE ((D,D))</td>
+<td>无未来</td>
+</tr>
+<tr>
+<td class="k">有限 (T) 且共同知识</td>
+<td>逆向归纳全程 D</td>
+<td>末日摧毁阴影</td>
+</tr>
+<tr>
+<td class="k">无限 / 几何续局</td>
+<td>(\delta\ge\delta^*) 可合作 SPE</td>
+<td>阴影可操作</td>
+</tr>
+</tbody>
+</table></div>
+<h3>两条经典策略</h3>
+<p><strong>冷酷触发（grim）</strong>：开始合作；任一期观察到 D → 永远 D。惩罚最重，门槛最低（标准参数 (0.50)），但对噪声极脆。<span class="tag t-fact">事实</span></p>
+<p><strong>以牙还牙（TFT）</strong>：首期 C，此后复制对方上期。Axelrod 定理：当 (w\ge\max\big(\frac{T-R}{T-P},\frac{T-R}{R-S}\big)) 时，无人能比 TFT 对 TFT 赚得更多；标准参数 (w^*!=!2/3)。<span class="tag t-fact">事实</span></p>
+<h3>资金流式「抽水图」：偏离如何被未来抽回</h3>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+    <marker id="flB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0f8a4d"/></marker>
+  </defs>
+  <rect x="40" y="40" width="160" height="70" rx="10" fill="#fef2f2" stroke="#d5342c"/><text x="120" y="70" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">当期偏离</text><text x="120" y="92" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">多赚 T−R</text>
+  <rect x="260" y="40" width="160" height="70" rx="10" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="70" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">触发惩罚</text><text x="340" y="92" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">落入 P 路径</text>
+  <rect x="480" y="40" width="160" height="70" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/><text x="560" y="70" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">未来损失贴现</text><text x="560" y="92" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">δ(R−P)/(1−δ)</text>
+
+  <line x1="200" y1="75" x2="260" y2="75" stroke="#d5342c" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="420" y1="75" x2="480" y2="75" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#flB)"/>
+
+  <rect x="140" y="160" width="400" height="80" rx="12" fill="#15181d"/><text x="340" y="195" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">阴影足够 ⇔ 未来被抽走的现值 ≥ 当期多赚</text><text x="340" y="220" text-anchor="middle" fill="#9aa3ad" font-size="12" font-family="sans-serif">标准参数：δ≥0.50（grim）或 w≥2/3（TFT）</text>
+</svg>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="80" cy="110" r="10" fill="#0f8a4d"/><text x="80" y="150" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1950s</text><text x="80" y="70" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">无名氏流传</text>
+  <circle cx="200" cy="110" r="10" fill="#1d4ed8"/><text x="200" y="150" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1971</text><text x="200" y="70" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Friedman SPE</text>
+  <circle cx="320" cy="110" r="10" fill="#1d4ed8"/><text x="320" y="150" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1981–84</text><text x="320" y="55" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Axelrod 锦标赛</text><text x="320" y="72" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">阴影用语流行</text>
+  <circle cx="460" cy="110" r="10" fill="#b8730a"/><text x="460" y="150" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1990s</text><text x="460" y="70" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">噪声·慷慨 TFT</text>
+  <circle cx="580" cy="110" r="10" fill="#d5342c"/><text x="580" y="150" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">2012+</text><text x="580" y="55" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">ZD / 大规模</text><text x="580" y="72" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">锦标赛复现</text>
+</svg>
+<p>演化叙事：理论先证明「耐心 ⇒ 合作可能」；Axelrod 用计算机竞赛把「阴影 + 互惠」变成公共语言；噪声与可复现性批评迫使策略从「漂亮规则」走向「对环境条件敏感」。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>行动</th>
+<th>短期私利</th>
+<th>长期私利（高 δ）</th>
+<th>集体</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">一直合作</td>
+<td>放弃 (T)</td>
+<td>稳定拿 (R)</td>
+<td>最优区域</td>
+</tr>
+<tr>
+<td class="k">偷一次</td>
+<td>拿 (T)</td>
+<td>触发惩罚落入 (P)</td>
+<td>破裂风险</td>
+</tr>
+<tr>
+<td class="k">永不原谅</td>
+<td>防剥削</td>
+<td>噪声下双输</td>
+<td>脆弱</td>
+</tr>
+<tr>
+<td class="k">过度宽恕</td>
+<td>被 ALLD 吃</td>
+<td>短期稳住合作</td>
+<td>易被入侵</td>
+</tr>
+<tr>
+<td class="k">放大阴影</td>
+<td>当下成本（承诺）</td>
+<td>扩大可行合作集</td>
+<td>制度红利</td>
+</tr>
+</tbody>
+</table></div>
+<p>激励设计口诀：<strong>让偏离的贴现损失可见、可信、足够大</strong>——可见靠监测，可信靠惩罚也是均衡路径上的最优反应，足够大靠 (\delta) 或支付差。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="infoA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="30" y="30" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="100" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">行动 / 支付</text>
+  <rect x="220" y="30" width="140" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="290" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">历史记录</text>
+  <rect x="410" y="30" width="140" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="480" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">触发规则</text>
+  <rect x="530" y="120" width="120" height="50" rx="8" fill="#15181d"/><text x="590" y="150" text-anchor="middle" font-size="12" font-weight="600" fill="#fff" font-family="sans-serif">下期行动</text>
+
+  <line x1="170" y1="55" x2="220" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#infoA)"/>
+  <line x1="360" y1="55" x2="410" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#infoA)"/>
+  <path d="M480,80 L480,120 L530,145" fill="none" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#infoA)"/>
+
+  <rect x="30" y="140" width="200" height="90" rx="10" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="175" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">信息瓶颈</text><text x="130" y="198" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">私人监控 · 延迟 · 噪声</text><text x="130" y="218" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">→ 有效阴影衰减</text>
+  <rect x="260" y="140" width="240" height="90" rx="10" fill="#fef2f2" stroke="#d5342c"/><text x="380" y="175" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">资源流</text><text x="380" y="198" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">合作流：稳定 R 交换</text><text x="380" y="218" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">惩罚流：转向 P 消耗</text>
+</svg>
+<p>重复博弈吃的「燃料」是<strong>可被策略条件化的公共历史</strong>。信息越私有、越延迟，阴影越像雾。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>秩</th>
+<th>杠杆</th>
+<th>为何锋利</th>
+<th>成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>消除共同知识终点</td>
+<td>直接阻止逆向归纳解开</td>
+<td>合同/制度设计</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>提高互动频率</td>
+<td>(\delta=e^{-r\Delta t}) 抬 δ</td>
+<td>组织节奏</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>降低诱惑 (T-R)</td>
+<td>直接降 (\delta^*)</td>
+<td>改分成/改规则</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>加深可信惩罚 (R-P)</td>
+<td>同等耐心下更易合作</td>
+<td>监督成本</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>提高可识别性</td>
+<td>声誉把单次变重复</td>
+<td>身份系统</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>选对策略族</td>
+<td>噪声环境换慷慨/悔恨</td>
+<td>学习</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>缩短监测时滞</td>
+<td>惩罚现值不折损</td>
+<td>流程</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>分解大交易为小回合</td>
+<td>加密互动、加阴影</td>
+<td>交易设计</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>集群启动互惠</td>
+<td>合作可从小簇入侵 ALLD</td>
+<td>社群</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>教学共同知识</td>
+<td>对齐「我们都会惩罚」</td>
+<td>沟通</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note green"><b>实操优先级</b><p>先查「有没有公开的结束日」与「多久见一次」，再谈「要不要更善良」。结构优先于性格。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「认识很久」= 高阴影</summary><div class="dbody"><p>认识久但明年合同必断 → 仍是有限次。看的是剩余不确定寿命，不是累计年限。</p></div></details>
+<details><summary>2. 把 Axelrod 当政策说明书</summary><div class="dbody"><p>锦标赛设计、支付值、对手集一变，TFT 不必再赢。PLOS One 等复分析对此有系统批评。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>3. 无限宽容当美德</summary><div class="dbody"><p>对 ALLD 过度宽恕 = 被抽干。可激怒是稳定合作的必要条件之一。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 冷酷到底当强硬</summary><div class="dbody"><p>噪声下 grim 双输。Wu &amp; Axelrod（1995）等强调慷慨/悔恨变体。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>5. 混淆 δ 与利率口径</summary><div class="dbody"><p>业务里的「月利率」不能直接当博弈 δ；要用 (e^{-r\Delta t}) 对齐回合长度。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>6. 以为无名氏定理告诉你会合作</summary><div class="dbody"><p>它说「可以」，不说「必然」。多重均衡下焦点、规范、领导力才选路径。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>7. 忽略惩罚者的成本</summary><div class="dbody"><p>不可置信的重罚不是 SPE。Friedman 式用阶段 NE 惩罚更可信。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>8. 把气候/军备直接贴 PD 标签</summary><div class="dbody"><p>可能是分配冲突或鸡博弈；错误结构导出错误阴影处方。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>9. 只看双边，不看网络</summary><div class="dbody"><p>间接互惠：阴影落在「别人是否还愿意和我玩」。声誉系统是阴影放大器。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>10. 用一次实验室结果外推制度</summary><div class="dbody"><p>被试耐心、局数、支付换算都影响合作率——标<span class="tag t-chk">待验证</span>再迁移。<span class="tag t-chk">待验证</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="grid g3">
+<div class="card"><h4>壕沟战「live and let live」</h4><p>同一部队对峙够久 → 默契停火；调动打乱匹配 → 阴影断裂。<span class="tag t-ana">分析</span>（Axelrod 经典叙事）</p></div>
+<div class="card"><h4>平台店铺与回头客</h4><p>评价系统把一次性游客变成可追踪历史 → 抬有效 (w)。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>寡头默契合谋</h4><p>重复竞价 + 高互动频率使惩罚降价可信；执法则试图打断阴影或改支付。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note blue"><b>映射三问</b><p>1) 阶段支付是否 PD/近 PD？ 2) 终点是否共同知识？ 3) 行动是否可观察、可归因？三问不过，别空谈阴影。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="flow "><p>建模支付 → 判定时间结构 → 估 δ 或 w → 算 δ<em> / w</em> → 选策略族 → 设计监测 → 压力测试噪声 → 改结构或改预期</p></div>
+<p>最小行动清单：</p>
+<ol>
+<li>把关系写成「回合」：每周一次？每单一次？</li>
+<li>问清有没有公开结束日；有则引入续约不确定性或尾部抵押。</li>
+<li>用标准公式算门槛，再对照你们的「耐心直觉」。</li>
+<li>规定「可观察违约」定义，避免噪声螺旋。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>🟢 基础：会算门槛</summary><div class="dbody"><p>会写 PD 四元组；会算 grim (\delta^*)；会解释有限次解开。</p></div></details>
+<details><summary>🔵 进阶：会选策略</summary><div class="dbody"><p>会区分 grim / TFT / 慷慨 / Pavlov；知道噪声下换族。</p></div></details>
+<details><summary>🟣 高阶：会设计阴影</summary><div class="dbody"><p>会用频率、分解交易、声誉、抵押抬有效 δ；会检查惩罚可信度。</p></div></details>
+<details><summary>🔴 专家：会处理多重均衡与网络</summary><div class="dbody"><p>会用无名氏定理边界思考；会把间接互惠与直接互惠接到同一诊断。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>把你的重复关系想成一张「阴影地图」：</p>
+<ul>
+<li><strong>雾区</strong>：终点已知 / 一次性陌生人 → 默认低合作。</li>
+<li><strong>薄阴影</strong>：偶发互动、弱监测 → 合作脆弱。</li>
+<li><strong>厚阴影</strong>：高频、可识别、惩罚可信 → 互惠可自执行。</li>
+<li><strong>噪声沼泽</strong>：误判多 → 必须带宽恕技能，否则双输副本。</li>
+</ul>
+<p>通关条件不是「更善良」，而是<strong>把关键关系从雾区拖进厚阴影</strong>。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>产出</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">选一段真实重复关系</td>
+<td>一页结构卡</td>
+<td>含支付直觉 + 回合定义</td>
+</tr>
+<tr>
+<td class="k">计算 grim δ*</td>
+<td>数字</td>
+<td>与标准公式一致</td>
+</tr>
+<tr>
+<td class="k">估计续局 w</td>
+<td>区间</td>
+<td>给出 E[回合]=1/(1−w)</td>
+</tr>
+<tr>
+<td class="k">找一个共同知识终点</td>
+<td>风险清单</td>
+<td>写出解开路径</td>
+</tr>
+<tr>
+<td class="k">设计一处抬阴影动作</td>
+<td>改频率/抵押/续约</td>
+<td>可在 7 天内落地</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若把已知终点改成几何续局</button><button class="tab" data-pane="tb1-1">若把互动从年改成月</button><button class="tab" data-pane="tb1-2">若引入 1% 执行噪声</button><button class="tab" data-pane="tb1-3">若只抬 δ 不改可观察性</button></div>
+<div class="pane on" id="tb1-0"><p>有限 (T) 的解开消失；当 (w\ge\delta^*) 量级，grim 合作可回来。关键是参与人信念是否真信「可能一直继续」。</p></div><div class="pane" id="tb1-1"><p>(\delta=e^{-r\Delta t}) 上升：例如 (r=0.10)、(\Delta t=1) 年 → (\delta\approx0.905)；若改成更短间隔，阴影显著变厚（在利率口径一致时）。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-2"><p>纯 TFT 易陷入 CD/DC 交替；慷慨 TFT / 悔恨 TFT / 部分文献中的 Omega-TFT 类规则更稳——代价是可能被剥削。<span class="tag t-ana">分析</span></p></div><div class="pane" id="tb1-3"><p>私人监控下「以为对方叛了」仍触发惩罚 → 名义耐心救不了信息结构。<span class="tag t-ana">分析</span></p></div>
+<h3>可调模型 1 · 冷酷触发 δ*</h3>
+<div class="tool" id="tool_grim">
+  <h3>冷酷触发：合作 vs 偏离现值</h3>
+  <div class="ctrl">
+    <label>R 合作 <output id="g_rO">3.0</output><input id="g_r" type="range" min="1" max="6" step="0.1" value="3"/></label>
+    <label>T 诱惑 <output id="g_tO">5.0</output><input id="g_t" type="range" min="2" max="12" step="0.1" value="5"/></label>
+    <label>P 惩罚 <output id="g_pO">1.0</output><input id="g_p" type="range" min="0" max="4" step="0.1" value="1"/></label>
+    <label>δ 贴现 <output id="g_dO">0.60</output><input id="g_d" type="range" min="0.05" max="0.95" step="0.01" value="0.60"/></label>
+  </div>
+  <div class="readout">
+    <div class="ro">δ*<strong id="g_star">0.50</strong></div>
+    <div class="ro">合作现值<strong id="g_coop">7.50</strong></div>
+    <div class="ro">偏离现值<strong id="g_dev">6.50</strong></div>
+    <div class="ro">平均合作<strong id="g_ac">3.00</strong></div>
+    <div class="ro">平均偏离<strong id="g_ad">2.60</strong></div>
+    <div id="g_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="gChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · TFT 集体稳定 w*</h3>
+<div class="tool" id="tool_tft">
+  <h3>TFT 集体稳定：对 ALLD 与交替背叛</h3>
+  <div class="ctrl">
+    <label>R <output id="t_rO">3.0</output><input id="t_r" type="range" min="1" max="6" step="0.1" value="3"/></label>
+    <label>T <output id="t_tO">5.0</output><input id="t_t" type="range" min="2" max="12" step="0.1" value="5"/></label>
+    <label>P <output id="t_pO">1.0</output><input id="t_p" type="range" min="0" max="4" step="0.1" value="1"/></label>
+    <label>S <output id="t_sO">0.0</output><input id="t_s" type="range" min="-2" max="2" step="0.1" value="0"/></label>
+    <label>w 续局 <output id="t_wO">0.70</output><input id="t_w" type="range" min="0.05" max="0.95" step="0.01" value="0.70"/></label>
+  </div>
+  <div class="readout">
+    <div class="ro">对 ALLD 门槛<strong id="t_a">0.50</strong></div>
+    <div class="ro">对交替门槛<strong id="t_b">0.67</strong></div>
+    <div class="ro">w*<strong id="t_star">0.67</strong></div>
+    <div class="ro">E[回合]<strong id="t_en">3.33</strong></div>
+    <div id="t_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="tChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 未来阴影：续局与期望长度</h3>
+<div class="tool" id="tool_shadow">
+  <h3>几何续局：w → 期望回合数</h3>
+  <div class="ctrl">
+    <label>w 续局概率 <output id="s_wO">0.90</output><input id="s_w" type="range" min="0.10" max="0.99" step="0.01" value="0.90"/></label>
+    <label>对照门槛 δ* <output id="s_thO">0.50</output><input id="s_th" type="range" min="0.20" max="0.90" step="0.01" value="0.50"/></label>
+  </div>
+  <div class="readout">
+    <div class="ro">E[回合]<strong id="s_en">10.00</strong></div>
+    <div class="ro">相对门槛<strong id="s_gap">+0.40</strong></div>
+    <div class="ro">阴影状态<strong id="s_st">厚</strong></div>
+    <div id="s_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="sChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 连续贴现：利率 × 间隔 → δ</h3>
+<div class="tool" id="tool_cont">
+  <h3>δ = e^(−r·Δt)：把「多久见一次」换成耐心</h3>
+  <div class="ctrl">
+    <label>年利率 r <output id="c_rO">0.10</output><input id="c_r" type="range" min="0.01" max="0.50" step="0.01" value="0.10"/></label>
+    <label>间隔（年）Δt <output id="c_dtO">1.00</output><input id="c_dt" type="range" min="0.02" max="5" step="0.02" value="1.00"/></label>
+    <label>目标 δ* <output id="c_thO">0.50</output><input id="c_th" type="range" min="0.20" max="0.90" step="0.01" value="0.50"/></label>
+  </div>
+  <div class="readout">
+    <div class="ro">δ<strong id="c_d">0.90</strong></div>
+    <div class="ro">最大间隔<strong id="c_max">6.93</strong>年</div>
+    <div class="ro">是否过线<strong id="c_ok">是</strong></div>
+    <div id="c_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="cChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>能讲清阴影 ≠ 时间流逝</td>
+<td>举出「长关系但有终点」反例</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>能手算 grim / TFT 门槛</td>
+<td>标准参数算出 0.50 与 2/3</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>能诊断噪声与信息</td>
+<td>给出策略换族理由</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>能改结构抬阴影</td>
+<td>落地一次频率/抵押/续约设计</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li><strong>5 分钟</strong>：选一个正在反复打交道的对象（客户 / 同事 / 供应商）。</li>
+<li><strong>10 分钟</strong>：粗估 (T,R,P,S)（用相对分即可）并算 (\delta^*=(T-R)/(T-P))。</li>
+<li><strong>10 分钟</strong>：写下「公开结束日」与「互动间隔」；用模型 4 看 δ 是否过线。</li>
+<li><strong>5 分钟</strong>：只改一件事——加密一次互动或加一条可观察的续约条款。</li>
+</ol>
+<p>验收：一张纸上有 (\delta^*)、估计 δ、以及一个已安排的结构改动。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>完成 30 分钟实践，列出 3 段关系</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>标注每段：有限终点 / 不确定 / 噪声源</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>对最重要一段算 grim 与 TFT 两套门槛</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>访谈或自查：对方如何理解「违约」</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>设计一条抬阴影措施并沟通</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>跑一次「误判演练」：如何对质而非螺旋</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘：有效 δ 变了吗？合作行为变了吗？</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>结构盘点</td>
+<td>关系地图 + 终点清单</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>门槛计算</td>
+<td>每段 δ<em> / w</em> 表</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>制度试点</td>
+<td>频率或声誉或抵押试点</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>噪声治理</td>
+<td>对质剧本 + 宽恕规则</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<ol>
+<li><strong>阴影不等式</strong>：未来损失贴现 ≥ 当期偏离增益。</li>
+<li><strong>冷酷门槛</strong> (\delta^*=(T-R)/(T-P))。</li>
+<li><strong>TFT 稳定</strong> (w^*=\max\big((T-R)/(T-P),(T-R)/(R-S)\big))。</li>
+<li><strong>几何续局</strong> (\mathbb{E}[N]=1/(1-w))。</li>
+<li><strong>连续贴现</strong> (\delta=e^{-r\Delta t})。</li>
+<li><strong>有限次解开</strong>：共同知识终点 → 逆向归纳。</li>
+<li><strong>无名氏定理</strong>：δ→1 时可行个人理性支付可由 SPE 支撑。</li>
+<li><strong>惩罚可信度</strong>：惩罚路径本身须是均衡行为。</li>
+<li><strong>噪声—宽恕权衡</strong>：防螺旋 vs 防剥削。</li>
+<li><strong>间接互惠</strong>：声誉把阴影从双边扩到网络。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>这段关系的「回合」如何定义？</summary><div class="dbody"><p>按周、按单、按版本发布？定义决定 Δt 与监测点。</p></div></details>
+<details><summary>是否存在共同知识的结束日？</summary><div class="dbody"><p>有则优先处理解开风险，再谈互惠话术。</p></div></details>
+<details><summary>我的 δ* 主要被 T−R 还是 T−P 推高？</summary><div class="dbody"><p>改分成 vs 改惩罚，杠杆不同。</p></div></details>
+<details><summary>行动可观察且可归因吗？</summary><div class="dbody"><p>不可归因则触发策略会误伤。</p></div></details>
+<details><summary>噪声来自执行还是感知？</summary><div class="dbody"><p>执行噪声靠确认机制；感知噪声靠对质协议。</p></div></details>
+<details><summary>惩罚对我自己是否可信？</summary><div class="dbody"><p>惩罚若极伤己，对方不信 → 非 SPE。</p></div></details>
+<details><summary>是否把一次性客户错当重复博弈？</summary><div class="dbody"><p>平台评价可部分修复；否则应按一次性定价风险。</p></div></details>
+<details><summary>抬阴影的成本谁承担？</summary><div class="dbody"><p>加密互动、抵押、监督都有成本——算净收益。</p></div></details>
+<details><summary>多重均衡下焦点是什么？</summary><div class="dbody"><p>规范、默认选项、领导承诺如何选合作路径。</p></div></details>
+<details><summary>我是否在用「善良」掩盖结构失败？</summary><div class="dbody"><p>结构不过线，劝善通常无效。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>不完全监控下的重复博弈（Abreu–Pearce–Stacchetti 等）。</li>
+<li>零行列式策略与「勒索」均衡对阴影叙事的修正。</li>
+<li>文化演化与间接互惠的统一框架（如 Nature Hum. Behav. 2021 线路）。</li>
+<li>与机制设计衔接：如何用合同<strong>制造</strong>不确定终点与可验证信号。</li>
+<li>多智能体 / LLM 对战中的重复博弈——算法耐心与人类耐心是否同构。<span class="tag t-hyp">假设</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">grim (\delta^*=(T-R)/(T-P))；标准参数 0.50</td>
+<td>教材/讲义共识</td>
+<td>MIT 6.254 Lec15；知经等整理</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">TFT 集体稳定 (w^*!=!2/3)（Axelrod 参数）</td>
+<td>论文定理</td>
+<td>Axelrod 1981 Theorem；JSTAGE 补证讨论</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">阴影用语与「拉长/加密互动」处方</td>
+<td>经典著作</td>
+<td>Axelrod《合作的进化》；Six Advances 综述</td>
+<td><span class="tag t-fact">事实</span>/<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">无名氏定理（耐心 ⇒ 可行个人理性支付）</td>
+<td>综述/百科与教材</td>
+<td>Friedman 1971；Wikipedia Folk theorem</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">TFT 结论对锦标赛设计敏感</td>
+<td>同行复分析</td>
+<td>PLOS One 2015；PLOS Comp Biol 2024 策略性质</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">第二锦标赛可复现 TFT 胜出，但扩展场次排名会变</td>
+<td>2026 复现研究</td>
+<td><em>Communications AI &amp; Computing</em> 复现 Axelrod 第二赛</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">噪声下慷慨/悔恨 TFT</td>
+<td>期刊</td>
+<td>Wu &amp; Axelrod 1995；Nowak &amp; Sigmund 线路</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">直接/间接互惠统一框架</td>
+<td>期刊</td>
+<td>Nature Human Behaviour 2021</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">(\delta=e^{-r\Delta t}) 换算示例</td>
+<td>推导</td>
+<td>本手册计算</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或标准定理；<span class="tag t-ana">分析</span>权威推断；<span class="tag t-inf">推论</span>由模型推出；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或复现仍在进行。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是认知与决策框架，用于理解重复互动中的激励与合作条件，<strong>不是</strong>投资建议、法律意见、管理咨询承诺或对任何现实冲突的道德裁决。文中数值基于经典教学参数与公开文献；迁移到具体商业、外交或个人信息环境时，支付标定、信息结构与制度约束必须重新估计。作者与生成引擎不对依据本手册采取的行动承担责任。</p>
+</section>
+<footer>  <p>《重复博弈与阴影效应：未来够重，合作可内生 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 7 分 41 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《重复博弈与阴影效应》主题脚本
+   四个可调模型：
+     1. 冷酷触发 δ* 与现值
+     2. TFT 集体稳定 w*
+     3. 几何续局阴影长度
+     4. 连续贴现 δ=e^(-rΔt)
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function clampLabel(ctx, lab, x, y, align, pl, w) {
+    var lw = ctx.measureText(lab).width;
+    ctx.textAlign = align;
+    var lx = align === 'left' ? Math.min(x, w - lw - 6) : Math.max(x, pl + 6);
+    ctx.fillText(lab, lx, y);
+  }
+
+  /* ── 1. Grim trigger ── */
+  (function grim() {
+    var rEl = $('g_r'), tEl = $('g_t'), pEl = $('g_p'), dEl = $('g_d');
+    if (!rEl || !tEl || !pEl || !dEl) return;
+    var cv = $('gChart');
+
+    function upd() {
+      var R = parseFloat(rEl.value), T = parseFloat(tEl.value);
+      var P = parseFloat(pEl.value), d = parseFloat(dEl.value);
+      if (!(T > P)) T = P + 0.1;
+      var star = (T - R) / (T - P);
+      if (!isFinite(star) || star < 0) star = 0;
+      if (star > 1) star = 1;
+      var coop = R / (1 - d);
+      var dev = T + d * P / (1 - d);
+      var ac = R;
+      var ad = (1 - d) * T + d * P;
+      var ok = d + 1e-9 >= star;
+      var col = ok ? C.green : C.red;
+
+      txt($('g_rO'), R.toFixed(1));
+      txt($('g_tO'), T.toFixed(1));
+      txt($('g_pO'), P.toFixed(1));
+      txt($('g_dO'), d.toFixed(2));
+      txt($('g_star'), star.toFixed(2));
+      txt($('g_coop'), coop.toFixed(2));
+      txt($('g_dev'), dev.toFixed(2));
+      txt($('g_ac'), ac.toFixed(2));
+      txt($('g_ad'), ad.toFixed(2));
+      tint($('g_star'), C.amber);
+
+      var msg = 'δ=' + d.toFixed(2) + (ok ? ' ≥ ' : ' < ') + 'δ*=' + star.toFixed(2) +
+        (ok ? ' → 冷酷触发下相互合作激励相容' : ' → 偏离更赚，阴影不够厚');
+      txt($('g_vh'), msg);
+      tint($('g_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 44, pr = 16, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var n = 40, i, xd, maxY = 1;
+      for (i = 0; i <= n; i++) {
+        xd = 0.05 + (0.9 * i) / n;
+        maxY = Math.max(maxY, R / (1 - xd), T + xd * P / (1 - xd));
+      }
+      function sx(x) { return pl + ((x - 0.05) / 0.9) * bw; }
+      function sy(v) { return y1 - (v / maxY) * bh; }
+
+      ctx.strokeStyle = C.grid;
+      for (i = 0; i <= 4; i++) {
+        var yy = pt + (bh * i) / 4;
+        ctx.beginPath();
+        ctx.moveTo(pl, yy);
+        ctx.lineTo(pl + bw, yy);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = C.green;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (i = 0; i <= n; i++) {
+        xd = 0.05 + (0.9 * i) / n;
+        var yv = R / (1 - xd);
+        if (i === 0) ctx.moveTo(sx(xd), sy(yv));
+        else ctx.lineTo(sx(xd), sy(yv));
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = C.red;
+      ctx.beginPath();
+      for (i = 0; i <= n; i++) {
+        xd = 0.05 + (0.9 * i) / n;
+        var yv2 = T + xd * P / (1 - xd);
+        if (i === 0) ctx.moveTo(sx(xd), sy(yv2));
+        else ctx.lineTo(sx(xd), sy(yv2));
+      }
+      ctx.stroke();
+
+      if (star >= 0.05 && star <= 0.95) {
+        ctx.strokeStyle = C.amber;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(sx(star), pt);
+        ctx.lineTo(sx(star), y1);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = C.amber;
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('δ*', sx(star), pt - 6);
+      }
+
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(sx(d), pt);
+      ctx.lineTo(sx(d), y1);
+      ctx.stroke();
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('绿=合作现值 红=偏离现值', pl + bw, pt - 8);
+      ctx.textAlign = 'center';
+      ctx.fillText('贴现因子 δ', pl + bw / 2, y1 + 31);
+    }
+    bind(['g_r', 'g_t', 'g_p', 'g_d'], upd);
+    upd();
+  })();
+
+  /* ── 2. TFT collective stability ── */
+  (function tft() {
+    var rEl = $('t_r'), tEl = $('t_t'), pEl = $('t_p'), sEl = $('t_s'), wEl = $('t_w');
+    if (!rEl || !tEl || !pEl || !sEl || !wEl) return;
+    var cv = $('tChart');
+
+    function upd() {
+      var R = parseFloat(rEl.value), T = parseFloat(tEl.value);
+      var P = parseFloat(pEl.value), S = parseFloat(sEl.value);
+      var w = parseFloat(wEl.value);
+      var a = (T > P) ? (T - R) / (T - P) : 1;
+      var b = (R > S) ? (T - R) / (R - S) : 1;
+      if (!isFinite(a) || a < 0) a = 0;
+      if (!isFinite(b) || b < 0) b = 0;
+      if (a > 1) a = 1;
+      if (b > 1) b = 1;
+      var star = Math.max(a, b);
+      var en = 1 / (1 - w);
+      var ok = w + 1e-9 >= star;
+      var col = ok ? C.green : C.red;
+
+      // Payoffs vs TFT (undiscounted sum style / (1-w) normalized avg)
+      var vSelf = R; // mutual TFT average
+      var vAlld = (1 - w) * T + w * P;
+      var vAlt = (1 - w) * (T + w * S) / (1 + w); // (T+wS)/(1+w) average form
+      // Actually average of alternating: (T+S)/2 when w→1; exact avg with discount:
+      // V = (1-w)(T + w S)/(1-w^2) = (T + w S)/(1+w)
+      vAlt = (T + w * S) / (1 + w);
+
+      txt($('t_rO'), R.toFixed(1));
+      txt($('t_tO'), T.toFixed(1));
+      txt($('t_pO'), P.toFixed(1));
+      txt($('t_sO'), S.toFixed(1));
+      txt($('t_wO'), w.toFixed(2));
+      txt($('t_a'), a.toFixed(2));
+      txt($('t_b'), b.toFixed(2));
+      txt($('t_star'), star.toFixed(2));
+      txt($('t_en'), en.toFixed(2));
+      tint($('t_star'), C.amber);
+
+      var msg = 'w=' + w.toFixed(2) + (ok ? ' ≥ ' : ' < ') + 'w*=' + star.toFixed(2) +
+        '｜对TFT平均：互惠 ' + vSelf.toFixed(2) +
+        ' / ALLD ' + vAlld.toFixed(2) +
+        ' / 交替 ' + vAlt.toFixed(2) +
+        (ok ? ' → TFT 集体稳定区间内' : ' → 可被 ALLD 或交替策略侵入');
+      txt($('t_vh'), msg);
+      tint($('t_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, ww = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = h - 46;
+      var bw = ww - pl - pr, bh = y1 - pt;
+      var items = [
+        { lab: '互惠 TFT', v: vSelf, c: C.green },
+        { lab: 'ALLD 入侵', v: vAlld, c: C.red },
+        { lab: '交替入侵', v: vAlt, c: C.amber }
+      ];
+      var maxAbs = Math.max(1, Math.abs(items[0].v), Math.abs(items[1].v), Math.abs(items[2].v));
+      function sx(v) { return pl + bw / 2 + (v / maxAbs) * (bw / 2 - 8); }
+      function sy(i) { return pt + (i + 0.5) * (bh / 3); }
+
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), pt);
+      ctx.lineTo(sx(0), y1);
+      ctx.stroke();
+
+      items.forEach(function (item, i) {
+        var y = sy(i), x0 = sx(0), x1 = sx(item.v);
+        ctx.fillStyle = item.c;
+        ctx.fillRect(Math.min(x0, x1), y - 12, Math.abs(x1 - x0), 24);
+        ctx.fillStyle = C.ink2;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(item.lab, pl, y - 16);
+        ctx.fillStyle = C.ink;
+        clampLabel(ctx, item.v.toFixed(2), item.v >= 0 ? x1 + 8 : x1 - 8, y + 4,
+          item.v >= 0 ? 'left' : 'right', pl, ww);
+      });
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('对 TFT 的平均支付（归一化）；w≥w* 时互惠不劣于入侵', pl + bw / 2, y1 + 31);
+    }
+    bind(['t_r', 't_t', 't_p', 't_s', 't_w'], upd);
+    upd();
+  })();
+
+  /* ── 3. Shadow length ── */
+  (function shadow() {
+    var wEl = $('s_w'), thEl = $('s_th');
+    if (!wEl || !thEl) return;
+    var cv = $('sChart');
+
+    function upd() {
+      var w = parseFloat(wEl.value), th = parseFloat(thEl.value);
+      if (w >= 0.999) w = 0.999;
+      var en = 1 / (1 - w);
+      var gap = w - th;
+      var ok = gap >= 0;
+      var st = en >= 10 ? '厚' : (en >= 3 ? '中' : '薄');
+      var col = ok ? C.green : C.red;
+
+      txt($('s_wO'), w.toFixed(2));
+      txt($('s_thO'), th.toFixed(2));
+      txt($('s_en'), en.toFixed(2));
+      txt($('s_gap'), (gap >= 0 ? '+' : '') + gap.toFixed(2));
+      txt($('s_st'), st);
+      tint($('s_st'), en >= 10 ? C.green : (en >= 3 ? C.amber : C.red));
+      tint($('s_gap'), col);
+
+      var msg = '续局 w=' + w.toFixed(2) + ' → 期望 ' + en.toFixed(2) + ' 回合；相对门槛 ' +
+        th.toFixed(2) + (ok ? ' 已越过 → 阴影足以支撑该门槛策略' : ' 未越过 → 合作难自执行');
+      txt($('s_vh'), msg);
+      tint($('s_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, ww = g.w, h = g.h;
+      var pl = 44, pr = 16, pt = 24, y1 = h - 46;
+      var bw = ww - pl - pr, bh = y1 - pt;
+      var n = 50, i, xw, maxY = 1;
+      for (i = 0; i <= n; i++) {
+        xw = 0.1 + (0.89 * i) / n;
+        maxY = Math.max(maxY, 1 / (1 - xw));
+      }
+      // cap display for readability
+      var yMax = Math.min(maxY, 40);
+      function sx(x) { return pl + ((x - 0.1) / 0.89) * bw; }
+      function sy(v) { return y1 - (Math.min(v, yMax) / yMax) * bh; }
+
+      ctx.strokeStyle = C.grid;
+      for (i = 0; i <= 4; i++) {
+        var yy = pt + (bh * i) / 4;
+        ctx.beginPath();
+        ctx.moveTo(pl, yy);
+        ctx.lineTo(pl + bw, yy);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (i = 0; i <= n; i++) {
+        xw = 0.1 + (0.89 * i) / n;
+        var yv = 1 / (1 - xw);
+        if (i === 0) ctx.moveTo(sx(xw), sy(yv));
+        else ctx.lineTo(sx(xw), sy(yv));
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = C.amber;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(sx(th), pt);
+      ctx.lineTo(sx(th), y1);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.arc(sx(w), sy(en), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('E[N]=1/(1−w)', pl + bw, pt - 8);
+      ctx.textAlign = 'center';
+      ctx.fillText('续局概率 w（黄线=对照门槛）', pl + bw / 2, y1 + 31);
+    }
+    bind(['s_w', 's_th'], upd);
+    upd();
+  })();
+
+  /* ── 4. Continuous discount ── */
+  (function cont() {
+    var rEl = $('c_r'), dtEl = $('c_dt'), thEl = $('c_th');
+    if (!rEl || !dtEl || !thEl) return;
+    var cv = $('cChart');
+
+    function upd() {
+      var r = parseFloat(rEl.value), dt = parseFloat(dtEl.value), th = parseFloat(thEl.value);
+      if (r < 0.001) r = 0.001;
+      var d = Math.exp(-r * dt);
+      var maxDt = -Math.log(th) / r;
+      var ok = d + 1e-12 >= th;
+      var col = ok ? C.green : C.red;
+
+      txt($('c_rO'), r.toFixed(2));
+      txt($('c_dtO'), dt.toFixed(2));
+      txt($('c_thO'), th.toFixed(2));
+      txt($('c_d'), d.toFixed(3));
+      txt($('c_max'), maxDt.toFixed(2));
+      txt($('c_ok'), ok ? '是' : '否');
+      tint($('c_ok'), col);
+      tint($('c_d'), ok ? C.green : C.amber);
+
+      var msg = 'r=' + r.toFixed(2) + '，Δt=' + dt.toFixed(2) + ' 年 → δ=' + d.toFixed(3) +
+        (ok ? ' ≥ ' : ' < ') + 'δ*=' + th.toFixed(2) +
+        '｜要过线，间隔至多 ' + maxDt.toFixed(2) + ' 年';
+      txt($('c_vh'), msg);
+      tint($('c_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, ww = g.w, h = g.h;
+      var pl = 44, pr = 16, pt = 24, y1 = h - 46;
+      var bw = ww - pl - pr, bh = y1 - pt;
+      var xMax = Math.max(5, dt * 1.4, maxDt * 1.1);
+      var n = 50, i, xd;
+      function sx(x) { return pl + (x / xMax) * bw; }
+      function sy(v) { return y1 - v * bh; }
+
+      ctx.strokeStyle = C.grid;
+      for (i = 0; i <= 4; i++) {
+        var yy = pt + (bh * i) / 4;
+        ctx.beginPath();
+        ctx.moveTo(pl, yy);
+        ctx.lineTo(pl + bw, yy);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (i = 0; i <= n; i++) {
+        xd = (xMax * i) / n;
+        var yv = Math.exp(-r * xd);
+        if (i === 0) ctx.moveTo(sx(xd), sy(yv));
+        else ctx.lineTo(sx(xd), sy(yv));
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = C.amber;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(th));
+      ctx.lineTo(pl + bw, sy(th));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.arc(sx(dt), sy(d), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (maxDt <= xMax) {
+        ctx.strokeStyle = C.green;
+        ctx.beginPath();
+        ctx.moveTo(sx(maxDt), pt);
+        ctx.lineTo(sx(maxDt), y1);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('δ=e^(−rΔt)', pl + bw, pt - 8);
+      ctx.textAlign = 'center';
+      ctx.fillText('互动间隔 Δt（年）；黄线=δ*，绿线=最大间隔', pl + bw / 2, y1 + 31);
+    }
+    bind(['c_r', 'c_dt', 'c_th'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
