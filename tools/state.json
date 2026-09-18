@@ -882,11 +882,14 @@
     {
       "slug": "极大极小定理（Minimax, von Neumann）：二人零和博弈中-最大化最小收益-与-最小化最大损失-必然相等，博弈论的起点定理",
       "title": "极大极小定理（Minimax, von Neumann）：二人零和博弈中\"最大化最小收益\"与\"最小化最大损失\"必然相等，博弈论的起点定理",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 04:49:31",
+      "finished": "2026-09-19 04:56:33",
+      "duration_sec": 422,
+      "outputs": [
+        "reports/极大极小定理（Minimax, von Neumann）：二人零和博弈中-最大化最小收益-与-最小化最大损失-必然相等，博弈论的起点定理.html",
+        "reports/极大极小定理（Minimax, von Neumann）：二人零和博弈中-最大化最小收益-与-最小化最大损失-必然相等，博弈论的起点定理.md"
+      ],
       "error": null
     },
     {
@@ -1897,7 +1900,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 04:49",
+  "updated": "2026-09-19 04:56",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
