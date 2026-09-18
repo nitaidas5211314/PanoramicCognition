@@ -622,11 +622,14 @@
     {
       "slug": "无名氏定理（Folk Theorem）：无限重复博弈中，任何优于最小最大值的收益组合都可以是均衡",
       "title": "无名氏定理（Folk Theorem）：无限重复博弈中，任何优于最小最大值的收益组合都可以是均衡",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 01:56:26",
+      "finished": "2026-09-19 02:06:15",
+      "duration_sec": 589,
+      "outputs": [
+        "reports/无名氏定理（Folk Theorem）：无限重复博弈中，任何优于最小最大值的收益组合都可以是均衡.html",
+        "reports/无名氏定理（Folk Theorem）：无限重复博弈中，任何优于最小最大值的收益组合都可以是均衡.md"
+      ],
       "error": null
     },
     {
@@ -1837,7 +1840,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 01:55",
+  "updated": "2026-09-19 02:06",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
