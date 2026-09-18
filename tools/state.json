@@ -908,11 +908,14 @@
     {
       "slug": "颤抖手完美均衡（Trembling-Hand Perfect）：要求均衡在对手偶尔犯错时依然稳健，剔除脆弱均衡",
       "title": "颤抖手完美均衡（Trembling-Hand Perfect）：要求均衡在对手偶尔犯错时依然稳健，剔除脆弱均衡",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 05:05:39",
+      "finished": "2026-09-19 05:14:05",
+      "duration_sec": 506,
+      "outputs": [
+        "reports/颤抖手完美均衡（Trembling-Hand Perfect）：要求均衡在对手偶尔犯错时依然稳健，剔除脆弱均衡.html",
+        "reports/颤抖手完美均衡（Trembling-Hand Perfect）：要求均衡在对手偶尔犯错时依然稳健，剔除脆弱均衡.md"
+      ],
       "error": null
     },
     {
@@ -1903,7 +1906,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 05:05",
+  "updated": "2026-09-19 05:14",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
