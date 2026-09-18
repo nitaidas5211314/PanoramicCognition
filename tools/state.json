@@ -947,11 +947,14 @@
     {
       "slug": "核心（Core）：合作博弈中没有任何子联盟愿意脱离的分配集合；核为空意味着联盟必然破裂",
       "title": "核心（Core）：合作博弈中没有任何子联盟愿意脱离的分配集合；核为空意味着联盟必然破裂",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 05:27:03",
+      "finished": "2026-09-19 05:34:58",
+      "duration_sec": 475,
+      "outputs": [
+        "reports/核心（Core）：合作博弈中没有任何子联盟愿意脱离的分配集合；核为空意味着联盟必然破裂.html",
+        "reports/核心（Core）：合作博弈中没有任何子联盟愿意脱离的分配集合；核为空意味着联盟必然破裂.md"
+      ],
       "error": null
     },
     {
@@ -1912,7 +1915,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 05:26",
+  "updated": "2026-09-19 05:34",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

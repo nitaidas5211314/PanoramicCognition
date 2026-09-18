@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>核心（Core） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Core × Cooperative Games</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>核心（Core）</h1>
+  <p class="sub">合作博弈里<strong>没有任何子联盟愿意脱离</strong>的分配集合——核为空意味着大联盟必然破裂；Bondareva–Shapley 给出充要条件。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>核心（core）</strong>是可转移效用（TU）合作博弈上的<strong>稳定分配集合</strong>：在效率约束 (x(N)=v(N)) 下，对每一个子联盟 (S)，其成员合计所得不少于他们单干能创造的价值——(\sum_{i\in S}x_i\ge v(S))。Gillies（1953）形式化；它是联盟稳定性的标准解概念。<span class="tag t-fact">事实</span></p>
+<p>核可以<strong>很大</strong>（一整块多面体），也可以<strong>为空</strong>。空核不是数学事故：三人多数博弈 (v({i})=0)、任意两人 (v=1)、大联盟 (v(N)=1) 的核必空——任何分法都会被某个二人联盟否决。<span class="tag t-fact">事实</span></p>
+<p>Bondareva（1963）与 Shapley（1967）独立给出充要条件：核非空 <strong>当且仅当</strong> 博弈<strong>平衡（balanced）</strong>——任何「分数覆盖」玩家的联盟加权值之和不超过 (v(N))。<span class="tag t-fact">事实</span></p>
+<p>与相邻概念分工：<strong>沙普利值</strong>问「事前公平份额」；<strong>核</strong>问「事后会不会拆伙」；核空时沙普利值仍存在，但可能留不住人。<strong>核仁（nucleolus）</strong>在核非空时落在核内，核空时给出「最不不满」的近似。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「怎么把饼分漂亮」，而是：给定特征函数 (v:2^N\to\mathbb{R})，有没有<strong>任何</strong>一种把 (v(N)) 分给个人的方案，使得<strong>没有任何子联盟</strong>有动机带着自己的 (v(S)) 出走。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：TU 合作博弈、特征函数、分配/估算（imputation）、阻塞联盟、平衡性、ε-核、核仁、凸博弈、市场博弈。</li>
+<li><strong>在界外</strong>：非合作讨价还价话术、股权对赌措辞——除非压成 (v(S)) 与稳定性检验。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>大联盟分配能否抵抗一切子联盟的退出威胁</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「特征函数 + 稳定集」为止；谈判过程可另建模</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>(N,v)、分配 (x)、超额 (e(S,x))、平衡权重</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>合作方；规则设计者；旁观者（被分摊成本的人）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>超可加性、凸性、平衡性、互补结构、退出成本</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>合同份额、合资分红、成本分摊单、投票多数</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实 (v(S))、隐性侧支付、未来报复能力</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>(v) 形状 → 核空/非空 → 是否需制度补丁</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>不平衡 ⇒ 核空；凸 ⇒ 核非空且含沙普利值</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「大家口头同意」≠「核非空」；合同可短时维系空核局面<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>合资散伙、多数派轮流分赃、手套/鞋市场极端份额</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>线性不等式组可行域；对偶即平衡条件</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。拆伙改变可行联盟 → 重估 (v) → 新核</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。重复博弈、惩罚条款、沉淀成本可「补」空核</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>互补增强 → 核放大；多数循环 → 核塌缩</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>核不问「公不公平」，而问：有没有哪怕一种分法，让所有子联盟都觉得「留下来不亏」。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它是联盟稳定的最低门槛</h4><p>没有核内点，任何提案都能被某个联盟严格改进——合资、成本分摊、多数决策都会陷入「永远有人想拆台」。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它给出可检验的充要条件</h4><p>Bondareva–Shapley：平衡 ⇔ 核非空。不必穷举所有分配，可用线性规划/对偶判定。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它暴露「空核 ≠ 不能合作」</h4><p>空核只说明<strong>无免疫阻塞的分配</strong>；长期合同、退出罚金、重复交互、平台治理仍可维系合作。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「签了合同」当成「核非空」。合同只是当期约束；若 (v) 结构本身不平衡，条款一松或外部机会一变，拆伙逻辑立刻复活。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层从「特征函数」爬到「制度补丁」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="coreArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度军备 · 退出罚金 / 重复博弈 / 平台治理补空核</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 实证与现场 · 合资拆伙 / 成本分摊争议 / 多数议会</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 计算 · LP 求核 / 采样超额 / 大 n 近似</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 跨域同构 · 稳定匹配 · 竞争均衡 · 网络流</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 解概念家族 · 核 · ε-核 · 核仁 · 沙普利值</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 经典例子 · 多数博弈空核 / 手套极端核 / 凸博弈</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 判定定理 · Bondareva–Shapley 平衡性</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 定义 · 效率 + 联盟理性（无阻塞）</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 原语 · 参与人 N + 特征函数 v(S)</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2–L4</strong>：会检验三人分配是否在核内、认多数空核与手套极端核；进阶卡在 <strong>L3</strong> 与 <strong>L5</strong>——平衡判定，以及核空时用 ε-核/核仁做「最稳近似」。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从稳定定义到可操作检验。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="80" y="16" width="520" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">稳定分配 → 核 C(v) → 空则制度补丁 / ε-核 / 核仁</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">无阻塞 · 效率</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">线性不等式 / 对偶</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">分账·合资·投票</text>
+
+  <line x1="280" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="180" width="180" height="70" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">v(S) 联盟值</text><text x="130" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">退出外部选择</text>
+  <rect x="250" y="180" width="180" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">x 分配向量</text><text x="340" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">Σxᵢ=v(N)</text>
+  <rect x="460" y="180" width="180" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">超额 e(S,x)</text><text x="550" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">v(S)−x(S)≤0</text>
+
+  <line x1="130" y1="146" x2="130" y2="180" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="146" x2="340" y2="180" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="550" y1="146" x2="550" y2="180" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <path d="M220 215 H250" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <path d="M430 215 H460" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <text x="340" y="280" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">红虚线 = 反馈：正超额 → 阻塞 → 拆伙 → 重写 v 或加制度</text>
+  <text x="340" y="310" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">跨域同构：核≈无套利包 / 竞争均衡分配 / 稳定匹配阻隔对</text>
+  <text x="340" y="340" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">空核 ≈ 循环多数 ≈ 预算不够付所有威胁</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>目标</th>
+<th>信息位置</th>
+<th>典型工具</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">合作方 / 玩家</td>
+<td>max 自身份额且不被挤出</td>
+<td>常知己方外部选择</td>
+<td>退出威胁、侧支付</td>
+</tr>
+<tr>
+<td class="k">规则设计者</td>
+<td>核非空 + 可计算 + 可执行</td>
+<td>定义 (v) 或强制披露</td>
+<td>凸化结构、ε-核、罚金</td>
+</tr>
+<tr>
+<td class="k">多数派 / 关键联盟</td>
+<td>用阻塞力抽租</td>
+<td>知投票/互补结构</td>
+<td>轮流结盟、否决权</td>
+</tr>
+<tr>
+<td class="k">稀缺资源方</td>
+<td>占核的极端点</td>
+<td>知供需不对称</td>
+<td>手套博弈式要价</td>
+</tr>
+<tr>
+<td class="k">旁观者 / 纳税人</td>
+<td>少承担外部性</td>
+<td>常被忽略</td>
+<td>预算上限、补贴审计</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号/度量</th>
+<th>为何关键</th>
+<th>杠杆方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">联盟值</td>
+<td>(v(S))</td>
+<td>阻塞力的来源</td>
+<td>测准外部选择比争论公式更重要</td>
+</tr>
+<tr>
+<td class="k">分配</td>
+<td>(x\in\mathbb{R}^n)</td>
+<td>核的候选点</td>
+<td>先满足效率再查超额</td>
+</tr>
+<tr>
+<td class="k">超额</td>
+<td>(e(S,x)=v(S)-x(S))</td>
+<td>(&gt;0) 即可阻塞</td>
+<td>核 ⇔ 一切超额 ≤ 0</td>
+</tr>
+<tr>
+<td class="k">平衡权重</td>
+<td>(\alpha(S)\ge 0)</td>
+<td>判定核是否空</td>
+<td>找违反的平衡族即证空核</td>
+</tr>
+<tr>
+<td class="k">超可加性</td>
+<td>(v(S\cup T)\ge v(S)+v(T))</td>
+<td>大联盟有意义</td>
+<td>无则先别谈核</td>
+</tr>
+<tr>
+<td class="k">凸性</td>
+<td>边际递增</td>
+<td>充分 ⇒ 核非空</td>
+<td>互补业务优先</td>
+</tr>
+<tr>
+<td class="k">最小 ε</td>
+<td>least-core 半径</td>
+<td>核空时的「不稳程度」</td>
+<td>ε 越小越好补</td>
+</tr>
+<tr>
+<td class="k">退出成本</td>
+<td>合同罚金等</td>
+<td>有效抬高 (v) 外留存</td>
+<td>可人为「造核」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="40" width="120" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="80" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">技术/互补</text>
+  <rect x="180" y="40" width="120" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="240" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">特征函数 v</text>
+  <rect x="340" y="40" width="120" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="400" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">平衡性</text>
+  <rect x="500" y="40" width="140" height="50" rx="8" fill="#15181d"/><text x="570" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">核 C(v)</text>
+
+  <line x1="140" y1="65" x2="180" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="300" y1="65" x2="340" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="460" y1="65" x2="500" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+
+  <rect x="180" y="160" width="120" height="50" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="240" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">分配提案 x</text>
+  <rect x="340" y="160" width="120" height="50" rx="8" fill="#fee2e2" stroke="#d5342c"/><text x="400" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">阻塞联盟</text>
+  <rect x="500" y="160" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="570" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">拆伙 / 重谈</text>
+
+  <line x1="240" y1="90" x2="240" y2="160" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="400" y1="90" x2="400" y2="160" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="570" y1="90" x2="570" y2="160" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="300" y1="185" x2="340" y2="185" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+  <line x1="460" y1="185" x2="500" y2="185" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+
+  <path d="M570 210 Q340 280 80 90" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+  <text x="340" y="300" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">反馈：拆伙改变可行联盟 → 重估 v → 新的核（或仍空）</text>
+</svg>
+<p>因果链（实线）与反馈（红虚线）必须分清：</p>
+<ol>
+<li><strong>技术互补 → (v)</strong>：没有协同就没有可分剩余，也谈不上稳定。<span class="tag t-ana">分析</span></li>
+<li><strong>(v) → 平衡性 → 核</strong>：Bondareva–Shapley 把「结构」钉成充要条件。<span class="tag t-fact">事实</span></li>
+<li><strong>提案 (x) → 超额 → 阻塞</strong>：正超额联盟是拆伙的直接扳机。<span class="tag t-fact">事实</span></li>
+<li><strong>反馈</strong>：拆伙后外部选择变化，(v) 重写，核可能从空变非空，或反过来。<span class="tag t-inf">推论</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="grid g2">
+<div class="card"><h4>核与竞争均衡</h4><p>可交换经济里，竞争均衡分配落在核内；人多时核「收缩」向竞争均衡（Debreu–Scarf 型结果的直观）。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>核与沙普利值</h4><p>凸博弈 ⇒ 沙普利值 ∈ 核；一般博弈沙普利值可能在核外——公平与稳定可分叉。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>核与核仁</h4><p>核非空 ⇒ 核仁 ∈ 核；核空 ⇒ 核仁仍唯一存在，落在最小 ε-核中。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>空核与循环多数</h4><p>奇数人简单多数「分一块饼」：核空，与 Condorcet 循环同构——总有多数想改方案。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note purple"><b>跨域同构（本手册最锋利的刀）</b><p><strong>空核</strong> ↔ <strong>预算不够同时满足所有威胁</strong> ↔ <strong>套利机会未消除</strong> ↔ <strong>匹配市场里的阻隔对</strong>。同一数学：一组不等式无解。<span class="tag t-inf">推论</span></p></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>核的运转可以压成一条流水线：</p>
+<div class="flow">
+  <span>写清 v(S)</span><i>→</i>
+  <span>效率：Σx=v(N)</span><i>→</i>
+  <span>查一切超额</span><i>→</i>
+  <span class="hi">核空？</span><i>→</i>
+  <span>平衡检验 / LP</span><i>→</i>
+  <span>ε-核·核仁·制度</span>
+</div>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>环节</th>
+<th>机制</th>
+<th>失败模式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">特征函数</td>
+<td>每个 (S) 的可转移价值</td>
+<td>估错外部选择 → 假核/假空</td>
+</tr>
+<tr>
+<td class="k">效率</td>
+<td>分光大联盟剩余</td>
+<td>「留公共池」伪装稳定</td>
+</tr>
+<tr>
+<td class="k">联盟理性</td>
+<td>(x(S)\ge v(S))</td>
+<td>漏检某个 (S)</td>
+</tr>
+<tr>
+<td class="k">平衡判定</td>
+<td>(\sum\alpha(S)v(S)\le v(N))</td>
+<td>只查整数划分不够</td>
+</tr>
+<tr>
+<td class="k">补丁</td>
+<td>ε、罚金、重复博弈</td>
+<td>补丁本身改变有效 (v)</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="80" cy="110" r="10" fill="#0f8a4d"/><text x="80" y="50" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">t0 建盟</text><text x="80" y="70" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">估 v · 提案</text>
+  <circle cx="220" cy="110" r="10" fill="#1d4ed8"/><text x="220" y="50" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">t1 检验</text><text x="220" y="70" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">超额扫描</text>
+  <circle cx="360" cy="110" r="10" fill="#b8730a"/><text x="360" y="50" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">t2 冲击</text><text x="360" y="70" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">外部机会变</text>
+  <circle cx="500" cy="110" r="10" fill="#d5342c"/><text x="500" y="50" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">t3 危机</text><text x="500" y="70" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">核变空/变点</text>
+  <circle cx="620" cy="110" r="10" fill="#15181d"/><text x="620" y="50" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">t4 修补</text><text x="620" y="70" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">罚金·ε·重谈</text>
+  <text x="340" y="170" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">核是状态变量：同一合同在不同外部选择下可从「稳」翻成「必裂」</text>
+  <text x="340" y="195" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">延迟：诉讼/罚金使短期表现像有核，长期仍服从结构</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>行动者</th>
+<th>激励</th>
+<th>对核的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">强互补方</td>
+<td>做大 (v(N))</td>
+<td>扩大可行核</td>
+</tr>
+<tr>
+<td class="k">可自成对的多数</td>
+<td>保持两两 (v) 高</td>
+<td>推高平衡加权和 → 易空核</td>
+</tr>
+<tr>
+<td class="k">稀缺侧（手套左手）</td>
+<td>占核的极端点</td>
+<td>核缩成单点，他方份额→0</td>
+</tr>
+<tr>
+<td class="k">设计者</td>
+<td>凸化 / 加退出成本</td>
+<td>人造非空核</td>
+</tr>
+<tr>
+<td class="k">短期机会主义者</td>
+<td>吃超额再跑</td>
+<td>加速空核暴露</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note red"><b>激励冲突的硬事实</b><p>核关心的是<strong>联盟</strong>激励，不是个人道德。一个「好人」若所在二人联盟超额为正，理性仍驱动他参与阻塞——除非制度改变有效 (v)。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="fB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="30" y="30" width="140" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="100" y="55" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">创造剩余</text><text x="100" y="75" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">v(N) 总饼</text>
+  <rect x="220" y="30" width="140" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="290" y="55" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">分配管道</text><text x="290" y="75" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">x₁…xₙ</text>
+  <rect x="410" y="30" width="140" height="60" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="480" y="55" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">威胁池</text><text x="480" y="75" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">各 S 的 v(S)</text>
+  <rect x="560" y="30" width="90" height="60" rx="8" fill="#fee2e2" stroke="#d5342c"/><text x="605" y="65" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">阻塞</text>
+
+  <line x1="170" y1="60" x2="220" y2="60" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#fA)"/>
+  <line x1="360" y1="60" x2="410" y2="60" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#fA)"/>
+  <line x1="550" y1="60" x2="560" y2="60" stroke="#d5342c" stroke-width="1.5" marker-end="url(#fB)"/>
+
+  <rect x="120" y="140" width="440" height="90" rx="10" fill="#f8fafc" stroke="#e2e6ec"/>
+  <text x="340" y="175" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">资金流抽水图：饼只有 v(N)，威胁合计可「虚要」更多</text>
+  <text x="340" y="200" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">三人多数：三对各要 1，加权和 1.5 &gt; v(N)=1 → 抽空 → 核空</text>
+  <text x="340" y="222" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">信息流：谁知道真实 v(S)，谁就能更准地发起阻塞或防御</text>
+</svg>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>秩</th>
+<th>杠杆点</th>
+<th>为何杠杆大</th>
+<th>操作成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>把 (v(S)) 测准</td>
+<td>假数据 → 假稳定</td>
+<td>中：反事实实验</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>改联盟结构（凸化）</td>
+<td>充分条件直接造核</td>
+<td>高：业务重组</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>退出罚金 / 重复博弈</td>
+<td>有效抬高留存</td>
+<td>中：合同设计</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>选核内点而非任意公平</td>
+<td>公平公式可能在核外</td>
+<td>低：先查核</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>用平衡族证空</td>
+<td>比穷举分配快</td>
+<td>低：三人手算</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>ε-核 / 核仁</td>
+<td>空核时的最小让步</td>
+<td>中：LP</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>限制可形成联盟</td>
+<td>缩小约束集</td>
+<td>政策/平台规则</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>侧支付通道</td>
+<td>TU 假设的现实版</td>
+<td>法律边界</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>信息披露</td>
+<td>减少「假 v」谈判</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>稀缺侧识别</td>
+<td>手套核极端点</td>
+<td>低：看供需</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「核非空 = 合作一定发生」</summary><div class="dbody"><p>核非空只保证<strong>存在</strong>稳定分配，不保证谈判会选中它；多重核点时仍可能谈崩。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. 「空核 = 不可能合作」</summary><div class="dbody"><p>空核 = 无免疫阻塞的分配。合同、声誉、罚金、平台规则可改变有效博弈。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>3. 「平均分一定在核内」</summary><div class="dbody"><p>三人多数平均分 ((1/3,1/3,1/3))：任二人合计 (2/3&lt;1)，三对全部阻塞。平均分甚至是「最不坏」的核仁，但仍不在核内。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 「沙普利值稳住大联盟」</summary><div class="dbody"><p>沙普利值永远存在，但可不在核内；核空时它无法阻止拆伙。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>5. 「超可加 ⇒ 核非空」</summary><div class="dbody"><p>超可加只说明大联盟「值得形成」，不保证稳定分配存在。多数博弈常取超可加仍空核。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>6. 「人多了核更大」</summary><div class="dbody"><p>交换经济里人多时核往往<strong>收缩</strong>；手套市场右侧过剩时核缩成给稀缺侧的单点。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>7. 「个人理性够了」</summary><div class="dbody"><p>估算集要求 (x_i\ge v({i}))；核还要求一切 (S)，漏掉二人联盟是最常见翻车。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>8. 「平衡性太抽象，可忽略」</summary><div class="dbody"><p>三人多数用 (\alpha=1/2) 覆盖三对：加权和 (1.5&gt;1)，立刻证空——抽象条件有手算版。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>9. 「核仁能创造核」</summary><div class="dbody"><p>核仁最小化不满，不能把空核变非空；它只选最小 ε-核里的一点。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>10. 「TU 侧支付现实中免费」</summary><div class="dbody"><p>法律、税收、信任摩擦使侧支付有成本；实际更接近 NTU，Scarf 平衡性只给充分条件。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>11. 「合同签署日核就冻结了」</summary><div class="dbody"><p>外部选择一变，(v) 重写，昨日核内点今日可被阻塞。<span class="tag t-inf">推论</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="mA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="40" y="30" width="160" height="80" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="120" y="65" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">抽象</text><text x="120" y="88" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">C(v) 多面体</text>
+  <rect x="260" y="30" width="160" height="80" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="65" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">机制</text><text x="340" y="88" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">超额·平衡·ε</text>
+  <rect x="480" y="30" width="160" height="80" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="560" y="65" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">操作</text><text x="560" y="88" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">条款·分账表</text>
+  <line x1="200" y1="70" x2="260" y2="70" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#mA)"/>
+  <line x1="420" y1="70" x2="480" y2="70" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#mA)"/>
+  <text x="340" y="160" text-anchor="middle" fill="#15181d" font-size="13" font-family="sans-serif">例：三人创业股权 → 估两两单干估值 → 扫超额 → 核空则加回购/竞业/分期归属</text>
+  <text x="340" y="190" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">例：成本分摊 → 先查核是否非空，再在核内选沙普利或核仁</text>
+  <text x="340" y="220" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">例：议会分预算 → 简单多数常空核，需超级多数或议程规则</text>
+</svg>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>列出玩家与所有非空联盟的 (v(S))</strong>（三人：7 个数）。</li>
+<li><strong>提案一个效率分配</strong>，算每个 (S) 的超额。</li>
+<li><strong>若有正超额</strong>：改分配或承认结构问题。</li>
+<li><strong>若怎么改都有正超额</strong>：用平衡权重证空核，转 ε-核/制度。</li>
+<li><strong>核非空</strong>：在核内用沙普利值或核仁做焦点选择。</li>
+<li><strong>写入退出成本</strong>，使有效博弈尽量平衡。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>叶子 · 能手算三人核</summary><div class="dbody"><p>给定 (v)，判断一点是否在核内；会举多数空核与手套单点核。【实践】</p></div></details>
+<details><summary>枝干 · 会用 Bondareva–Shapley</summary><div class="dbody"><p>构造平衡权重证空；理解凸 ⇒ 核非空；区分超可加与平衡。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>树干 · 空核补丁设计</summary><div class="dbody"><p>ε-核、核仁、合同罚金、重复博弈折扣因子如何改变有效稳定。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>冠层 · 现场建模</summary><div class="dbody"><p>把合资/分摊/投票压成 (v)，做敏感性（外部选择 ±10%）并报告核是否翻转。【实践】</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是<strong>联盟稳定官</strong>：每关一个特征函数。目标不是「分得大家开心」，而是<strong>找到核内点</strong>；若核空，用最少的 ε 或罚金「造出」非空 ε-核。评分：最小 ε、条款简洁度、对 (v) 扰动的稳健性。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>产出</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 多数博弈</td>
+<td>证明核空</td>
+<td>写出 (\alpha=1/2) 加权和 1.5&gt;1</td>
+</tr>
+<tr>
+<td class="k">T2 盈余博弈</td>
+<td>找一个核点</td>
+<td>(v_{12}=4,v_{13}=3,v_{23}=2,v_N=6) 如 (3,2,1)</td>
+</tr>
+<tr>
+<td class="k">T3 手套</td>
+<td>写出核</td>
+<td>1 左 2 右、配对值 1 → 核={(1,0,0)}</td>
+</tr>
+<tr>
+<td class="k">T4 沙普利对照</td>
+<td>算 φ 是否在核</td>
+<td>同上盈余 φ=(2.5,2,1.5)∈核</td>
+</tr>
+<tr>
+<td class="k">T5 最小 ε</td>
+<td>多数博弈</td>
+<td>ε* = 1/3，核仁=(1/3,1/3,1/3)</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>四个可调模型：分配是否在核、二人联盟值抬高何时空核、手套供需、ε-核半径。</p>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">模型 A · 三人分配核检验</button><button class="tab" data-pane="tb1-1">模型 B · 抬高两两联盟 · 空核阈值</button><button class="tab" data-pane="tb1-2">模型 C · 手套市场</button><button class="tab" data-pane="tb1-3">模型 D · ε-核与多数博弈</button></div>
+<div class="pane on" id="tb1-0"><div class="tool" id="toolCoreCheck">
+  <div class="ctrl">
+    <label>玩家1 份额 x₁ <output id="x1_o">2.0</output></label>
+    <input type="range" id="x1" min="0" max="6" step="0.1" value="2">
+    <label>玩家2 份额 x₂ <output id="x2_o">2.0</output></label>
+    <input type="range" id="x2" min="0" max="6" step="0.1" value="2">
+    <label>玩家3 份额 x₃（自动 = 6−x₁−x₂） <output id="x3_o">2.0</output></label>
+    <input type="range" id="x3disp" min="0" max="6" step="0.1" value="2" disabled>
+  </div>
+  <p style="font-size:12px;color:var(--ink3);margin:0 0 8px">固定盈余博弈：v({i})=0，v({1,2})=4，v({1,3})=3，v({2,3})=2，v(N)=6。拖动 x₁、x₂，x₃ 自动补足效率。</p>
+  <div class="readout">
+    <div class="ro">x₃<strong id="ro_x3">2.00</strong></div>
+    <div class="ro">最大超额<strong id="ro_maxe">—</strong></div>
+    <div class="ro">核内？<strong id="ro_incore">—</strong></div>
+    <div id="core_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap"></div>
+  </div>
+  <canvas id="coreChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-1"><div class="tool" id="toolBondareva">
+  <div class="ctrl">
+    <label>两两联盟值 a（对称） <output id="a_o">4.0</output></label>
+    <input type="range" id="a_pair" min="0" max="8" step="0.1" value="4">
+    <label>大联盟 v(N) <output id="vn_o">6.0</output></label>
+    <input type="range" id="vn" min="1" max="12" step="0.1" value="6">
+  </div>
+  <p style="font-size:12px;color:var(--ink3);margin:0 0 8px">v({i})=0，v({i,j})=a，v(N) 可调。对称平衡权重 α=1/2 覆盖三对：加权和 = 1.5a。与 v(N) 比较判定。</p>
+  <div class="readout">
+    <div class="ro">1.5a<strong id="ro_bal">6.00</strong></div>
+    <div class="ro">缺口 1.5a−v(N)<strong id="ro_gap">0.00</strong></div>
+    <div class="ro">核<strong id="ro_empty">非空边界</strong></div>
+    <div id="bal_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap"></div>
+  </div>
+  <canvas id="balChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-2"><div class="tool" id="toolGlove">
+  <div class="ctrl">
+    <label>左手玩家数 L <output id="L_o">1</output></label>
+    <input type="range" id="L_n" min="1" max="5" step="1" value="1">
+    <label>右手玩家数 R <output id="R_o">2</output></label>
+    <input type="range" id="R_n" min="1" max="5" step="1" value="2">
+    <label>每对价值 <output id="pair_o">1.0</output></label>
+    <input type="range" id="pair_v" min="0.5" max="5" step="0.5" value="1">
+  </div>
+  <p style="font-size:12px;color:var(--ink3);margin:0 0 8px">v(S)=配对价值×可配对数。稀缺侧拿走全部配对剩余；过剩侧核内份额为 0。<span class="tag t-ana">分析</span></p>
+  <div class="readout">
+    <div class="ro">v(N)<strong id="ro_vnG">1.00</strong></div>
+    <div class="ro">稀缺侧每人<strong id="ro_scarce">1.00</strong></div>
+    <div class="ro">过剩侧每人<strong id="ro_abund">0.00</strong></div>
+    <div id="glove_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap"></div>
+  </div>
+  <canvas id="gloveChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-3"><div class="tool" id="toolEps">
+  <div class="ctrl">
+    <label>ε 松弛 <output id="eps_o">0.334</output></label>
+    <input type="range" id="eps" min="0" max="1" step="0.001" value="0.334">
+    <label>等分时每人份额（固定 1/3） <output id="eq_o">0.333</output></label>
+    <input type="range" id="eq_dummy" min="0" max="1" step="0.001" value="0.333" disabled>
+  </div>
+  <p style="font-size:12px;color:var(--ink3);margin:0 0 8px">三人多数：v({i})=0，v(二人)=1，v(N)=1。ε-核要求 x(S)≥v(S)−ε。等分进入 ε-核的最小 ε 为 ε*=1/3≈0.333；滑块默认 0.334（step=0.001 能精确表示的略上界）。<span class="tag t-fact">事实</span></p>
+  <div class="readout">
+    <div class="ro">二人门槛 1−ε<strong id="ro_pairNeed">0.666</strong></div>
+    <div class="ro">ε-核含等分？<strong id="ro_epsOk">是</strong></div>
+    <div class="ro">ε*<strong id="ro_epsStar">0.333</strong></div>
+    <div id="eps_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap"></div>
+  </div>
+  <canvas id="epsChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>标志性产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识核</td>
+<td>定义 + 三人手检</td>
+<td>一张超额表</td>
+</tr>
+<tr>
+<td class="k">L2 判空</td>
+<td>Bondareva 手算</td>
+<td>空核证明一段</td>
+</tr>
+<tr>
+<td class="k">L3 选型</td>
+<td>核内选点 / ε-核</td>
+<td>分账方案 + 理由</td>
+</tr>
+<tr>
+<td class="k">L4 造核</td>
+<td>合同与结构改造</td>
+<td>条款使有效博弈平衡</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<p>选一个真实三人协作（项目分红、合租押金分配、小组奖金）。</p>
+<ol>
+<li>写下每人单干、两两、三人的「可创造价值」（主观估即可，标<span class="tag t-hyp">假设</span>）。</li>
+<li>提案一种分法，填超额表（7 行）。</li>
+<li>若有正超额：改一版分配；若仍空，计算对称情形下 (1.5a) 与 (v(N))。</li>
+<li>产出：一页纸「核检报告」+ 一条制度补丁（罚金或分期）。</li>
+</ol>
+<p>验收：别人能按你的表复算最大超额。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>定义与超额</td>
+<td>手算多数空核</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>盈余核点</td>
+<td>找到 ≥2 个核顶点</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>手套</td>
+<td>改变 L/R 看核如何跳</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>沙普利 vs 核</td>
+<td>同一 (v) 对照</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>Bondareva</td>
+<td>对称 a 扫阈值</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>ε-核 / 核仁</td>
+<td>多数 ε*=1/3</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>真实案例</td>
+<td>30 分钟实践落盘</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>基础例子</td>
+<td>5 个经典博弈核状态卡片</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>判定定理</td>
+<td>独立证明 2 个空核 + 2 个非空</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>补丁工具箱</td>
+<td>ε、罚金、重复博弈折扣各一则</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>现场项目</td>
+<td>一份合资/分摊核分析备忘录</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<ol>
+<li><strong>核定义</strong>：效率 + 联盟理性。</li>
+<li><strong>超额</strong>：(e(S,x)=v(S)-x(S))。</li>
+<li><strong>Bondareva–Shapley</strong>：平衡 ⇔ 核非空。</li>
+<li><strong>三人多数空核</strong>：(1.5&gt;1)。</li>
+<li><strong>手套/鞋市场</strong>：稀缺侧独占。</li>
+<li><strong>凸博弈</strong>：核非空且含沙普利值。</li>
+<li><strong>ε-核 / least-core</strong>：最小松弛。</li>
+<li><strong>核仁</strong>：字典序最小化超额向量。</li>
+<li><strong>Debreu–Scarf 直觉</strong>：复制经济核收缩。</li>
+<li><strong>有效博弈</strong>：罚金改变 (v) 以造核。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 核和纳什均衡什么关系？</summary><div class="dbody"><p>核是合作（联盟）稳定；纳什是非合作（单人偏离）。同一情境可同时用两者，但对象不同。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q2 为什么奇数简单多数常空核？</summary><div class="dbody"><p>任意过半联盟要走全部剩余，对称过半联盟的加权需求超过 (v(N))。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q3 超可加但空核，大联盟还会形成吗？</summary><div class="dbody"><p>可能短期形成，但不存在稳定分法；需制度或改 (v)。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q4 核很大时选哪个点？</summary><div class="dbody"><p>焦点：沙普利值（若在核内）、核仁、谈判力、现状点。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q5 NTU 呢？</summary><div class="dbody"><p>Scarf：平衡 ⇒ 核非空（充分不必需）；侧支付受限时更易空核。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q6 计算复杂度？</summary><div class="dbody"><p>一般核成员检验与相关问题随联盟数指数增长；小 (n) 用 LP，大 (n) 需结构。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>Q7 空核时沙普利值还有用吗？</summary><div class="dbody"><p>有——作公平基准与归因；但不能替代稳定性补丁。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q8 如何快速怀疑空核？</summary><div class="dbody"><p>多个高价值、高度重叠的联盟，其「分数覆盖」加权和明显大于 (v(N))。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>Q9 核仁一定公平吗？</summary><div class="dbody"><p>核仁最小化最不满联盟，是稳定取向的单点解，不必满足沙普利公理。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q10 现实里侧支付不合法怎么办？</summary><div class="dbody"><p>按 NTU 或加可行转移约束；可能需非货币补偿（股权归属节奏、决策权）。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>精读 Bondareva (1963) / Shapley (1967) 与 Kannai 综述章。<span class="tag t-fact">事实</span></li>
+<li>对照本引擎《沙普利值》手册：同一 (v) 上画核与 (\phi)。</li>
+<li>延伸：kernel、bargaining set、稳定匹配中的核、网络博弈的核。</li>
+<li>计算：小规模用线性规划求核顶点；核仁用序贯 LP。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">核的定义</td>
+<td>经典文献</td>
+<td>Gillies 1953；教材标准定义</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Bondareva–Shapley</td>
+<td>原始定理</td>
+<td>Bondareva 1963；Shapley 1967 Naval Res. Logist.</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">三人多数空核</td>
+<td>标准例子</td>
+<td>Serrano 讲义；IISc / 多校讲义</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">手套/鞋市场核</td>
+<td>教科书例子</td>
+<td>Wikipedia Core (game theory)；匹配市场</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Scarf NTU</td>
+<td>定理</td>
+<td>Scarf 1967</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">核仁性质</td>
+<td>文献</td>
+<td>Schmeidler 1969；后续综述</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">空核≠不能合作</td>
+<td>解释</td>
+<td>产业组织/合同理论常用补丁</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">交互模型数值</td>
+<td>自洽推算</td>
+<td>本手册 node 验算</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">大 n 复杂度</td>
+<td>计算博弈论</td>
+<td>多类游戏 NP-hard 结果</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或原始定理；<span class="tag t-ana">分析</span>权威解释性判断；<span class="tag t-inf">推论</span>由定义推出；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或前沿计算结论。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是<strong>决策与分析框架</strong>，不是法律意见、投资建议或任何合资/分摊方案的保证。特征函数 (v(S)) 在现实中常含主观估计与制度摩擦；核非空不保证谈判成功，空核也不禁止一切合作。涉及股权、劳动合同、反垄断与侧支付合法性时，请咨询合格专业人士。作者与平台不对依据本手册做出的决策承担责任。</p>
+</section>
+<footer>  <p>《核心（Core） · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 7 分 55 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《核心（Core）》主题脚本
+   四个可调模型：
+     1. 三人盈余分配核检验
+     2. 对称两两联盟 Bondareva 阈值
+     3. 手套市场核
+     4. 多数博弈 ε-核
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t && t.classList && t.classList.contains('tab')) setTimeout(fn, 40);
+    });
+    window.addEventListener('resize', function () { setTimeout(fn, 40); });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, items, ymin, ymax) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    if (ymin == null || ymax == null) {
+      var vs = items.map(function (x) { return x.v; });
+      ymin = Math.min.apply(null, vs.concat([0])) - 0.05;
+      ymax = Math.max.apply(null, vs.concat([0])) + 0.05;
+      if (ymax <= ymin) { ymax = ymin + 1; }
+    }
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (items.length * 1.45);
+    var span = ymax - ymin || 1;
+    items.forEach(function (it, i) {
+      var x = pl + (i + 0.5) * (bw / items.length) - barW / 2;
+      var y = y1 - ((it.v - ymin) / span) * bh;
+      var zeroY = y1 - ((0 - ymin) / span) * bh;
+      var top = Math.min(y, zeroY), bot = Math.max(y, zeroY);
+      ctx.fillStyle = it.c;
+      ctx.fillRect(x, top, barW, Math.max(2, bot - top));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+      var lab = (typeof it.v === 'number' ? it.v.toFixed(it.dp != null ? it.dp : 2) : String(it.v));
+      var lw = ctx.measureText(lab).width;
+      var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 2), w - pr - lw / 2 - 2);
+      ctx.fillText(lab, lx, top - 6);
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(items._axis || '数值', pl + bw, y1 + 31);
+  }
+
+  /* —— 模型 A：盈余核检验 —— */
+  function updateCore() {
+    var x1 = +($('x1') && $('x1').value);
+    var x2 = +($('x2') && $('x2').value);
+    var x3 = 6 - x1 - x2;
+    if ($('x1_o')) txt($('x1_o'), x1.toFixed(1));
+    if ($('x2_o')) txt($('x2_o'), x2.toFixed(1));
+    if ($('x3_o')) txt($('x3_o'), x3.toFixed(1));
+    if ($('x3disp')) $('x3disp').value = Math.max(0, Math.min(6, x3));
+
+    var e12 = 4 - (x1 + x2);
+    var e13 = 3 - (x1 + x3);
+    var e23 = 2 - (x2 + x3);
+    var e1 = 0 - x1, e2 = 0 - x2, e3 = 0 - x3;
+    var maxe = Math.max(e12, e13, e23, e1, e2, e3);
+    var feasible = x3 >= -1e-9 && x1 >= -1e-9 && x2 >= -1e-9;
+    var inCore = feasible && maxe <= 1e-9;
+
+    txt($('ro_x3'), x3.toFixed(2));
+    txt($('ro_maxe'), maxe.toFixed(2));
+    tint($('ro_maxe'), maxe > 1e-9 ? C.red : C.green);
+    txt($('ro_incore'), !feasible ? '无效（x₃<0）' : (inCore ? '是' : '否'));
+    tint($('ro_incore'), inCore ? C.green : C.red);
+
+    var verdict = $('core_v');
+    if (verdict) {
+      var msg = !feasible
+        ? 'x₁+x₂>6，效率无法满足，先缩小份额。'
+        : (inCore
+          ? '所有超额≤0：该点在核内。沙普利值 (2.5, 2.0, 1.5) 亦在核内。'
+          : '最大超额来自阻塞联盟；调整份额或承认需制度补丁。');
+      verdict.innerHTML = '<span style="color:' + (inCore && feasible ? C.green : C.amber) + '">' + msg + '</span>';
+    }
+
+    var items = [
+      { lab: 'e₁₂', v: e12, c: e12 > 0 ? C.red : C.green, dp: 2 },
+      { lab: 'e₁₃', v: e13, c: e13 > 0 ? C.red : C.green, dp: 2 },
+      { lab: 'e₂₃', v: e23, c: e23 > 0 ? C.red : C.green, dp: 2 },
+      { lab: 'x₁', v: x1, c: C.blue, dp: 2 },
+      { lab: 'x₂', v: x2, c: C.blue, dp: 2 },
+      { lab: 'x₃', v: x3, c: C.blue, dp: 2 }
+    ];
+    items._axis = '超额 / 份额';
+    bars($('coreChart'), items, Math.min(-1, maxe, x3) - 0.2, Math.max(4.5, x1, x2, x3) + 0.2);
+  }
+
+  /* —— 模型 B：Bondareva —— */
+  function updateBal() {
+    var a = +($('a_pair') && $('a_pair').value);
+    var vn = +($('vn') && $('vn').value);
+    txt($('a_o'), a.toFixed(1));
+    txt($('vn_o'), vn.toFixed(1));
+    var bal = 1.5 * a;
+    var gap = bal - vn;
+    var empty = gap > 1e-9;
+    var border = Math.abs(gap) <= 1e-9;
+
+    txt($('ro_bal'), bal.toFixed(2));
+    txt($('ro_gap'), gap.toFixed(2));
+    tint($('ro_gap'), empty ? C.red : (border ? C.amber : C.green));
+    txt($('ro_empty'), empty ? '空' : (border ? '非空（边界）' : '非空'));
+    tint($('ro_empty'), empty ? C.red : C.green);
+
+    var verdict = $('bal_v');
+    if (verdict) {
+      var thr = (2 * vn / 3);
+      var msg = empty
+        ? 'α=½ 覆盖三对：1.5a > v(N) ⇒ 不平衡 ⇒ 核空。对称阈值 a ≤ ' + thr.toFixed(2) + '。'
+        : (border
+          ? '恰在 Bondareva 边界：核缩为（可能退化的）集合。'
+          : '1.5a ≤ v(N)，该对称平衡族不证空；对对称博弈此条件亦充分。');
+      verdict.innerHTML = '<span style="color:' + (empty ? C.red : C.green) + '">' + msg + '</span>';
+    }
+
+    var items = [
+      { lab: '1.5a', v: bal, c: empty ? C.red : C.amber, dp: 2 },
+      { lab: 'v(N)', v: vn, c: C.blue, dp: 2 },
+      { lab: '缺口', v: gap, c: empty ? C.red : C.green, dp: 2 },
+      { lab: '阈值a', v: 2 * vn / 3, c: C.ink2, dp: 2 }
+    ];
+    items._axis = '平衡检验';
+    bars($('balChart'), items);
+  }
+
+  /* —— 模型 C：手套 —— */
+  function updateGlove() {
+    var L = +($('L_n') && $('L_n').value);
+    var R = +($('R_n') && $('R_n').value);
+    var pv = +($('pair_v') && $('pair_v').value);
+    txt($('L_o'), String(L));
+    txt($('R_o'), String(R));
+    txt($('pair_o'), pv.toFixed(1));
+
+    var pairs = Math.min(L, R);
+    var vn = pairs * pv;
+    var scarceIsL = L < R;
+    var scarceIsR = R < L;
+    var equal = L === R;
+    var scarcePay = equal ? pv / 2 : pv;
+    var abundPay = equal ? pv / 2 : 0;
+    var scarceN = equal ? L : (scarceIsL ? L : R);
+    var abundN = equal ? 0 : (scarceIsL ? R : L);
+
+    txt($('ro_vnG'), vn.toFixed(2));
+    txt($('ro_scarce'), scarcePay.toFixed(2));
+    txt($('ro_abund'), abundPay.toFixed(2));
+
+    var verdict = $('glove_v');
+    if (verdict) {
+      var msg;
+      if (equal) {
+        msg = 'L=R：核为任意把每对价值在左右之间分割且同侧玩家等份的分配；图示取对称各 ' + (pv / 2).toFixed(2) + '。';
+      } else if (scarceIsL) {
+        msg = '左手稀缺：核中每个左手得 ' + pv.toFixed(2) + '，右手得 0。过剩侧无谈判力。';
+      } else {
+        msg = '右手稀缺：核中每个右手得 ' + pv.toFixed(2) + '，左手得 0。';
+      }
+      verdict.innerHTML = '<span style="color:' + C.blue + '">' + msg + '</span>';
+    }
+
+    var items = [
+      { lab: 'v(N)', v: vn, c: C.blue, dp: 2 },
+      { lab: '稀缺/人', v: scarcePay, c: C.amber, dp: 2 },
+      { lab: '过剩/人', v: abundPay, c: C.green, dp: 2 },
+      { lab: '配对数', v: pairs, c: C.ink2, dp: 0 }
+    ];
+    items._axis = '手套核';
+    bars($('gloveChart'), items, -0.05, Math.max(vn, pv) + 0.2);
+  }
+
+  /* —— 模型 D：ε-核 —— */
+  function updateEps() {
+    var eps = +($('eps') && $('eps').value);
+    txt($('eps_o'), eps.toFixed(3));
+    var eq = 1 / 3;
+    txt($('eq_o'), eq.toFixed(3));
+    var pairGot = 2 * eq;
+    var pairNeed = 1 - eps;
+    var epsStar = 1 / 3;
+    // 等分在 ε-核内 ⇔ ε ≥ 1/3（避免 0.333 因 step 吸附仍略小于 1/3）
+    var ok = eps + 1e-12 >= epsStar;
+
+    txt($('ro_pairNeed'), pairNeed.toFixed(3));
+    txt($('ro_epsOk'), ok ? '是' : '否');
+    tint($('ro_epsOk'), ok ? C.green : C.red);
+    txt($('ro_epsStar'), epsStar.toFixed(3));
+
+    var verdict = $('eps_v');
+    if (verdict) {
+      var msg = ok
+        ? 'ε ≥ ε*=1/3：等分落入 ε-核；least-core 在 ε* 处非空，核仁即等分。'
+        : 'ε < 1/3：等分被二人联盟阻塞。把滑块拖到 ≥ 0.334。';
+      verdict.innerHTML = '<span style="color:' + (ok ? C.green : C.red) + '">' + msg + '</span>';
+    }
+
+    var items = [
+      { lab: '二人所得', v: pairGot, c: C.blue, dp: 3 },
+      { lab: '1−ε', v: pairNeed, c: ok ? C.green : C.red, dp: 3 },
+      { lab: 'ε', v: eps, c: C.amber, dp: 3 },
+      { lab: 'ε*', v: epsStar, c: C.ink2, dp: 3 }
+    ];
+    items._axis = 'ε-核';
+    bars($('epsChart'), items, -0.02, 1.05);
+  }
+
+  function all() {
+    updateCore();
+    updateBal();
+    updateGlove();
+    updateEps();
+  }
+
+  bind(['x1', 'x2'], updateCore);
+  bind(['a_pair', 'vn'], updateBal);
+  bind(['L_n', 'R_n', 'pair_v'], updateGlove);
+  bind(['eps'], updateEps);
+  all();
+})();
+</script>
+</body>
+</html>
