@@ -830,11 +830,14 @@
     {
       "slug": "选美博弈（Keynesian Beauty Contest）：猜别人猜什么而非猜真相，金融市场的核心结构",
       "title": "选美博弈（Keynesian Beauty Contest）：猜别人猜什么而非猜真相，金融市场的核心结构",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 04:13:31",
+      "finished": "2026-09-19 04:23:19",
+      "duration_sec": 588,
+      "outputs": [
+        "reports/选美博弈（Keynesian Beauty Contest）：猜别人猜什么而非猜真相，金融市场的核心结构.html",
+        "reports/选美博弈（Keynesian Beauty Contest）：猜别人猜什么而非猜真相，金融市场的核心结构.md"
+      ],
       "error": null
     },
     {
@@ -1885,7 +1888,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 04:13",
+  "updated": "2026-09-19 04:23",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>选美博弈（Keynesian Beauty Contest）：猜别人猜什么而非猜真相 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Beauty Contest × Higher-Order Beliefs</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <div class="navgroup">实践系统</div>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>选美博弈（Keynesian Beauty Contest）：猜别人猜什么而非猜真相</h1>
+  <p class="sub">凯恩斯报纸选美：奖不在「最美」，而在<strong>猜中别人会投谁</strong>——金融市场定价的核心常常是高阶信念，不是真相本身。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>选美博弈（Keynesian Beauty Contest）</strong>：凯恩斯《通论》第 12 章的报纸选美——参赛者不是选自己觉得最美的脸，而是选「别人最可能选的那张」。一阶是「我猜基本面」，二阶是「我猜别人猜什么」，三阶是「我猜别人猜别人猜什么」……<strong><span class="tag t-fact">事实</span></strong>（Keynes, 1936）</p>
+<p>实验室版本是 <strong>p-猜数游戏（guessing game）</strong>：在 ([0,100]) 里报一个数，最接近「全体平均数 × (p)」者胜。若 (p=2/3)、人人无限理性且共同知识，唯一纳什是 <strong>0</strong>；真实人第一轮往往落在 <strong>level-1≈33.3、level-2≈22.2</strong> 一带，几乎没人直接报 0。<span class="tag t-fact">事实</span>（Nagel, <em>AER</em> 1995）</p>
+<p>资产市场里：短视、噪声价格、分散信息 → 今日价 ≈ 对「明日平均预期」的平均预期；<strong>平均信念不满足迭代期望律</strong>，公共信息被系统性超配，价格可相对基本面惯性漂移。<span class="tag t-ana">分析</span>（Allen–Morris–Shin, <em>RFS</em> 2006）</p>
+<blockquote>
+<p>市场问的常常不是「值多少」，而是：<strong>别人以为别人会出多少价</strong>。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「投机坏不坏」，而是：<strong>当收益取决于他人预期时，高阶信念如何塑造价格、波动与策略深度；以及有限深度（level-k）如何解释「明明知道均衡是 0，却没人报 0」</strong>。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：凯恩斯隐喻、p-猜数、level-k / 认知层级、高阶信念、公共信息超配、短视定价楔、与共同知识/协调博弈的同构。</li>
+<li><strong>在界外</strong>：某只票的买卖点、具体荐股话术——除非压成「(p)、层级 (k)、公共信号权重、短视系数 (\beta)」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>猜他人预期（高阶信念）如何决定结果</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到信念层级、支付规则与信息结构可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>(p)、level-k、Nash=0、公共/私人信号、(\beta) 短视权重</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>散户、游资、机构、做市商、媒体、指数/基准、监管</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>推理深度 (k)、公共信号精度份额 (\alpha)、持有期/短视 (\beta)</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>报价分布、成交量、媒体热度、指数成分调整、调研均值</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实层级、他人对他人的信念、私人信息精度</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>信息结构 → 超配公共；短视 → 价格楔；深度分布 → 胜出区间</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>更高阶 → 公共权重↑；(\beta)↑ → 价格更跟平均意见</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「大家都看空」≠ 价格立刻反映基本面<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>题材炒作、指数抱团、政策谣言脉冲、聪明钱「骑泡沫」</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>支付绑定「猜中平均意见」而非「猜中真相」</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。价格本身成为公共信号，再进入下一轮高阶预期</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。基本面冲击经多层预期才渗入价格（AMS：惯性）</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>叙事正反馈可放大偏离；清算/到期负反馈拉回基本面</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>选美博弈的锋利处：<strong>理性本身可以制造「偏离真相」</strong>——只要支付函数奖励的是「猜中别人」，不是「猜中基本面」。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它是金融市场的结构隐喻</h4><p>凯恩斯不是在骂投机者蠢，而是指出：<strong>当再出售价格由他人出价决定时，高阶信念进入定价方程是理性的</strong>。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它有可重复的实验锚点</h4><p>Nagel 1995 把隐喻变成可测的猜数游戏：均衡清晰（0），行为系统偏离（L1/L2），且多轮向均衡收敛。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它开相反的药方</h4><p>「再多披露一点公共信息」未必消除选美——公共信号正是高阶猜测的最佳锚；但正式模型仍显示<strong>更好披露可提高价格信息量</strong>，不能用选美借口反透明。<span class="tag t-ana">分析</span>（Gao, <em>JAR</em> 2008）</p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「我比别人聪明一层」当成策略——若多数人其实已经是 L2，你的 L3 可能输给「略浅一层」的赢家；深度不是单调优势。<span class="tag t-inf">推论</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看选美如何从报纸隐喻长成定价操作系统。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="bcArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 机制与披露 · 透明 vs 超配公共：药方要算清</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 资产定价 · AMS：迭代平均预期与价格惯性</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 实证/实验 · 调研 HOB、实验室知情者骑情绪</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 信息结构 · 公共信号被系统性超配</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 短视系数 β · 价格= (1−β)·基本面 + β·平均意见</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 level-k · L0=50 → Lk = p·L(k−1)；无限 → Nash</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 p-猜数 · 目标 = p × 群体均值；p&lt;1 时 NE=0</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 高阶信念 · 我猜你猜我猜……</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 凯恩斯隐喻 · 报纸选美：猜别人投谁</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L3→L4</strong>：先会算 level-k，再谈市场。进阶卡在 <strong>L5–L8</strong>：短视 + 公共超配，才把隐喻接进价格。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到可操作判别。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="180" y="16" width="320" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">支付：猜中「平均意见」而非真相</text>
+
+  <rect x="30" y="100" width="190" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="125" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">一阶信念</text><text x="125" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">我对基本面的判断</text>
+  <rect x="245" y="100" width="190" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">高阶信念 HOB</text><text x="340" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">我对他人信念的信念</text>
+  <rect x="460" y="100" width="190" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="555" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">level-k / Nash</text><text x="555" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">有限深度 vs 无限迭代</text>
+
+  <line x1="280" y1="60" x2="125" y2="100" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="555" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="80" y="200" width="220" height="52" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="190" y="222" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">公共信号超配</text><text x="190" y="240" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">猜平均意见 → 盯媒体/指数</text>
+  <rect x="380" y="200" width="220" height="52" rx="8" fill="#f3e8ff" stroke="#7c3aed"/><text x="490" y="222" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">短视定价楔</text><text x="490" y="240" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">β↑ → 价离基本面</text>
+
+  <line x1="340" y1="152" x2="190" y2="200" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <line x1="340" y1="152" x2="490" y2="200" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+
+  <text x="340" y="300" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">抽象：高阶信念 → 机制：超配公共 / 短视楔 → 操作：估 k、估 β、拆公共锚</text>
+  <text x="340" y="330" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">实线=定义展开；红虚线=反馈到可交易对象</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>在选美中的位置</th>
+<th>典型动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L0 / 噪声交易者</td>
+<td>锚在「显著点」（常取 50）</td>
+<td>跟标题、跟情绪</td>
+</tr>
+<tr>
+<td class="k">L1–L2 投机者</td>
+<td>猜「别人大概在哪」</td>
+<td>题材博弈、短线预期差</td>
+</tr>
+<tr>
+<td class="k">深度迭代者</td>
+<td>逼近 0 / 逼近基本面</td>
+<td>易「过度聪明」输掉短局</td>
+</tr>
+<tr>
+<td class="k">机构 / 知情者</td>
+<td>可骑情绪也可逆情绪</td>
+<td>实验室：知情者会迎合浅层估值<span class="tag t-chk">待验证</span>（Hirota et al., 2024）</td>
+</tr>
+<tr>
+<td class="k">媒体 / 指数 / 政策</td>
+<td>公共信号源</td>
+<td>改变「猜别人」的默认锚</td>
+</tr>
+<tr>
+<td class="k">基准与考核</td>
+<td>制造短视</td>
+<td>季度排名 → 抬高 (\beta)</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+<th>杠杆感</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">(p)</td>
+<td>目标=均值×(p)；市场里像「折现/收缩系数」</td>
+<td>(p) 越小，均衡越深、第一轮越「难猜」</td>
+</tr>
+<tr>
+<td class="k">(k)</td>
+<td>推理层数；(L_k=p^k\cdot L_0)</td>
+<td>胜负常取决于<strong>相对</strong>深度，非绝对智商</td>
+</tr>
+<tr>
+<td class="k">(\alpha)</td>
+<td>公共信号精度份额</td>
+<td>(\alpha)↑ 且阶数↑ → 公共权重逼近 1</td>
+</tr>
+<tr>
+<td class="k">(\beta)</td>
+<td>短视/选美权重</td>
+<td>(\beta)↑ → 价格楔放大</td>
+</tr>
+<tr>
+<td class="k">(F) vs (P_{\mathrm{pub}})</td>
+<td>基本面 vs 公共叙事读数</td>
+<td>二者分裂时，高阶交易最活跃</td>
+</tr>
+<tr>
+<td class="k">持有期 / 考核周期</td>
+<td>决定有效 (\beta)</td>
+<td>越短越选美</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="140" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="90" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">支付绑平均意见</text>
+  <rect x="200" y="30" width="140" height="44" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="270" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">高阶信念进入</text>
+  <rect x="380" y="30" width="140" height="44" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="450" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">超配公共信号</text>
+  <rect x="520" y="30" width="140" height="44" rx="8" fill="#15181d"/><text x="590" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#fff" font-family="sans-serif">价格偏离 F</text>
+
+  <line x1="160" y1="52" x2="198" y2="52" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="340" y1="52" x2="378" y2="52" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="520" y1="52" x2="518" y2="52" stroke="#1d4ed8" stroke-width="1.5"/>
+  <line x1="520" y1="52" x2="518" y2="52" stroke="#1d4ed8"/>
+  <line x1="520" y1="52" x2="555" y2="52" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+
+  <rect x="100" y="130" width="160" height="44" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="180" y="157" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">短视 / 考核 β↑</text>
+  <rect x="320" y="130" width="160" height="44" rx="8" fill="#f3e8ff" stroke="#7c3aed"/><text x="400" y="157" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">今日价盯明日均价</text>
+  <rect x="500" y="130" width="160" height="44" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="580" y="157" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">惯性 / 动量外观</text>
+
+  <line x1="260" y1="152" x2="318" y2="152" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="480" y1="152" x2="498" y2="152" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+
+  <path d="M590,74 C620,100 620,110 580,130" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+  <text x="340" y="230" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">实线：因果链；红虚线：价格→再成公共信号→下一轮高阶预期</text>
+  <text x="340" y="260" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">AMS：平均信念破坏迭代期望律 → 公共信息影响被放大</text>
+</svg>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>「更透明」与「更少选美」不是同义词</strong>：公共信息既告知基本面，又提供「别人都会看到」的协调锚——后者喂高阶。<span class="tag t-ana">分析</span></li>
+<li><strong>知情者不一定纠偏</strong>：实验室里知情交易者会骑浅层误定价，放大波动。<span class="tag t-chk">待验证</span>（Hirota et al., <em>Pacific Economic Review</em> 2024）</li>
+<li><strong>一阶与高阶可分叉</strong>：散户调研中 FOB 与 HOB 相关但非同一物（相关约 0.51）；外生抬高 FOB 增仓、抬高 HOB 减仓。<span class="tag t-chk">待验证</span>（Xiao et al., 调研+RCT）</li>
+<li><strong>深度竞赛可自我挫败</strong>：人人多想一层，均值下移，原「最优深度」失效——像军备竞赛。<span class="tag t-inf">推论</span></li>
+<li><strong>跨域同构</strong>：猜数 level-k ↔ 扑克「层级思维」↔ 广告「消费者以为别人喜欢什么」↔ 标准战中的「别人会押哪套」。<span class="tag t-ana">分析</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<ol>
+<li><strong>设定支付</strong>：胜负/收益绑定「接近平均意见 × (p)」或「卖给下一位出价者」。  </li>
+<li><strong>形成层级</strong>：参与者对他人深度做假设 → 产生 (L_k) 分布。  </li>
+<li><strong>锚定公共</strong>：媒体、指数、政策成为猜平均意见的廉价信号。  </li>
+<li><strong>定价</strong>：短视下 (P \approx (1-\beta)F + \beta\,\overline{\text{Opinion}})；(\overline{\text{Opinion}}) 本身超配公共。  </li>
+<li><strong>反馈</strong>：成交价写入下一轮公共信息集；多轮实验中向均衡收敛，单轮市场常停在浅层。  </li>
+<li><strong>清算窗口</strong>：到期、再融资、基本面披露 → (\beta) 临时下降，楔收缩。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="90" cy="110" r="10" fill="#0f8a4d"/><text x="90" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">隐喻</text><text x="90" y="70" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Keynes 1936</text>
+  <circle cx="230" cy="110" r="10" fill="#1d4ed8"/><text x="230" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">实验</text><text x="230" y="70" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Nagel 1995</text>
+  <circle cx="370" cy="110" r="10" fill="#b8730a"/><text x="370" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">定价理论</text><text x="370" y="70" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">AMS 2006</text>
+  <circle cx="510" cy="110" r="10" fill="#7c3aed"/><text x="510" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">披露争论</text><text x="510" y="70" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Gao 2008</text>
+  <circle cx="620" cy="110" r="10" fill="#d5342c"/><text x="620" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">HOB 实证</text><text x="620" y="70" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">2024–25</text>
+  <text x="340" y="170" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">单局市场：常停在 L1–L2；重复反馈：向更深均衡挪动</text>
+  <text x="340" y="195" text-anchor="middle" font-size="12" fill="#7c848f" font-family="sans-serif">政策/媒体冲击：瞬间重置「公共锚」，层级分布重洗</text>
+</svg>
+<p>Nagel 实验中，(p&lt;1) 时各轮选择整体下移；(p=1/2) 第四轮过半选择 &lt;1，但仍少有人报精确 0。<span class="tag t-fact">事实</span>市场类比：重复博弈 + 反馈可「拆穿」浅层选美，但新叙事不断重启时钟。</p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>激励</th>
+<th>对系统的作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">短线考核资金</td>
+<td>短期相对排名</td>
+<td>抬高 (\beta)，强化选美</td>
+</tr>
+<tr>
+<td class="k">媒体平台</td>
+<td>点击与共同注意力</td>
+<td>制造强公共锚</td>
+</tr>
+<tr>
+<td class="k">指数与 ETF</td>
+<td>被动跟成分</td>
+<td>把「别人必须买」写成规则</td>
+</tr>
+<tr>
+<td class="k">基本面长线</td>
+<td>等待楔收敛</td>
+<td>承受时间风险与资金流出</td>
+</tr>
+<tr>
+<td class="k">监管</td>
+<td>稳定与公平披露</td>
+<td>增公共信息——信息角色与共同性角色缠在一起</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="fB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="40" y="30" width="120" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="100" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">私人研究</text>
+  <rect x="280" y="30" width="120" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">公共媒体/政策</text>
+  <rect x="520" y="30" width="120" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="580" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">价格本身</text>
+
+  <rect x="200" y="130" width="280" height="50" rx="8" fill="#15181d"/><text x="340" y="160" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">平均意见 / 高阶预期池</text>
+
+  <line x1="100" y1="80" x2="280" y2="130" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#fA)"/>
+  <line x1="340" y1="80" x2="340" y2="130" stroke="#b8730a" stroke-width="2.5" marker-end="url(#fA)"/>
+  <line x1="580" y1="80" x2="420" y2="130" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#fA)"/>
+
+  <rect x="240" y="210" width="200" height="36" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="340" y="233" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">资金流向「被预期会涨」的标的</text>
+  <line x1="340" y1="180" x2="340" y2="210" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#fB)"/>
+  <text x="340" y="255" text-anchor="middle" font-size="11" fill="#7c848f" font-family="sans-serif">粗线=公共信息对平均意见权重更大（抽水效应）</text>
+</svg>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何有效</th>
+<th>操作成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>显式估计对方 (k) 分布</td>
+<td>决定你报哪一层</td>
+<td>低：用历史/问卷近似</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>识别当前强公共锚</td>
+<td>知道别人会盯什么</td>
+<td>低：列 3 个锚并打分</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>拉长有效持有期（降 (\beta)）</td>
+<td>直接缩小选美楔</td>
+<td>中：考核与资金结构</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>分离 FOB 与 HOB</td>
+<td>避免「我觉得低估」与「别人还会更疯」混谈</td>
+<td>低：两列表</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>多轮反馈设计</td>
+<td>实验显示收敛；投资上靠复核节奏</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>披露质量 vs 噪声</td>
+<td>提高公共精度的信息角色</td>
+<td>高：制度层</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>到期/事件日历</td>
+<td>清算窗降低 (\beta)</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>避免「深一层军备」</td>
+<td>相对深度匹配</td>
+<td>低：纪律</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>组合对冲叙事风险</td>
+<td>选美仓与基本面仓分账</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>记录预测对象</td>
+<td>「猜价」还是「猜基本面」必须写清</td>
+<td>极低</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「均衡是 0，所以我报 0」</summary><div class="dbody"><p>忽略他人有限深度；第一轮报 0 在 Nagel 类实验中几乎必输。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>2. 「我比市场更深，所以稳赢」</summary><div class="dbody"><p>若群体已在 L2，L4 可能更远离开奖带；深度是相对的。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>3. 「有基本面就不会选美」</summary><div class="dbody"><p>短视 + 再出售需求本身就把高阶信念写进价格。<span class="tag t-ana">分析</span>（AMS）</p></div></details>
+<details><summary>4. 「多披露就能消灭选美」</summary><div class="dbody"><p>公共信息同时增强共同性；借口「反透明」亦不成立——正式模型仍支持更好披露提升价格信息量。<span class="tag t-ana">分析</span>（Gao 2008）</p></div></details>
+<details><summary>5. 「机构会自动纠偏」</summary><div class="dbody"><p>知情者可选择骑泡沫；纠偏不是制度必然。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>6. 「高阶信念=悲观就该空仓」</summary><div class="dbody"><p>HOB 与仓位关系依设定而变；RCT 显示抬高 HOB 可降股票配置，但是特定样本。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>7. 「新闻热=基本面变」</summary><div class="dbody"><p>热度首先是公共锚强度，其次才可能是信息。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>8. 「选美=非理性」</summary><div class="dbody"><p>在支付绑定平均意见时，猜别人是理性策略；非理性在于误判层级分布。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>9. 「一次猜对证明模型」</summary><div class="dbody"><p>幸存者偏差；要看事前层级假设是否可重复。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>10. 「p 固定不变」</summary><div class="dbody"><p>制度、杠杆、衍生品与考核会改变有效 (p) 与 (\beta)。<span class="tag t-hyp">假设</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <rect x="20" y="20" width="200" height="240" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="120" y="50" text-anchor="middle" font-size="14" font-weight="700" fill="#15181d" font-family="sans-serif">抽象层</text>
+  <text x="120" y="90" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">高阶信念</text>
+  <text x="120" y="120" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">level-k / Nash</text>
+  <text x="120" y="150" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">迭代平均预期</text>
+  <text x="120" y="180" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">公共超配</text>
+
+  <rect x="240" y="20" width="200" height="240" rx="10" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="340" y="50" text-anchor="middle" font-size="14" font-weight="700" fill="#15181d" font-family="sans-serif">机制层</text>
+  <text x="340" y="90" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">短视考核 → β</text>
+  <text x="340" y="120" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">媒体/指数锚</text>
+  <text x="340" y="150" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">价格反馈信号</text>
+  <text x="340" y="180" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">清算窗降 β</text>
+
+  <rect x="460" y="20" width="200" height="240" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="560" y="50" text-anchor="middle" font-size="14" font-weight="700" fill="#15181d" font-family="sans-serif">操作层</text>
+  <text x="560" y="90" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">估 k 分布</text>
+  <text x="560" y="120" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">列公共锚</text>
+  <text x="560" y="150" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">分账：叙事/价值</text>
+  <text x="560" y="180" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">事件前降仓β</text>
+</svg>
+<p>例：主题投资高潮时，(F) 未变而 (P_{\mathrm{pub}}) 飙升——模型 3 会显示楔扩大；这不是「情绪玄学」，是 (\beta) 与公共权重的算术。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>理论命题</th>
+<th>行动翻译</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">第一轮别报 Nash</td>
+<td>先画 L0–L3，再选相对匹配层</td>
+</tr>
+<tr>
+<td class="k">公共信号超配</td>
+<td>交易日志强制写「我在赌锚还是赌 F」</td>
+</tr>
+<tr>
+<td class="k">(\beta) 决定楔</td>
+<td>能控持有期就控；不能就缩小仓位</td>
+</tr>
+<tr>
+<td class="k">多轮收敛</td>
+<td>设复核点：新信息是否改变 (k) 分布</td>
+</tr>
+<tr>
+<td class="k">披露双刃</td>
+<td>读公告时问：信息增量 vs 共同注意力增量</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>枝 A · 形式化</summary><div class="dbody"><ul>
+<li>推导 (p&lt;1) 时唯一 NE=0（反复剔除劣势）</li>
+<li>手算 (L_k=p^k\cdot 50)</li>
+<li>解释 AMS「平均信念破坏迭代期望」的直觉</li>
+</ul></div></details>
+<details><summary>枝 B · 实验直觉</summary><div class="dbody"><ul>
+<li>复述 Nagel 1995 关键数字（L1/L2 聚集、少有人报 0）</li>
+<li>设计一次 10 人纸面猜数并记录均值</li>
+</ul></div></details>
+<details><summary>枝 C · 市场翻译</summary><div class="dbody"><ul>
+<li>把题材战写成 ((F,P_{\mathrm{pub}},\beta,k))</li>
+<li>拆指数纳入/剔除的「强制公共需求」</li>
+</ul></div></details>
+<details><summary>枝 D · 元认知</summary><div class="dbody"><ul>
+<li>FOB/HOB 分列</li>
+<li>识别「我以为我在价值，其实在猜意见」</li>
+</ul></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你进入「意见交易所」：胜负不按真相结算，而按「是否接近本局平均出价 × (p)」。每局公布公共标题（强锚）与可选私人备忘录（弱信号）。升级路线：从「跟锚的 L1」→「估分布的 L2」→「管理 (\beta) 的组合官」→「设计披露与考核的规则设计师」。Boss 关：公共锚与基本面反向时的持仓纪律。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>完成标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">手算 p=2/3 的 L0–L4</td>
+<td>50 / 33.33 / 22.22 / 14.81 / 9.88（滑块 0.67≈33.50/22.45）</td>
+</tr>
+<tr>
+<td class="k">组织一次迷你猜数</td>
+<td>记录均值与赢家数，对照 L2</td>
+</tr>
+<tr>
+<td class="k">锚清单</td>
+<td>当前市场 5 个最强公共锚</td>
+</tr>
+<tr>
+<td class="k">楔速算</td>
+<td>默认参数算出 P=108.75、楔+8.75</td>
+</tr>
+<tr>
+<td class="k">案例卡</td>
+<td>1 则新闻标成选美结构</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若所有人突然变成 L∞</button><button class="tab" data-pane="tb1-1">若公共锚从 120 打到 80（F=100）</button><button class="tab" data-pane="tb1-2">若考核周期从季改年</button><button class="tab" data-pane="tb1-3">若禁止公共披露</button></div>
+<div class="pane on" id="tb1-0"><p>p=2/3 时都报 0，游戏无趣；市场里若 (\beta\to0) 且共同知识基本面，选美项消失——现实考核很少允许。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-1"><p>α=0.5、k=2 → 公共权重 0.875；β=0.5 时价格从偏高楔翻向偏低楔（见模型 3）。叙事反转等于重定价。<span class="tag t-fact">事实</span>（算术）</p></div><div class="pane" id="tb1-2"><p>有效 (\beta) 下降，同样叙事下价格楔收窄——不一定改基本面，先改激励。<span class="tag t-ana">分析</span></p></div><div class="pane" id="tb1-3"><p>共同性下降，但信息也枯竭；Gao 类结果警告：别把婴儿与洗澡水一起倒掉。<span class="tag t-ana">分析</span></p></div>
+<h3>可调模型 1 · level-k 猜数：p 与层级</h3>
+<p>滑块默认 (p=0.67)（约 (2/3)），(L_0=50) → (L_1=33.50)，(L_2=22.45)；精确 (p=2/3) 时为 33.33 / 22.22。无限层 → 0。拖动看「你该站在哪一层」。</p>
+<div class="tool" id="tool_lk">
+  <div class="ctrl">
+    <label>p（目标=均值×p） <output id="lk_pO">0.67</output></label>
+    <input type="range" id="lk_p" min="0.20" max="0.95" step="0.01" value="0.67"/>
+    <label>L0 锚 <output id="lk_l0O">50</output></label>
+    <input type="range" id="lk_l0" min="20" max="80" step="1" value="50"/>
+    <label>你的层级 k <output id="lk_kO">2</output></label>
+    <input type="range" id="lk_k" min="0" max="8" step="1" value="2"/>
+  </div>
+  <div class="readout">
+    <div class="ro">你的报数<strong id="lk_you">22.45</strong></div>
+    <div class="ro">L1<strong id="lk_l1">33.50</strong></div>
+    <div class="ro">L2<strong id="lk_l2">22.45</strong></div>
+    <div class="ro">Nash(∞)<strong id="lk_nash">0.00</strong></div>
+    <div id="lk_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="lk_vh">默认 p=0.67≈2/3：L2=22.45；无限理性 → 0。第一轮报 0 通常过深。</span></div>
+  </div>
+  <canvas id="lkChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · 群体混合：谁赢？</h3>
+<p>设定 L0/L1/L2 三组占比（自动归一），算群体均值与目标 (p\times)均值，看哪一层最接近开奖。默认 (p=0.67)、40%/35%/25% → 均值≈37.34，目标≈25.02，<strong>L2 最近</strong>（|ε|≈2.57）。<span class="tag t-fact">事实</span>（算术）</p>
+<div class="tool" id="tool_mx">
+  <div class="ctrl">
+    <label>p <output id="mx_pO">0.67</output></label>
+    <input type="range" id="mx_p" min="0.20" max="0.95" step="0.01" value="0.67"/>
+    <label>L0 占比% <output id="mx_w0O">40</output></label>
+    <input type="range" id="mx_w0" min="0" max="100" step="1" value="40"/>
+    <label>L1 占比% <output id="mx_w1O">35</output></label>
+    <input type="range" id="mx_w1" min="0" max="100" step="1" value="35"/>
+    <label>L2 占比% <output id="mx_w2O">25</output></label>
+    <input type="range" id="mx_w2" min="0" max="100" step="1" value="25"/>
+  </div>
+  <div class="readout">
+    <div class="ro">均值<strong id="mx_mean">37.34</strong></div>
+    <div class="ro">目标<strong id="mx_tgt">25.02</strong></div>
+    <div class="ro">最近层<strong id="mx_win">L2</strong></div>
+    <div class="ro">|误差|<strong id="mx_err">2.57</strong></div>
+    <div id="mx_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="mx_vh">默认混合：目标≈25.02，L2=22.45 最近（|ε|≈2.57）。加深群体会下移目标。</span></div>
+  </div>
+  <canvas id="mxChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 公共超配：阶数如何吸干私人信号</h3>
+<p>教学近似：公共精度份额 (\alpha) 时，第 (k) 阶平均意见对公共的权重 (w=1-(1-\alpha)^{k+1})。(\alpha=0.5)：k=0→0.50，k=1→0.75，k=2→0.875。<span class="tag t-inf">推论</span>（示意公式，非 AMS 全导出）</p>
+<div class="tool" id="tool_pw">
+  <div class="ctrl">
+    <label>公共精度份额 α <output id="pw_aO">0.50</output></label>
+    <input type="range" id="pw_a" min="0.10" max="0.90" step="0.01" value="0.50"/>
+    <label>信念阶数 k <output id="pw_kO">2</output></label>
+    <input type="range" id="pw_k" min="0" max="8" step="1" value="2"/>
+  </div>
+  <div class="readout">
+    <div class="ro">公共权重 w<strong id="pw_w">0.875</strong></div>
+    <div class="ro">私人权重<strong id="pw_priv">0.125</strong></div>
+    <div class="ro">相对 k=0 Δw<strong id="pw_dw">+0.375</strong></div>
+    <div id="pw_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="pw_vh">α=0.5、k=2 → w=0.875：猜「别人的平均意见」时，公共锚主导。</span></div>
+  </div>
+  <canvas id="pwChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 短视定价楔：β × 公共叙事</h3>
+<p>(P=(1-\beta)F+\beta[(1-w)F+w\,P_{\mathrm{pub}}])，(w=1-(1-\alpha)^{k+1})。默认 F=100、Ppub=120、α=0.5、k=2、β=0.5 → <strong>P=108.75</strong>，楔 <strong>+8.75</strong>。<span class="tag t-fact">事实</span>（算术）</p>
+<div class="tool" id="tool_pr">
+  <div class="ctrl">
+    <label>基本面 F <output id="pr_fO">100</output></label>
+    <input type="range" id="pr_f" min="60" max="140" step="1" value="100"/>
+    <label>公共叙事 Ppub <output id="pr_pubO">120</output></label>
+    <input type="range" id="pr_pub" min="60" max="160" step="1" value="120"/>
+    <label>α <output id="pr_aO">0.50</output></label>
+    <input type="range" id="pr_a" min="0.10" max="0.90" step="0.01" value="0.50"/>
+    <label>阶数 k <output id="pr_kO">2</output></label>
+    <input type="range" id="pr_k" min="0" max="6" step="1" value="2"/>
+    <label>短视 β <output id="pr_bO">0.50</output></label>
+    <input type="range" id="pr_b" min="0" max="1" step="0.01" value="0.50"/>
+  </div>
+  <div class="readout">
+    <div class="ro">价格 P<strong id="pr_p">108.75</strong></div>
+    <div class="ro">楔 P−F<strong id="pr_w">+8.75</strong></div>
+    <div class="ro">意见权重 w<strong id="pr_ow">0.875</strong></div>
+    <div class="ro">涨跌色<strong id="pr_dir">偏高</strong></div>
+    <div id="pr_vline" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="pr_vh">默认：P=108.75，楔+8.75（涨红）。降 β 或让 Ppub→F 可收楔。</span></div>
+  </div>
+  <canvas id="prChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>讲清凯恩斯隐喻与 p-猜数规则</td>
+<td>不与「选最美」混淆</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>手算 level-k 与混合赢家</td>
+<td>与滑块一致</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>用 α、k、β 解释价格楔</td>
+<td>算出 +8.75 类例子</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>案例拆解 + 批评过度叙事</td>
+<td>标清<span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>纸算精确 (p=2/3)：L0–L4 = 50 / 33.33 / 22.22 / 14.81 / 9.88；再用滑块 p=0.67 对照（8 分钟）。  </li>
+<li>假设朋友局 40/35/25、p=0.67，算目标≈25.02，标出 L2 为相对赢家（8 分钟）。  </li>
+<li>打开模型 4：把 β 从 0.50 拖到 0.20，看楔从 +8.75 缩到 +3.50（7 分钟）。  </li>
+<li>写当前你最关心的一个标的/议题：一句话分清「我在猜 F 还是猜别人」（7 分钟）。  </li>
+</ol>
+<p>产出：一张手算表 + 一句对象声明——成本接近 0，可验证。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>隐喻与规则</td>
+<td>半页转述（禁止「选最美」误读）</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>level-k</td>
+<td>5 组 p 的 L0–L4 表</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>Nagel 数字</td>
+<td>对照笔记</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>公共超配</td>
+<td>α–k 热力直觉</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>定价楔</td>
+<td>3 组 (F,Ppub,β)</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>现实案例</td>
+<td>1 则新闻建模</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘</td>
+<td>陷阱清单自测 10 条</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>形式与实验</td>
+<td>自办 1 次猜数局</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>信息与披露</td>
+<td>读 AMS/Gao 摘要卡</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>市场翻译</td>
+<td>10 张案例卡</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>纪律系统</td>
+<td>FOB/HOB 分账模板固化</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>凯恩斯报纸选美</td>
+<td>奖给猜中大众选票者</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>p-猜数</td>
+<td>目标=p×均值</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>反复剔除 → NE=0</td>
+<td>p&lt;1 时唯一理性共同知识解</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>level-k</td>
+<td>(L_k=p^k L_0)</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>认知层级 / Poisson cognitive hierarchy</td>
+<td>对他人深度的概率分布</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>AMS 迭代平均预期</td>
+<td>平均信念破坏迭代期望律</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>公共信息超配</td>
+<td>猜意见时抬公共权重</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>短视定价楔</td>
+<td>(P=(1-\beta)F+\beta\,\overline{Op})</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>披露双角色</td>
+<td>信息 vs 共同性（Gao）</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>FOB≠HOB</td>
+<td>一阶与高阶可分叉并反向影响仓位</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 选美博弈是在骂市场非理性吗？</summary><div class="dbody"><p>不完全是：它指出理性人在特定支付下也会猜别人。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q2 为什么实验里没人第一轮报 0？</summary><div class="dbody"><p>因为 0 是对「人人无限理性」的最优反应，而该前提不成立。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q3 L2≈22.2 是否「正确答案」？</summary><div class="dbody"><p>是常见深度，不是唯一真理；取决于真实分布。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q4 金融市场的 p 是什么？</summary><div class="dbody"><p>隐喻系数：折现、风险、再出售概率等压缩「猜均值」的强度。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>Q5 公共信息是否应该减少？</summary><div class="dbody"><p>选美效应存在 ≠ 应反透明；需看净信息效率。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q6 如何降低自己的选美暴露？</summary><div class="dbody"><p>降 (\beta)（更长持有/更松考核）、缩小叙事仓、强制写清预测对象。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>Q7 高阶信念能量化吗？</summary><div class="dbody"><p>可用调研/实验代理；字段证据仍粗，标<span class="tag t-chk">待验证</span>。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>Q8 与反射性（索罗斯）什么关系？</summary><div class="dbody"><p>同属「信念↔价格」闭环；选美更强调高阶与支付结构。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q9 与协调博弈/谢林点？</summary><div class="dbody"><p>公共锚=显著焦点；选美是「带支付收缩」的协调。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q10 算法交易会消灭选美吗？</summary><div class="dbody"><p>算法可加快层级军备，也可能把公共微观结构信号变成新锚。<span class="tag t-hyp">假设</span></p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>精读 Allen–Morris–Shin (2006) 与 Nagel (1995) 原文数字表  </li>
+<li>对比认知层级（Camerer et al.）与 level-k 的预测差  </li>
+<li>把 ETF 纳入/剔除事件写成「强制公共需求」冲击实验  </li>
+<li>自建 FOB/HOB 日记 30 天，回测「对象声明」是否降低混乱交易  </li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">报纸选美隐喻</td>
+<td>经典著作</td>
+<td>Keynes, <em>General Theory</em> (1936), Ch.12</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">p-猜数实验</td>
+<td>同行评审</td>
+<td>Nagel, <em>AER</em> 1995</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">迭代平均预期与公共超配</td>
+<td>同行评审</td>
+<td>Allen, Morris, Shin, <em>RFS</em> 2006</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">披露与效率</td>
+<td>同行评审</td>
+<td>Gao, <em>JAR</em> 2008</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">知情者骑情绪（实验室）</td>
+<td>同行评审</td>
+<td>Hirota et al., <em>Pacific Economic Review</em> 2024</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">FOB/HOB 与仓位（调研+RCT）</td>
+<td>工作论文/会议</td>
+<td>Xiao et al.；相关≈0.51</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">HOB 与非基本面投机（调研）</td>
+<td>工作论文</td>
+<td>Vasudevan et al., Shiller 调研</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">level-k / 楔的算术例子</td>
+<td>本手册推演</td>
+<td>见可调模型</td>
+<td><span class="tag t-fact">事实</span>（算术）/<span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或可复算；<span class="tag t-ana">分析</span>权威模型推断；<span class="tag t-inf">推论</span>逻辑延伸；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单线或新 empirically。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与决策训练材料，<strong>不构成投资建议、不构成对任何证券的推荐或预测</strong>。文中收益、价格楔、层级分布均为教学示意；真实交易涉及本金损失风险。金融市场有正漂移与制度约束，「什么都不做」亦非零基准——任何胜率/收益叙述均需自备对照。作者与引擎不对依据本文的决策承担责任。</p>
+</section>
+<footer>  <p>《选美博弈（Keynesian Beauty Contest）：猜别人猜什么而非猜真相 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 9 分 48 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《选美博弈 Keynesian Beauty Contest》主题脚本
+   四个可调模型：
+     1. level-k 猜数
+     2. 群体混合谁赢
+     3. 公共信号超配权重
+     4. 短视定价楔
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    purple: '#7c3aed', grid: '#eef1f5', axis: '#e2e6ec',
+    ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function clampLabel(ctx, lab, x, y, align, pl, w) {
+    var lw = ctx.measureText(lab).width;
+    ctx.textAlign = align;
+    var lx = align === 'left' ? Math.min(x, w - lw - 6) : Math.max(x, pl + 6);
+    ctx.fillText(lab, lx, y);
+  }
+  function r2(x) { return (Math.round(x * 100) / 100).toFixed(2); }
+  function r3(x) { return (Math.round(x * 1000) / 1000).toFixed(3); }
+  function r1(x) { return (Math.round(x * 10) / 10).toFixed(1); }
+  function signed(x) {
+    var v = Math.round(x * 100) / 100;
+    return (v > 0 ? '+' : '') + v.toFixed(2);
+  }
+  function levelK(p, l0, k) {
+    return l0 * Math.pow(p, k);
+  }
+  function pubW(alpha, k) {
+    return 1 - Math.pow(1 - alpha, k + 1);
+  }
+  function priceWedge(F, Ppub, alpha, k, beta) {
+    var w = pubW(alpha, k);
+    var op = (1 - w) * F + w * Ppub;
+    var P = (1 - beta) * F + beta * op;
+    return { w: w, op: op, P: P, wedge: P - F };
+  }
+
+  /* ── 1. level-k ── */
+  (function lk() {
+    var pEl = $('lk_p'), l0El = $('lk_l0'), kEl = $('lk_k');
+    if (!pEl || !l0El || !kEl) return;
+    var cv = $('lkChart');
+
+    function upd() {
+      var p = parseFloat(pEl.value), l0 = parseFloat(l0El.value), k = parseInt(kEl.value, 10);
+      var you = levelK(p, l0, k);
+      var l1 = levelK(p, l0, 1), l2 = levelK(p, l0, 2);
+      var nash = (p < 1) ? 0 : l0;
+
+      txt($('lk_pO'), r2(p));
+      txt($('lk_l0O'), String(Math.round(l0)));
+      txt($('lk_kO'), String(k));
+      txt($('lk_you'), r2(you));
+      txt($('lk_l1'), r2(l1));
+      txt($('lk_l2'), r2(l2));
+      txt($('lk_nash'), r2(nash));
+
+      var msg = 'p=' + r2(p) + '，L' + k + '=' + r2(you) +
+        '（L1=' + r2(l1) + '，L2=' + r2(l2) + '）；无限层 → ' + r2(nash) +
+        (k >= 5 ? '。过深可能远离第一轮开奖带。' : '。');
+      var col = (k === 0) ? C.amber : (k <= 2 ? C.green : C.blue);
+      txt($('lk_vh'), msg);
+      tint($('lk_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 44, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var maxK = 8;
+      var maxY = l0 * 1.05;
+      function sx(kk) { return pl + (kk / maxK) * bw; }
+      function sy(v) { return y1 - (v / maxY) * bh; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth = 1;
+      for (var i = 0; i <= 4; i++) {
+        var yy = pt + (bh * i) / 4;
+        ctx.beginPath();
+        ctx.moveTo(pl, yy);
+        ctx.lineTo(pl + bw, yy);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (var kk = 0; kk <= maxK; kk++) {
+        var vv = levelK(p, l0, kk);
+        if (kk === 0) ctx.moveTo(sx(kk), sy(vv));
+        else ctx.lineTo(sx(kk), sy(vv));
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = C.red;
+      ctx.beginPath();
+      ctx.arc(sx(k), sy(you), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('层级 k →', pl + bw / 2, y1 + 31);
+      ctx.textAlign = 'right';
+      ctx.fillText('报数', pl - 6, pt + 10);
+    }
+    bind(['lk_p', 'lk_l0', 'lk_k'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 2. mixture winner ── */
+  (function mx() {
+    var pEl = $('mx_p'), w0El = $('mx_w0'), w1El = $('mx_w1'), w2El = $('mx_w2');
+    if (!pEl || !w0El) return;
+    var cv = $('mxChart');
+
+    function upd() {
+      var p = parseFloat(pEl.value);
+      var a = parseFloat(w0El.value), b = parseFloat(w1El.value), c = parseFloat(w2El.value);
+      var s = a + b + c;
+      if (s <= 0) { a = 1; b = 0; c = 0; s = 1; }
+      var f0 = a / s, f1 = b / s, f2 = c / s;
+      var l0 = 50, l1 = levelK(p, l0, 1), l2 = levelK(p, l0, 2);
+      var mean = f0 * l0 + f1 * l1 + f2 * l2;
+      var tgt = p * mean;
+      var d0 = Math.abs(l0 - tgt), d1 = Math.abs(l1 - tgt), d2 = Math.abs(l2 - tgt);
+      var win = 'L0', err = d0, wcol = C.amber;
+      if (d1 <= err) { win = 'L1'; err = d1; wcol = C.blue; }
+      if (d2 <= err) { win = 'L2'; err = d2; wcol = C.green; }
+
+      txt($('mx_pO'), r2(p));
+      txt($('mx_w0O'), String(Math.round(a)));
+      txt($('mx_w1O'), String(Math.round(b)));
+      txt($('mx_w2O'), String(Math.round(c)));
+      txt($('mx_mean'), r2(mean));
+      txt($('mx_tgt'), r2(tgt));
+      txt($('mx_win'), win);
+      tint($('mx_win'), wcol);
+      txt($('mx_err'), r2(err));
+
+      var msg = '归一后 L0/L1/L2=' + r2(f0 * 100) + '%/' + r2(f1 * 100) + '%/' + r2(f2 * 100) +
+        '% → 均值=' + r2(mean) + '，目标=' + r2(tgt) + ' → 最近 ' + win + '（|ε|=' + r2(err) + '）';
+      txt($('mx_vh'), msg);
+      tint($('mx_vh'), wcol);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr;
+      var items = [
+        { lab: 'L0=' + r2(l0), v: d0, c: C.amber },
+        { lab: 'L1=' + r2(l1), v: d1, c: C.blue },
+        { lab: 'L2=' + r2(l2), v: d2, c: C.green }
+      ];
+      var maxV = Math.max(0.01, d0, d1, d2);
+      var barH = 28, gap = 16, startY = pt + 24;
+      items.forEach(function (it, i) {
+        var y = startY + i * (barH + gap);
+        var len = (it.v / maxV) * bw * 0.92;
+        ctx.fillStyle = it.c;
+        ctx.fillRect(pl, y, Math.max(2, len), barH);
+        ctx.fillStyle = C.ink;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(it.lab + '  |ε|', pl, y - 4);
+        var lab = r2(it.v);
+        ctx.fillStyle = C.ink2;
+        clampLabel(ctx, lab, pl + len + 8, y + barH / 2 + 4, 'left', pl, w);
+      });
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('与目标的绝对误差（越短越近）· 目标=' + r2(tgt), pl + bw / 2, y1 + 31);
+    }
+    bind(['mx_p', 'mx_w0', 'mx_w1', 'mx_w2'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 3. public overweight ── */
+  (function pw() {
+    var aEl = $('pw_a'), kEl = $('pw_k');
+    if (!aEl || !kEl) return;
+    var cv = $('pwChart');
+
+    function upd() {
+      var alpha = parseFloat(aEl.value), k = parseInt(kEl.value, 10);
+      var w = pubW(alpha, k);
+      var w0 = pubW(alpha, 0);
+      var dw = w - w0;
+
+      txt($('pw_aO'), r2(alpha));
+      txt($('pw_kO'), String(k));
+      txt($('pw_w'), r3(w));
+      txt($('pw_priv'), r3(1 - w));
+      txt($('pw_dw'), signed(dw));
+      tint($('pw_dw'), dw >= 0 ? C.red : C.green);
+
+      var msg = 'α=' + r2(alpha) + '、k=' + k + ' → w=1-(1-α)^(k+1)=' + r3(w) +
+        '（私人仅 ' + r3(1 - w) + '）；相对一阶 Δw=' + signed(dw);
+      txt($('pw_vh'), msg);
+      tint($('pw_vh'), w >= 0.8 ? C.red : C.blue);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, ww = g.w, h = g.h;
+      var pl = 44, pr = 16, pt = 16, y1 = h - 46;
+      var bw = ww - pl - pr, bh = y1 - pt;
+      var maxK = 8;
+      function sx(kk) { return pl + (kk / maxK) * bw; }
+      function sy(v) { return y1 - v * bh; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth = 1;
+      for (var i = 0; i <= 4; i++) {
+        var yy = pt + (bh * i) / 4;
+        ctx.beginPath();
+        ctx.moveTo(pl, yy);
+        ctx.lineTo(pl + bw, yy);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = C.amber;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (var kk = 0; kk <= maxK; kk++) {
+        var vv = pubW(alpha, kk);
+        if (kk === 0) ctx.moveTo(sx(kk), sy(vv));
+        else ctx.lineTo(sx(kk), sy(vv));
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = C.red;
+      ctx.beginPath();
+      ctx.arc(sx(k), sy(w), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('阶数 k → 公共权重 w', pl + bw / 2, y1 + 31);
+    }
+    bind(['pw_a', 'pw_k'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+
+  /* ── 4. price wedge ── */
+  (function pr() {
+    var fEl = $('pr_f'), pubEl = $('pr_pub'), aEl = $('pr_a'), kEl = $('pr_k'), bEl = $('pr_b');
+    if (!fEl || !pubEl || !aEl || !kEl || !bEl) return;
+    var cv = $('prChart');
+
+    function upd() {
+      var F = parseFloat(fEl.value), Ppub = parseFloat(pubEl.value);
+      var alpha = parseFloat(aEl.value), k = parseInt(kEl.value, 10), beta = parseFloat(bEl.value);
+      var r = priceWedge(F, Ppub, alpha, k, beta);
+      var hi = r.wedge >= 0;
+      var col = hi ? C.red : C.green;
+
+      txt($('pr_fO'), String(Math.round(F)));
+      txt($('pr_pubO'), String(Math.round(Ppub)));
+      txt($('pr_aO'), r2(alpha));
+      txt($('pr_kO'), String(k));
+      txt($('pr_bO'), r2(beta));
+      txt($('pr_p'), r2(r.P));
+      txt($('pr_w'), signed(r.wedge));
+      tint($('pr_w'), col);
+      txt($('pr_ow'), r3(r.w));
+      txt($('pr_dir'), hi ? '偏高' : (r.wedge < 0 ? '偏低' : '持平'));
+      tint($('pr_dir'), col);
+
+      var msg = 'w=' + r3(r.w) + '，意见=' + r2(r.op) + ' → P=(1-β)F+β·Op=' + r2(r.P) +
+        '，楔=' + signed(r.wedge) + (hi ? '（涨红）' : '（跌绿）');
+      txt($('pr_vh'), msg);
+      tint($('pr_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr;
+      var items = [
+        { lab: '基本面 F', v: F, c: C.ink2 },
+        { lab: '平均意见', v: r.op, c: C.amber },
+        { lab: '价格 P', v: r.P, c: col }
+      ];
+      var minV = Math.min(F, r.op, r.P) - 5;
+      var maxV = Math.max(F, r.op, r.P) + 5;
+      var span = Math.max(1, maxV - minV);
+      var barH = 28, gap = 16, startY = pt + 24;
+      function sx(v) { return pl + ((v - minV) / span) * bw; }
+      items.forEach(function (it, i) {
+        var y = startY + i * (barH + gap);
+        var x0 = sx(Math.min(F, it.v));
+        // draw from min axis
+        var len = ((it.v - minV) / span) * bw;
+        ctx.fillStyle = it.c;
+        ctx.fillRect(pl, y, Math.max(2, len), barH);
+        ctx.fillStyle = C.ink;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(it.lab, pl, y - 4);
+        var lab = r2(it.v);
+        ctx.fillStyle = C.ink2;
+        clampLabel(ctx, lab, pl + len + 8, y + barH / 2 + 4, 'left', pl, w);
+      });
+      // F marker line
+      ctx.strokeStyle = C.ink3;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 3]);
+      var fx = sx(F);
+      ctx.beginPath();
+      ctx.moveTo(fx, pt);
+      ctx.lineTo(fx, y1);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('虚线=基本面 F · 楔 ' + signed(r.wedge), pl + bw / 2, y1 + 31);
+    }
+    bind(['pr_f', 'pr_pub', 'pr_a', 'pr_k', 'pr_b'], upd);
+    upd();
+    window.addEventListener('resize', upd);
+  })();
+})();
+</script>
+</body>
+</html>
