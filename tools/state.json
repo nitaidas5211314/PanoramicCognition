@@ -1012,11 +1012,14 @@
     {
       "slug": "维克里拍卖（二价拍卖）：出价说真话是占优策略，机制设计的经典范例",
       "title": "维克里拍卖（二价拍卖）：出价说真话是占优策略，机制设计的经典范例",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 06:04:25",
+      "finished": "2026-09-19 06:11:19",
+      "duration_sec": 414,
+      "outputs": [
+        "reports/维克里拍卖（二价拍卖）：出价说真话是占优策略，机制设计的经典范例.html",
+        "reports/维克里拍卖（二价拍卖）：出价说真话是占优策略，机制设计的经典范例.md"
+      ],
       "error": null
     },
     {
@@ -1927,7 +1930,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 06:04",
+  "updated": "2026-09-19 06:11",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
