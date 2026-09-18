@@ -856,11 +856,14 @@
     {
       "slug": "沙普利值（Shapley Value）：合作博弈中按边际贡献分配收益的唯一公平解",
       "title": "沙普利值（Shapley Value）：合作博弈中按边际贡献分配收益的唯一公平解",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 04:31:54",
+      "finished": "2026-09-19 04:39:39",
+      "duration_sec": 465,
+      "outputs": [
+        "reports/沙普利值（Shapley Value）：合作博弈中按边际贡献分配收益的唯一公平解.html",
+        "reports/沙普利值（Shapley Value）：合作博弈中按边际贡献分配收益的唯一公平解.md"
+      ],
       "error": null
     },
     {
@@ -1891,7 +1894,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 04:31",
+  "updated": "2026-09-19 04:39",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
