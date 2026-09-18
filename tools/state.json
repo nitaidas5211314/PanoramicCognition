@@ -596,11 +596,14 @@
     {
       "slug": "逆向归纳（Backward Induction）：从最后一步倒推，动态博弈的标准求解思路",
       "title": "逆向归纳（Backward Induction）：从最后一步倒推，动态博弈的标准求解思路",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 01:38:56",
+      "finished": "2026-09-19 01:47:04",
+      "duration_sec": 488,
+      "outputs": [
+        "reports/逆向归纳（Backward Induction）：从最后一步倒推，动态博弈的标准求解思路.html",
+        "reports/逆向归纳（Backward Induction）：从最后一步倒推，动态博弈的标准求解思路.md"
+      ],
       "error": null
     },
     {
@@ -1831,7 +1834,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 01:38",
+  "updated": "2026-09-19 01:47",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
