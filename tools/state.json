@@ -986,11 +986,14 @@
     {
       "slug": "威胁点 - BATNA：谈判力来源于-谈崩后的最佳替代方案-，而非口头强硬",
       "title": "威胁点 / BATNA：谈判力来源于\"谈崩后的最佳替代方案\"，而非口头强硬",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 05:51:25",
+      "finished": "2026-09-19 05:57:34",
+      "duration_sec": 369,
+      "outputs": [
+        "reports/威胁点 - BATNA：谈判力来源于-谈崩后的最佳替代方案-，而非口头强硬.html",
+        "reports/威胁点 - BATNA：谈判力来源于-谈崩后的最佳替代方案-，而非口头强硬.md"
+      ],
       "error": null
     },
     {
@@ -1921,7 +1924,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 05:51",
+  "updated": "2026-09-19 05:57",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

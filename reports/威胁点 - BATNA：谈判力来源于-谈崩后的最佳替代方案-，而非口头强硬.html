@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>威胁点 / BATNA · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Threat Point × BATNA × ZOPA</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>威胁点 / BATNA</h1>
+  <p class="sub">谈判力来源于<strong>谈崩后的最佳替代方案</strong>，而非口头强硬——把 Fisher–Ury 的 BATNA、纳什破裂点、保留价与 ZOPA、以及 Binmore 的「外部选项原则」钉成同一张可操作地图。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>BATNA（Best Alternative To a Negotiated Agreement）</strong>是 Roger Fisher 与 William Ury 在《Getting to Yes》（1981）里钉下的概念：若当前谈判<strong>谈崩</strong>，你能独立执行的<strong>最佳替代行动</strong>。<span class="tag t-fact">事实</span></p>
+<p>博弈论里与之对应的是<strong>威胁点 / 破裂点（threat / disagreement point）(d)</strong>：达不成协议时各方的效用；纳什讨价还价解从 (d) 起切剩余。Korobkin（2004）把议价力压缩成一句：<strong>能可信地说「不给就走」</strong>——而这句威胁的可信度，几乎完全取决于你（被对方感知到）的 BATNA。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></p>
+<p><strong>口头强硬 ≠ 谈判力。</strong> 嗓门、姿态、虚张声势若没有可执行的外部选项撑腰，在理性对手眼里只是廉价信号；真正抬高你份额的，是改善 (d)（或让对方相信 (d) 已改善），以及在 ZOPA 内纪律地守住保留价。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「怎么把对方骂服」，而是：给定一次具体谈判，<strong>谈崩后你能得到什么、对方能得到什么</strong>，如何据此设定<strong>保留价</strong>、判断<strong>是否存在成交区间（ZOPA）</strong>，以及外部选项应进<strong>威胁点</strong>还是只当<strong>约束</strong>（Binmore 的 outside option principle）。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：BATNA 清单与开发、保留价校准、ZOPA、威胁点进 NBS、外部选项原则（deal-me-out vs split-the-difference）、可信走掉威胁、信息与披露策略。</li>
+<li><strong>在界外</strong>：多议题联合增益的全部技巧（可挂接）、法庭判决细节、话术脚本——除非压成「选项—效用—保留价」三元组。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>谈崩后的最佳替代如何决定议价力与成交边界</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「选项—威胁点—保留价—ZOPA—解概念」为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>BATNA、威胁点 (d)、保留价 (R)、ZOPA、外部选项 (e)</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>买卖双方、中介、仲裁/法庭、旁观者（替代交易对手）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>双方 BATNA 质量、转换成本、时间压力、感知偏差</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>公开报价、竞品、诉讼预期成本、库存/空缺岗位</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>对方真实 BATNA、私下底线、风险态度</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>己方 BATNA↑ → (R)↑ → ZOPA 收缩或上移 → 份额↑</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>可信走掉威胁 ⇒ 对方必须覆盖你的 (R)；不可信威胁被剔除<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「态度硬」与结果相关常因混淆：硬的人往往已有更好 BATNA<span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>拍桌子、最后通牒、僵局、突然让步</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>参与约束：协议效用 ≥ BATNA 效用；否则走掉更优</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。改善 BATNA 改变威胁点，也改变对方对你耐心的信念</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。开发 BATNA 要时间；拖延本身改变有效 (d)（贴现）</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>多报价互相强化；虚报 BATNA 被识破 → 信誉折损 → 有效议价力↓</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>谈判桌上能要到什么，取决于<strong>桌子外面你还能去哪</strong>——先算清谈崩后的世界，再谈桌上的数字。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它把「权力」从姿态改成可验算量</h4><p>议价力 ≈ 可信走掉威胁的质量；BATNA / (d) 可比较、可投资、可改善。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它同时挡住两类错误</h4><p>没有 BATNA → 接受劣于走掉的协议；高估 BATNA → 错杀本该成交的 ZOPA。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它连接两门课</h4><p>实务课讲 Fisher–Ury；理论课讲 Nash (d) 与 Binmore 外部选项原则——混用会算错份额。<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「目标价」当成「保留价」，或把「想象中的更好 offer」当成已落地的 BATNA。M&amp;A 与招聘里常见：卖方幻想下一轮更高报价却未折现等待成本与交易失败概率，结果谈崩后回到更差的现状。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层从「谈崩后你去哪」爬到「制度与披露军备」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="btArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度军备 · 披露规则 / 竞标设计 / 诉讼程序作为共同 BATNA</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 实证与现场 · 招聘 / 采购 / M&amp;A / 劳资 / 诉讼和解</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 战略基础 · Rubinstein 耐心 · 外部选项原则 · 可信承诺</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 跨域同构 · 期权行权价 · 参与约束 · 机会成本 · 退出威胁</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 解概念对照 · NBS 威胁点 vs deal-me-out 约束</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 经典算例 · 二手车 / 薪酬 ZOPA / 剩余抬升 / 虚报识破</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 术语三角 · BATNA · 保留价 R · 威胁点 d · ZOPA</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 决策规则 · 协议 ≻ BATNA 才签；否则走掉或改牌桌</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 原语 · 谈崩后的行动清单 → 选最优一项 = BATNA</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L1–L4</strong>：会列 BATNA、写成货币保留价、画 ZOPA；进阶卡在 <strong>L5–L7</strong>——何时把外部选项当 (d)，何时只当约束。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从「外面还有什么」映射到「桌上该不该签」。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="80" y="16" width="520" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">外部选项 → 保留价 / 威胁点 → 签或不签 / 份额怎么切</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">参与约束 · 机会成本</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">d / R / ZOPA / OOP</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">报价·走掉·开发选项</text>
+
+  <line x1="280" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="180" width="180" height="70" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">BATNA 清单</text><text x="130" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">可执行的外部行动</text>
+  <rect x="250" y="180" width="180" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">R 与 d</text><text x="340" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">保留价·破裂效用</text>
+  <rect x="460" y="180" width="180" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">成交判定</text><text x="550" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">在不在 ZOPA</text>
+
+  <line x1="130" y1="146" x2="130" y2="180" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="146" x2="340" y2="180" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="550" y1="146" x2="550" y2="180" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <path d="M220 215 H250" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <path d="M430 215 H460" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <text x="340" y="280" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">红虚线 = 反馈：走掉/竞价 → 改双方有效 BATNA → 新的 ZOPA</text>
+  <text x="340" y="310" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">跨域同构：参与约束 IR · 期权执行边界 · 供应链双源采购</text>
+  <text x="340" y="340" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">权力公式：可信的「不给就走」 ≻ 任何桌上的姿态表演</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>目标</th>
+<th>信息位置</th>
+<th>典型 BATNA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">买方</td>
+<td>压价、扩条款</td>
+<td>知己方替代货源</td>
+<td>其他供应商、自制、推迟采购</td>
+</tr>
+<tr>
+<td class="k">卖方</td>
+<td>提价、锁量</td>
+<td>知库存与其他客户</td>
+<td>下一位客户、库存持有、停售</td>
+</tr>
+<tr>
+<td class="k">求职者</td>
+<td>薪酬+角色</td>
+<td>知其他 offer</td>
+<td>现职留下、其他公司 offer、创业/休息</td>
+</tr>
+<tr>
+<td class="k">雇主</td>
+<td>控成本、填坑</td>
+<td>知候选人池</td>
+<td>下一位候选人、外包、岗位空置</td>
+</tr>
+<tr>
+<td class="k">诉讼双方</td>
+<td>和解 vs 判决</td>
+<td>律师评估胜率</td>
+<td><strong>共同</strong> BATNA = 继续打官司（期望净额）<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">仲裁/监管</td>
+<td>规则公平</td>
+<td>需披露 (S,d)</td>
+<td>强制程序本身改变有效 (d)</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号</th>
+<th>方向</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">己方 BATNA 质量</td>
+<td>(B_i)</td>
+<td>↑ → 议价力↑</td>
+<td>必须可执行，不是愿望清单</td>
+</tr>
+<tr>
+<td class="k">保留价</td>
+<td>(R_i)</td>
+<td>由 (B_i) + 调整项决定</td>
+<td>≠ 目标价 ≠ 开价</td>
+</tr>
+<tr>
+<td class="k">威胁点</td>
+<td>(d_i)</td>
+<td>进 NBS 的破裂效用</td>
+<td>与 (B_i) 常同向，但不总等同<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">对方 BATNA</td>
+<td>(B_j)</td>
+<td>↑ → 对你不利</td>
+<td>常被高估或低估</td>
+</tr>
+<tr>
+<td class="k">ZOPA 宽度</td>
+<td>(W)</td>
+<td>买方 (R_b) − 卖方 (R_s)（价）</td>
+<td>(W\le 0) ⇒ 无成交除非改牌</td>
+</tr>
+<tr>
+<td class="k">转换/等待成本</td>
+<td>(c)</td>
+<td>↑ → 有效 (R) 变差</td>
+<td>时间压力即议价力另一源<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">感知偏差</td>
+<td>(\hat B - B)</td>
+<td>高估己方 / 低估对方</td>
+<td>实验与实务高频<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cfA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cfB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="16" y="30" width="130" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="81" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">开发 / 改善 BATNA</text>
+  <rect x="186" y="30" width="130" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="251" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">保留价 R 上移</text>
+  <rect x="356" y="30" width="130" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="421" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">可信走掉威胁</text>
+  <rect x="526" y="30" width="138" height="50" rx="8" fill="#15181d"/><text x="595" y="60" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">份额 / 条款改善</text>
+
+  <line x1="146" y1="55" x2="186" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <line x1="316" y1="55" x2="356" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <line x1="486" y1="55" x2="526" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+
+  <text x="340" y="100" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">（上排实线 = 因果主链）</text>
+
+  <rect x="40" y="140" width="160" height="50" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="120" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">口头强硬 / 虚报 BATNA</text>
+  <rect x="260" y="140" width="160" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">对方更新信念</text>
+  <rect x="480" y="140" width="160" height="50" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="560" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">识破 → 有效力↓</text>
+
+  <line x1="200" y1="165" x2="260" y2="165" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cfB)"/>
+  <line x1="420" y1="165" x2="480" y2="165" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cfB)"/>
+
+  <rect x="160" y="230" width="360" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="260" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">双方 R 重叠？有 → 切剩余；无 → 改议题 / 改善 BATNA / 走掉</text>
+  <text x="340" y="305" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">红虚线 = 负反馈：廉价威胁被剔除（类 SPNE 逻辑）</text>
+</svg>
+<div class="note green"><b>默认算例（先算后写）</b><p>蛋糕 (\pi=100)，威胁点 ((d_1,d_2)=(20,30)) → 剩余 (50)，对称 NBS 份额 (45/55)。若方 1 把 BATNA 抬到 (d_1=40)，剩余变 (30)，份额变 (55/45)——<strong>己方净增 (+10)</strong>，不是姿态变了，是 (d) 变了。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>BATNA ≠ 保留价</strong>：BATNA 是外部行动；保留价是「当前这笔交易里你愿接受的最差条款」，常 = BATNA 货币等价 ± 转换成本、关系价值、风险溢价。<span class="tag t-ana">分析</span></li>
+<li><strong>威胁点 ≠ 外部选项（总是）</strong>：Binmore–Rubinstein–Wolinsky / Binmore 外部选项实验指出：在交替出价结构下，外部选项往往只做<strong>约束（deal-me-out）</strong>，不应天真地整段塞进 (d) 做「对半分差（split-the-difference）」。<span class="tag t-fact">事实</span></li>
+<li><strong>双方可以共享同一个 BATNA</strong>：诉讼和解里，双方的「谈崩」都是上法庭——议价力来自对判决期望的相对评估，而非另找一个买家。<span class="tag t-ana">分析</span></li>
+<li><strong>时间压力是第二权力源</strong>：实证研究提示，除 BATNA 外，耐心/截止期也会改变有效议价力；把权力完全等同于 BATNA 会漏掉这一维。<span class="tag t-chk">待验证</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>Fisher–Ury 的三步开发 BATNA：<span class="tag t-fact">事实</span></p>
+<ol>
+<li>列出谈不成时可能采取的行动；</li>
+<li>把有希望的想法落实成可执行选项；</li>
+<li>暂定最优一项为 BATNA。</li>
+</ol>
+<p>之后决策规则极简：</p>
+<p>[
+\text{接受协议} \iff U(\text{协议}) \ge U(\text{BATNA})
+]</p>
+<p>（实务上写成货币保留价比较。）</p>
+<p>当需要预测「剩余怎么切」时，才引入解概念：对称 NBS 在线性可转移效用下给出</p>
+<p>[
+u_i = d_i + \tfrac12\bigl(\pi - d_1 - d_2\bigr)
+]</p>
+<p><strong>改善己方 (d_i) 会同时缩小剩余并提高己方水平</strong>——这是「投资 BATNA」的数学理由。</p>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <text x="340" y="28" text-anchor="middle" fill="#15181d" font-size="14" font-weight="700" font-family="sans-serif">资金 / 价值流：外部选项如何「抽水」进谈判地位</text>
+  <rect x="40" y="50" width="120" height="70" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="100" y="80" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">市场 / 竞品</text><text x="100" y="100" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">报价·库存·岗位</text>
+  <rect x="200" y="50" width="120" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="260" y="80" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">你的 BATNA</text><text x="260" y="100" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">可执行外部行动</text>
+  <rect x="360" y="50" width="120" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="420" y="80" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">谈判桌</text><text x="420" y="100" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">报价·还价·条款</text>
+  <rect x="520" y="50" width="120" height="70" rx="8" fill="#15181d"/><text x="580" y="80" text-anchor="middle" fill="#fff" font-size="12" font-family="sans-serif">协议或走掉</text><text x="580" y="100" text-anchor="middle" fill="#c5cad3" font-size="11" font-family="sans-serif">U≥BATNA?</text>
+  <line x1="160" y1="85" x2="200" y2="85" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="320" y1="85" x2="360" y2="85" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="480" y1="85" x2="520" y2="85" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <rect x="120" y="160" width="440" height="70" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="340" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">抽水方向：把市场里的真实机会「泵进」d / R，再决定桌上怎么切</text><text x="340" y="212" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">没有外部泵 → 桌上只剩姿态；泵假了 → 对方切断管道（识破）</text>
+</svg>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="80" cy="100" r="10" fill="#0f8a4d"/><text x="80" y="60" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">T0 列选项</text>
+  <circle cx="200" cy="100" r="10" fill="#1d4ed8"/><text x="200" y="60" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">T1 落实 BATNA</text>
+  <circle cx="320" cy="100" r="10" fill="#b8730a"/><text x="320" y="60" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">T2 定 R / 估对方</text>
+  <circle cx="440" cy="100" r="10" fill="#1d4ed8"/><text x="440" y="60" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">T3 桌上交锋</text>
+  <circle cx="560" cy="100" r="10" fill="#15181d"/><text x="560" y="60" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">T4 签或走</text>
+  <line x1="90" y1="100" x2="190" y2="100" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="210" y1="100" x2="310" y2="100" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="330" y1="100" x2="430" y2="100" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="450" y1="100" x2="550" y2="100" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <text x="340" y="150" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">关键延迟：T0→T1 常被跳过——未开发 BATNA 就上桌，等于空手进场</text>
+  <text x="340" y="175" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">T3 过程中 BATNA 仍可变：新报价、竞标结果、诉讼进展都会改 d</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>激励</th>
+<th>扭曲风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">代理人（律师/经纪人）</td>
+<td>成交拿佣金</td>
+<td>可能压低你的有效保留价以促成交易<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">采购经理</td>
+<td>KPI 降价</td>
+<td>忽略质量/交期的多维 BATNA</td>
+</tr>
+<tr>
+<td class="k">招聘方</td>
+<td>尽快填坑</td>
+<td>高估「下一位候选人」BATNA</td>
+</tr>
+<tr>
+<td class="k">卖方创始人</td>
+<td>估值叙事</td>
+<td>把「想象中的下轮融资」当 BATNA<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">双方高管</td>
+<td>不显得软弱</td>
+<td>姿态军备竞赛，毁掉本存在的 ZOPA</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<div class="grid g2">
+<div class="card"><h4>资源流</h4><p>金钱、时间、注意力流向：<strong>开发 BATNA</strong>（搜寻、面试、备选方案工程）与<strong>桌上谈判</strong>本身。资源错配的典型是 90% 花在话术、10% 花在外部选项。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>信息流</h4><p>对方不知道你的真实 (B)；你展示的是<strong>信号</strong>。可验证信号（书面 offer、公开竞标）改变对方信念；不可验证的吹牛容易被折扣甚至反噬。<span class="tag t-inf">推论</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+<th>操作成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>先落实再上桌：把 BATNA 做成可执行选项</td>
+<td>直接抬 (d)/(R)</td>
+<td>中：搜寻与准备</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>分开「目标价 / 开价 / 保留价」三张纸</td>
+<td>防情绪塌方</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>估计对方 BATNA（含共同诉讼路径）</td>
+<td>判断 ZOPA 是否存在</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>多议题换价值，而不是单维死磕价格</td>
+<td>扩大有效蛋糕后再切</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>用客观标准（市价、先例）锚定，而非嗓门</td>
+<td>降低姿态战</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>谨慎披露：展示「有选项」≠ 报出精确数字</td>
+<td>信息是武器也是弱点</td>
+<td>低–中</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>识别代理人激励扭曲</td>
+<td>防被「促成交易」绑架</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>区分威胁点用法：NBS-(d) vs deal-me-out</td>
+<td>防理论误用导致错判份额</td>
+<td>中–高</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>管理时间压力（己方截止期、对方库存期）</td>
+<td>第二权力源</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>谈崩后复盘：实际执行的是否真是「最佳」替代</td>
+<td>关闭学习回路</td>
+<td>低</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 把口头强硬当成议价力</summary><div class="dbody"><p>姿态若无 BATNA 支撑，理性对手只会等你耗尽情绪。权力来自走得成，不是喊得响。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. BATNA 与保留价混为一谈</summary><div class="dbody"><p>BATNA 是外部行动；保留价是本交易的底线。转换成本、关系、风险会让两者数值不同。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>3. 把目标价写成「底线」</summary><div class="dbody"><p>目标是 aspire，底线是 walk-away。把 aspire 当底线 → 假僵局或假让步。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>4. 高估自己的 BATNA</summary><div class="dbody"><p>「一定还有更好买家/雇主」未折现搜寻成本与失败率 → 错杀成交。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>5. 低估对方的 BATNA</summary><div class="dbody"><p>以为对方「非你不可」，其实对方库存或候选人池很深 → 你的威胁不可信。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>6. 过早或过精确地披露 BATNA</summary><div class="dbody"><p>说出「我另有 72 万 offer」可能变成锚定，也可能被压到刚好高于该数；有时只透露「有竞争选项」更优。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>7. 把外部选项整段塞进纳什威胁点</summary><div class="dbody"><p>在交替出价结构下，外部选项常只约束最低可接受协议（deal-me-out），不等于自动对半分差。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>8. 沉没成本绑架保留价</summary><div class="dbody"><p>「已经谈了三个月」不是提高 (R) 的理由；沉没成本应退出决策。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>9. 单维价格执念</summary><div class="dbody"><p>忽略交期、付款、风险分担、独家条款——这些都能改变有效 BATNA 与 ZOPA。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>10. 代理人替你「优化成交率」</summary><div class="dbody"><p>佣金结构可能系统压低你的有效走掉意愿；先对齐激励再授权。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>11. 无 ZOPA 仍硬谈</summary><div class="dbody"><p>双方保留价不重叠时，继续压价只会伤关系；应改牌桌（加议题）或各自执行 BATNA。<span class="tag t-fact">事实</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <rect x="30" y="40" width="180" height="140" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/><text x="120" y="80" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">抽象</text><text x="120" y="110" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">参与约束</text><text x="120" y="135" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">U(协议)≥U(BATNA)</text>
+  <rect x="250" y="40" width="180" height="140" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="80" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">机制</text><text x="340" y="110" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">R、d、ZOPA</text><text x="340" y="135" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">NBS / OOP</text>
+  <rect x="470" y="40" width="180" height="140" rx="10" fill="#fff7e6" stroke="#b8730a"/><text x="560" y="80" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">操作</text><text x="560" y="110" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">列选项·定底线</text><text x="560" y="135" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">估对方·决定走留</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>BATNA 例子</th>
+<th>保留价怎么写</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">二手车</td>
+<td>另一家同款 ¥6,500</td>
+<td>高于等价全成本才买<span class="tag t-fact">事实</span>（Fisher 经典叙事）</td>
+</tr>
+<tr>
+<td class="k">求职</td>
+<td>现职或另一 offer ¥72 万</td>
+<td>(R=) BATNA ± 转换成本</td>
+</tr>
+<tr>
+<td class="k">采购</td>
+<td>第二供应商报价</td>
+<td>不低于该全成本的条款组合</td>
+</tr>
+<tr>
+<td class="k">和解</td>
+<td>判决期望净额</td>
+<td>不低于继续诉讼的期望效用</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>写清三行</strong>：开价 / 目标 / 保留价（保留价由 BATNA 校准）。</li>
+<li><strong>列对方可能的 BATNA</strong>，判断 ZOPA 是否为空。</li>
+<li><strong>若 ZOPA 为空</strong>：先投资改善己方或对方选项结构，再回桌。</li>
+<li><strong>若 ZOPA 非空</strong>：用客观标准切剩余，而不是比谁嗓门大。</li>
+<li><strong>每次让步前问</strong>：让步后是否仍 ≥ BATNA？若否，准备走掉。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>一级 · 识词</summary><div class="dbody"><p>能区分 BATNA、保留价、目标价、威胁点、ZOPA；能用一句话解释「权力来自走得成」。</p></div></details>
+<details><summary>二级 · 记账</summary><div class="dbody"><p>能把一次真实谈判写成：选项清单 → 最佳项 → 货币 (R) → 对方 (R) 估计 → ZOPA 宽。</p></div></details>
+<details><summary>三级 · 建模</summary><div class="dbody"><p>能在线性剩余上算对称 NBS；能指出外部选项应作 (d) 还是 deal-me-out 约束。</p></div></details>
+<details><summary>四级 · 实战</summary><div class="dbody"><p>能在招聘/采购/和解中管理披露与代理人激励，并在无 ZOPA 时主动改牌桌或离场。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你进入一座「双桌世界」：<strong>外桌</strong>是市场（报价、诉讼、竞品），<strong>内桌</strong>是谈判。外桌等级决定你在内桌的血量（保留价）。Boss 不是对方情绪，而是「无 ZOPA 却不愿走」的执念；隐藏关卡是「把愿望清单误当成已落地 BATNA」。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>成功标准</th>
+<th>奖励感</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">主线：完成一次 BATNA 三步开发</td>
+<td>清单≥5 项且最优项可执行</td>
+<td>保留价有据</td>
+</tr>
+<tr>
+<td class="k">支线：画出对方 BATNA</td>
+<td>至少 2 个可证伪假设</td>
+<td>ZOPA 判断</td>
+</tr>
+<tr>
+<td class="k">日常：任何还价前默念「≥BATNA？」</td>
+<td>连续 7 天无例外</td>
+<td>防情绪成交</td>
+</tr>
+<tr>
+<td class="k">挑战：无 ZOPA 时主动提议改议题或暂停</td>
+<td>留下书面理由</td>
+<td>纪律</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">A · ZOPA 探测器</button><button class="tab" data-pane="tb1-1">B · 威胁点抬升 → 份额</button><button class="tab" data-pane="tb1-2">C · 外部选项原则</button><button class="tab" data-pane="tb1-3">D · 保留价校准</button></div>
+<div class="pane on" id="tb1-0"><p>卖方保留价（最低可接受价）与买方保留价（最高可接受价）是否重叠，决定谈还是走。</p>
+<div class="tool" id="tool_zopa">
+  <div class="ctrl">
+    <label>卖方保留价 Rs <output id="zp_rsO">50</output></label>
+    <input type="range" id="zp_rs" min="10" max="120" step="1" value="50">
+    <label>买方保留价 Rb <output id="zp_rbO">80</output></label>
+    <input type="range" id="zp_rb" min="10" max="120" step="1" value="80">
+  </div>
+  <div class="readout">
+    <div class="ro">ZOPA 宽 <b id="zp_w">30</b></div>
+    <div class="ro">中点参考 <b id="zp_mid">65.0</b></div>
+    <div class="ro">状态 <b id="zp_st">有成交区间</b></div>
+    <div id="zp_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定：Rs≤Rb → 存在 ZOPA；成交价应落在 [Rs, Rb]</div>
+  </div>
+  <canvas id="zpChart" height="214"></canvas>
+</div></div><div class="pane" id="tb1-1"><p>线性蛋糕上，改善己方威胁点如何改写对称 NBS。</p>
+<div class="tool" id="tool_lift">
+  <div class="ctrl">
+    <label>蛋糕 π <output id="lf_piO">100.0</output></label>
+    <input type="range" id="lf_pi" min="40" max="200" step="0.5" value="100">
+    <label>己方威胁点 d₁ <output id="lf_d1O">20.0</output></label>
+    <input type="range" id="lf_d1" min="0" max="90" step="0.5" value="20">
+    <label>对方威胁点 d₂ <output id="lf_d2O">30.0</output></label>
+    <input type="range" id="lf_d2" min="0" max="90" step="0.5" value="30">
+  </div>
+  <div class="readout">
+    <div class="ro">剩余 <b id="lf_s">50.00</b></div>
+    <div class="ro">NBS 份额 u₁/u₂ <b id="lf_u">45.00 / 55.00</b></div>
+    <div class="ro">相对「五五开总蛋糕」 <b id="lf_vs">−5.00 / +5.00</b></div>
+    <div id="lf_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定：抬高 d₁ 会缩小剩余，但通常抬高己方绝对份额</div>
+  </div>
+  <canvas id="lfChart" height="214"></canvas>
+</div></div><div class="pane" id="tb1-2"><p>对比「把外部选项当威胁点对半分差」vs「只当 deal-me-out 约束」。</p>
+<div class="tool" id="tool_oop">
+  <div class="ctrl">
+    <label>蛋糕 π <output id="op_piO">100.0</output></label>
+    <input type="range" id="op_pi" min="50" max="150" step="0.5" value="100">
+    <label>方1 外部选项 e₁ <output id="op_e1O">60.0</output></label>
+    <input type="range" id="op_e1" min="0" max="90" step="0.5" value="60">
+    <label>方2 外部选项 e₂ <output id="op_e2O">10.0</output></label>
+    <input type="range" id="op_e2" min="0" max="90" step="0.5" value="10">
+  </div>
+  <div class="readout">
+    <div class="ro">无选项基准（五五） <b id="op_base">50.00 / 50.00</b></div>
+    <div class="ro">deal-me-out <b id="op_dmo">60.00 / 40.00</b></div>
+    <div class="ro">split-the-difference <b id="op_std">75.00 / 25.00</b></div>
+    <div id="op_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定：仅当 e 超过无选项均衡时，外部选项才「咬住」协议</div>
+  </div>
+  <canvas id="opChart" height="214"></canvas>
+</div></div><div class="pane" id="tb1-3"><p>从 BATNA 货币值加减转换成本与风险溢价，得到本交易保留价，并与桌上报价比较。</p>
+<div class="tool" id="tool_res">
+  <div class="ctrl">
+    <label>BATNA 货币值 <output id="rs_bO">72.0</output></label>
+    <input type="range" id="rs_b" min="20" max="120" step="0.1" value="72">
+    <label>转换成本（＋恶化） <output id="rs_cO">3.0</output></label>
+    <input type="range" id="rs_c" min="0" max="20" step="0.1" value="3">
+    <label>关系/风险调整（可负） <output id="rs_aO">0.0</output></label>
+    <input type="range" id="rs_a" min="-10" max="10" step="0.1" value="0">
+    <label>桌上报价 <output id="rs_oO">70.0</output></label>
+    <input type="range" id="rs_o" min="20" max="120" step="0.1" value="70">
+  </div>
+  <div class="readout">
+    <div class="ro">保留价 R <b id="rs_r">75.0</b></div>
+    <div class="ro">报价 − R <b id="rs_gap">−5.0</b></div>
+    <div class="ro">决策 <b id="rs_dec">应拒绝或再谈</b></div>
+    <div id="rs_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定：求职场景下 R = BATNA + 转换成本 + 调整；报价低于 R → 走掉更优</div>
+  </div>
+  <canvas id="rsChart" height="214"></canvas>
+</div></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>解释 BATNA 与姿态的区别</td>
+<td>能举反例</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>完成一次真实谈判的 BATNA→R→ZOPA 表</td>
+<td>一页纸</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>指出 NBS-(d) 与 deal-me-out 的适用差别</td>
+<td>口述 + 一算例</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>在组织里建立「上桌前 BATNA 检查」流程</td>
+<td>被他人复用</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一件<strong>本周真实要谈的事</strong>（报价、续约、分工、买东西）。</li>
+<li>10 分钟：列出谈不成时至少 <strong>5</strong> 个行动，标出可执行的最优项 = BATNA。</li>
+<li>10 分钟：把 BATNA 写成货币或效用，加上转换成本，得到保留价 (R)；另写目标价与开价。</li>
+<li>10 分钟：猜测对方 BATNA 与 (R)，画是否存在 ZOPA；若无，写下「改议题 / 改善选项 / 走掉」三选一。</li>
+<li>产出：一页纸，可验证——保留价数字与选项名称必须具体到可执行。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>行动</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>完成 30 分钟最小实践</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>为对方 BATNA 写 2 个可证伪假设并找证据</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>用本手册工具 A/B 复算你的数字</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>检查代理人激励是否扭曲你的 (R)</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>演练一次「报价低于 R → 礼貌走掉」话术</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>若有第二谈判，强制先更新 BATNA 再上桌</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘：哪次差点用姿态代替选项？记下触发条件</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<ul>
+<li><strong>周 1</strong>：建立个人「谈判前检查表」（BATNA / R / 对方 / ZOPA）。</li>
+<li><strong>周 2</strong>：在至少 2 次真实互动中执行检查表；记录走掉或成交理由。</li>
+<li><strong>周 3</strong>：专攻披露策略：何时展示竞争选项、展示到什么精度。</li>
+<li><strong>周 4</strong>：引入解概念对照（NBS vs deal-me-out）；写一篇一页复盘给同事或未来的自己。</li>
+</ul>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>BATNA 决策规则</td>
+<td>协议必须优于最佳外部行动</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>保留价校准</td>
+<td>(R = U^{-1}(U(B))) ± 调整项</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>ZOPA</td>
+<td>双方保留价重叠区间</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>对称 NBS</td>
+<td>(u_i=d_i+\frac12(\pi-d_1-d_2))</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>威胁点抬升</td>
+<td>投资 (d_i) 提高己方水平</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>deal-me-out</td>
+<td>外部选项作约束，非自动改 (d)</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>split-the-difference</td>
+<td>把 (e) 当 (d) 对半分差（常被误用）</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>可信走掉威胁</td>
+<td>Korobkin：权力 = 僵局威胁的可信度</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>共同 BATNA（诉讼）</td>
+<td>双方外部选项同一条判决路径</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>参与约束 IR</td>
+<td>机制设计里「自愿参与」的同构物</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>上桌前</summary><div class="dbody"><p>我的 BATNA 是否已落实到可执行？保留价是否写死？目标价是否与保留价分开？</p></div></details>
+<details><summary>对对方</summary><div class="dbody"><p>对方最强的外部选项是什么？是另找交易对手，还是共同走向法庭/监管？</p></div></details>
+<details><summary>ZOPA</summary><div class="dbody"><p>双方保留价是否重叠？若不重叠，我准备改哪一张牌？</p></div></details>
+<details><summary>披露</summary><div class="dbody"><p>我展示「有选项」还是报出精确数字？报出后对方最优反应是什么？</p></div></details>
+<details><summary>理论选用</summary><div class="dbody"><p>这次该用威胁点进 NBS，还是外部选项只做 deal-me-out？依据是议价程序还是习惯建模？</p></div></details>
+<details><summary>代理人</summary><div class="dbody"><p>谁拿佣金？成交对他们是否比「对你最优」更重要？</p></div></details>
+<details><summary>时间</summary><div class="dbody"><p>谁的截止期更紧？拖延是在消耗谁的有效 BATNA？</p></div></details>
+<details><summary>谈崩后</summary><div class="dbody"><p>我是否真的会执行写下的 BATNA，还是会后悔性回桌？</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>精读 Fisher–Ury–Patton《Getting to Yes》BATNA 章，对照自己上次谈判。</li>
+<li>接续本队列相邻主题：<strong>纳什讨价还价解</strong>、<strong>鲁宾斯坦轮流出价</strong>、<strong>可信承诺</strong>——把 (d)、耐心、烧船连成一条链。</li>
+<li>进阶：Binmore 外部选项实验与「outside option principle」原文；Korobkin <em>Bargaining Power as Threat of Impasse</em>。</li>
+<li>实务：为采购/招聘各做一份「BATNA 仪表盘」（选项、成本、时效、可信度评分）。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">BATNA 术语与三步开发</td>
+<td>经典著作</td>
+<td>Fisher, Ury(, Patton)《Getting to Yes》1981/1991/2011；Beyond Intractability 综述</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">议价力 = 僵局威胁</td>
+<td>法学论文</td>
+<td>Korobkin, <em>Bargaining Power as Threat of Impasse</em> (2004)；<em>Three Conceptions of Power</em></td>
+<td><span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">威胁点与 NBS</td>
+<td>经典论文</td>
+<td>Nash 1950/1953；教材性综述（合作讨价还价）</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">外部选项原则</td>
+<td>理论+实验</td>
+<td>Binmore–Shaked–Sutton 等 outside option 实验；BRW 1986 建模指南</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">ZOPA / 保留点</td>
+<td>教学与实务</td>
+<td>Harvard PON「How to Find the ZOPA」；KARRASS BATNA–ZOPA 指南</td>
+<td><span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">高估 BATNA 等失误</td>
+<td>实务评论</td>
+<td>Redcliffe / Red Bear 等谈判训练文（二手）</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">时间压力亦为权力源</td>
+<td>实证综述</td>
+<td><em>Alternatives vs. Time</em>（PMC，2020 前后实验文献）</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">默认数值算例</td>
+<td>自算</td>
+<td>(\pi=100,(d_1,d_2)=(20,30)\Rightarrow 45/55)；(d_1=40\Rightarrow 55/45)；OOP 默认 (60/40) vs (75/25)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或经典文本；<span class="tag t-ana">分析</span>权威推导/机构判断；<span class="tag t-inf">推论</span>本手册推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或二手转述。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是<strong>认知与决策框架</strong>，用于理解谈判中的外部选项、保留价与威胁点，<strong>不是</strong>法律意见、投资建议、采购或人力资源合规指引。具体合同、诉讼、并购、劳动争议应咨询具备资质的专业人士。文中数值均为教学算例，不构成对任何真实交易的预测或保证。读者须自行承担依据本手册行动的后果。</p>
+</section>
+<footer>  <p>《威胁点 / BATNA · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 6 分 9 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《威胁点 / BATNA》主题脚本
+   四个可调模型：
+     1. ZOPA 探测器
+     2. 威胁点抬升 → NBS 份额
+     3. 外部选项原则（deal-me-out vs split-the-difference）
+     4. 保留价校准
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t && t.classList && t.classList.contains('tab')) setTimeout(fn, 40);
+    });
+    window.addEventListener('resize', function () { setTimeout(fn, 40); });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(1), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, items, ymin, ymax) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    if (ymin == null || ymax == null) {
+      var vs = items.map(function (x) { return x.v; });
+      ymin = Math.min.apply(null, vs.concat([0])) - 0.5;
+      ymax = Math.max.apply(null, vs.concat([0])) + 0.5;
+      if (ymax <= ymin) { ymax = ymin + 1; }
+    }
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (items.length * 1.45);
+    var span = ymax - ymin || 1;
+    items.forEach(function (it, i) {
+      var x = pl + (i + 0.5) * (bw / items.length) - barW / 2;
+      var y = y1 - ((it.v - ymin) / span) * bh;
+      var zeroY = y1 - ((0 - ymin) / span) * bh;
+      var top = Math.min(y, zeroY), bot = Math.max(y, zeroY);
+      ctx.fillStyle = it.c;
+      ctx.fillRect(x, top, barW, Math.max(2, bot - top));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+      var lab = (typeof it.v === 'number' ? it.v.toFixed(it.dp != null ? it.dp : 2) : String(it.v));
+      var lw = ctx.measureText(lab).width;
+      var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 2), w - pr - lw / 2 - 2);
+      ctx.fillText(lab, lx, top - 6);
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(items._axis || '数值', pl + bw, y1 + 31);
+  }
+  function fmt1(x) { return (Math.round(x * 10) / 10).toFixed(1); }
+  function fmt2(x) { return (Math.round(x * 100) / 100).toFixed(2); }
+
+  /* ---- 1. ZOPA ---- */
+  function updZp() {
+    var rs = +$('zp_rs').value, rb = +$('zp_rb').value;
+    txt($('zp_rsO'), String(rs));
+    txt($('zp_rbO'), String(rb));
+    var w = rb - rs;
+    var mid = (rs + rb) / 2;
+    var ok = w >= 0;
+    txt($('zp_w'), ok ? String(w) : String(w));
+    txt($('zp_mid'), ok ? fmt1(mid) : '—');
+    txt($('zp_st'), ok ? '有成交区间' : '无 ZOPA');
+    var vh = $('zp_vh');
+    if (ok) {
+      txt(vh, '判定：Rs≤Rb → 存在 ZOPA；成交价应落在 [' + rs + ', ' + rb + ']，中点参考 ' + fmt1(mid));
+      tint(vh, C.green);
+    } else {
+      txt(vh, '判定：Rs>Rb → 无重叠；应改议题、改善 BATNA，或各自走掉（勿硬压）');
+      tint(vh, C.red);
+    }
+    var items = [
+      { lab: 'Rs', v: rs, c: C.amber, dp: 0 },
+      { lab: '中点', v: ok ? mid : 0, c: C.blue, dp: 1 },
+      { lab: 'Rb', v: rb, c: C.green, dp: 0 },
+      { lab: '宽度', v: w, c: ok ? C.blue : C.red, dp: 0 }
+    ];
+    items._axis = '价格 / 宽度';
+    var ymin = Math.min(rs, rb, 0) - 5;
+    var ymax = Math.max(rs, rb, Math.abs(w)) + 5;
+    bars($('zpChart'), items, ymin, ymax);
+  }
+
+  /* ---- 2. Threat-point lift / NBS ---- */
+  function updLf() {
+    var pi = +$('lf_pi').value, d1 = +$('lf_d1').value, d2 = +$('lf_d2').value;
+    txt($('lf_piO'), fmt1(pi));
+    txt($('lf_d1O'), fmt1(d1));
+    txt($('lf_d2O'), fmt1(d2));
+    var s = pi - d1 - d2;
+    var ok = s >= -1e-9;
+    if (!ok) s = 0;
+    var u1 = d1 + s / 2, u2 = d2 + s / 2;
+    var half = pi / 2;
+    txt($('lf_s'), fmt2(s));
+    txt($('lf_u'), fmt2(u1) + ' / ' + fmt2(u2));
+    txt($('lf_vs'), fmt2(u1 - half) + ' / ' + fmt2(u2 - half));
+    var vh = $('lf_vh');
+    if (!ok) {
+      txt(vh, '判定：剩余为负，个人理性集为空，无协议');
+      tint(vh, C.red);
+    } else {
+      txt(vh, '判定：抬高 d₁ 缩小剩余，但己方绝对份额通常上升（默认 20→40 时 +10）');
+      tint(vh, C.green);
+    }
+    var items = [
+      { lab: 'd₁', v: d1, c: C.amber, dp: 1 },
+      { lab: 'u₁', v: u1, c: C.blue, dp: 2 },
+      { lab: 'u₂', v: u2, c: C.green, dp: 2 },
+      { lab: '剩余', v: s, c: ok ? C.ink2 : C.red, dp: 2 }
+    ];
+    items._axis = '效用 / 份额';
+    bars($('lfChart'), items, 0, Math.max(pi, u1, u2) + 5);
+  }
+
+  /* ---- 3. Outside option principle ---- */
+  function updOp() {
+    var pi = +$('op_pi').value, e1 = +$('op_e1').value, e2 = +$('op_e2').value;
+    txt($('op_piO'), fmt1(pi));
+    txt($('op_e1O'), fmt1(e1));
+    txt($('op_e2O'), fmt1(e2));
+    var b1 = pi / 2, b2 = pi / 2;
+    /* deal-me-out: start from equal split; if ei > bi, give ei and residual to other (efficient) */
+    var d1 = b1, d2 = b2;
+    if (e1 > b1 && e2 > b2) {
+      /* both prefer outside — no interior deal better for both; mark infeasible-ish */
+      d1 = e1; d2 = e2;
+    } else if (e1 > b1) {
+      d1 = e1; d2 = pi - e1;
+    } else if (e2 > b2) {
+      d2 = e2; d1 = pi - e2;
+    }
+    var dmoOk = d1 + d2 <= pi + 1e-9 && d1 >= e1 - 1e-9 && d2 >= e2 - 1e-9;
+    /* split-the-difference: treat e as threat point */
+    var sur = pi - e1 - e2;
+    var stdOk = sur >= -1e-9;
+    var s1 = stdOk ? e1 + sur / 2 : NaN;
+    var s2 = stdOk ? e2 + sur / 2 : NaN;
+
+    txt($('op_base'), fmt2(b1) + ' / ' + fmt2(b2));
+    txt($('op_dmo'), dmoOk ? fmt2(d1) + ' / ' + fmt2(d2) : '无可行协议');
+    txt($('op_std'), stdOk ? fmt2(s1) + ' / ' + fmt2(s2) : '剩余为负');
+
+    var vh = $('op_vh');
+    if (e1 <= b1 && e2 <= b2) {
+      txt(vh, '判定：外部选项均不超过无选项均衡 → deal-me-out 与基准相同（选项「不咬住」）');
+      tint(vh, C.blue);
+    } else if (dmoOk && stdOk) {
+      txt(vh, '判定：选项咬住后，deal-me-out 与 split-the-difference 分差可达 ' +
+        fmt2(Math.abs(s1 - d1)) + '（默认 15）——混用会系统性误判份额');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：外部选项过高，检查是否真有共同剩余可分');
+      tint(vh, C.red);
+    }
+
+    var items = [
+      { lab: '基准1', v: b1, c: C.ink3, dp: 2 },
+      { lab: 'DMO1', v: dmoOk ? d1 : 0, c: C.blue, dp: 2 },
+      { lab: 'STD1', v: stdOk ? s1 : 0, c: C.amber, dp: 2 },
+      { lab: 'DMO2', v: dmoOk ? d2 : 0, c: C.green, dp: 2 }
+    ];
+    items._axis = '方1/方2 份额';
+    bars($('opChart'), items, 0, pi + 5);
+  }
+
+  /* ---- 4. Reservation calibration ---- */
+  function updRs() {
+    var b = +$('rs_b').value, c = +$('rs_c').value, a = +$('rs_a').value, o = +$('rs_o').value;
+    txt($('rs_bO'), fmt1(b));
+    txt($('rs_cO'), fmt1(c));
+    txt($('rs_aO'), fmt1(a));
+    txt($('rs_oO'), fmt1(o));
+    /* 求职：更高更好 → R = BATNA + 转换成本 + 调整；报价需 ≥ R */
+    var R = b + c + a;
+    var gap = o - R;
+    txt($('rs_r'), fmt1(R));
+    txt($('rs_gap'), fmt1(gap));
+    var accept = gap >= -1e-9;
+    txt($('rs_dec'), accept ? '可接受（≥保留价）' : '应拒绝或再谈');
+    var vh = $('rs_vh');
+    if (accept) {
+      txt(vh, '判定：报价 ' + fmt1(o) + ' ≥ 保留价 ' + fmt1(R) + ' → 相对 BATNA 不亏（仍可继续要目标价）');
+      tint(vh, C.green);
+    } else {
+      txt(vh, '判定：报价低于保留价 ' + fmt1(-gap) + ' → 执行 BATNA 更优（默认 70 vs 75）');
+      tint(vh, C.red);
+    }
+    var items = [
+      { lab: 'BATNA', v: b, c: C.ink3, dp: 1 },
+      { lab: 'R', v: R, c: C.amber, dp: 1 },
+      { lab: '报价', v: o, c: accept ? C.green : C.red, dp: 1 },
+      { lab: '差额', v: gap, c: accept ? C.blue : C.red, dp: 1 }
+    ];
+    items._axis = '货币单位';
+    var ymin = Math.min(b, R, o, gap, 0) - 2;
+    var ymax = Math.max(b, R, o, Math.abs(gap)) + 2;
+    bars($('rsChart'), items, ymin, ymax);
+  }
+
+  function refreshAll() {
+    updZp(); updLf(); updOp(); updRs();
+  }
+
+  bind(['zp_rs', 'zp_rb'], updZp);
+  bind(['lf_pi', 'lf_d1', 'lf_d2'], updLf);
+  bind(['op_pi', 'op_e1', 'op_e2'], updOp);
+  bind(['rs_b', 'rs_c', 'rs_a', 'rs_o'], updRs);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', refreshAll);
+  } else {
+    refreshAll();
+  }
+})();
+</script>
+</body>
+</html>
