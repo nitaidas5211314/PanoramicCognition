@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>信息甄别（Screening）：让对方自己站队 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Screening × Asymmetric Information</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>信息甄别（Screening）：让对方自己站队</h1>
+  <p class="sub">信息劣势方设计<strong>菜单式合约</strong>——免赔额档位、质量版本、费率套餐——让知情方自我分类，把逆向选择变成可定价的分离。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>信息甄别（Screening）</strong>：在信息不对称下，<strong>不知情的一方先行动</strong>，设计一组「价格–数量 / 保费–保障 / 质量–价位」菜单，使知情方按自身类型<strong>自愿选中</strong>为其准备的那一项——典型载体是保险免赔额档位、二级价格歧视与信贷条款。<span class="tag t-fact">事实</span></p>
+<p>核心不是「把人分好类再报价」，而是<strong>激励相容（IC）</strong>：每种类型选「给自己的合约」比模仿别人更划算；再加<strong>参与约束（IR）</strong>，对方才愿意进场。<span class="tag t-fact">事实</span></p>
+<p>经典出处：Rothschild &amp; Stiglitz《Equilibrium in Competitive Insurance Markets》（QJE 1976）。与 Akerlof 柠檬市场、Spence 信号传递同属不对称信息三件套；Stiglitz 因筛选与不完全信息市场分享 2001 年诺贝尔经济学奖。<span class="tag t-fact">事实</span></p>
+<p>对照：信号是知情方主动花钱发声；甄别是不知情方先摆菜单。同一枚硬币的两面——移动顺序与谁承担设计成本不同。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「营销话术」，而是：<strong>不掌握私人信息的一方，如何用合约菜单诱导自我揭示，以及分离会牺牲多少效率</strong>。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：菜单设计、单交叉、IC/IR、分离/混同、信息租金、质量扭曲、竞争下均衡是否存在。</li>
+<li><strong>在界外</strong>：某款车险该买哪档免赔、某航司舱位该不该升——除非压成「IC 是否成立、扭曲是否可接受」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>不知情方如何用菜单让对方自我分类</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「类型单调 + IC + 零利润/垄断利润」可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>类型、合约菜单、信念、租金、效率扭曲</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>投保人/消费者/借款人；保险公司/卖方/银行；监管</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(p_H,p_L)、免赔/保障 (q)、类型 (\theta)、质量、占比 (\lambda)</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>所选套餐、保费、免赔额、舱位、套餐档位</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实风险、真实支付意愿、真实成本类型</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>菜单 → 自我选择 → 事后风险池/利润 → 菜单再设计</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>IC 紧约束 ⇒ 低类型被扭曲 ⇒ 高类型拿信息租金</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「选低免赔的人出险更多」≠ 全是逆向选择（还有道德风险）<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>多档车险、商务/经济舱、信用卡年费–利率菜单</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>单交叉 + 激励相容 + 参与 +（竞争时）零利润</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。菜单被套利 → 交叉补贴崩 → 档位重排</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。出险数据、信用表现、续保行为都有时滞</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>档位过密可正反馈「选择过载」；精算反馈可负反馈稳定池</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>甄别问的不是「你知不知道对方是谁」，而是「你设计的菜单，会不会让高风险/高意愿的人假装成低风险/低意愿」。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它把「不知道」变成可运营的产品线</h4><p>免赔额、共付、版本分级：不是客服话术，是把私人信息压进可观察选择。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它解释「为什么低风险反而买不全」</h4><p>竞争分离均衡里，低风险常被<strong>故意限制保障</strong>，以免高风险伪装——效率损失是信息租金的代价。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它连接保险、定价与信贷</h4><p>同一结构：菜单、IC、扭曲低端、保全高端——换场景只换符号。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>以为「多开几个套餐」就是甄别。若档位差不够大，高类型会越档选便宜项（cannibalization）；若差过大，低类型退出，只剩柠檬池。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层从「类型不可见」爬到「监管与均衡修复」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="scArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 监管与强制 · 强制保险 / 社区评级 / 披露与反歧视边界</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 均衡修复 · Wilson–Miyazaki–Spence / 混合策略 / 内生披露</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 竞争存在性 · RS 可能无纯策略均衡 · 奶油撇脂威胁</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 跨域同构 · 二级价格歧视 / 最优税收 / 采购拍卖菜单</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 均衡菜单 · 分离（H 全保 / L 部分保）· 混同被撇脂</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 应用原型 · 免赔额档 · 舱位版本 · 利率–额度菜单</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 解概念 · IC / IR / 零利润 · 单交叉 · 信息租金</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 设计原语 · 不知情方先动 · 菜单诱导自我选择</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 问题原语 · 私人类型 → 逆向选择 → 需要可自我揭示的合约</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2–L3</strong>：先写清 IC；进阶卡在 <strong>L5–L7</strong>：竞争下「漂亮的分离菜单」可能根本站不住。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到三层操作。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="140" y="16" width="400" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">菜单设计 → 自我选择 → 类型揭示 → 差异化对待</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">类型筛选装置</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">IC · IR · 单交叉</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">免赔·舱位·套餐</text>
+
+  <line x1="300" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="380" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="60" y="190" width="560" height="70" rx="8" fill="#f8fafc" stroke="#e2e6ec"/>
+  <text x="80" y="220" fill="#15181d" font-size="13" font-family="sans-serif">判别：高类型选高端项是否仍优于越档？低类型是否愿留下？</text>
+  <text x="80" y="242" fill="#7c848f" font-size="12" font-family="sans-serif">IC+IR 齐 → 可分离；缺一条 → 混同、退出或被奶油撇脂</text>
+
+  <rect x="60" y="290" width="260" height="60" rx="8" fill="#fef2f2" stroke="#d5342c"/>
+  <text x="190" y="316" text-anchor="middle" fill="#d5342c" font-size="12" font-weight="700" font-family="sans-serif">假菜单</text>
+  <text x="190" y="336" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">档位差不够 / 无 IC</text>
+  <rect x="360" y="290" width="260" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="490" y="316" text-anchor="middle" fill="#0f8a4d" font-size="12" font-weight="700" font-family="sans-serif">真甄别</text>
+  <text x="490" y="336" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">自我选择=类型揭示</text>
+  <line x1="320" y1="320" x2="360" y2="320" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>在系统里做什么</th>
+<th>典型失败模式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">不知情委托人（保险人/卖方）</td>
+<td>设计菜单、承受分类错误成本</td>
+<td>档位过密被越档；过稀流失低类型</td>
+</tr>
+<tr>
+<td class="k">高风险 / 高支付意愿类型</td>
+<td>选「贵而全」的合约</td>
+<td>伪装低类型吃补贴</td>
+</tr>
+<tr>
+<td class="k">低风险 / 低支付意愿类型</td>
+<td>选「便宜而残缺」的合约</td>
+<td>被过度扭曲 → 退出</td>
+</tr>
+<tr>
+<td class="k">竞争保险公司</td>
+<td>抢客户、撇脂</td>
+<td>破坏混同/交叉补贴</td>
+</tr>
+<tr>
+<td class="k">监管方</td>
+<td>强制参保、限制歧视、社区评级</td>
+<td>压扁菜单差 → 甄别失灵</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号直觉</th>
+<th>为何重要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">高/低出险率</td>
+<td>(p_H &gt; p_L)</td>
+<td>保险甄别的类型差</td>
+</tr>
+<tr>
+<td class="k">保障额度</td>
+<td>(q)（或免赔 (D=L-q)）</td>
+<td>低类型被限制的「数量」</td>
+</tr>
+<tr>
+<td class="k">精算公平保费</td>
+<td>(\pi = p\cdot q)</td>
+<td>零利润基准</td>
+</tr>
+<tr>
+<td class="k">高类型占比</td>
+<td>(\lambda)</td>
+<td>决定分离均衡是否扛得住撇脂</td>
+</tr>
+<tr>
+<td class="k">支付意愿类型</td>
+<td>(\theta_H &gt; \theta_L)</td>
+<td>二级价格歧视的类型差</td>
+</tr>
+<tr>
+<td class="k">质量 / 版本</td>
+<td>(q)</td>
+<td>垄断菜单里被扭曲的维度</td>
+</tr>
+<tr>
+<td class="k">风险厌恶</td>
+<td>(\gamma)</td>
+<td>保障残缺的福利代价</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cfA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cfB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="130" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="85" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">设计菜单</text>
+  <rect x="180" y="30" width="130" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="245" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">自我选择</text>
+  <rect x="340" y="30" width="130" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="405" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">类型分离</text>
+  <rect x="500" y="30" width="150" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="575" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">差异化精算</text>
+  <line x1="150" y1="55" x2="180" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+  <line x1="310" y1="55" x2="340" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+  <line x1="470" y1="55" x2="500" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+
+  <rect x="80" y="140" width="200" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="180" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">混同一口价</text>
+  <rect x="360" y="140" width="240" height="50" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="480" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">奶油撇脂 → 混同瓦解</text>
+  <line x1="280" y1="165" x2="360" y2="165" stroke="#d5342c" stroke-dasharray="5 4" marker-end="url(#cfB)"/>
+
+  <text x="340" y="240" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">实线：甄别因果链 · 红色虚线：竞争者用「只吸引低风险」的合约拆掉混同</text>
+  <text x="340" y="265" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">闭环：若 H 发现伪装 L 仍划算，低风险池被污染，菜单必须加码扭曲</text>
+</svg>
+<p>教学默认（均值–方差 CE）：财富 (W=100)、损失 (L=50)、(p_H=0.25)、(p_L=0.05)、(\gamma=0.04)。H 全额公平保险保费 <strong>12.5</strong>、CE=<strong>87.5</strong>；满足 H 的 IC 时，L 最大保障约 <strong>18.55</strong>（保费约 <strong>0.93</strong>），相对全保的 CE 损失约 <strong>0.94</strong>。<span class="tag t-fact">事实</span>（教学约定，见模型 1）</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>表面</th>
+<th>底下</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">「免赔额是为了控赔」</td>
+<td>也是甄别装置；同时纠缠道德风险<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">「多档套餐=照顾不同需求」</td>
+<td>需求差可能是烟幕，真目标是抽高意愿的租金<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">「商务舱贵」</td>
+<td>二级歧视：用舒适/改签弹性做自我选择<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">「低免赔的人出险多」</td>
+<td>可能逆向选择，也可能是买完更敢开车（道德风险）<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">「竞争会消灭交叉补贴」</td>
+<td>RS：混同常被撇脂；但均衡概念一换，结论可变<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<div class="grid g2">
+<div class="card"><h4>垄断甄别（Mussa–Rosen 型）</h4><p>卖方设计质量–价格菜单。高效能：高类型质量接近一阶最优；低类型质量<strong>向下扭曲</strong>，以降低高类型的模仿收益（信息租金）。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>竞争甄别（Rothschild–Stiglitz 型）</h4><p>保险公司先报价。均衡若存在，通常是分离：H 得全保公平价；L 得部分保险。混同在标准 RS 定义下站不住——总有人能奶油撇脂。<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="flow "><p>不知情方设计菜单 <i>→</i> 知情方选合约 <i>→</i> {.hi}IC 检验 <i>→</i> 精算/利润结算 <i>→</i> 菜单迭代</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="80" cy="110" r="10" fill="#0f8a4d"/><text x="80" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">1970s</text><text x="80" y="150" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Akerlof / Spence</text><text x="80" y="168" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">RS 保险均衡</text>
+  <circle cx="220" cy="110" r="10" fill="#1d4ed8"/><text x="220" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">1978–84</text><text x="220" y="150" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Mussa–Rosen</text><text x="220" y="168" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">非线性定价</text>
+  <circle cx="360" cy="110" r="10" fill="#b8730a"/><text x="360" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">2001</text><text x="360" y="150" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">诺奖三件套</text><text x="360" y="168" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">不对称信息</text>
+  <circle cx="500" cy="110" r="10" fill="#5b8def"/><text x="500" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">2010s</text><text x="500" y="150" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">均衡再刻画</text><text x="500" y="168" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">混合/披露</text>
+  <circle cx="620" cy="110" r="10" fill="#15181d"/><text x="620" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">2024–25</text><text x="620" y="150" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">sorting vs</text><text x="620" y="168" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">screening</text>
+  <line x1="90" y1="110" x2="210" y2="110" stroke="#1d4ed8" marker-end="url(#tmA)"/>
+  <line x1="230" y1="110" x2="350" y2="110" stroke="#1d4ed8" marker-end="url(#tmA)"/>
+  <line x1="370" y1="110" x2="490" y2="110" stroke="#1d4ed8" marker-end="url(#tmA)"/>
+  <line x1="510" y1="110" x2="610" y2="110" stroke="#1d4ed8" marker-end="url(#tmA)"/>
+</svg>
+<p>演化主线：从「均衡可能不存在」的不安，到用前瞻性撤约、混合策略、内生披露修补；再到分散市场里 <strong>sorting（跨市场自我分选）</strong> 与 <strong>screening（机制内菜单）</strong> 的消长（2024 <em>JET</em> 等）。<span class="tag t-ana">分析</span><span class="tag t-chk">待验证</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>想要什么</th>
+<th>约束 / 手段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">保险人</td>
+<td>零利润下活下去 / 垄断下抽租</td>
+<td>菜单差、核保、强制条款</td>
+</tr>
+<tr>
+<td class="k">高风险投保人</td>
+<td>尽量全保、尽量便宜</td>
+<td>伪装低风险；监管限制核保时更强</td>
+</tr>
+<tr>
+<td class="k">低风险投保人</td>
+<td>便宜且够用的保障</td>
+<td>接受残缺保障，或退出</td>
+</tr>
+<tr>
+<td class="k">卖方（版本商）</td>
+<td>高类型多付钱</td>
+<td>故意阉割低端，防越档</td>
+</tr>
+<tr>
+<td class="k">监管</td>
+<td>覆盖率与公平</td>
+<td>可能牺牲甄别精度</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="flB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="30" y="30" width="160" height="70" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="110" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">低风险保费</text><text x="110" y="82" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">流入风险池</text>
+  <rect x="260" y="30" width="160" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">高风险保费</text><text x="340" y="82" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">+ 索赔流出</text>
+  <rect x="490" y="30" width="160" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="570" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">信息租金</text><text x="570" y="82" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">留给高类型</text>
+
+  <rect x="120" y="160" width="440" height="80" rx="10" fill="#15181d"/><text x="340" y="195" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">菜单是「抽水泵」：用低端扭曲换高端如实申报</text><text x="340" y="220" text-anchor="middle" fill="#a8b0ba" font-size="12" font-family="sans-serif">保费与价差是可见流；类型与租金是隐藏流</text>
+
+  <line x1="110" y1="100" x2="200" y2="160" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="340" y1="100" x2="340" y2="160" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="570" y1="100" x2="480" y2="160" stroke="#b8730a" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#flB)"/>
+</svg>
+<p>资金流：低类型交「便宜保费」换残缺保障；高类型交公平全保费；若存在交叉补贴，低类型还在暗中资助高类型——竞争往往把这条暗管掐断。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+<th>操作入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>单交叉是否成立</td>
+<td>不成立则菜单分不开</td>
+<td>先画无差异曲线斜率</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>IC 紧约束落在谁身上</td>
+<td>决定谁被扭曲、谁拿租金</td>
+<td>检查「越档」净收益</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>类型差 (\Delta p) / (\Delta\theta)</td>
+<td>差越大，越易分离</td>
+<td>找可观察代理变量放大差</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>高类型占比 (\lambda)</td>
+<td>决定竞争分离能否存活</td>
+<td>测池子结构再定价</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>低端故意残缺度</td>
+<td>防越档的主旋钮</td>
+<td>免赔、共付、功能阉割</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>参与约束 IR</td>
+<td>扭曲过度 → 退出</td>
+<td>留「够用」的底线包</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>奶油撇脂防御</td>
+<td>竞争下菜单生死线</td>
+<td>限制只卖单约 / 前瞻撤约</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>道德风险纠缠</td>
+<td>混淆甄别读数</td>
+<td>用随机试验或结构模型拆开</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>监管对歧视的限制</td>
+<td>压缩可用菜单维度</td>
+<td>改用行为/团体变量</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>沟通成本与选择过载</td>
+<td>档位过多反降转化</td>
+<td>3±1 档优于 12 档</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「多开几个套餐 = 已经在甄别」</summary><div class="dbody"><p>没有 IC 检验的菜单只是货架。高意愿会买低价档，低意愿可能买错档——这是分类噪声，不是揭示。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. 「分离均衡一定存在」</summary><div class="dbody"><p>RS 经典结果：条件不满足时<strong>纯策略均衡可以不存在</strong>。现实里看到的「稳定菜单」可能靠制度摩擦、声誉或不同均衡概念撑着。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>3. 「低风险买不全=保险公司黑心」</summary><div class="dbody"><p>在竞争分离里，限制低风险保障是为了阻止高风险伪装——是信息约束下的次优，不一定是暴利。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 「出险与保障正相关 = 逆向选择铁证」</summary><div class="dbody"><p>也可能是道德风险：买了低免赔才更敢出险。Chiappori–Salanié 等强调识别难题。<span class="tag t-ana">分析</span><span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>5. 「信号和甄别是一回事」</summary><div class="dbody"><p>移动顺序不同：信号是知情方先动；甄别是不知情方先动。谁承担设计与浪费成本也不同。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>6. 「一口价最公平所以最好」</summary><div class="dbody"><p>一口价常导致混同与柠檬化；「公平」若指同价，可能牺牲覆盖率与效率。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>7. 「高端不该被扭曲」</summary><div class="dbody"><p>垄断甄别里，<strong>高类型配置常接近有效</strong>，被扭曲的是低类型——反直觉但标准。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>8. 「交叉补贴一定坏」</summary><div class="dbody"><p>有时补贴能改善低风险处境（Wilson 等前瞻性概念）；竞争是否允许补贴取决于均衡定义。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>9. 「免赔额只反欺诈」</summary><div class="dbody"><p>免赔同时服务甄别与道德风险控制；单一叙事会设计错档位。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>10. 「数据多了就不需要菜单」</summary><div class="dbody"><p>大数据降低信息不对称，但残余私人信息与监管限制仍在；菜单从「粗筛」变成「精筛」，形态变了，逻辑还在。<span class="tag t-inf">推论</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="abA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="40" y="40" width="180" height="80" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">抽象</text><text x="130" y="98" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">类型 · IC · 租金</text>
+  <rect x="250" y="40" width="180" height="80" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">机制</text><text x="340" y="98" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">菜单 · 零利润</text>
+  <rect x="460" y="40" width="180" height="80" rx="10" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">操作</text><text x="550" y="98" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">三档免赔 / 两版 SKU</text>
+  <line x1="220" y1="80" x2="250" y2="80" stroke="#1d4ed8" marker-end="url(#abA)"/>
+  <line x1="430" y1="80" x2="460" y2="80" stroke="#1d4ed8" marker-end="url(#abA)"/>
+  <text x="340" y="180" text-anchor="middle" fill="#454c56" font-size="13" font-family="sans-serif">例：车险「¥0 / ¥2000 / ¥5000 免赔」≈ 保障维度上的分离菜单</text>
+  <text x="340" y="208" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">例：SaaS「免费版阉功能 / 专业版」≈ 质量维度上的二级歧视</text>
+</svg>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>列类型假设</strong>：高/低风险或高/低 WTP，各用一个可观察代理（驾龄、用量、企业规模）。</li>
+<li><strong>画两档菜单</strong>：贵而全 vs 便宜而残；写出对方选错档时的净收益。</li>
+<li><strong>算 IC</strong>：高类型越档净收益 ≤ 0；低类型留下净收益 ≥ 0。</li>
+<li><strong>压低端</strong>：若越档，加大残缺（免赔↑、功能↓）或缩小价差。</li>
+<li><strong>查退出</strong>：低端是否还值得买；否则补一个「底线包」。</li>
+<li><strong>竞争压力测试</strong>：若对手只抢低风险，你的混同/补贴还活得了吗？</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>枝 A · 读菜单</summary><div class="dbody"><p>识别免赔、共付、限额、版本阉割分别卡在哪条 IC 上。</p></div></details>
+<details><summary>枝 B · 写 IC</summary><div class="dbody"><p>会把「伪装收益」写成一两个不等式，而不是凭感觉调价。</p></div></details>
+<details><summary>枝 C · 拆相关</summary><div class="dbody"><p>区分逆向选择与道德风险的识别策略（实验、工具变量、结构模型）。</p></div></details>
+<details><summary>枝 D · 竞争直觉</summary><div class="dbody"><p>能解释为什么混同常被撇脂、(\lambda) 小时分离可能崩。</p></div></details>
+<details><summary>枝 E · 产品落地</summary><div class="dbody"><p>把理论菜单收成 2–4 个真实 SKU，并做一次越档回放测试。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是一家新保险公司的精算产品经理。市场里藏着高/低风险客户；你可以上架最多四档合约。竞争对手会尝试奶油撇脂。胜利条件：一年后低风险覆盖率 ≥ 60%，且综合成本率可控——靠的不是「猜人」，而是菜单是否通过 IC。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>产出</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 对照信号手册</td>
+<td>一页「谁先动 / 谁付费」对照表</td>
+<td>能口述 3 个差异</td>
+</tr>
+<tr>
+<td class="k">T2 拆一款真实产品</td>
+<td>标出其菜单维度与疑似 IC</td>
+<td>至少 2 档</td>
+</tr>
+<tr>
+<td class="k">T3 手算分离上限</td>
+<td>用模型 1 得到 (q_L^{\max})</td>
+<td>与页面 readout 一致</td>
+</tr>
+<tr>
+<td class="k">T4 垄断扭曲</td>
+<td>用模型 2 看 (q_L) 如何随 (\lambda) 变</td>
+<td>会解释「为何阉低端」</td>
+</tr>
+<tr>
+<td class="k">T5 存在性扫描</td>
+<td>用模型 3 找 (\lambda^*)</td>
+<td>说出「何时分离危险」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>四个可调模型：保险 IC 保障上限、二级质量菜单、分离存在性、免赔档自我选择。</p>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">模型1 保险保障上限</button><button class="tab" data-pane="tb1-1">模型2 质量菜单扭曲</button><button class="tab" data-pane="tb1-2">模型3 分离存在性 λ*</button><button class="tab" data-pane="tb1-3">模型4 免赔档自选</button></div>
+<div class="pane on" id="tb1-0"><p>不掌握风险类型的保险公司先报价。H 拿全额公平保险；L 的保障被压到使 H 恰好不想伪装。效用用均值–方差 CE：(\mathrm{CE}= \mathbb{E}[w]-\frac{\gamma}{2}\mathrm{Var}(w))。</p>
+<div class="tool" id="tool-ins">
+  <div class="ctrl">
+    <label>高风险出险率 pH <output id="ins_pHO">0.25</output></label>
+    <input type="range" id="ins_pH" min="0.10" max="0.45" step="0.01" value="0.25"/>
+    <label>低风险出险率 pL <output id="ins_pLO">0.05</output></label>
+    <input type="range" id="ins_pL" min="0.01" max="0.15" step="0.01" value="0.05"/>
+    <label>损失额 L <output id="ins_LO">50</output></label>
+    <input type="range" id="ins_L" min="20" max="80" step="1" value="50"/>
+    <label>风险厌恶 γ <output id="ins_gO">0.04</output></label>
+    <input type="range" id="ins_g" min="0.01" max="0.10" step="0.01" value="0.04"/>
+  </div>
+  <div class="readout">
+    <div class="ro">H 公平保费 <b id="ins_premH">12.5</b></div>
+    <div class="ro">L 最大保障 qL <b id="ins_qL">18.55</b></div>
+    <div class="ro">L 保费 <b id="ins_premL">0.93</b></div>
+    <div class="ro">L 的 CE 损失 <b id="ins_gap">0.94</b></div>
+    <div id="ins_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="insChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-1"><p>垄断者面对 (\theta_H&gt;\theta_L)，成本 (c=q^2/2)。二阶最优：(q_H=\theta_H)，(q_L=\theta_L-\frac{\lambda}{1-\lambda}(\theta_H-\theta_L))（下限为 0）。信息租金 (=(\theta_H-\theta_L)q_L)。</p>
+<div class="tool" id="tool-mr">
+  <div class="ctrl">
+    <label>高类型 θH <output id="mr_thHO">4.0</output></label>
+    <input type="range" id="mr_thH" min="2.5" max="6" step="0.1" value="4"/>
+    <label>低类型 θL <output id="mr_thLO">2.0</output></label>
+    <input type="range" id="mr_thL" min="0.8" max="3" step="0.1" value="2"/>
+    <label>高类型占比 λ <output id="mr_lamO">0.35</output></label>
+    <input type="range" id="mr_lam" min="0.10" max="0.70" step="0.01" value="0.35"/>
+  </div>
+  <div class="readout">
+    <div class="ro">qH（有效） <b id="mr_qH">4.00</b></div>
+    <div class="ro">qL（扭曲） <b id="mr_qL">0.92</b></div>
+    <div class="ro">信息租金 <b id="mr_rent">1.85</b></div>
+    <div class="ro">利润 π / π_FB <b id="mr_pi">3.08 / 4.10</b></div>
+    <div id="mr_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="mrChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-2"><p>固定模型 1 的分离菜单，比较 L 在「分离合约」与「按平均出险率全保混同」下的 CE。当混同更好时，经典 RS 意义下分离面临撇脂/混同威胁。临界占比 (\lambda^*)。</p>
+<div class="tool" id="tool-ex">
+  <div class="ctrl">
+    <label>高风险占比 λ <output id="ex_lamO">0.20</output></label>
+    <input type="range" id="ex_lam" min="0.02" max="0.60" step="0.01" value="0.20"/>
+    <label>pH <output id="ex_pHO">0.25</output></label>
+    <input type="range" id="ex_pH" min="0.10" max="0.45" step="0.01" value="0.25"/>
+    <label>pL <output id="ex_pLO">0.05</output></label>
+    <input type="range" id="ex_pL" min="0.01" max="0.15" step="0.01" value="0.05"/>
+    <label>γ <output id="ex_gO">0.04</output></label>
+    <input type="range" id="ex_g" min="0.01" max="0.10" step="0.01" value="0.04"/>
+  </div>
+  <div class="readout">
+    <div class="ro">混同公平 p̄ <b id="ex_pbar">0.09</b></div>
+    <div class="ro">CE 分离 / 混同 <b id="ex_ces">96.56 / 95.50</b></div>
+    <div class="ro">临界 λ* <b id="ex_lstar">0.094</b></div>
+    <div class="ro">状态 <b id="ex_ok">分离较稳</b></div>
+    <div id="ex_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="exChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-3"><p>两档：低免赔高保费 vs 高免低保费。期望自付 ≈ (p\cdot D)。看哪类人选哪档；若高风险也选高免赔，说明价差/免赔差不够。</p>
+<div class="tool" id="tool-ded">
+  <div class="ctrl">
+    <label>低免赔 DA <output id="ded_DAO">1000</output></label>
+    <input type="range" id="ded_DA" min="0" max="3000" step="100" value="1000"/>
+    <label>高免赔 DB <output id="ded_DBO">5000</output></label>
+    <input type="range" id="ded_DB" min="2000" max="10000" step="100" value="5000"/>
+    <label>保费差 Δπ（B 更便宜） <output id="ded_dPO">700</output></label>
+    <input type="range" id="ded_dP" min="100" max="2000" step="50" value="700"/>
+    <label>pH / pL <output id="ded_pO">0.20 / 0.05</output></label>
+    <input type="range" id="ded_pH" min="0.08" max="0.40" step="0.01" value="0.20"/>
+    <input type="range" id="ded_pL" min="0.01" max="0.12" step="0.01" value="0.05"/>
+  </div>
+  <div class="readout">
+    <div class="ro">H 选 <b id="ded_pickH">A</b></div>
+    <div class="ro">L 选 <b id="ded_pickL">B</b></div>
+    <div class="ro">H 选 A 净省 <b id="ded_saveH">0</b></div>
+    <div class="ro">分离？ <b id="ded_ok">是</b></div>
+    <div id="ded_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="dedChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>验收动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识谱</td>
+<td>分清信号 vs 甄别、混同 vs 分离</td>
+<td>指着产品说出谁先动</td>
+</tr>
+<tr>
+<td class="k">L2 演算</td>
+<td>会算 IC 与 (q_L^{\max})</td>
+<td>模型 1 默认值对得上</td>
+</tr>
+<tr>
+<td class="k">L3 设计</td>
+<td>能改三档菜单并通过越档测试</td>
+<td>写出改档前后净收益</td>
+</tr>
+<tr>
+<td class="k">L4 批判</td>
+<td>能讨论存在性与识别混淆</td>
+<td>用 (\lambda^*) + 道德风险一句拆开</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>打开你最近买过的保险 / SaaS / 航司舱位页面（10 分钟）。</li>
+<li>只记两档：价格差、功能/免赔差（5 分钟）。</li>
+<li>假设一个「高类型」和一个「低类型」，手算越档是否划算（10 分钟）。</li>
+<li>写一句结论：这是真甄别、假菜单，还是主要在控道德风险？（5 分钟）</li>
+</ol>
+<p>验收：纸上有两个不等式（或清晰的期望成本对比），不是感觉评价。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>对照 Spence 信号手册</td>
+<td>差异表</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>精读 RS 分离故事</td>
+<td>半页笔记</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>跑通模型 1–2</td>
+<td>截图 + 默认真数</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>拆一款车险/医疗险菜单</td>
+<td>档位卡片</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>拆一款 SaaS 版本</td>
+<td>阉割点列表</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>模型 3：扫 (\lambda)</td>
+<td>临界笔记</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘：哪次越档差点发生</td>
+<td>改档建议 3 条</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>概念与对照</td>
+<td>信号/甄别/道德风险三角图</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>保险菜单深潜</td>
+<td>自建三档并做 IC 表</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>定价菜单深潜</td>
+<td>二级歧视一页设计书</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>竞争与识别</td>
+<td>(\lambda^*) + 「相关≠逆选」备忘</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>Rothschild–Stiglitz</td>
+<td>竞争保险：分离（若存在）；混同被撇脂</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>Wilson / Miyazaki–Spence</td>
+<td>前瞻性撤约，可恢复交叉补贴型结果</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>Mussa–Rosen</td>
+<td>质量菜单：扭曲低端、保全高端</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>Maskin–Riley</td>
+<td>非线性定价的一般垄断甄别</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>Mirrlees 税收</td>
+<td>劳动收入税作为能力甄别</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>Stiglitz–Weiss 信贷配给</td>
+<td>利率本身甄别/逆向选择</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>单交叉</td>
+<td>无差异曲线只交叉一次 → 可分离</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>信息租金</td>
+<td>高类型因能伪装而必须留下的剩余</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>奶油撇脂</td>
+<td>只吸引低风险的偏离合约</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>sorting vs screening</td>
+<td>跨子市场分选 vs 机制内菜单（2024）</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 我面对的是信号问题还是甄别问题？</summary><div class="dbody"><p>看谁先行动、谁设计合约。雇主看学历≈接收信号；保险公司出免赔菜单≈甄别。</p></div></details>
+<details><summary>Q2 菜单差够不够大？</summary><div class="dbody"><p>用越档净收益检验；不够就加残缺或加价差。</p></div></details>
+<details><summary>Q3 我扭曲了谁？</summary><div class="dbody"><p>垄断里常扭曲低类型；竞争保险里限制低风险保障。</p></div></details>
+<details><summary>Q4 混同为什么危险？</summary><div class="dbody"><p>竞争者可以设计只对低风险有利的合约把池子抽空。</p></div></details>
+<details><summary>Q5 \(\lambda\) 很小时该怎么办？</summary><div class="dbody"><p>经典分离可能不稳；考虑强制保险、社区评级或接受不同均衡概念。</p></div></details>
+<details><summary>Q6 如何避免选择过载？</summary><div class="dbody"><p>优先 2–4 档清晰对立，而不是 12 档微调。</p></div></details>
+<details><summary>Q7 数据能否替代菜单？</summary><div class="dbody"><p>可缩小不对称，但监管与残余私人信息仍要激励相容。</p></div></details>
+<details><summary>Q8 出险多是不是逆向选择？</summary><div class="dbody"><p>先问：是买之前的风险差，还是买之后的行为变？</p></div></details>
+<details><summary>Q9 交叉补贴该不该做？</summary><div class="dbody"><p>看竞争结构与监管目标；别在「一碰就撇脂」的市场里硬补。</p></div></details>
+<details><summary>Q10 和信号手册怎么联用？</summary><div class="dbody"><p>同一市场可两边同时发生：投保人出示体检（信号），保险公司给免赔菜单（甄别）。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>精读 RS 1976 原文的存在性讨论，对照 Wilson 1977。</li>
+<li>把本页模型 2 接到真实 SaaS 定价表，估 (\theta) 差。</li>
+<li>追踪 2024–2025「sorting versus screening」文献，看匹配技术如何改变菜单形态。<span class="tag t-chk">待验证</span></li>
+<li>若做实证：先设计「逆向选择 vs 道德风险」识别策略，再谈系数。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">RS 竞争保险分离/存在性</td>
+<td>经典论文</td>
+<td>Rothschild &amp; Stiglitz, QJE 1976</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">免赔 vs 共付在逆选下的比较</td>
+<td>学术论文</td>
+<td>Doherty–Jung / 相关最优保险讨论（UZH 等）</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">实验市场中的筛选均衡</td>
+<td>学术论文</td>
+<td>Screening equilibria in experimental markets</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">垄断质量菜单</td>
+<td>经典理论</td>
+<td>Mussa &amp; Rosen 1978；Maskin &amp; Riley 1984</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">均衡概念批评与修复</td>
+<td>工作论文/期刊</td>
+<td>NBER w24711/w26251；混合策略均衡刻画</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">sorting vs screening</td>
+<td>近期理论</td>
+<td><em>Journal of Economic Theory</em> 2024</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">中国医保逆选识别讨论</td>
+<td>学术论文</td>
+<td>北大相关实证研究（主观/客观风险）</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">教学默认数值</td>
+<td>自建演算</td>
+<td>本手册模型 1–4（node 验算）</td>
+<td><span class="tag t-fact">事实</span>（约定）</td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或可复算；<span class="tag t-ana">分析</span>权威推导/主流判断；<span class="tag t-inf">推论</span>本手册推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单源或识别未清。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为信息经济学与产品设计的认知与练习框架，<strong>不是</strong>保险投保建议、定价方案或投资建议。文中数值多为教学约定参数，不代表任何真实产品的精算结论。涉及监管、歧视与强制保险的制度安排因司法辖区而异，实践前请咨询合格专业人士并核对当地法规。</p>
+</section>
+<footer>  <p>《信息甄别（Screening）：让对方自己站队 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 8 分 7 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《信息甄别（Screening）》主题脚本
+   四个可调模型：
+     1. 保险：H-IC 下 L 的最大保障
+     2. Mussa–Rosen 质量菜单扭曲
+     3. 分离存在性 λ*
+     4. 免赔档自我选择
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, items, ymin, ymax) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    if (ymin == null || ymax == null) {
+      var vs = items.map(function (x) { return x.v; });
+      ymin = Math.min.apply(null, vs.concat([0])) - 0.2;
+      ymax = Math.max.apply(null, vs.concat([0])) + 0.2;
+      if (ymax <= ymin) { ymax = ymin + 1; }
+    }
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (items.length * 1.45);
+    var span = ymax - ymin || 1;
+    items.forEach(function (it, i) {
+      var x = pl + (i + 0.5) * (bw / items.length) - barW / 2;
+      var y = y1 - ((it.v - ymin) / span) * bh;
+      var zeroY = y1 - ((0 - ymin) / span) * bh;
+      var top = Math.min(y, zeroY), bot = Math.max(y, zeroY);
+      ctx.fillStyle = it.c;
+      ctx.fillRect(x, top, barW, Math.max(2, bot - top));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+      var lab = (typeof it.v === 'number' ? it.v.toFixed(2) : String(it.v));
+      var lw = ctx.measureText(lab).width;
+      var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 2), w - pr - lw / 2 - 2);
+      ctx.fillText(lab, lx, top - 6);
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(items._axis || '数值', pl + bw, y1 + 31);
+  }
+
+  function ce(p, prem, q, W, L, g) {
+    var rem = L - q;
+    var Ew = W - prem - p * rem;
+    var Var = p * (1 - p) * rem * rem;
+    return Ew - (g / 2) * Var;
+  }
+
+  function maxQL(pH, pL, W, L, g) {
+    var premH = pH * L;
+    var ceH = ce(pH, premH, L, W, L, g);
+    var lo = 0, hi = L, mid, i;
+    for (i = 0; i < 56; i++) {
+      mid = (lo + hi) / 2;
+      if (ce(pH, pL * mid, mid, W, L, g) <= ceH + 1e-10) lo = mid;
+      else hi = mid;
+    }
+    return lo;
+  }
+
+  /* ── 1. 保险保障上限 ── */
+  (function insurance() {
+    if (!$('ins_pH')) return;
+    var ids = ['ins_pH', 'ins_pL', 'ins_L', 'ins_g'];
+    var cv = $('insChart');
+    var W = 100;
+
+    function upd() {
+      var pH = parseFloat($('ins_pH').value);
+      var pL = parseFloat($('ins_pL').value);
+      var L = parseFloat($('ins_L').value);
+      var g = parseFloat($('ins_g').value);
+      txt($('ins_pHO'), pH.toFixed(2));
+      txt($('ins_pLO'), pL.toFixed(2));
+      txt($('ins_LO'), L.toFixed(0));
+      txt($('ins_gO'), g.toFixed(2));
+
+      var msg, col;
+      if (!(pH > pL)) {
+        msg = '需要 pH > pL，否则类型差为零，无法甄别';
+        col = C.red;
+        txt($('ins_premH'), '—');
+        txt($('ins_qL'), '—');
+        txt($('ins_premL'), '—');
+        txt($('ins_gap'), '—');
+        txt($('ins_vh'), msg);
+        tint($('ins_vh'), col);
+        return;
+      }
+
+      var premH = pH * L;
+      var qL = maxQL(pH, pL, W, L, g);
+      var premL = pL * qL;
+      var ceL = ce(pL, premL, qL, W, L, g);
+      var ceLfull = ce(pL, pL * L, L, W, L, g);
+      var gap = ceLfull - ceL;
+      var ded = L - qL;
+
+      txt($('ins_premH'), premH.toFixed(2));
+      txt($('ins_qL'), qL.toFixed(2));
+      txt($('ins_premL'), premL.toFixed(2));
+      txt($('ins_gap'), gap.toFixed(2));
+
+      msg = 'H 全保公平价 ' + premH.toFixed(2) + '；L 最大保障 ' + qL.toFixed(2) +
+        '（等效免赔≈' + ded.toFixed(2) + '），相对全保 CE 损失 ' + gap.toFixed(2) +
+        '——这是阻止 H 伪装的信息代价';
+      col = C.green;
+      txt($('ins_vh'), msg);
+      tint($('ins_vh'), col);
+
+      var items = [
+        { lab: 'qH=L', v: L, c: C.red },
+        { lab: 'qLmax', v: qL, c: C.blue },
+        { lab: '免赔', v: ded, c: C.amber },
+        { lab: 'CE损失', v: gap, c: C.green }
+      ];
+      items._axis = '保障 / 损失';
+      bars(cv, items, 0, Math.max(L, gap) * 1.08);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+
+  /* ── 2. Mussa–Rosen ── */
+  (function mussa() {
+    if (!$('mr_thH')) return;
+    var ids = ['mr_thH', 'mr_thL', 'mr_lam'];
+    var cv = $('mrChart');
+
+    function upd() {
+      var thH = parseFloat($('mr_thH').value);
+      var thL = parseFloat($('mr_thL').value);
+      var lam = parseFloat($('mr_lam').value);
+      txt($('mr_thHO'), thH.toFixed(1));
+      txt($('mr_thLO'), thL.toFixed(1));
+      txt($('mr_lamO'), lam.toFixed(2));
+
+      var msg, col;
+      if (!(thH > thL)) {
+        msg = '需要 θH > θL（单交叉/类型排序）';
+        col = C.red;
+        txt($('mr_vh'), msg);
+        tint($('mr_vh'), col);
+        return;
+      }
+
+      var qH = thH;
+      var qL = thL - (lam / (1 - lam)) * (thH - thL);
+      if (qL < 0) qL = 0;
+      var tL = thL * qL;
+      var tH = tL + thH * (qH - qL);
+      var rent = (thH - thL) * qL;
+      var pi = lam * (tH - qH * qH / 2) + (1 - lam) * (tL - qL * qL / 2);
+      var qLfb = thL;
+      var tLfb = thL * qLfb;
+      var tHfb = thH * qH;
+      var pifb = lam * (tHfb - qH * qH / 2) + (1 - lam) * (tLfb - qLfb * qLfb / 2);
+      var distort = qLfb - qL;
+
+      txt($('mr_qH'), qH.toFixed(2));
+      txt($('mr_qL'), qL.toFixed(2));
+      txt($('mr_rent'), rent.toFixed(2));
+      txt($('mr_pi'), pi.toFixed(2) + ' / ' + pifb.toFixed(2));
+
+      if (qL <= 1e-9) {
+        msg = '低类型被完全挤出（qL=0）：λ 太高或类型差太大，只服务高类型更划算';
+        col = C.amber;
+      } else {
+        msg = 'qH=' + qH.toFixed(2) + ' 保持有效；qL 从一阶 ' + qLfb.toFixed(2) +
+          ' 扭曲到 ' + qL.toFixed(2) + '（↓' + distort.toFixed(2) + '），信息租金 ' +
+          rent.toFixed(2) + '，利润为完全歧视的 ' + ((100 * pi) / pifb).toFixed(0) + '%';
+        col = C.green;
+      }
+      txt($('mr_vh'), msg);
+      tint($('mr_vh'), col);
+
+      var items = [
+        { lab: 'qH', v: qH, c: C.green },
+        { lab: 'qL', v: qL, c: C.blue },
+        { lab: 'qL_FB', v: qLfb, c: C.amber },
+        { lab: '租金', v: rent, c: C.red }
+      ];
+      items._axis = '质量 / 租金';
+      bars(cv, items, 0, Math.max(qH, qLfb, rent) * 1.1);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+
+  /* ── 3. 存在性 λ* ── */
+  (function exist() {
+    if (!$('ex_lam')) return;
+    var ids = ['ex_lam', 'ex_pH', 'ex_pL', 'ex_g'];
+    var cv = $('exChart');
+    var W = 100, L = 50;
+
+    function upd() {
+      var lam = parseFloat($('ex_lam').value);
+      var pH = parseFloat($('ex_pH').value);
+      var pL = parseFloat($('ex_pL').value);
+      var g = parseFloat($('ex_g').value);
+      txt($('ex_lamO'), lam.toFixed(2));
+      txt($('ex_pHO'), pH.toFixed(2));
+      txt($('ex_pLO'), pL.toFixed(2));
+      txt($('ex_gO'), g.toFixed(2));
+
+      var msg, col;
+      if (!(pH > pL)) {
+        msg = '需要 pH > pL';
+        col = C.red;
+        txt($('ex_vh'), msg);
+        tint($('ex_vh'), col);
+        return;
+      }
+
+      var qL = maxQL(pH, pL, W, L, g);
+      var premL = pL * qL;
+      var ceSep = ce(pL, premL, qL, W, L, g);
+      var pbar = lam * pH + (1 - lam) * pL;
+      var cePool = ce(pL, pbar * L, L, W, L, g);
+      /* λ*：使 W - pbar*L = ceSep ⇒ pbar = (W-ceSep)/L */
+      var pbarStar = (W - ceSep) / L;
+      var lstar = (pbarStar - pL) / (pH - pL);
+      if (lstar < 0) lstar = 0;
+      if (lstar > 1) lstar = 1;
+      var sepOk = ceSep + 1e-9 >= cePool;
+
+      txt($('ex_pbar'), pbar.toFixed(3));
+      txt($('ex_ces'), ceSep.toFixed(2) + ' / ' + cePool.toFixed(2));
+      txt($('ex_lstar'), lstar.toFixed(3));
+      txt($('ex_ok'), sepOk ? '分离较稳' : '混同威胁');
+      tint($('ex_ok'), sepOk ? C.green : C.red);
+
+      if (sepOk) {
+        msg = '当前 λ=' + lam.toFixed(2) + ' ≥ 约 λ*=' + lstar.toFixed(3) +
+          '：L 更偏好分离合约（CE ' + ceSep.toFixed(2) + ' ≥ 混同 ' + cePool.toFixed(2) +
+          '），奶油撇脂/混同吸引力较弱';
+        col = C.green;
+      } else {
+        msg = '当前 λ=' + lam.toFixed(2) + ' < λ*≈' + lstar.toFixed(3) +
+          '：L 更想要平均费率全保（CE 混同 ' + cePool.toFixed(2) + ' > 分离 ' +
+          ceSep.toFixed(2) + '）——经典 RS 下分离易被威胁';
+        col = C.red;
+      }
+      txt($('ex_vh'), msg);
+      tint($('ex_vh'), col);
+
+      var items = [
+        { lab: 'CE分离', v: ceSep, c: C.blue },
+        { lab: 'CE混同', v: cePool, c: C.red },
+        { lab: 'λ', v: lam, c: C.amber },
+        { lab: 'λ*', v: lstar, c: C.green }
+      ];
+      items._axis = 'CE / 占比';
+      bars(cv, items, 0, Math.max(ceSep, cePool, 1) * 1.02);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+
+  /* ── 4. 免赔档自选 ── */
+  (function deductible() {
+    if (!$('ded_DA')) return;
+    var ids = ['ded_DA', 'ded_DB', 'ded_dP', 'ded_pH', 'ded_pL'];
+    var cv = $('dedChart');
+
+    function cost(p, D, prem) {
+      return prem + p * D;
+    }
+
+    function upd() {
+      var DA = parseFloat($('ded_DA').value);
+      var DB = parseFloat($('ded_DB').value);
+      var dP = parseFloat($('ded_dP').value);
+      var pH = parseFloat($('ded_pH').value);
+      var pL = parseFloat($('ded_pL').value);
+      txt($('ded_DAO'), DA.toFixed(0));
+      txt($('ded_DBO'), DB.toFixed(0));
+      txt($('ded_dPO'), dP.toFixed(0));
+      txt($('ded_pO'), pH.toFixed(2) + ' / ' + pL.toFixed(2));
+
+      var msg, col;
+      if (!(DB > DA)) {
+        msg = '需要 DB > DA（高免赔档才构成残缺保障）';
+        col = C.red;
+        txt($('ded_vh'), msg);
+        tint($('ded_vh'), col);
+        return;
+      }
+      if (!(pH > pL)) {
+        msg = '需要 pH > pL';
+        col = C.red;
+        txt($('ded_vh'), msg);
+        tint($('ded_vh'), col);
+        return;
+      }
+
+      /* 规范化：A 保费 = dP，B 保费 = 0（只看差） */
+      var premA = dP, premB = 0;
+      var cHA = cost(pH, DA, premA), cHB = cost(pH, DB, premB);
+      var cLA = cost(pL, DA, premA), cLB = cost(pL, DB, premB);
+      var pickH = cHA <= cHB ? 'A' : 'B';
+      var pickL = cLA <= cLB ? 'A' : 'B';
+      var saveH = cHB - cHA; /* >0 表示选 A 更省 */
+      var sep = pickH === 'A' && pickL === 'B';
+
+      txt($('ded_pickH'), pickH);
+      txt($('ded_pickL'), pickL);
+      txt($('ded_saveH'), saveH.toFixed(0));
+      txt($('ded_ok'), sep ? '是' : '否');
+      tint($('ded_ok'), sep ? C.green : C.red);
+
+      if (sep) {
+        msg = '分离成立：H 选低免赔 A（相对 B 期望成本低 ' + saveH.toFixed(0) +
+          '），L 选高免 B。价差 Δπ=' + dP.toFixed(0) + ' 落在分离区间内';
+        col = C.green;
+      } else if (pickH === 'B' && pickL === 'B') {
+        msg = '双双选 B：保费差太大 / 免赔差太小，高风险也宁愿扛免赔——低免赔档卖不动';
+        col = C.amber;
+      } else if (pickH === 'A' && pickL === 'A') {
+        msg = '双双选 A：保费差太小，低风险也买低免赔——菜单失去甄别力（混同到 A）';
+        col = C.red;
+      } else {
+        msg = '交叉错配：H→' + pickH + '、L→' + pickL + '（非预期分离方向），检查参数单调性';
+        col = C.red;
+      }
+      txt($('ded_vh'), msg);
+      tint($('ded_vh'), col);
+
+      var items = [
+        { lab: 'H@A', v: cHA, c: C.red },
+        { lab: 'H@B', v: cHB, c: '#f5a8a4' },
+        { lab: 'L@A', v: cLA, c: C.blue },
+        { lab: 'L@B', v: cLB, c: '#93c5fd' }
+      ];
+      items._axis = '期望总成本';
+      var mx = Math.max(cHA, cHB, cLA, cLB);
+      bars(cv, items, 0, mx * 1.1);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
