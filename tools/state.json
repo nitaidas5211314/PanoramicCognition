@@ -635,11 +635,14 @@
     {
       "slug": "一报还一报（Tit-for-Tat）：善意、可激怒、宽恕、清晰——Axelrod 竞赛中胜出的简单策略",
       "title": "一报还一报（Tit-for-Tat）：善意、可激怒、宽恕、清晰——Axelrod 竞赛中胜出的简单策略",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 02:06:40",
+      "finished": "2026-09-19 02:13:34",
+      "duration_sec": 414,
+      "outputs": [
+        "reports/一报还一报（Tit-for-Tat）：善意、可激怒、宽恕、清晰——Axelrod 竞赛中胜出的简单策略.html",
+        "reports/一报还一报（Tit-for-Tat）：善意、可激怒、宽恕、清晰——Axelrod 竞赛中胜出的简单策略.md"
+      ],
       "error": null
     },
     {
@@ -1840,7 +1843,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 02:06",
+  "updated": "2026-09-19 02:13",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
