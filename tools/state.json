@@ -518,11 +518,14 @@
     {
       "slug": "纳什均衡（Nash Equilibrium）：给定他人策略，无人能通过单方面改变策略获益的状态；有限博弈必存在（可能是混合策略）",
       "title": "纳什均衡（Nash Equilibrium）：给定他人策略，无人能通过单方面改变策略获益的状态；有限博弈必存在（可能是混合策略）",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 00:46:26",
+      "finished": "2026-09-19 00:53:52",
+      "duration_sec": 446,
+      "outputs": [
+        "reports/纳什均衡（Nash Equilibrium）：给定他人策略，无人能通过单方面改变策略获益的状态；有限博弈必存在（可能是混合策略）.html",
+        "reports/纳什均衡（Nash Equilibrium）：给定他人策略，无人能通过单方面改变策略获益的状态；有限博弈必存在（可能是混合策略）.md"
+      ],
       "error": null
     },
     {
@@ -1813,7 +1816,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 00:46",
+  "updated": "2026-09-19 00:53",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
