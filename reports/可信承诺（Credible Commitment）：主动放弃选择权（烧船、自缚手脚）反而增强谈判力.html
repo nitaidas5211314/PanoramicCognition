@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>可信承诺：主动放弃选择权反而增强谈判力 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Credible Commitment × Strategy</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践系统</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>可信承诺：主动放弃选择权反而增强谈判力</h1>
+  <p class="sub">Schelling 悖论——<strong>烧掉退路、自缚手脚</strong>，把「我想」变成「我别无选择」，对手才不得不重新算账。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>可信承诺（Credible Commitment）</strong>：主动、可见、难以撤销地<strong>限制自己的未来选择集</strong>，使威胁或承诺在节点真正到达时仍是最优行动——从而改变对手的预期与最优反应。<span class="tag t-fact">事实</span></p>
+<p>直觉与日常相反：谈判里「留有余地」常被当作理性；Schelling 指出，<strong>自由往往是投降的自由</strong>——烧桥、沉船、公开押上声誉，反而让对方无法指望你让步。<span class="tag t-ana">分析</span></p>
+<p>经典出处：Thomas C. Schelling《冲突的战略》（<em>The Strategy of Conflict</em>, 1960）与《讨价还价随笔》（<em>An Essay on Bargaining</em>, 1956）——「束缚自己的力量」是谈判力的来源之一。<span class="tag t-fact">事实</span></p>
+<p>下游扩展：Selten 的 SPNE 问「威胁事后还执行吗」；Kydland–Prescott（1977）把同一逻辑写成宏观政策的<strong>时间不一致</strong>；Williamson（1983）用人质/保证金解释交易中的私人秩序。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「话说得多硬」，而是：<strong>如何用可见的自我约束，把 cheap talk 变成对手必须当真的激励结构</strong>。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：承诺装置（commitment device）、威胁 vs 承诺的可信性、烧桥/人质/合同/声誉/制度委托、时间不一致、双边承诺冲突、与 SPNE 的衔接。</li>
+<li><strong>在界外</strong>：某次并购胜负预测、具体诉讼文书措辞——除非压成「承诺是否可逆 / 对方是否观测到 / 违约成本是否够高」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>如何让威胁/承诺在事后仍值得执行，从而事前改变均衡</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「选择集被可观测地收窄 + 对手信念更新」可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>承诺装置、可见性、不可逆性、违约成本、时间一致性</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>谈判方、在位/进入者、央行与公众、合同双方、国家</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>承诺成本 (C)、粘住概率 (q)、贴现 (\delta)、诱惑 (\chi)、人质 (H)</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>公开声明、合同罚则、沉没产能、托管金、立法独立性</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>私人类型、事后反悔冲动、对方是否真信你「烧了桥」</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>你的选择集 → 对手最优反应 → 路径与剩余分配</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>可信自我约束 ⇒ 对手预期锁定 ⇒ 均衡移动</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「嘴硬」相关于谈判成功，但相关≠可信<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>最后通牒、公开喊价、烧船典故、央行独立性宣传</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>改支付 / 删行动 / 引入第三方执行 / 声誉资本</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。成功承诺强化声誉；失败承诺摧毁未来可信度</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。制度建设、专有投资、法律执行都有时滞</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>军备式互绑承诺可正反馈冲突；第三方托管可负反馈稳定交易</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>可信承诺问的不是「你想不想守约」，而是「到了那个节点，你还有没有别的选择——以及对手知不知道」。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它翻转「灵活=强大」的直觉</h4><p>Schelling：在讨价还价中，<strong>无法让步</strong>常常比能让步更有力——前提是对方看得见、信得过。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它连接微观谈判与宏观制度</h4><p>同一逻辑：烧桥吓退对手 ↔ 央行独立性压低通胀偏见 ↔ 合同人质支撑专用性投资。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它是 SPNE / 机制设计的操作把手</h4><p>想改均衡？别只会喊；去删掉「软化」选项、抬高反悔成本、外包执行权。<span class="tag t-inf">推论</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「我宣布底线」当成承诺。若对方知道你事后仍能悄悄让步，声明只是 cheap talk；对方会等到你软化，或自己也装死导致双输。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看「话术」如何变成「选择集上的钢铁」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="ccArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度设计 · 独立性 / 规则 vs 相机抉择 / 宪法性约束</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 宏观时间不一致 · Kydland–Prescott / Barro–Gordon</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 交易治理 · Williamson 人质 / 专有投资 / 私人秩序</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 双边承诺风险 · Crawford：互绑过狠 → 冲突概率上升</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 装置菜单 · 沉没成本 / 合同 / 声誉 / 第三方 / 公开性</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 应用原型 · 鸡博弈烧桥 / 最后通牒 / 进入威慑</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 解概念衔接 · 承诺后子博弈的 SPNE / 逆向归纳</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 可信性三要件 · 可见 · 昂贵/不可逆 · 对手理解</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 问题原语 · 威胁/承诺事后想反悔 → 事前不被信</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L1→L2</strong>：先会判别「三要件」缺哪条；进阶卡在 <strong>L6</strong>：双方都烧桥时，可信性越高，<strong>冲突概率</strong>也可能越高——承诺不是越多越好。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到三层操作。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="180" y="16" width="320" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">自我约束 → 对手预期 → 均衡移动</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">缩小未来可行集</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">改支付 / 删行动 / 外包</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">烧桥·人质·立法独立</text>
+
+  <line x1="300" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="380" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="60" y="190" width="560" height="70" rx="8" fill="#f8fafc" stroke="#e2e6ec"/>
+  <text x="80" y="220" fill="#15181d" font-size="13" font-family="sans-serif">判别：事后执行是否仍最优？对手能否观测？反悔成本是否 ≥ 诱惑？</text>
+  <text x="80" y="242" fill="#7c848f" font-size="12" font-family="sans-serif">三缺一 → cheap talk；齐了 → 对手最优反应被改写</text>
+
+  <rect x="60" y="290" width="260" height="60" rx="8" fill="#fef2f2" stroke="#d5342c"/>
+  <text x="190" y="316" text-anchor="middle" fill="#d5342c" font-size="12" font-weight="700" font-family="sans-serif">口头底线</text>
+  <text x="190" y="336" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">选择集未变</text>
+  <rect x="360" y="290" width="260" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="490" y="316" text-anchor="middle" fill="#0f8a4d" font-size="12" font-weight="700" font-family="sans-serif">可信承诺</text>
+  <text x="490" y="336" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">选择集可见地收窄</text>
+  <line x1="320" y1="320" x2="360" y2="320" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>在系统里做什么</th>
+<th>典型失败模式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">承诺方</td>
+<td>选择装置、支付可见成本</td>
+<td>成本不够 / 偷偷留后门</td>
+</tr>
+<tr>
+<td class="k">对手</td>
+<td>观测并更新信念、选最优反应</td>
+<td>误判可见性或可逆性</td>
+</tr>
+<tr>
+<td class="k">第三方执行者</td>
+<td>托管、仲裁、监管、智能合约</td>
+<td>自身不可信 → 承诺塌方</td>
+</tr>
+<tr>
+<td class="k">观众 / 声誉市场</td>
+<td>把一次违约放大为长期成本</td>
+<td>秘密交易使声誉装置失效</td>
+</tr>
+<tr>
+<td class="k">制度设计师</td>
+<td>立法独立性、规则锚定</td>
+<td>规则可被政治轻易改写</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号直觉</th>
+<th>为何重要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">承诺成本</td>
+<td>(C)</td>
+<td>太小=假烧桥；太大=得不偿失</td>
+</tr>
+<tr>
+<td class="k">粘住概率</td>
+<td>(q)</td>
+<td>(q) 高则单方强，双边易冲突</td>
+</tr>
+<tr>
+<td class="k">诱惑强度</td>
+<td>(\chi)</td>
+<td>事后反悔冲动；决定通胀偏见等</td>
+</tr>
+<tr>
+<td class="k">人质价值</td>
+<td>(H)</td>
+<td>(H \ge T-G) 才能锁住合作</td>
+</tr>
+<tr>
+<td class="k">可见性</td>
+<td>公开 vs 私下</td>
+<td>看不见的约束不改对手信念</td>
+</tr>
+<tr>
+<td class="k">贴现</td>
+<td>(\delta)</td>
+<td>声誉装置依赖足够在乎明天</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cfA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cfB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="90" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">装置生效</text>
+  <rect x="200" y="30" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="270" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">对手更新信念</text>
+  <rect x="380" y="30" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="450" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">最优反应改变</text>
+  <rect x="540" y="30" width="120" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="600" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">新均衡</text>
+  <line x1="160" y1="55" x2="200" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+  <line x1="340" y1="55" x2="380" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+  <line x1="520" y1="55" x2="540" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+
+  <rect x="80" y="140" width="200" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="180" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">口头威胁（可反悔）</text>
+  <rect x="360" y="140" width="220" height="50" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="470" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">对手不当真 → 均衡不动</text>
+  <line x1="280" y1="165" x2="360" y2="165" stroke="#d5342c" stroke-dasharray="5 4" marker-end="url(#cfB)"/>
+
+  <text x="340" y="240" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">实线：可信承诺因果链 · 红色虚线：cheap talk 被 SPNE/逆向归纳切断</text>
+  <text x="340" y="265" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">双边同时烧桥时，红色「冲突」分支概率随 q↑ 而上升</text>
+</svg>
+<p>鸡博弈教学支付（Straight / Swerve）：双方软化 ((2,2))；你硬他软 ((5,1))；你软他硬 ((1,5))；双硬撞车 ((-10,-10))。<span class="tag t-fact">事实</span>（教学约定）</p>
+<ul>
+<li><strong>无承诺</strong>：同时选，风险占优常倾向软化，或混策略撞车风险。  </li>
+<li><strong>你先烧桥（强制 Straight）</strong>：对手在子博弈里比较 (1) vs (-10) → 必软化；你得 <strong>5</strong>。<span class="tag t-inf">推论</span>  </li>
+<li>这就是「放弃选择权增强谈判力」的最小完整例子。</li>
+</ul>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>表面</th>
+<th>底下</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">「绝不让步」</td>
+<td>是否已删除「让步」选项？违约成本够不够？</td>
+</tr>
+<tr>
+<td class="k">灵活授权谈判代表</td>
+<td>Schelling：过度授权可能削弱代表议价力<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">央行「会考虑就业」</td>
+<td>理性公众预见到通胀诱惑 → 偏见均衡</td>
+</tr>
+<tr>
+<td class="k">双方都立军令状</td>
+<td>(q) 高时冲突概率 (q^2) 可主导<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">交保证金</td>
+<td>(H) 对守约方价值 vs 对接收方价值（(a)）是否匹配</td>
+</tr>
+</tbody>
+</table></div>
+<p>跨域同构：烧桥 ↔ 乌利西斯绑桅杆 ↔ 密码学预承诺（commit–reveal）↔ 央行通胀目标立法 ↔ 代码里把「可回滚开关」物理拆掉。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<ol>
+<li><strong>识别时间不一致</strong>：事前最优计划，事后想偏离。  </li>
+<li><strong>选装置类型</strong>：删行动（烧桥）/ 改支付（罚金、人质）/ 外包执行（第三方）/ 声誉资本。  </li>
+<li><strong>满足三要件</strong>：可见、昂贵或不可逆、对手能理解映射。  </li>
+<li><strong>重算子博弈 SPNE</strong>：承诺后，威胁/承诺是否成最优。  </li>
+<li><strong>检查双边效应</strong>：对方是否也在烧桥？冲突概率是否失控。  </li>
+<li><strong>校准成本</strong>：(C) 或 (H) 刚好跨过临界，避免过度自残。</li>
+</ol>
+<div class="note purple"><b>威胁 vs 承诺</b><p>Schelling 区分：威胁是「若你做 X，我伤害你（也常伤害我）」；承诺/允诺是「若你做 Y，我给予/兑现」。两者都需要可信性装置，但支付结构不同。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="3"/>
+  <circle cx="70" cy="110" r="8" fill="#0f8a4d"/><text x="70" y="70" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1956</text><text x="70" y="88" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">Bargaining</text>
+  <circle cx="170" cy="110" r="8" fill="#0f8a4d"/><text x="170" y="70" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1960</text><text x="170" y="88" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">Strategy</text>
+  <circle cx="280" cy="110" r="8" fill="#1d4ed8"/><text x="280" y="70" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1965</text><text x="280" y="88" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">Selten SP</text>
+  <circle cx="390" cy="110" r="8" fill="#1d4ed8"/><text x="390" y="70" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1977</text><text x="390" y="88" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">Kydland</text>
+  <circle cx="500" cy="110" r="8" fill="#b8730a"/><text x="500" y="70" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1983</text><text x="500" y="88" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">Williamson</text>
+  <circle cx="600" cy="110" r="8" fill="#d5342c"/><text x="600" y="70" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">2004</text><text x="600" y="88" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">Nobel KP</text>
+  <text x="340" y="160" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">1982 Crawford 等形式化双边承诺冲突；1990s 起央行独立性与通胀目标制度化</text>
+  <text x="340" y="185" text-anchor="middle" font-size="12" fill="#7c848f" font-family="sans-serif">今日：从军控到平台规则、智能合约——承诺装置菜单持续扩张</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>想要什么</th>
+<th>承诺如何改写激励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">谈判强势方</td>
+<td>更大剩余份额</td>
+<td>单方可信需求压缩对方可行集</td>
+</tr>
+<tr>
+<td class="k">弱势方</td>
+<td>防止被剥削</td>
+<td>公开「无法授权超限」反而增强底线</td>
+</tr>
+<tr>
+<td class="k">交易双方</td>
+<td>专用性投资不被敲竹杠</td>
+<td>人质/保证金对齐事后激励</td>
+</tr>
+<tr>
+<td class="k">货币当局</td>
+<td>低通胀 + 灵活应对冲击</td>
+<td>独立性/规则牺牲部分灵活换可信</td>
+</tr>
+<tr>
+<td class="k">双方鹰派</td>
+<td>各绑死立场</td>
+<td>高 (q) 下冲突概率上升，剩余蒸发</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="30" y="40" width="150" height="70" rx="8" fill="#15181d"/><text x="105" y="70" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">剩余 / 饼</text><text x="105" y="92" text-anchor="middle" fill="#9aa3ad" font-size="11" font-family="sans-serif">待分配 S</text>
+  <rect x="260" y="40" width="150" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="335" y="70" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">承诺装置</text><text x="335" y="92" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">烧桥 / 人质 / 规则</text>
+  <rect x="490" y="40" width="160" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="570" y="70" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">可见信号</text><text x="570" y="92" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">对手信念更新</text>
+  <line x1="180" y1="75" x2="260" y2="75" stroke="#1d4ed8" marker-end="url(#flA)"/>
+  <line x1="410" y1="75" x2="490" y2="75" stroke="#1d4ed8" marker-end="url(#flA)"/>
+
+  <rect x="120" y="160" width="440" height="60" rx="8" fill="#f8fafc" stroke="#e2e6ec"/>
+  <text x="340" y="185" text-anchor="middle" fill="#15181d" font-size="13" font-family="sans-serif">信息流：装置必须被观测，否则资源白烧、均衡不动</text>
+  <text x="340" y="205" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">资源流：真实 C 或 H 换取预期锁定——「抽水」进可信性，而非进话术</text>
+</svg>
+<p>抽水逻辑：你把一部分灵活度/现金沉没进装置，换对手不敢赌你软化；若装置不可见，资源流空转，信息流断裂。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>可见的不可逆约束</td>
+<td>直接改对手信念</td>
+<td>公开毁选项、链上锁仓、立法</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>违约/人质规模 (H)</td>
+<td>跨过 (T-G) 临界即翻转合作</td>
+<td>保证金、专有资产、违约金</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>粘住概率 (q)</td>
+<td>单方议价力与双边冲突的权衡</td>
+<td>别把 (q) 无脑调到 1</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>第三方可信度</td>
+<td>外包执行绕过自我时间不一致</td>
+<td>托管、仲裁、独立机构</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>声誉资本</td>
+<td>重复博弈中的影子未来</td>
+<td>公开记录、平台评分</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>授权边界</td>
+<td>「代表无权再让」可增强底线</td>
+<td>董事会限额、选民约束</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>信息结构</td>
+<td>秘密后门摧毁承诺</td>
+<td>审计、披露、可验证信号</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>行动顺序</td>
+<td>先承诺再让对手动</td>
+<td>议程、产能抢先</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>规则 vs 裁量</td>
+<td>宏观里牺牲灵活换偏见下降</td>
+<td>通胀目标、泰勒型规则</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>互绑对冲</td>
+<td>防止单边军备式承诺</td>
+<td>冷却期、保密协议、调解</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>① 「说得够狠就可信」</summary><div class="dbody"><p>无成本、可撤销的声明不改选择集。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>② 烧了桥却没让对手看见</summary><div class="dbody"><p>不可见的自残只伤害自己，不移动均衡。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>③ 承诺成本低于诱惑</summary><div class="dbody"><p>(C &lt; \chi) 或 (H &lt; T-G) 时，理性对手预期你会反悔。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>④ 双方同时极限承诺</summary><div class="dbody"><p>Crawford 线：弱承诺或低成本互绑，常导致冲突均衡；默认 (q=0.8)、双方各要 70 时冲突概率 <strong>0.64</strong>，单方期望仅 <strong>18</strong>（远低于对半的 50）。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>⑤ 把灵活裁量当美德（宏观）</summary><div class="dbody"><p>Kydland–Prescott：理性预期下，相机抉择可把经济锁在高通胀无额外就业的次优。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>⑥ 混淆威胁可信与承诺可信</summary><div class="dbody"><p>SPNE 剪的是不可信威胁；允诺同样需要装置，只是支付符号不同。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>⑦ 人质对接收方无价值</summary><div class="dbody"><p>Williamson：若接收方不在乎人质（(a) 过低），威慑敲竹杠的效力下降。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>⑧ 秘密投票式装置被误用</summary><div class="dbody"><p>Schelling：有时<strong>剥夺证明能力</strong>（如秘密投票）反而防止被威胁——装置方向要配对问题。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>⑨ 忽视执行者的时间不一致</summary><div class="dbody"><p>「交给法院/央行」若执行者本身会软化，只是把问题上移一层。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>⑩ 承诺一次用尽声誉</summary><div class="dbody"><p>成功靠声誉的承诺，违约会折损未来所有装置的 (q)。<span class="tag t-inf">推论</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实对应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">烧桥强制直行</td>
+<td>项羽破釜沉舟；金门驻军「绑住」援助预期（Schelling 例）<span class="tag t-chk">待验证</span>叙事细节</td>
+</tr>
+<tr>
+<td class="k">谈判代表限额</td>
+<td>「超过此价董事会不批」</td>
+</tr>
+<tr>
+<td class="k">通胀目标立法</td>
+<td>新西兰等央行改革（1990s 起）<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">特许经营专有投资</td>
+<td>店面专有装修作人质防搭便车<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">托管 / 智能合约</td>
+<td>违约自动罚没</td>
+</tr>
+<tr>
+<td class="k">公开军令状</td>
+<td>把声誉押上媒体</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li>写清：谁在何时想反悔？诱惑有多大？  </li>
+<li>列装置菜单，估 (C)/(H)/(q)。  </li>
+<li>检查三要件（可见·昂贵·可理解）。  </li>
+<li>重算承诺后的子博弈：对手最优反应是什么？  </li>
+<li>若双边都可能承诺：算冲突概率，考虑冷却或第三方。  </li>
+<li>选最小足够装置，避免表演性自残。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>① 入门：三要件检查表</summary><div class="dbody"><p>对任意「底线声明」打分：可见？可逆？对手懂？</p></div></details>
+<details><summary>② 入门：鸡博弈烧桥</summary><div class="dbody"><p>无承诺 vs 强制直行，手算支付 5 vs 混战风险。</p></div></details>
+<details><summary>③ 进阶：单方需求承诺</summary><div class="dbody"><p>饼 100，承诺要 70，对方外选项 0 → 接受；得 70。</p></div></details>
+<details><summary>④ 进阶：双边 q 模型</summary><div class="dbody"><p>默认 (q=0.8,d=70)：冲突概率 0.64，EU≈18 &lt; 50。</p></div></details>
+<details><summary>⑤ 进阶：时间不一致损失</summary><div class="dbody"><p>诱惑 (\chi=4) → 裁量通胀 4、损失 8；承诺损失 0。</p></div></details>
+<details><summary>⑥ 进阶：人质临界</summary><div class="dbody"><p>(H^<em>=T-G)；默认 (T=15,G=10) → (H^</em>=5)。</p></div></details>
+<details><summary>⑦ 专家：规则 vs 裁量权衡</summary><div class="dbody"><p>冲击很大时，完全绑死规则可能过刚——谈 Rogoff 保守央行银行家等补丁。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>⑧ 专家：与 SPNE / 机制设计衔接</summary><div class="dbody"><p>把承诺写成扩展式的先行节点；设计使合意结果成唯一 SPNE。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是「烧桥工程师」：每张局势卡上有一个想反悔的未来自我。你的技能是花最少的 (C)，让对手的期望计算翻转——但若对手也在烧桥，屏幕会变红（冲突预警）。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>完成标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 三要件</td>
+<td>剖析 3 条真实「底线」声明</td>
+</tr>
+<tr>
+<td class="k">T2 鸡博弈</td>
+<td>手算烧桥后支付</td>
+</tr>
+<tr>
+<td class="k">T3 双边 q</td>
+<td>复现 EU=18 与冲突 0.64</td>
+</tr>
+<tr>
+<td class="k">T4 通胀偏见</td>
+<td>(\chi=4) 损失对照表</td>
+</tr>
+<tr>
+<td class="k">T5 人质</td>
+<td>为一则交易设计最小 (H)</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若只口头要 70</button><button class="tab" data-pane="tb1-1">若单方 q=1 要 70</button><button class="tab" data-pane="tb1-2">若双方 q=0.8 各要 70</button><button class="tab" data-pane="tb1-3">若 χ 从 4 降到 1</button></div>
+<div class="pane on" id="tb1-0"><p>选择集未变 → 对方可等你软化或还价；不保证得到 70。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-1"><p>对方外选项 0 → 接受；你得 70 &gt; 50。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-2"><p>冲突概率 0.64；期望约 18，双输于对半分。<span class="tag t-ana">分析</span></p></div><div class="pane" id="tb1-3"><p>裁量损失从 8 降到 0.5；承诺装置的相对价值下降。<span class="tag t-inf">推论</span></p></div>
+<h3>可调模型 1 · 鸡博弈：烧桥强制直行</h3>
+<p>默认支付：双软 ((2,2))；你硬他软 ((5,1))；你软他硬 ((1,5))；双硬 ((-10,-10))。勾选「烧桥」后你只能直行，对手最优是软化，你得 <strong>5.0</strong>。</p>
+<div class="tool" id="tool_chicken">
+  <div class="ctrl">
+    <label>双软支付 <output id="ch_ssO">2.0</output></label>
+    <input type="range" id="ch_ss" min="0" max="4" step="0.1" value="2.0"/>
+    <label>硬对软：强硬方 <output id="ch_winO">5.0</output></label>
+    <input type="range" id="ch_win" min="2" max="8" step="0.1" value="5.0"/>
+    <label>硬对软：软化方 <output id="ch_loseO">1.0</output></label>
+    <input type="range" id="ch_lose" min="0" max="3" step="0.1" value="1.0"/>
+    <label>双硬撞车 <output id="ch_crashO">-10.0</output></label>
+    <input type="range" id="ch_crash" min="-20" max="-2" step="0.5" value="-10.0"/>
+    <label>烧桥（强制直行） <output id="ch_burnO">是</output></label>
+    <input type="range" id="ch_burn" min="0" max="1" step="1" value="1"/>
+  </div>
+  <div class="readout">
+    <div class="ro">你的行动<strong id="ch_act">直行（已承诺）</strong></div>
+    <div class="ro">对手最优<strong id="ch_opp">软化</strong></div>
+    <div class="ro">你的支付<strong id="ch_pay">5.0</strong></div>
+    <div id="ch_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ch_vh">烧桥后对手比较软化 1.0 vs 撞车 -10.0 → 必软化；你得 5.0</span></div>
+  </div>
+  <canvas id="chChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · 谈判承诺：单方需求 vs 双边冲突</h3>
+<p>饼 (S=100)。单方粘住时要价 (d)（外选项 0）→ 对方接受得 (S-d)。双方都要价且粘住概率为 (q) 时：冲突概率 (q^2)；默认 (q=0.80,d=70) → 冲突概率 <strong>0.64</strong>，单方期望收益 <strong>18.0</strong>（低于对半 <strong>50</strong>）。</p>
+<div class="tool" id="tool_bargain">
+  <div class="ctrl">
+    <label>饼 S <output id="bg_sO">100</output></label>
+    <input type="range" id="bg_s" min="40" max="200" step="1" value="100"/>
+    <label>要价 d <output id="bg_dO">70</output></label>
+    <input type="range" id="bg_d" min="50" max="95" step="1" value="70"/>
+    <label>粘住概率 q <output id="bg_qO">0.80</output></label>
+    <input type="range" id="bg_q" min="0.10" max="1.00" step="0.01" value="0.80"/>
+    <label>模式：0单方1双边 <output id="bg_modeO">1</output></label>
+    <input type="range" id="bg_mode" min="0" max="1" step="1" value="1"/>
+  </div>
+  <div class="readout">
+    <div class="ro">冲突概率<strong id="bg_conf">0.64</strong></div>
+    <div class="ro">你的期望<strong id="bg_eu">18.0</strong></div>
+    <div class="ro">对半基准<strong id="bg_base">50.0</strong></div>
+    <div id="bg_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="bg_vh">双边 q=0.80 各要 70：冲突 0.64；EU=18.0 &lt; 50 → 互绑过狠反而更差</span></div>
+  </div>
+  <canvas id="bgChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 时间不一致：裁量通胀偏见</h3>
+<p>简化损失 (L=\frac12\pi^2-\chi(\pi-\pi^e))。理性预期下裁量均衡 (\pi=\chi)，损失 (\frac12\chi^2)；承诺 (\pi=0) 则损失 0。默认 (\chi=4.0) → 裁量通胀 <strong>4.0</strong>、损失 <strong>8.0</strong>，承诺可节省 <strong>8.0</strong>。</p>
+<div class="tool" id="tool_time">
+  <div class="ctrl">
+    <label>诱惑强度 χ <output id="ti_chiO">4.0</output></label>
+    <input type="range" id="ti_chi" min="0" max="10" step="0.1" value="4.0"/>
+    <label>承诺（锁死 π=0） <output id="ti_comO">是</output></label>
+    <input type="range" id="ti_com" min="0" max="1" step="1" value="1"/>
+  </div>
+  <div class="readout">
+    <div class="ro">实现通胀 π<strong id="ti_pi">0.0</strong></div>
+    <div class="ro">社会损失 L<strong id="ti_L">0.0</strong></div>
+    <div class="ro">相对裁量节省<strong id="ti_save">8.0</strong></div>
+    <div id="ti_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ti_vh">承诺锁定 π=0，L=0；裁量会选 π=χ=4.0，L=8.0 → 承诺节省 8.0</span></div>
+  </div>
+  <canvas id="tiChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 人质保证金：最小 H* 锁住合作</h3>
+<p>合作总剩余 (G)，单方背叛诱惑支付 (T)（对方得 0）。人质 (H) 在背叛时罚没。可信合作条件：(G \ge T-H) ⇒ (H \ge T-G)。默认 (G=10,T=15) → <strong>H*=5.0</strong>；设 (H=6) 时合作可自我执行。</p>
+<div class="tool" id="tool_hostage">
+  <div class="ctrl">
+    <label>合作剩余 G <output id="hs_gO">10.0</output></label>
+    <input type="range" id="hs_g" min="2" max="20" step="0.5" value="10.0"/>
+    <label>背叛诱惑 T <output id="hs_tO">15.0</output></label>
+    <input type="range" id="hs_t" min="5" max="30" step="0.5" value="15.0"/>
+    <label>人质 H <output id="hs_hO">6.0</output></label>
+    <input type="range" id="hs_h" min="0" max="20" step="0.5" value="6.0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">H*<strong id="hs_star">5.0</strong></div>
+    <div class="ro">合作可信？<strong id="hs_ok">是</strong></div>
+    <div class="ro">背叛净得<strong id="hs_net">9.0</strong></div>
+    <div id="hs_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="hs_vh">H=6.0 ≥ H*=5.0 → 背叛净得 T−H=9.0 ≤ 合作 G=10.0 → 合作可信</span></div>
+  </div>
+  <canvas id="hsChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>三要件 + 鸡博弈烧桥</td>
+<td>口算得 5</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>单方/双边谈判承诺</td>
+<td>复现 70 与 EU=18</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>时间不一致 + 人质 H*</td>
+<td>χ=4、H*=5</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>制度菜单与双边冲突管理</td>
+<td>半页案例设计</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一条你或公司最近的「底线」声明，用三要件打分（8 分钟）。  </li>
+<li>打开模型 1，关/开烧桥，记录支付从「风险」翻到 5.0（6 分钟）。  </li>
+<li>模型 2 保持 (d=70)，把模式打到双边、(q) 从 0.5 拖到 1.0，找到 EU 低于 50 的区间（8 分钟）。  </li>
+<li>为一笔需要对方先投资的合作，用模型 4 算出最小 (H^*)（8 分钟）。  </li>
+</ol>
+<p>产出：一页「三要件评分 + H*」——成本接近 0，可验证。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>三要件</td>
+<td>5 条声明评分表</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>鸡博弈</td>
+<td>支付树手绘</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>单方承诺</td>
+<td>d 与接受集</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>双边 q</td>
+<td>EU–q 曲线笔记</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>时间不一致</td>
+<td>χ 损失表</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>人质</td>
+<td>一则交易 H*</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘</td>
+<td>技能树自测</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>成果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>微观承诺装置</td>
+<td>烧桥/人质/合同熟练</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>谈判与冲突</td>
+<td>单方 vs 双边对照册</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>宏观与制度</td>
+<td>央行/规则案例卡</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>综合设计</td>
+<td>一份完整承诺方案</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>Schelling 自我约束</td>
+<td>放弃选择权可增强谈判力</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>可信性三要件</td>
+<td>可见 · 昂贵/不可逆 · 可理解</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>鸡博弈烧桥</td>
+<td>强制直行 → 对手软化</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>单方需求承诺</td>
+<td>粘住要价压缩对方份额</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>双边承诺冲突</td>
+<td>高 (q) 下冲突概率 (q^2)</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>SPNE 衔接</td>
+<td>承诺后子博弈必须仍最优</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>时间不一致</td>
+<td>裁量 π=χ，承诺可消偏见</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>人质 (H^*)</td>
+<td>(H \ge T-G) 锁合作</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>声誉装置</td>
+<td>用未来租金贴现约束今天</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>规则 vs 裁量</td>
+<td>制度牺牲灵活换可信集合扩大</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 事后执行还是最优吗？</summary><div class="dbody"><p>不是 → 需要装置，否则不可信。</p></div></details>
+<details><summary>Q2 对手观测到约束了吗？</summary><div class="dbody"><p>没有 → 资源白烧。</p></div></details>
+<details><summary>Q3 C 或 H 过临界了吗？</summary><div class="dbody"><p>(H^*=T-G)；通胀里看 (\chi)。</p></div></details>
+<details><summary>Q4 对方是否也在承诺？</summary><div class="dbody"><p>算 (q^2) 冲突；考虑降温。</p></div></details>
+<details><summary>Q5 威胁还是允诺？</summary><div class="dbody"><p>支付结构不同，装置设计不同。</p></div></details>
+<details><summary>Q6 第三方自身可信吗？</summary><div class="dbody"><p>执行者时间不一致会传染。</p></div></details>
+<details><summary>Q7 秘密后门在哪？</summary><div class="dbody"><p>一条可撤销通道就能摧毁 q。</p></div></details>
+<details><summary>Q8 宏观该绑多死？</summary><div class="dbody"><p>冲击方差大时保留有限灵活（保守央行等）。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q9 与 SPNE 关系？</summary><div class="dbody"><p>承诺=改变博弈树；再用逆向归纳检验。</p></div></details>
+<details><summary>Q10 今天最小实践？</summary><div class="dbody"><p>三要件打分 + 算一个 H*——见第 22 节。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>子博弈精炼与承诺行动的形式化扩展式  </li>
+<li>Rogoff 保守央行银行家、最优委托  </li>
+<li>不完全合同与关系契约  </li>
+<li>行为承诺：偏好反转、双曲贴现与承诺需求  </li>
+<li>链上预承诺与可验证延迟  </li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">Schelling 自我约束 / 烧桥</td>
+<td>原著</td>
+<td><em>The Strategy of Conflict</em> (1960)；<em>An Essay on Bargaining</em> (1956)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">威胁与承诺可信性讨论</td>
+<td>学术综述</td>
+<td>Myerson「Learning from Schelling's Strategy of Conflict」</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">双边承诺与冲突</td>
+<td>工作论文/文献</td>
+<td>Crawford (1982) 线；Ellingsen–Miettinen 等后续</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">时间不一致政策</td>
+<td>原始论文 + 诺奖</td>
+<td>Kydland–Prescott JPE 1977；2004 诺贝尔经济科学奖通俗说明</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">通胀偏见直觉</td>
+<td>联储综述</td>
+<td>FRBSF Economic Letter 对 KP / Barro–Gordon 的复述</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">人质与可信承诺</td>
+<td>原始论文</td>
+<td>Williamson AER 1983 <em>Credible Commitments: Using Hostages…</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">鸡博弈/人质默认数值</td>
+<td>自算教学约定</td>
+<td>见可调模型；node 验算</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">金门驻军等历史例</td>
+<td>Schelling 叙述</td>
+<td>战略叙事，细节作<span class="tag t-chk">待验证</span></td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">央行独立性改革</td>
+<td>诺奖委员会综述</td>
+<td>新西兰、瑞典、英国、欧元区等制度变迁叙述</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或可核验原文；<span class="tag t-ana">分析</span>权威判断/主流解释；<span class="tag t-inf">推论</span>由模型推出；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或转载链过长。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与决策框架学习材料，<strong>不是</strong>投资、法律、谈判代理、公共政策或商业咨询建议。文中数值多为教学约定或解析示例，不代表任何真实市场、汇率或政策预测。将「烧桥 / 人质 / 规则锁定」用于真实决策前，须自行核验支付、可见性、法律制度与对手信念；错误的承诺设计可能导致冲突升级或不可逆损失。作者与引擎不对依据本手册采取的行动承担责任。</p>
+</section>
+<footer>  <p>《可信承诺：主动放弃选择权反而增强谈判力 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 7 分 5 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《可信承诺（Credible Commitment）》主题脚本
+   四个可调模型：
+     1. 鸡博弈烧桥
+     2. 谈判承诺：单方 vs 双边冲突
+     3. 时间不一致通胀偏见
+     4. 人质保证金 H*
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(1), pl - 6, y + 3);
+    }
+  }
+
+  /* ── 1. 鸡博弈烧桥 ── */
+  (function chicken() {
+    if (!$('ch_burn')) return;
+    var ids = ['ch_ss', 'ch_win', 'ch_lose', 'ch_crash', 'ch_burn'];
+    var cv = $('chChart');
+
+    function upd() {
+      var ss = parseFloat($('ch_ss').value);
+      var win = parseFloat($('ch_win').value);
+      var lose = parseFloat($('ch_lose').value);
+      var crash = parseFloat($('ch_crash').value);
+      var burn = parseInt($('ch_burn').value, 10) === 1;
+      txt($('ch_ssO'), ss.toFixed(1));
+      txt($('ch_winO'), win.toFixed(1));
+      txt($('ch_loseO'), lose.toFixed(1));
+      txt($('ch_crashO'), crash.toFixed(1));
+      txt($('ch_burnO'), burn ? '是' : '否');
+
+      var act, opp, pay, msg, col;
+      if (burn) {
+        act = '直行（已承诺）';
+        if (lose >= crash - 1e-9) {
+          opp = '软化';
+          pay = win;
+          msg = '烧桥后对手比较软化 ' + lose.toFixed(1) + ' vs 撞车 ' + crash.toFixed(1) +
+            ' → 必软化；你得 ' + win.toFixed(1);
+          col = C.green;
+        } else {
+          opp = '直行（撞车）';
+          pay = crash;
+          msg = '异常：软化支付低于撞车，对手也硬刚 → 双方 ' + crash.toFixed(1);
+          col = C.red;
+        }
+      } else {
+        act = '可软可硬（未承诺）';
+        opp = '不确定';
+        pay = ss;
+        msg = '无烧桥：可能协调在双软 ' + ss.toFixed(1) + '，或混策略面临撞车 ' +
+          crash.toFixed(1) + '；承诺可把结果锁到硬对软 ' + win.toFixed(1);
+        col = C.amber;
+      }
+
+      txt($('ch_act'), act);
+      txt($('ch_opp'), opp);
+      txt($('ch_pay'), pay.toFixed(1));
+      txt($('ch_vh'), msg);
+      tint($('ch_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var vals = [
+        { lab: '双软', v: ss, c: C.amber },
+        { lab: '硬对软', v: win, c: C.green },
+        { lab: '软对硬', v: lose, c: C.blue },
+        { lab: '撞车', v: crash, c: C.red },
+        { lab: '你当前', v: pay, c: burn ? C.green : C.amber }
+      ];
+      var ymin = Math.min(ss, win, lose, crash, pay) - 1;
+      var ymax = Math.max(ss, win, lose, crash, pay) + 1;
+      axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+      var barW = bw / (vals.length * 1.45);
+      vals.forEach(function (o, i) {
+        var x = pl + (i + 0.5) * (bw / vals.length) - barW / 2;
+        var y0 = y1 - ((0 - ymin) / (ymax - ymin)) * bh;
+        var yv = y1 - ((o.v - ymin) / (ymax - ymin)) * bh;
+        var top = Math.min(y0, yv), bot = Math.max(y0, yv);
+        ctx.fillStyle = o.c;
+        ctx.globalAlpha = 0.85;
+        ctx.fillRect(x, top, barW, Math.max(2, bot - top));
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = C.ink;
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        var lab = o.v.toFixed(1);
+        var lw = ctx.measureText(lab).width;
+        var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 4), w - pr - lw / 2 - 4);
+        ctx.fillText(lab, lx, Math.min(top, yv) - 6);
+        ctx.fillStyle = C.ink3;
+        ctx.fillText(o.lab, x + barW / 2, y1 + 18);
+      });
+      ctx.fillStyle = C.ink2;
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('鸡博弈支付比较', pl + bw, pt - 6);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+
+  /* ── 2. 谈判承诺 ── */
+  (function bargain() {
+    if (!$('bg_q')) return;
+    var ids = ['bg_s', 'bg_d', 'bg_q', 'bg_mode'];
+    var cv = $('bgChart');
+
+    function euBilateral(S, d, q) {
+      var conf = q * q;
+      var aOnly = q * (1 - q);
+      var bOnly = (1 - q) * q;
+      var bothFlex = (1 - q) * (1 - q);
+      var eu = conf * 0 + aOnly * d + bOnly * (S - d) + bothFlex * (S / 2);
+      return { conf: conf, eu: eu };
+    }
+
+    function upd() {
+      var S = parseFloat($('bg_s').value);
+      var d = parseFloat($('bg_d').value);
+      var q = parseFloat($('bg_q').value);
+      var mode = parseInt($('bg_mode').value, 10);
+      if (d > S) d = S;
+      txt($('bg_sO'), String(S));
+      txt($('bg_dO'), String(d));
+      txt($('bg_qO'), q.toFixed(2));
+      txt($('bg_modeO'), String(mode));
+
+      var base = S / 2;
+      var conf, eu, msg, col;
+      if (mode === 0) {
+        conf = 0;
+        eu = d;
+        msg = '单方 q=1 要价 ' + d + '：对方得 ' + (S - d) + ' ≥ 0 → 接受；你得 ' +
+          d + '（对半基准 ' + base.toFixed(1) + '）';
+        col = eu >= base ? C.green : C.amber;
+      } else {
+        var r = euBilateral(S, d, q);
+        conf = r.conf;
+        eu = r.eu;
+        msg = '双边 q=' + q.toFixed(2) + ' 各要 ' + d + '：冲突 ' + conf.toFixed(2) +
+          '；EU=' + eu.toFixed(1) + (eu < base ? ' < ' : ' ≥ ') + base.toFixed(1) +
+          (eu < base ? ' → 互绑过狠反而更差' : ' → 仍优于对半');
+        col = eu < base ? C.red : C.green;
+      }
+
+      txt($('bg_conf'), conf.toFixed(2));
+      txt($('bg_eu'), eu.toFixed(1));
+      txt($('bg_base'), base.toFixed(1));
+      txt($('bg_vh'), msg);
+      tint($('bg_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var ymin = 0, ymax = S * 1.05;
+      axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+
+      function sx(qv) { return pl + ((qv - 0.1) / 0.9) * bw; }
+      function sy(v) { return y1 - ((v - ymin) / (ymax - ymin)) * bh; }
+
+      ctx.strokeStyle = C.amber;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(base));
+      ctx.lineTo(pl + bw, sy(base));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = C.amber;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('对半 ' + base.toFixed(0), pl + 4, sy(base) - 4);
+
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (var i = 0; i <= 90; i++) {
+        var qv = 0.1 + (i / 90) * 0.9;
+        var ev = euBilateral(S, d, qv).eu;
+        var x = sx(qv), y = sy(ev);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = C.red;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (var j = 0; j <= 90; j++) {
+        var q2 = 0.1 + (j / 90) * 0.9;
+        var cf = q2 * q2 * S;
+        var x2 = sx(q2), y2 = sy(cf);
+        if (j === 0) ctx.moveTo(x2, y2); else ctx.lineTo(x2, y2);
+      }
+      ctx.stroke();
+
+      var cur = mode === 1 ? eu : d;
+      ctx.fillStyle = C.green;
+      ctx.beginPath();
+      ctx.arc(mode === 1 ? sx(q) : pl + bw * 0.5, sy(cur), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink2;
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('蓝：双边EU(q) · 红：冲突损失尺度 q²·S', pl + bw, pt - 8);
+      ctx.fillStyle = C.ink3;
+      ctx.textAlign = 'center';
+      ctx.fillText('粘住概率 q', pl + bw / 2, y1 + 31);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+
+  /* ── 3. 时间不一致 ── */
+  (function timeInc() {
+    if (!$('ti_chi')) return;
+    var ids = ['ti_chi', 'ti_com'];
+    var cv = $('tiChart');
+
+    function upd() {
+      var chi = parseFloat($('ti_chi').value);
+      var com = parseInt($('ti_com').value, 10) === 1;
+      txt($('ti_chiO'), chi.toFixed(1));
+      txt($('ti_comO'), com ? '是' : '否');
+
+      var piDisc = chi;
+      var LDisc = 0.5 * chi * chi;
+      var pi = com ? 0 : piDisc;
+      var L = com ? 0 : LDisc;
+      var save = LDisc - L;
+
+      txt($('ti_pi'), pi.toFixed(1));
+      txt($('ti_L'), L.toFixed(1));
+      txt($('ti_save'), save.toFixed(1));
+      var msg = com
+        ? ('承诺锁定 π=0，L=0；裁量会选 π=χ=' + chi.toFixed(1) + '，L=' + LDisc.toFixed(1) +
+          ' → 承诺节省 ' + save.toFixed(1))
+        : ('裁量均衡 π=χ=' + chi.toFixed(1) + '，L=' + L.toFixed(1) +
+          '；打开承诺可把损失降到 0');
+      txt($('ti_vh'), msg);
+      tint($('ti_vh'), com ? C.green : C.red);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var chiMax = 10;
+      var ymin = 0, ymax = 0.5 * chiMax * chiMax * 1.05;
+      axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+
+      function sx(c) { return pl + (c / chiMax) * bw; }
+      function sy(v) { return y1 - ((v - ymin) / (ymax - ymin)) * bh; }
+
+      ctx.strokeStyle = C.red;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (var i = 0; i <= 100; i++) {
+        var c = (i / 100) * chiMax;
+        var Lv = 0.5 * c * c;
+        var x = sx(c), y = sy(Lv);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = C.green;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(0));
+      ctx.lineTo(pl + bw, sy(0));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = com ? C.green : C.red;
+      ctx.beginPath();
+      ctx.arc(sx(chi), sy(L), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink2;
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('红：裁量损失 ½χ² · 绿：承诺 L=0', pl + bw, pt - 8);
+      ctx.fillStyle = C.ink3;
+      ctx.textAlign = 'center';
+      ctx.fillText('诱惑强度 χ', pl + bw / 2, y1 + 31);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+
+  /* ── 4. 人质 H* ── */
+  (function hostage() {
+    if (!$('hs_h')) return;
+    var ids = ['hs_g', 'hs_t', 'hs_h'];
+    var cv = $('hsChart');
+
+    function upd() {
+      var G = parseFloat($('hs_g').value);
+      var T = parseFloat($('hs_t').value);
+      var H = parseFloat($('hs_h').value);
+      txt($('hs_gO'), G.toFixed(1));
+      txt($('hs_tO'), T.toFixed(1));
+      txt($('hs_hO'), H.toFixed(1));
+
+      var Hstar = Math.max(0, T - G);
+      var net = T - H;
+      var ok = G >= net - 1e-9;
+      txt($('hs_star'), Hstar.toFixed(1));
+      txt($('hs_ok'), ok ? '是' : '否');
+      txt($('hs_net'), net.toFixed(1));
+      var msg = 'H=' + H.toFixed(1) + (ok ? ' ≥ ' : ' < ') + 'H*=' + Hstar.toFixed(1) +
+        ' → 背叛净得 T−H=' + net.toFixed(1) + (ok ? ' ≤ ' : ' > ') + '合作 G=' + G.toFixed(1) +
+        (ok ? ' → 合作可信' : ' → 仍会背叛');
+      txt($('hs_vh'), msg);
+      tint($('hs_vh'), ok ? C.green : C.red);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 28, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var hMax = 20;
+      var ymin = Math.min(0, G, T - hMax) - 1;
+      var ymax = Math.max(G, T, net) + 2;
+      axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+
+      function sx(hv) { return pl + (hv / hMax) * bw; }
+      function sy(v) { return y1 - ((v - ymin) / (ymax - ymin)) * bh; }
+
+      ctx.strokeStyle = C.green;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(G));
+      ctx.lineTo(sx(hMax), sy(G));
+      ctx.stroke();
+
+      ctx.strokeStyle = C.red;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(T));
+      ctx.lineTo(sx(hMax), sy(T - hMax));
+      ctx.stroke();
+
+      if (Hstar <= hMax) {
+        ctx.strokeStyle = C.amber;
+        ctx.beginPath();
+        ctx.moveTo(sx(Hstar), pt);
+        ctx.lineTo(sx(Hstar), y1);
+        ctx.stroke();
+        ctx.fillStyle = C.amber;
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('H*=' + Hstar.toFixed(1), sx(Hstar), pt - 4);
+      }
+
+      ctx.fillStyle = C.blue;
+      ctx.beginPath();
+      ctx.arc(sx(H), sy(net), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink2;
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('绿：合作G · 红：背叛净得T−H · 点：当前', pl + bw, pt - 8);
+      ctx.fillStyle = C.ink3;
+      ctx.textAlign = 'center';
+      ctx.fillText('人质 H', pl + bw / 2, y1 + 31);
+    }
+    bind(ids, upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>

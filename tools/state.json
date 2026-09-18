@@ -648,11 +648,14 @@
     {
       "slug": "可信承诺（Credible Commitment）：主动放弃选择权（烧船、自缚手脚）反而增强谈判力",
       "title": "可信承诺（Credible Commitment）：主动放弃选择权（烧船、自缚手脚）反而增强谈判力",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 02:13:56",
+      "finished": "2026-09-19 02:21:01",
+      "duration_sec": 425,
+      "outputs": [
+        "reports/可信承诺（Credible Commitment）：主动放弃选择权（烧船、自缚手脚）反而增强谈判力.html",
+        "reports/可信承诺（Credible Commitment）：主动放弃选择权（烧船、自缚手脚）反而增强谈判力.md"
+      ],
       "error": null
     },
     {
@@ -1843,7 +1846,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 02:13",
+  "updated": "2026-09-19 02:21",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
