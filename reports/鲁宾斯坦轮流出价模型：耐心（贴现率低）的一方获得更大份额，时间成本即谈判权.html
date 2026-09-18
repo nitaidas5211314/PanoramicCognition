@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鲁宾斯坦轮流出价模型 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Rubinstein × Alternating Offers</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <div class="navgroup">模拟与路线</div>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与问题</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>鲁宾斯坦轮流出价模型</h1>
+  <p class="sub">轮流出价 + 时间贴现 ⇒ 唯一子博弈精炼均衡：<strong>耐心（δ 高）的一方拿更大份额</strong>；时间成本就是谈判权——先手优势在双方都极耐心时趋于消失。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>鲁宾斯坦轮流出价模型（Rubinstein alternating-offers, 1982）</strong>把「分一块大小为 1 的饼」写成无限期交替提案博弈：一方出价，另一方接受或拒绝；拒绝则换手、蛋糕按各自贴现因子 (\delta_i\in(0,1)) 缩水。唯一<strong>子博弈精炼纳什均衡（SPE）</strong>在第一回合立即成交，先手方份额为</p>
+<p>[
+x_1^*=\frac{1-\delta_2}{1-\delta_1\delta_2}
+]</p>
+<p>——(\delta_i) 越大（越耐心、时间成本越低），己方份额越大。时间成本即谈判权。<span class="tag t-fact">事实</span></p>
+<p>Ariel Rubinstein, <em>Perfect Equilibrium in a Bargaining Model</em>, <em>Econometrica</em> 50(1), 1982。<span class="tag t-fact">事实</span></p>
+<p>与相邻概念分工：<strong>纳什讨价还价解（NBS）</strong>给公理公平点；本模型给<strong>非合作过程</strong>与唯一 SPE；当回合间隔 (\Delta t\to0) 且 (\delta_i=e^{-r_i\Delta t}) 时，先手份额逼近 (r_2/(r_1+r_2))，与广义纳什解殊途同归（Binmore–Rubinstein–Wolinsky 1986）。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「怎么开口要价」的话术，而是：在<strong>完全信息、无限期、轮流提案、贴现有成本</strong>的规则下，理性双方会在何时、以什么比例成交。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：贴现因子模型、固定每期成本模型、有限期 Stahl 变体、与 NBS 的极限联系、劳资/并购/许可等谈判映射。</li>
+<li><strong>在界外</strong>：多方联盟核、不完全信息下的拖延均衡、法庭判决措辞——除非压成 (\delta)、外部选项与协议规则。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>轮流出价下如何唯一、立即地分配剩余</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「协议规则 + 贴现/成本 + SPE」为止；私有信息另建模型</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>饼、提案、接受/拒绝、(\delta_i)、SPE 份额</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>先手提案方、后手方；仲裁/监管偶尔改规则</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(\delta_1,\delta_2)（或 (c_1,c_2)）、谁先出价、破裂点</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>合同价、分成、工资、成交时点</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实耐心、私下外部选项、对方信念</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>(\delta_i)↑ → 己方份额↑；对方 (\delta)↑ → 己方份额↓</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>无差异条件 ⇒ 闭式 (x_1^*)；SPE 剔除不可信威胁<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「嗓门大」≠耐心；拖延本身若无成本则理论力崩塌<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>先开高价、僵局、最后通牒、马拉松谈判</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>今日给对方的，恰好等于对方明日当提案人的贴现价值</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。份额不公 → 拒签/换对手 → 改有效 (\delta) 或破裂点</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>均衡预言<strong>零延迟</strong>；现实拖延多靠不完全信息<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>改善外部选项强化地位；假威胁被识破则回落</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>谈判权不是嗓门，而是<strong>谁更能等</strong>——(\delta) 把「等得起」写成可复算的份额公式。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它把「拖延威胁」钉成唯一 SPE</h4><p>无限期看似无穷均衡，完美性要求筛到<strong>唯一</strong>立即成交点。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它量化「耐心 = 议价力」</h4><p>(x_1^*) 对 (\delta_1) 递增、对 (\delta_2) 递减；对称 (\delta) 时先手拿 (1/(1+\delta)&gt;1/2)。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它给公理纳什解装上策略地基</h4><p>(\Delta t\to0) 时逼近广义 NBS——两条路径指向同一答案。<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>以为「谈判拖得越久越能压价」。在完全信息 Rubinstein 世界里，<strong>均衡从不拖延</strong>——真正吃亏的是 (\delta) 更低的一方；你若现金流紧、截止日期硬，拖只会把自己折现掉。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层从「一轮提案」爬到「制度与实证」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rbArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度军备 · 强制调解 / 最后通牒仲裁 / 截止日立法</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 实证与现场 · 劳资 · 并购 · 许可 · 实验偏离</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 极限与公理 · BRW → 广义纳什 · 与 NBS 对接</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 跨域同构 · 期权时间价值 · 利率 · 生存概率</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 变体 · 固定成本 c · 有限期 Stahl · 外部选项</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 经典算例 · δ=0.9 → 52.63% · 不对称耐心</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 解概念 · 子博弈精炼 · 无差异条件 · 立即成交</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 协议规则 · 交替提案 · 接受/拒绝 · 无限期</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 原语 · 饼=1 · 贴现因子 δ₁,δ₂ · 谁先出价</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L1–L4</strong>：会写无差异方程、手算 (x_1^<em>)；进阶卡在 </em><em>L5–L7</em>*——固定成本极端解、连续时间极限与 NBS。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从贴现偏好到可操作成交价。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="80" y="16" width="520" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">协议规则 → SPE 无差异 → 合同价 / 分成 / 工资</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">时间偏好·完美性</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">x₁*=(1−δ₂)/(1−δ₁δ₂)</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">开价·截止日·BATNA</text>
+
+  <line x1="280" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="180" width="180" height="70" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">δ₁, δ₂</text><text x="130" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">耐心 / 利率 / 破裂风险</text>
+  <rect x="250" y="180" width="180" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">SPE 份额</text><text x="340" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">立即接受</text>
+  <rect x="460" y="180" width="180" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">成交映射</text><text x="550" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">效用→货币</text>
+
+  <line x1="130" y1="146" x2="130" y2="180" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="146" x2="340" y2="180" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="550" y1="146" x2="550" y2="180" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <path d="M220 215 H250" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <path d="M430 215 H460" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <text x="340" y="280" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">红虚线 = 反馈：拒签 → 改 δ 或外部选项 → 新份额</text>
+  <text x="340" y="310" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">跨域同构：利率贴现 · 期权时间衰减 · 生存概率</text>
+  <text x="340" y="340" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">Nash 计划：非合作 SPE ↔ 公理 NBS（连续时间极限）</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>目标</th>
+<th>信息位置</th>
+<th>典型工具</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">先手提案方</td>
+<td>max 己方贴现效用</td>
+<td>知规则与己方 δ</td>
+<td>开价贴着对方无差异点</td>
+</tr>
+<tr>
+<td class="k">后手方</td>
+<td>max 己方贴现效用</td>
+<td>对称（完全信息）</td>
+<td>拒绝低于续价值的要约</td>
+</tr>
+<tr>
+<td class="k">现金流紧的一方</td>
+<td>抬高有效 δ 或换位</td>
+<td>常被低估</td>
+<td>桥接融资、延长截止日</td>
+</tr>
+<tr>
+<td class="k">仲裁者</td>
+<td>改规则（谁先开价、间隔）</td>
+<td>需双方披露</td>
+<td>强制调解、最终报价仲裁</td>
+</tr>
+<tr>
+<td class="k">旁观者</td>
+<td>少承担拖延外部性</td>
+<td>常被忽略</td>
+<td>消费者、员工、供应链</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号/度量</th>
+<th>为何关键</th>
+<th>杠杆方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">先手份额</td>
+<td>(x_1^*=(1-\delta_2)/(1-\delta_1\delta_2))</td>
+<td>均衡成交点</td>
+<td>(\delta_1)↑ / (\delta_2)↓ → (x_1)↑</td>
+</tr>
+<tr>
+<td class="k">后手份额</td>
+<td>(x_2^*=\delta_2(1-\delta_1)/(1-\delta_1\delta_2))</td>
+<td>互补</td>
+<td>与上相反</td>
+</tr>
+<tr>
+<td class="k">贴现因子</td>
+<td>(\delta_i\in(0,1))</td>
+<td>耐心度量</td>
+<td>(\delta=1/(1+r)) 或续约概率</td>
+</tr>
+<tr>
+<td class="k">每期固定成本</td>
+<td>(c_i)</td>
+<td>另一成本结构</td>
+<td>成本更低者几乎通吃<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">先手权</td>
+<td>谁在 t=0 提案</td>
+<td>对称 δ 时仍 &gt;50%</td>
+<td>(\delta\to1) 时优势→0</td>
+</tr>
+<tr>
+<td class="k">破裂点 / 外部选项</td>
+<td>(d_i)</td>
+<td>扩展模型</td>
+<td>提高 BATNA ≡ 抬底线</td>
+</tr>
+<tr>
+<td class="k">回合间隔</td>
+<td>(\Delta t)</td>
+<td>连续极限关键</td>
+<td>(\Delta t\to0) → NBS</td>
+</tr>
+<tr>
+<td class="k">饼的大小</td>
+<td>常归一为 1</td>
+<td>可缩放</td>
+<td>先估剩余再套公式</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="40" width="120" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="80" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">现金流/利率</text>
+  <rect x="180" y="40" width="120" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="240" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">δ₁, δ₂</text>
+  <rect x="340" y="40" width="120" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="400" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">无差异方程</text>
+  <rect x="500" y="40" width="140" height="50" rx="8" fill="#15181d"/><text x="570" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">SPE 立即成交</text>
+
+  <line x1="140" y1="65" x2="180" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="300" y1="65" x2="340" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="460" y1="65" x2="500" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+
+  <rect x="180" y="160" width="120" height="50" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="240" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">谁先出价</text>
+  <rect x="340" y="160" width="120" height="50" rx="8" fill="#fee2e2" stroke="#d5342c"/><text x="400" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">拒签/拖延</text>
+  <rect x="500" y="160" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="570" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">再谈判</text>
+
+  <line x1="240" y1="90" x2="240" y2="160" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="400" y1="90" x2="400" y2="160" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="570" y1="90" x2="570" y2="160" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="300" y1="185" x2="340" y2="185" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+  <line x1="460" y1="185" x2="500" y2="185" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+
+  <path d="M570 210 Q340 280 80 90" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+  <text x="340" y="300" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">反馈：拖延消耗剩余 → 暴露真实 δ → 新协议点</text>
+</svg>
+<p>因果链（实线）与反馈（红虚线）：</p>
+<ol>
+<li><strong>利率/现金流/破裂风险 → (\delta)</strong>：(\delta\approx 1/(1+r))，或「下一回合还存在」的概率。<span class="tag t-ana">分析</span></li>
+<li><strong>(\delta) + 先手权 → 无差异方程 → (x^*)</strong>：今日给对方的 = 对方明日当提案人的贴现价值。<span class="tag t-fact">事实</span></li>
+<li><strong>拒签 → 再谈判</strong>：完全信息下均衡路径上不发生；若发生，多半是信息不完全或外部冲击改写了 (\delta)。<span class="tag t-ana">分析</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="grid g2">
+<div class="card"><h4>先手优势 ≠ 永远占优</h4><p>对称 (\delta=0.9) 时先手 <strong>52.63%</strong>；(\delta=0.99) 时仅 <strong>50.25%</strong>。双方都极耐心时，先手溢价几乎消失。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>「不耐心」可以被对方收割</h4><p>若 (\delta_1=0.5,\delta_2=0.99)，先手只剩 <strong>1.98%</strong>——先手权救不了现金流崩盘的一方。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>固定成本模型更极端</h4><p>每期成本 (c_1&lt;c_2) 时，完美均衡让方 1 <strong>通吃整饼</strong>；成本更高者几乎只拿对方一期的损失。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>立即成交是预测，也是批评点</h4><p>理论预言零延迟；现实拖延普遍——主批评指向<strong>完全信息</strong>假设，不完全信息模型才解释僵局。<span class="tag t-ana">分析</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p><strong>稳态无差异（stationary SPE）</strong>：</p>
+<ul>
+<li>方 1 提案时要 (x^<em>)，方 2 接受当且仅当己方 ≥ (1-x^</em>)。</li>
+<li>方 2 提案时，方 1 只拿 (y^<em>=\delta_1 x^</em>)，方 2 拿 (1-y^*)。</li>
+<li>一致性：(1-x^<em>=\delta_2(1-y^</em>)=\delta_2(1-\delta_1 x^<em>))，解得 (x^</em>=(1-\delta_2)/(1-\delta_1\delta_2))。<span class="tag t-fact">事实</span></li>
+</ul>
+<p><strong>对称特例</strong> (\delta_1=\delta_2=\delta)：(x^<em>=1/(1+\delta))，(1-x^</em>=\delta/(1+\delta))。<span class="tag t-fact">事实</span></p>
+<p><strong>为何立即成交</strong>：任何故意拖延都会把饼折现，提案人可把对方推到无差异点并自己拿走「未折现」部分——拖延对双方都劣。<span class="tag t-inf">推论</span></p>
+<div class="note green"><b>验算锚点（交付前已用 node 复核）</b><p>(\delta_1=\delta_2=0.9) → (x_1^<em>=52.63\%)；(\delta_1=0.9,\delta_2=0.8) → (x_1^</em>=71.43\%)；(\delta_1=0.8,\delta_2=0.9) → (x_1^*=35.71\%)。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="130" x2="640" y2="130" stroke="#e2e6ec" stroke-width="3"/>
+  <circle cx="80" cy="130" r="10" fill="#0f8a4d"/><text x="80" y="90" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">1950</text><text x="80" y="170" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">Nash 公理解</text>
+  <circle cx="200" cy="130" r="10" fill="#1d4ed8"/><text x="200" y="90" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">1972</text><text x="200" y="170" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">Stahl 有限期</text>
+  <circle cx="340" cy="130" r="12" fill="#d5342c"/><text x="340" y="85" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">1982</text><text x="340" y="170" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">Rubinstein 无限期</text>
+  <circle cx="480" cy="130" r="10" fill="#b8730a"/><text x="480" y="90" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">1986</text><text x="480" y="170" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">BRW 极限=NBS</text>
+  <circle cx="600" cy="130" r="10" fill="#7c848f"/><text x="600" y="90" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">1990s+</text><text x="600" y="170" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">不完全信息/实验</text>
+  <line x1="90" y1="130" x2="190" y2="130" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="210" y1="130" x2="328" y2="130" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="352" y1="130" x2="470" y2="130" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <line x1="490" y1="130" x2="590" y2="130" stroke="#1d4ed8" stroke-width="2" marker-end="url(#tmA)"/>
+  <text x="340" y="230" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">从「该怎么分才公平」到「理性过程会分到哪」再到「为何现实会拖延」</text>
+</svg>
+<p>演化逻辑：公理公平 → 有限期逆向归纳 → 无限期唯一 SPE → 连续时间对接 NBS → 用私人信息解释拖延。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>激励</th>
+<th>扭曲风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">高 δ 方</td>
+<td>拖得起 → 份额大</td>
+<td>炫耀耐心可能暴露真实截止日</td>
+</tr>
+<tr>
+<td class="k">低 δ 方</td>
+<td>急于成交</td>
+<td>被压到接近对方一期损失</td>
+</tr>
+<tr>
+<td class="k">掌握先手权者</td>
+<td>对称耐心下略赚</td>
+<td>若己方 δ 远低于对方，先手也救不了</td>
+</tr>
+<tr>
+<td class="k">设定规则者</td>
+<td>选谁先开价、间隔多长</td>
+<td>「立即还价」协议会破坏唯一性<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">代理人谈判</td>
+<td>代理人 δ ≠ 委托人 δ</td>
+<td>代理可能过早让步或无谓拖延</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="flB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="40" y="30" width="140" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="110" y="65" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">剩余（饼）</text>
+  <rect x="270" y="30" width="140" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="65" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">提案 / 还价</text>
+  <rect x="500" y="30" width="140" height="60" rx="8" fill="#15181d"/><text x="570" y="65" text-anchor="middle" fill="#fff" font-size="13" font-weight="600" font-family="sans-serif">成交分配</text>
+
+  <line x1="180" y1="60" x2="270" y2="60" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="410" y1="60" x2="500" y2="60" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+
+  <rect x="270" y="150" width="140" height="60" rx="8" fill="#fee2e2" stroke="#d5342c"/><text x="340" y="185" text-anchor="middle" fill="#15181d" font-size="13" font-family="sans-serif">每期贴现损耗</text>
+  <path d="M340 90 V150" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#flB)"/>
+  <text x="340" y="250" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">抽水机：拖延把饼抽进「时间」——均衡上双方选择不让泵启动</text>
+</svg>
+<p>信息流：完全信息下双方共享规则与 (\delta)；真正稀缺的是<strong>对方真实耐心与外部选项</strong>——一旦不对称，拖延与信号出现。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>序</th>
+<th>杠杆</th>
+<th>为何有效</th>
+<th>成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>抬高己方有效 δ</strong></td>
+<td>直接进公式</td>
+<td>桥接资金、备选方案</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>压低对方有效 δ</strong></td>
+<td>对称地伤对方份额</td>
+<td>合法施压截止日（伦理边界）</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>争夺先手提案权</strong></td>
+<td>对称 δ 时稳赚数个点</td>
+<td>议程设计</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>缩短还价间隔</strong></td>
+<td>(\Delta t\downarrow) → 逼近均分/NBS</td>
+<td>制度安排</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>改善 BATNA</strong></td>
+<td>抬破裂点</td>
+<td>另找买家/工作</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>换固定成本叙事</strong></td>
+<td>成本更低者极端占优</td>
+<td>需可信每期损耗</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>公开承诺截止日</strong></td>
+<td>改变对方信念中的 δ</td>
+<td>假截止日会被识破</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>代理人激励对齐</strong></td>
+<td>防代理 δ 错位</td>
+<td>合同设计</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>把总蛋糕做大</strong></td>
+<td>份额公式乘的是剩余</td>
+<td>创造协同</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>选对解概念对照</strong></td>
+<td>SPE vs NBS vs 五五开</td>
+<td>白板演算</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「拖得越久越能压价」</summary><div class="dbody"><p>完全信息 SPE <strong>立即成交</strong>。拖通常意味着你更急，或信息不完全——不是自动的议价武器。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. 把贴现因子当成「利率数字随便填」</summary><div class="dbody"><p>(\delta=0.9) 对应每期约 <strong>11.1%</strong> 的时间成本；若「一期」是一周，年化会夸张。要先定义一期多长。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>3. 只看先手权，不看耐心差</summary><div class="dbody"><p>(\delta_1=0.5,\delta_2=0.99) 时先手仅 <strong>1.98%</strong>。先手权救不了崩盘的现金流。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 把「五五开」当 Rubinstein</summary><div class="dbody"><p>对称且 (\delta\to1) 才趋近五五；有限耐心下先手总 &gt;50%。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>5. 混淆 δ 与「贴现率」口语</summary><div class="dbody"><p>金融里贴现率常指 (r)；模型里直接进公式的是 (\delta=1/(1+r))。说「贴现率低」时要确认指的是 (r) 低（更耐心）还是 (\delta) 低（更不耐心）。本手册标题里的「贴现率低」按日常汉语指<strong>时间成本低、更耐心</strong>，对应高 (\delta)。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>6. 忽略「立即还价」会毁掉唯一性</summary><div class="dbody"><p>若拒绝后可<strong>立刻</strong>还价（无时间损耗），均衡爆炸；时间摩擦是理论力的来源。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>7. 用最后通牒直觉套无限期</summary><div class="dbody"><p>有限期最后一轮像最后通牒；无限期没有「最后一轮」，逻辑完全不同。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>8. 以为实验一定复制公式</summary><div class="dbody"><p>实验室常出现公平偏好、学习与偏离；有真实支付延迟时耐心效应更清晰，但并非处处贴公式。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>9. 把嗓门/情绪当 δ</summary><div class="dbody"><p>δ 是偏好参数，不是表演。表演若不能改变真实外部选项或现金流，进不了公式。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>10. 忘掉把「总价」先减成剩余</summary><div class="dbody"><p>公式分的是归一化饼；并购里要先减双方 BATNA，再套份额。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="mapA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="30" y="40" width="180" height="80" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="120" y="75" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">抽象</text><text x="120" y="98" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">δ · SPE · 无差异</text>
+  <rect x="250" y="40" width="180" height="80" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="75" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">机制</text><text x="340" y="98" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">开价=对方续价值</text>
+  <rect x="470" y="40" width="180" height="80" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="560" y="75" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">操作</text><text x="560" y="98" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">工资·并购·许可</text>
+  <line x1="210" y1="80" x2="250" y2="80" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#mapA)"/>
+  <line x1="430" y1="80" x2="470" y2="80" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#mapA)"/>
+  <text x="340" y="180" text-anchor="middle" fill="#15181d" font-size="13" font-family="sans-serif">例：资方 δ=0.95、劳方 δ=0.85，资方先开价 → 资方约 77.92% 剩余</text>
+  <text x="340" y="210" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">若劳方先开价（δ₁=0.85,δ₂=0.95）→ 劳方仅 25.97%，资方仍拿 74.03%</text>
+  <text x="340" y="240" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">核对：耐心差压过先手权——更能等的一方始终拿大头【事实】</text>
+  <text x="340" y="270" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">映射关键：先估剩余与真实耐心，再谈「谁先报价」</text>
+</svg>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="flow "><p><span>估剩余</span><i>→</i><span>估双方 δ</span><i>→</i><span class="hi">算 x*</span><i>→</i><span>对照 BATNA</span><i>→</i><span>设计议程</span><i>→</i><span>开价贴无差异</span></p></div>
+<ol>
+<li>把标的写成「合作剩余」，不是总营收。</li>
+<li>用利率、截止日、备选方案粗估 (\delta)（区间即可）。</li>
+<li>代入公式得基准开价；再加减信息租金与公平偏好。</li>
+<li>若你 δ 明显更低：优先<strong>抬 δ</strong>（融资、备选），而不是加码表演强硬。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>① 基础：手算对称 δ</summary><div class="dbody"><p>会算 (x^<em>=1/(1+\delta))；(\delta=0.9) → </em><em>52.63%</em>*。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>② 基础：不对称 δ</summary><div class="dbody"><p>会算 (x_1^<em>=(1-\delta_2)/(1-\delta_1\delta_2))；验 (\delta_1=0.9,\delta_2=0.8) → </em><em>71.43%</em>*。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>③ 中级：无差异叙事</summary><div class="dbody"><p>能向非技术听众讲清：「我给你的，刚好等于你明天当庄家的折现值。」</p></div></details>
+<details><summary>④ 中级：BRW 极限</summary><div class="dbody"><p>(\delta_i=e^{-r_i\Delta t})，(\Delta t\to0) → (x_1\to r_2/(r_1+r_2))。例：(r_1=0.05,r_2=0.15) → <strong>75%</strong>。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>⑤ 中级：固定成本极端解</summary><div class="dbody"><p>比较 (c_1,c_2)，理解「成本更低者通吃」。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>⑥ 高级：外部选项扩展</summary><div class="dbody"><p>把破裂点嵌进交替出价，理解「底线抬升」。</p></div></details>
+<details><summary>⑦ 高级：不完全信息</summary><div class="dbody"><p>知道拖延的标准解释是私人信息，而不是 Rubinstein 主定理。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>⑧ 高级：规则设计</summary><div class="dbody"><p>理解「立即还价」「谁先开价」如何改变预测力。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你进入一座<strong>无尽议价厅</strong>：每拒绝一次，天花板上的饼就按各自 (\delta) 缩小一圈。唯一通关法不是吼，而是算出对方的无差异点，第一回合就放上那一刀——大厅灯光亮起，交易完成。</p>
+<p>隐藏成就：在 (\delta\to1) 的「极耐心副本」里，先手光环熄灭，你与对手几乎均分——那是通往纳什公理殿堂的传送门。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>难度</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">白板推导对称公式</td>
+<td>★☆☆</td>
+<td>一页推导</td>
+</tr>
+<tr>
+<td class="k">用不对称 δ 算一笔假想并购剩余</td>
+<td>★★☆</td>
+<td>数字区间</td>
+</tr>
+<tr>
+<td class="k">对比「五五开 vs Rubinstein vs NBS」</td>
+<td>★★☆</td>
+<td>三列对照表</td>
+</tr>
+<tr>
+<td class="k">列出抬高己方 δ 的 3 个真实动作</td>
+<td>★★★</td>
+<td>行动清单</td>
+</tr>
+<tr>
+<td class="k">解释为何理论零延迟、现实常拖延</td>
+<td>★★★</td>
+<td>短文</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若你突然更耐心</button><button class="tab" data-pane="tb1-1">若对方比你更能拖</button><button class="tab" data-pane="tb1-2">若双方都极耐心</button><button class="tab" data-pane="tb1-3">若改成连续时间</button></div>
+<div class="pane on" id="tb1-0"><p>(\delta_1) 从 0.8 提到 0.95（(\delta_2=0.8) 不变）：(x_1^<em>) 从 </em><em>71.43%</em><em> 升到 </em><em>89.55%</em><em>——同为先手，耐心差把份额拉开 </em><em>+18.1pp</em>*。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-1"><p>(\delta_1=0.8,\delta_2=0.9)：先手只剩 <strong>35.71%</strong>。先手权被耐心差反噬。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-2"><p>(\delta=0.99)：先手 <strong>50.25%</strong>，溢价仅 <strong>0.25pp</strong>——逼近纳什对称解。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-3"><p>(r_1=0.05,r_2=0.15)：极限份额 <strong>75%</strong>，与广义纳什权重一致。<span class="tag t-fact">事实</span></p></div>
+<h3>可调模型 1：轮流出价份额计算器</h3>
+<div class="tool" id="tool-rb">
+  <div class="ctrl">
+    <label>先手贴现 δ₁ <output id="rb_d1O">0.90</output></label>
+    <input type="range" id="rb_d1" min="0.05" max="0.99" step="0.01" value="0.90"/>
+    <label>后手贴现 δ₂ <output id="rb_d2O">0.90</output></label>
+    <input type="range" id="rb_d2" min="0.05" max="0.99" step="0.01" value="0.90"/>
+    <label>饼的大小 π <output id="rb_piO">1.00</output></label>
+    <input type="range" id="rb_pi" min="0.5" max="20" step="0.5" value="1"/>
+  </div>
+  <div class="readout">
+    <div class="ro">先手份额 x₁* <b id="rb_x1">52.63%</b></div>
+    <div class="ro">后手份额 x₂* <b id="rb_x2">47.37%</b></div>
+    <div class="ro">先手货币 <b id="rb_m1">0.53</b></div>
+    <div class="ro">后手货币 <b id="rb_m2">0.47</b></div>
+    <div id="rb_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="rbChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<h3>可调模型 2：共同耐心与先手溢价</h3>
+<div class="tool" id="tool-fm">
+  <div class="ctrl">
+    <label>共同贴现 δ <output id="fm_dO">0.90</output></label>
+    <input type="range" id="fm_d" min="0.05" max="0.99" step="0.01" value="0.90"/>
+  </div>
+  <div class="readout">
+    <div class="ro">先手 x₁*=1/(1+δ) <b id="fm_x1">52.63%</b></div>
+    <div class="ro">后手 <b id="fm_x2">47.37%</b></div>
+    <div class="ro">先手溢价 vs 50% <b id="fm_prem">+2.63pp</b></div>
+    <div class="ro">隐含每期 r <b id="fm_r">11.11%</b></div>
+    <div id="fm_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="fmChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<h3>可调模型 3：连续时间极限 ↔ 广义纳什</h3>
+<div class="tool" id="tool-ct">
+  <div class="ctrl">
+    <label>先手时间偏好 r₁ <output id="ct_r1O">0.10</output></label>
+    <input type="range" id="ct_r1" min="0.01" max="0.50" step="0.01" value="0.10"/>
+    <label>后手时间偏好 r₂ <output id="ct_r2O">0.10</output></label>
+    <input type="range" id="ct_r2" min="0.01" max="0.50" step="0.01" value="0.10"/>
+    <label>回合间隔 Δt <output id="ct_dtO">0.10</output></label>
+    <input type="range" id="ct_dt" min="0.01" max="1.00" step="0.01" value="0.10"/>
+  </div>
+  <div class="readout">
+    <div class="ro">δ₁=e^{−r₁Δt} <b id="ct_d1">0.990</b></div>
+    <div class="ro">δ₂=e^{−r₂Δt} <b id="ct_d2">0.990</b></div>
+    <div class="ro">离散 SPE x₁* <b id="ct_x">50.25%</b></div>
+    <div class="ro">极限 r₂/(r₁+r₂) <b id="ct_lim">50.00%</b></div>
+    <div id="ct_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="ctChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<h3>可调模型 4：固定每期成本（极端对照）</h3>
+<div class="tool" id="tool-fc">
+  <div class="ctrl">
+    <label>先手每期成本 c₁ <output id="fc_c1O">0.10</output></label>
+    <input type="range" id="fc_c1" min="0.01" max="0.50" step="0.01" value="0.10"/>
+    <label>后手每期成本 c₂ <output id="fc_c2O">0.20</output></label>
+    <input type="range" id="fc_c2" min="0.01" max="0.50" step="0.01" value="0.20"/>
+  </div>
+  <div class="readout">
+    <div class="ro">完美均衡先手份额 <b id="fc_x">100%</b></div>
+    <div class="ro">后手份额 <b id="fc_y">0%</b></div>
+    <div class="ro">制度含义 <b id="fc_note">c₁&lt;c₂ → 先手通吃</b></div>
+    <div class="ro">对照贴现模型 <b id="fc_vs">见判定行</b></div>
+    <div id="fc_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="fcChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>说出公式与「耐心=议价力」</td>
+<td>默写 (x_1^*)</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>不对称与先手溢价手算</td>
+<td>三道题全对</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>映射到真实谈判变量</td>
+<td>一份 δ 估计备忘</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>规则设计与 NBS 对接</td>
+<td>能讲清 BRW 极限</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一件你正在谈的事（或假想租房砍价），写出双方 BATNA 与「一期」定义（天/周）。</li>
+<li>给双方各估一个 (\delta) 区间（例如 0.85–0.95）。</li>
+<li>用模型 1 算出 (x^*) 区间；对照你的心理价位。</li>
+<li>列出<strong>一个</strong>能在 7 天内抬高己方 δ 的动作（备选房源、过桥资金、延长内部截止日）。</li>
+<li>把数字与动作写进笔记——产出可验证：一张表 + 一个动作。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>重推导无差异方程，验算 δ=0.9 → 52.63%</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>用不对称案例算劳资剩余分割</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>读 BRW 思想：极限 = 广义纳什</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>盘点自己真实谈判中的「时间成本」</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>用模型 3 看 Δt 变小时份额如何贴极限</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>写半页：理论零延迟 vs 现实拖延</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘 30 分钟实践，改一版开价策略</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>焦点</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>公式与对称/不对称</td>
+<td>题集 10 道</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>映射真实变量</td>
+<td>两场谈判的 δ 备忘</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>固定成本 vs 贴现</td>
+<td>对照短文</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>与 NBS/实验文献对照</td>
+<td>一页决策清单</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>无限期交替出价 SPE</td>
+<td>(x_1^*=(1-\delta_2)/(1-\delta_1\delta_2))</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>对称耐心</td>
+<td>(1/(1+\delta)) 与先手溢价</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>固定每期成本</td>
+<td>成本低者极端占优</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>Stahl 有限期</td>
+<td>最后通牒式逆向归纳</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>BRW 连续极限</td>
+<td>(r_2/(r_1+r_2)) ↔ 广义纳什</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>外部选项扩展</td>
+<td>破裂点抬升底线</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不完全信息讨价还价</td>
+<td>解释均衡路径外的拖延</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>纳什讨价还价解</td>
+<td>公理公平点，极限对接</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>最终报价仲裁</td>
+<td>规则改变威胁点</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>需求博弈</td>
+<td>Nash 1953 非合作极限思想</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>我的「一期」该定多长？</summary><div class="dbody"><p>按还价实际间隔；间隔一变，同一年化利率对应的 δ 就变。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>如何估计对方 δ？</summary><div class="dbody"><p>看截止日、财报现金流、有无备选交易、公开表态的可验证成本——区间优于点估计。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>先手权能买吗？</summary><div class="dbody"><p>议程、谁起草第一稿、谁发起会议，都是软性先手。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>为什么实验室常偏离？</summary><div class="dbody"><p>公平偏好、试错学习、代币贴现不真实；有真实时间延迟时更接近理论方向。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>和「强硬开价」有何关系？</summary><div class="dbody"><p>均衡开价贴无差异，不是漫天要价；要价过高被拒则掉进折现。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>多人怎么分？</summary><div class="dbody"><p>经典模型是二人；多人需另用联盟/谈判协议网络。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>风险厌恶怎么办？</summary><div class="dbody"><p>把饼改成效用单位，或先估效用再套公式；货币线性只是特例。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>标题说「贴现率低」会不会反了？</summary><div class="dbody"><p>口语「贴现率低」= 时间成本低 = 更耐心 = <strong>高 δ</strong>。进公式请用 δ，不要把 r 与 δ 混用。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>精读 Rubinstein 1982 原文的偏好公理（不仅是 δ 特例）。</li>
+<li>对照本仓库《纳什讨价还价解》手册，做 SPE↔NBS 对照表。</li>
+<li>进入不完全信息讨价还价与「为何罢工发生」。</li>
+<li>机制设计视角：如何设计调解规则以缩短有害拖延。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">SPE 闭式解 (x_1^*=(1-\delta_2)/(1-\delta_1\delta_2))</td>
+<td>经典论文</td>
+<td>Rubinstein 1982, <em>Econometrica</em> 50(1)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">对称公式 (1/(1+\delta))</td>
+<td>教材推导</td>
+<td>Stanford Econ 203 / 标准博弈论讲义</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">固定成本极端解</td>
+<td>同上原文</td>
+<td>Rubinstein 1982 Conclusion 1</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">BRW 极限 ↔ 广义纳什</td>
+<td>经典论文</td>
+<td>Binmore, Rubinstein &amp; Wolinsky 1986</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">立即成交预言及批评</td>
+<td>综述/实验</td>
+<td>讨价还价文献主流批评；patience 实验论文</td>
+<td><span class="tag t-ana">分析</span>/<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">本手册数值算例</td>
+<td>自行验算</td>
+<td>node 复核 δ=0.9→52.63% 等</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>标记约定</strong>：<span class="tag t-fact">事实</span>多方一致或可复算；<span class="tag t-ana">分析</span>权威推断；<span class="tag t-inf">推论</span>逻辑推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或实验争议。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是<strong>决策与谈判思维框架</strong>，不是法律意见、不是投资建议、不是对任何具体交易的定价承诺。公式依赖完全信息与特定协议规则；现实谈判含私人信息、制度约束与伦理边界。使用者应自行核实参数与合规要求。页脚耗时由构建流水线自动写入。</p>
+</section>
+<footer>  <p>《鲁宾斯坦轮流出价模型 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 7 分 19 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《鲁宾斯坦轮流出价模型》主题脚本
+   四个可调模型：
+     1. 轮流出价份额（δ1,δ2,π）
+     2. 共同耐心与先手溢价
+     3. 连续时间极限 ↔ 广义纳什
+     4. 固定每期成本极端解
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t && t.classList && t.classList.contains('tab')) setTimeout(fn, 40);
+    });
+    window.addEventListener('resize', function () { setTimeout(fn, 40); });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, items, ymin, ymax) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    if (ymin == null || ymax == null) {
+      var vs = items.map(function (x) { return x.v; });
+      ymin = Math.min.apply(null, vs.concat([0])) - 0.02;
+      ymax = Math.max.apply(null, vs.concat([0])) + 0.02;
+      if (ymax <= ymin) { ymax = ymin + 1; }
+    }
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (items.length * 1.45);
+    var span = ymax - ymin || 1;
+    items.forEach(function (it, i) {
+      var x = pl + (i + 0.5) * (bw / items.length) - barW / 2;
+      var y = y1 - ((it.v - ymin) / span) * bh;
+      var zeroY = y1 - ((0 - ymin) / span) * bh;
+      var top = Math.min(y, zeroY), bot = Math.max(y, zeroY);
+      ctx.fillStyle = it.c;
+      ctx.fillRect(x, top, barW, Math.max(2, bot - top));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+      var lab = (typeof it.v === 'number' ? it.v.toFixed(it.dp != null ? it.dp : 2) : String(it.v));
+      var lw = ctx.measureText(lab).width;
+      var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 2), w - pr - lw / 2 - 2);
+      ctx.fillText(lab, lx, top - 6);
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(items._axis || '份额 / 支付', pl + bw, y1 + 31);
+  }
+
+  function pct(x) { return (x * 100).toFixed(2) + '%'; }
+  function fmt2(x) { return (Math.round(x * 100) / 100).toFixed(2); }
+  function fmt3(x) { return (Math.round(x * 1000) / 1000).toFixed(3); }
+
+  function x1Star(d1, d2) {
+    var den = 1 - d1 * d2;
+    if (den <= 1e-12) return 0.5;
+    return (1 - d2) / den;
+  }
+
+  /* —— 1. 轮流出价份额 —— */
+  function updRb() {
+    var d1 = parseFloat(($('rb_d1') || {}).value || 0.9);
+    var d2 = parseFloat(($('rb_d2') || {}).value || 0.9);
+    var pi = parseFloat(($('rb_pi') || {}).value || 1);
+    txt($('rb_d1O'), d1.toFixed(2));
+    txt($('rb_d2O'), d2.toFixed(2));
+    txt($('rb_piO'), pi.toFixed(2));
+    var x1 = x1Star(d1, d2);
+    var x2 = 1 - x1;
+    txt($('rb_x1'), pct(x1));
+    txt($('rb_x2'), pct(x2));
+    txt($('rb_m1'), fmt2(pi * x1));
+    txt($('rb_m2'), fmt2(pi * x2));
+    var vh = $('rb_vh');
+    if (x1 > 0.55) {
+      txt(vh, '判定：先手优势明显（或后手更不耐心）· 时间成本即谈判权');
+      tint(vh, C.red);
+    } else if (x1 < 0.45) {
+      txt(vh, '判定：后手更耐心，先手权被耐心差反噬');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：接近均分 · 双方耐心接近或都很高');
+      tint(vh, C.green);
+    }
+    var items = [
+      { lab: '先手', v: pi * x1, c: C.red, dp: 2 },
+      { lab: '后手', v: pi * x2, c: C.green, dp: 2 },
+      { lab: '五五对照', v: pi * 0.5, c: C.blue, dp: 2 }
+    ];
+    items._axis = '货币支付（π×份额）';
+    bars($('rbChart'), items, 0, pi * 1.05);
+  }
+
+  /* —— 2. 先手溢价曲线 —— */
+  function updFm() {
+    var d = parseFloat(($('fm_d') || {}).value || 0.9);
+    txt($('fm_dO'), d.toFixed(2));
+    var x1 = 1 / (1 + d);
+    var x2 = 1 - x1;
+    var prem = (x1 - 0.5) * 100;
+    var r = 1 / d - 1;
+    txt($('fm_x1'), pct(x1));
+    txt($('fm_x2'), pct(x2));
+    txt($('fm_prem'), (prem >= 0 ? '+' : '') + prem.toFixed(2) + 'pp');
+    txt($('fm_r'), (r * 100).toFixed(2) + '%');
+    var vh = $('fm_vh');
+    if (d >= 0.95) {
+      txt(vh, '判定：双方很耐心 · 先手溢价趋近 0 · 通向纳什对称解');
+      tint(vh, C.green);
+    } else if (d <= 0.5) {
+      txt(vh, '判定：双方都很急 · 先手溢价很大 · 像「短视最后通牒」');
+      tint(vh, C.red);
+    } else {
+      txt(vh, '判定：中等耐心 · 先手仍有几个百分点优势');
+      tint(vh, C.blue);
+    }
+    var g = fit($('fmChart'), 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    var ymin = 0.45, ymax = 0.75;
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    ctx.strokeStyle = C.blue;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (var i = 0; i <= 100; i++) {
+      var di = 0.05 + (0.94 * i) / 100;
+      var xi = 1 / (1 + di);
+      var xx = pl + (i / 100) * bw;
+      var yy = y1 - ((xi - ymin) / (ymax - ymin)) * bh;
+      if (i === 0) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
+    }
+    ctx.stroke();
+    ctx.strokeStyle = C.ink3;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    var y50 = y1 - ((0.5 - ymin) / (ymax - ymin)) * bh;
+    ctx.moveTo(pl, y50);
+    ctx.lineTo(pl + bw, y50);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    var cx = pl + ((d - 0.05) / 0.94) * bw;
+    var cy = y1 - ((x1 - ymin) / (ymax - ymin)) * bh;
+    ctx.fillStyle = C.red;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('横轴 δ →   纵轴先手份额', pl + bw, y1 + 31);
+    ctx.textAlign = 'left';
+    ctx.fillText('50% 均分线', pl + 4, y50 - 6);
+  }
+
+  /* —— 3. 连续时间极限 —— */
+  function updCt() {
+    var r1 = parseFloat(($('ct_r1') || {}).value || 0.1);
+    var r2 = parseFloat(($('ct_r2') || {}).value || 0.1);
+    var dt = parseFloat(($('ct_dt') || {}).value || 0.1);
+    txt($('ct_r1O'), r1.toFixed(2));
+    txt($('ct_r2O'), r2.toFixed(2));
+    txt($('ct_dtO'), dt.toFixed(2));
+    var d1 = Math.exp(-r1 * dt);
+    var d2 = Math.exp(-r2 * dt);
+    var x = x1Star(d1, d2);
+    var lim = r2 / (r1 + r2);
+    txt($('ct_d1'), fmt3(d1));
+    txt($('ct_d2'), fmt3(d2));
+    txt($('ct_x'), pct(x));
+    txt($('ct_lim'), pct(lim));
+    var gap = Math.abs(x - lim) * 100;
+    var vh = $('ct_vh');
+    if (gap < 0.5) {
+      txt(vh, '判定：离散 SPE 已贴紧极限 · 可视作广义纳什权重');
+      tint(vh, C.green);
+    } else if (dt >= 0.5) {
+      txt(vh, '判定：间隔偏大 · 离散先手效应仍明显（差 ' + gap.toFixed(2) + 'pp）');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：逼近中 · |SPE−极限|=' + gap.toFixed(2) + 'pp');
+      tint(vh, C.blue);
+    }
+    var items = [
+      { lab: '离散SPE', v: x, c: C.red, dp: 3 },
+      { lab: '极限NBS', v: lim, c: C.blue, dp: 3 },
+      { lab: '均分', v: 0.5, c: C.green, dp: 3 }
+    ];
+    items._axis = '先手份额';
+    bars($('ctChart'), items, 0, 1);
+  }
+
+  /* —— 4. 固定成本 —— */
+  function updFc() {
+    var c1 = parseFloat(($('fc_c1') || {}).value || 0.1);
+    var c2 = parseFloat(($('fc_c2') || {}).value || 0.2);
+    txt($('fc_c1O'), c1.toFixed(2));
+    txt($('fc_c2O'), c2.toFixed(2));
+    var x, y, note, col;
+    if (c1 < c2 - 1e-9) {
+      x = 1; y = 0;
+      note = 'c₁<c₂ → 先手通吃';
+      col = C.red;
+    } else if (c1 > c2 + 1e-9) {
+      x = c2; y = 1 - c2;
+      note = 'c₁>c₂ → 先手只拿 c₂';
+      col = C.amber;
+    } else {
+      x = Math.max(c1, 0.5);
+      y = 1 - x;
+      note = 'c₁=c₂ → 多重均衡（示意取中高）';
+      col = C.blue;
+    }
+    txt($('fc_x'), pct(x));
+    txt($('fc_y'), pct(y));
+    txt($('fc_note'), note);
+    // 对照：把 c 粗映射为「每期损失率」近似 δ≈1-c（仅示意）
+    var d1a = Math.max(0.05, Math.min(0.99, 1 - c1));
+    var d2a = Math.max(0.05, Math.min(0.99, 1 - c2));
+    var xd = x1Star(d1a, d2a);
+    txt($('fc_vs'), '若 δ≈1−c → 贴现模型先手 ' + pct(xd));
+    var vh = $('fc_vh');
+    txt(vh, '判定：' + note + ' · 固定成本模型比贴现模型更极端');
+    tint(vh, col);
+    var items = [
+      { lab: '固定成本·先手', v: x, c: C.red, dp: 2 },
+      { lab: '固定成本·后手', v: y, c: C.green, dp: 2 },
+      { lab: '贴现近似·先手', v: xd, c: C.blue, dp: 2 }
+    ];
+    items._axis = '份额';
+    bars($('fcChart'), items, 0, 1.05);
+  }
+
+  function boot() {
+    bind(['rb_d1', 'rb_d2', 'rb_pi'], updRb);
+    bind(['fm_d'], updFm);
+    bind(['ct_r1', 'ct_r2', 'ct_dt'], updCt);
+    bind(['fc_c1', 'fc_c2'], updFc);
+    updRb();
+    updFm();
+    updCt();
+    updFc();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+</body>
+</html>
