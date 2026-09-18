@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>机制设计（Mechanism Design）：反向博弈论 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Mechanism Design × Reverse Game Theory</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>机制设计（Mechanism Design）：反向博弈论</h1>
+  <p class="sub">先设定想要的结果，再设计规则——让理性人<strong>自愿</strong>把信息吐出来、把行动对齐目标；2007 诺奖的骨架是启示原理、实施理论与最优拍卖。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>机制设计（Mechanism Design）</strong>是<strong>反向博弈论</strong>：不预测「给定规则下均衡是什么」，而是<strong>先选定社会目标</strong>（效率、收入、公平、公共品供给……），再设计消息空间、分配规则与支付规则，使理性参与人的均衡行为恰好实现该目标。<span class="tag t-fact">事实</span></p>
+<p>2007 年诺贝尔经济学奖授予 Leonid Hurwicz、Eric Maskin、Roger Myerson，「for having laid the foundations of mechanism design theory」。<span class="tag t-fact">事实</span>核心三件套：</p>
+<ol>
+<li><strong>激励相容（IC）</strong>：说真话 / 选合意行动是均衡；</li>
+<li><strong>启示原理（Revelation Principle）</strong>：最优机制可限缩为「直接、激励相容」机制；</li>
+<li><strong>实施理论（Implementation）</strong>：不仅「能出现」合意结果，还要排除坏均衡（Maskin）。</li>
+</ol>
+<p>与相邻主题分工：委托—代理手册专讲 IC+IR 约束骨架；本手册专讲<strong>规则空间本身</strong>——拍卖、投票、公共品、匹配、平台——以及「什么目标根本不可实施」。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「怎么说服人」，而是：<strong>在私人信息与自利激励下，哪些社会选择函数可被机制实施，实施它们的信息租金 / 效率损失有多大</strong>。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：社会选择函数、直接/间接机制、DSIC / BIC、VCG、Myerson 最优拍卖、实施、不可能性定理。</li>
+<li><strong>在界外</strong>：某次投标话术、某份股权行权日——除非压成「消息—分配—支付」三元组与 IC 检验。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>设计规则使均衡结果落在目标集合</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「可形式化的消息、分配、支付 + 解概念」为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>类型、消息、分配规则 (x)、支付规则 (p)、目标 (f)</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>机制设计者；持私人信息的参与人；有时还有旁观者（纳税人）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>信息结构、偏好域、解概念（占优/贝叶斯）、预算平衡</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>出价、投票、成交价、中标者、公开规则</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实估值、真实偏好、合谋意图</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>规则 → 策略均衡 → 分配与支付 → 福利/收入</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>私人信息 + 自利 ⇒ 必须付租金或扭曲分配才能抽取真相</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「规则复杂」≠「激励相容」；繁琐常掩盖可操纵性<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>拍卖保留价、广告竞价、频谱牌照、学校匹配、碳配额</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>约束优化：max 目标 s.t. IC（及 IR、预算、可行性）</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。参与人学习规则漏洞 → 设计者改规则（军备竞赛）</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。动态机制、声誉、重复拍卖改变静态 IC</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>合谋可正反馈掏空机制；透明+审计可负反馈</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>机制设计问的不是「他们会不会配合」，而是「在他们只为自己算账时，哪套规则仍能把结果钉在目标上」。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它把「制度」变成可计算对象</h4><p>市场、投票、监管、平台抽成——全是消息—分配—支付的实例；可比、可证、可改进。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它同时告诉你「能做到」与「做不到」</h4><p>VCG 证明准线性偏好下效率可 DSIC 实施；Gibbard–Satterthwaite 证明一般投票域上策略证明几乎只剩独裁。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它是数字经济的操作系统</h4><p>搜索广告、频谱拍卖、云计算现货、碳市场、匹配入学——设计失误以十亿计。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「效率最优的直接机制」直接当「现实中该用的拍卖格式」。启示原理说的是<strong>分析可限缩</strong>，不是「请参与人申报类型」；落地常要翻译成英式升价、同时升价、GSP 等间接机制，并处理合谋、预算约束与明显策略证明（OSP）。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层从「目标函数」爬到「制度军备」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="mdArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度军备 · 合谋防范 / 监管修订 / 平台规则迭代</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 实证与现场 · 频谱拍卖 / 广告竞价 / 匹配市场</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 稳健与明显性 · 信念无关 / OSP / 近似最优</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 跨域同构 · 拍卖 · 投票 · 公共品 · 合同 · 匹配</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 目标权衡 · 效率 vs 收入 vs 公平 vs 预算平衡</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 经典机制 · Vickrey / VCG / Myerson 保留价</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 解概念 · DSIC · BIC · 实施（Maskin）</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 启示原理 · 直接机制 + 激励相容即可搜最优</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 问题原语 · 目标 f + 私人类型 θ + 自利策略</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2–L4</strong>：会用启示原理把问题压成直接机制，并算清 Vickrey/Myerson；进阶卡在 <strong>L5</strong> 与 <strong>L7</strong>——效率与收入不可兼得时如何取舍，以及参与人「看不懂」时 DSIC 是否还够用。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象目标到可操作规则。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="100" y="16" width="480" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">目标 f(θ) → 机制 (M,g) → 均衡结果 = f</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">社会选择 / 可实施性</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">启示 · IC · 支付</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">拍卖·投票·匹配·监管</text>
+
+  <line x1="280" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="180" width="180" height="70" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">类型 θ 私人</text><text x="130" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">不可强制披露</text>
+  <rect x="250" y="180" width="180" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">直接机制</text><text x="340" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">报告 → (x,p)</text>
+  <rect x="460" y="180" width="180" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">间接翻译</text><text x="550" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">升价/GSP/时钟</text>
+
+  <line x1="130" y1="146" x2="130" y2="180" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="146" x2="340" y2="180" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="550" y1="146" x2="550" y2="180" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <path d="M220 215 H250" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <path d="M430 215 H460" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <text x="340" y="280" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">红虚线 = 反馈：操纵/合谋暴露 → 改支付或改域假设</text>
+  <text x="340" y="310" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">跨域同构：IC≈「说谎不划算」· 保留价≈「虚拟估值截断」</text>
+  <text x="340" y="340" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">VCG 抽外部性 · Myerson 卖虚拟福利 · Maskin 剔坏均衡</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>目标</th>
+<th>信息位置</th>
+<th>典型工具</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">机制设计者</td>
+<td>max 福利 / 收入 / 公平指标</td>
+<td>通常不知私人类型</td>
+<td>规则书、保留价、支付公式</td>
+</tr>
+<tr>
+<td class="k">参与人</td>
+<td>max 自身效用</td>
+<td>持有类型 θ</td>
+<td>出价、投票、报告、是否参与</td>
+</tr>
+<tr>
+<td class="k">旁观者 / 纳税人</td>
+<td>承担赤字或享受剩余</td>
+<td>常被忽略</td>
+<td>预算平衡、补贴上限</td>
+</tr>
+<tr>
+<td class="k">监管者</td>
+<td>防合谋、防掠夺、护竞争</td>
+<td>强制披露与审计</td>
+<td>拍卖规则备案、反垄断</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hurwicz（1960s 起）：把「机制」形式化为消息交换 + 结果函数；激励相容成为核心约束。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+<th>杠杆方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">偏好域</td>
+<td>允许的类型集合</td>
+<td>域越窄，可实施目标越多（单峰 → 中位数投票）</td>
+</tr>
+<tr>
+<td class="k">解概念</td>
+<td>DSIC / BIC / NE 实施</td>
+<td>越强越稳健，可实施集合越小</td>
+</tr>
+<tr>
+<td class="k">支付工具</td>
+<td>是否允许准线性转移</td>
+<td>有转移 → VCG 逃出 G–S；无转移 → 投票不可能</td>
+</tr>
+<tr>
+<td class="k">虚拟估值 (\phi(v))</td>
+<td>(v-(1-F)/f)</td>
+<td>Myerson：按 (\phi) 分配 = 收入最优</td>
+</tr>
+<tr>
+<td class="k">保留价 / 门槛</td>
+<td>截断低类型</td>
+<td>抬收入、损效率；均匀 [0,1] 最优保留价 <strong>1/2</strong></td>
+</tr>
+<tr>
+<td class="k">预算平衡</td>
+<td>(\sum p_i \ge) 成本</td>
+<td>常与效率+IC 冲突（公共品）</td>
+</tr>
+<tr>
+<td class="k">合谋空间</td>
+<td>侧支付、假名</td>
+<td>VCG 对合谋脆弱；需改格式</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="40" width="120" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="80" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">私人类型 θ</text>
+  <rect x="180" y="40" width="120" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="240" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">消息 / 出价</text>
+  <rect x="340" y="40" width="120" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="400" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">分配 x · 支付 p</text>
+  <rect x="500" y="40" width="160" height="50" rx="8" fill="#15181d"/><text x="580" y="70" text-anchor="middle" fill="#fff" font-size="12" font-family="sans-serif">福利 / 收入</text>
+  <line x1="140" y1="65" x2="180" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="300" y1="65" x2="340" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="460" y1="65" x2="500" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+
+  <rect x="180" y="140" width="280" height="50" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="320" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">IC 约束：说谎收益 ≤ 真话收益</text>
+  <path d="M240 90 V140" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+  <path d="M400 90 V140" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+
+  <rect x="100" y="230" width="480" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="255" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">设计者选 (x,p) 使 IC 成立且目标最优</text>
+  <text x="340" y="275" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">实线=因果链 · 红虚线=激励反馈（可操纵则改支付）</text>
+</svg>
+<p>因果主链：信息不对称 → 必须用支付/扭曲购买真话 → 效率或收入出现次优缺口。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="grid g2">
+<div class="card"><h4>启示原理 ≠ 「请大家报类型」</h4><p>它是<strong>搜索空间压缩定理</strong>：任意间接机制的均衡结果，可被某个直接 IC 机制复制。设计者仍常实施升价拍卖等「好懂」的间接形式。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>VCG 逃出 G–S，靠的是域限制 + 转移支付</h4><p>Gibbard–Satterthwaite：一般域、确定性、满射、策略证明 ⇒ 独裁。VCG 依赖<strong>准线性</strong>偏好与货币转移，不在 G–S 假设内。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>收入最优常故意牺牲效率</h4><p>Myerson：按虚拟估值 (\phi) 分配；(\phi(v)&lt;0) 时宁可不卖。均匀 [0,1] 单物品 i.i.d.：最优 = 二价 + 保留价 1/2。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>「多一个竞买人」可替代最优机制</h4><p>Bulow–Klemperer：在规则条件下，多招一名竞买人跑无保留价 Vickrey，期望收入不低于少一人的最优拍卖。<span class="tag t-fact">事实</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>标准三步（诺贝尔委员会表述）：</p>
+<ol>
+<li><strong>预测</strong>：给定规则，用博弈论求均衡行为；</li>
+<li><strong>评价</strong>：按目标函数给结果打分；</li>
+<li><strong>优化</strong>：在激励约束下选规则——启示原理把第 3 步变成「在直接 IC 机制上优化」。<span class="tag t-fact">事实</span></li>
+</ol>
+<p>运行时闭环：</p>
+<div class="note teal"><b>运行闭环</b><p>设定目标 f → 选解概念 → 写 IC/IR → 求最优直接机制 → 翻译为现场格式 → 观测操纵 → 修订</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="70" cy="100" r="10" fill="#0f8a4d"/><text x="70" y="60" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1960s</text><text x="70" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">Hurwicz</text><text x="70" y="156" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">机制形式化</text>
+  <circle cx="200" cy="100" r="10" fill="#1d4ed8"/><text x="200" y="60" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1970s</text><text x="200" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">启示原理</text><text x="200" y="156" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">Gibbard/Myerson</text>
+  <circle cx="330" cy="100" r="10" fill="#1d4ed8"/><text x="330" y="60" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1981</text><text x="330" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">Myerson</text><text x="330" y="156" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">最优拍卖</text>
+  <circle cx="460" cy="100" r="10" fill="#b8730a"/><text x="460" y="60" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1990s+</text><text x="460" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">频谱/匹配</text><text x="460" y="156" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">现场大规模</text>
+  <circle cx="590" cy="100" r="10" fill="#15181d"/><text x="590" y="60" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">2007→今</text><text x="590" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">诺奖/OSP</text><text x="590" y="156" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">算法机制</text>
+</svg>
+<p>Vickrey（1961）二价拍卖 → Clarke（1971）/ Groves（1973）推广为 VCG；FCC 等 1990 年代起大规模频谱拍卖把理论推到现场。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>公开说辞</th>
+<th>真实激励</th>
+<th>对机制的压力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">卖方 / 政府</td>
+<td>效率与公平</td>
+<td>收入、政治可辩护性</td>
+<td>要保留价、要简单</td>
+</tr>
+<tr>
+<td class="k">高估值买方</td>
+<td>公平竞争</td>
+<td>少付钱、排挤对手</td>
+<td>压低报价、合谋、假名</td>
+</tr>
+<tr>
+<td class="k">低估值买方</td>
+<td>参与机会</td>
+<td>信息租金或被扭曲出局</td>
+<td>抱怨「门槛太高」</td>
+</tr>
+<tr>
+<td class="k">平台</td>
+<td>生态繁荣</td>
+<td>抽成与广告收入</td>
+<td>GSP/VCG 变体、质量分</td>
+</tr>
+<tr>
+<td class="k">设计顾问</td>
+<td>科学最优</td>
+<td>可落地与可解释</td>
+<td>简单近似 &gt; 复杂最优</td>
+</tr>
+</tbody>
+</table></div>
+<p>激励不相容的制度，长期会被「套利者」教育成另一套制度。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0f8a4d"/></marker>
+    <marker id="fB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="40" y="30" width="140" height="70" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="110" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">私人估值</text><text x="110" y="80" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">信息源</text>
+  <rect x="270" y="30" width="140" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">机制黑箱</text><text x="340" y="80" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">x(·), p(·)</text>
+  <rect x="500" y="30" width="140" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="570" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">物品 / 席位</text><text x="570" y="80" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">实物流</text>
+  <line x1="180" y1="55" x2="270" y2="55" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#fA)"/>
+  <line x1="410" y1="55" x2="500" y2="55" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#fA)"/>
+  <text x="340" y="20" text-anchor="middle" fill="#0f8a4d" font-size="11" font-family="sans-serif">报告 / 出价（信息流）</text>
+
+  <rect x="270" y="150" width="140" height="70" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="340" y="180" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">支付抽水</text><text x="340" y="200" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">p → 卖方/国库</text>
+  <path d="M340 100 V150" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#fB)"/>
+  <text x="420" y="130" fill="#d5342c" font-size="11" font-family="sans-serif">货币流（可含信息租金）</text>
+  <text x="340" y="250" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">VCG：支付 = 你加给别人的外部性；Myerson：抽虚拟福利</text>
+</svg>
+<p>信息向上汇聚，物品按规则分配，货币按支付规则抽走——<strong>抽水量</strong>就是激励成本。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何锋利</th>
+<th>操作提示</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>先写清目标 f</td>
+<td>效率/收入/公平互相冲突</td>
+<td>一页写「最大化什么、容忍什么损失」</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>选解概念强度</td>
+<td>DSIC 稳健但苛刻</td>
+<td>高风险用占优；重复场景可 BIC</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>启示原理做搜索</td>
+<td>避免穷举间接格式</td>
+<td>先求最优直接，再翻译</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>保留价 / 虚拟估值</td>
+<td>收入侧主旋钮</td>
+<td>均匀先验先试 r=垄断价</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>多招竞买人</td>
+<td>常优于精修机制</td>
+<td>Bulow–Klemperer 思维</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>偏好域假设</td>
+<td>决定可能性边界</td>
+<td>单峰？准线性？相关价值？</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>支付可验证性</td>
+<td>防假名与合谋</td>
+<td>身份、保证金、事后审计</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>明显策略证明</td>
+<td>降低认知失败</td>
+<td>二价密封在单物品上 OSP</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>简单近似机制</td>
+<td>复杂最优难落地</td>
+<td>「简单 vs 最优」文献</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>实施/多重均衡</td>
+<td>Maskin 单调性</td>
+<td>检查坏均衡是否可被踢掉</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 把纳什预测当成机制设计</summary><div class="dbody"><p>给定规则求均衡是「正向」博弈；机制设计是改规则。混用会导致「既然均衡糟糕，人不够理性」——其实该改支付。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. 以为说真话机制「不需要钱」</summary><div class="dbody"><p>VCG/Myerson 用支付买激励；没有转移支付时，一般域上策略证明几乎不可能（G–S）。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>3. 把启示原理当成操作手册</summary><div class="dbody"><p>直接机制是分析工具；现场参与人常拒绝「申报类型」，需要时钟拍卖等翻译。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>4. 只看效率，不看收入与政治约束</summary><div class="dbody"><p>政府拍卖常被要求「卖个好价钱」；纯 VCG 可能低收入甚至收入怪癖（多一人收入下降）。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>5. 忽略合谋与假名</summary><div class="dbody"><p>VCG 对合谋脆弱；多物品假名可操纵。理论 DSIC ≠ 抗合谋。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>6. 用「平均出价」当估值</summary><div class="dbody"><p>收益等价等结论依赖模型；现场有共同价值、预算约束、声誉——先验错则保留价错。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>7. 以为保留价越高越好</summary><div class="dbody"><p>均匀 [0,1] 单买家：r*(1−r) 在 r=0.5 最大；再高成交概率崩塌。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>8. 把 GSP 广告当成 VCG</summary><div class="dbody"><p>广义二价（GSP）不是 DSIC；实践靠质量分与学习，不能用 VCG 定理直接背书。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>9. 忽视「参与人不懂」</summary><div class="dbody"><p>Li（2017）明显策略证明：二价单物品 OSP，多物品福利最优且败者零支付时 OSP 失败。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>10. 目标未定义就上算法</summary><div class="dbody"><p>「用 AI 优化拍卖」若目标函数含糊，优化的是代理指标而非社会目标。<span class="tag t-inf">推论</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象构件</th>
+<th>现实对应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">类型 θ</td>
+<td>估值、成本、偏好序、点击价值</td>
+</tr>
+<tr>
+<td class="k">直接机制</td>
+<td>「报你的值」的密封投标（分析用）</td>
+</tr>
+<tr>
+<td class="k">间接机制</td>
+<td>英式拍卖、同时升价、GSP、Deferred Acceptance</td>
+</tr>
+<tr>
+<td class="k">VCG 支付</td>
+<td>二价、Clarke 枢轴税、部分广告结算</td>
+</tr>
+<tr>
+<td class="k">虚拟估值门槛</td>
+<td>保留价、准入门槛、质量加权</td>
+</tr>
+<tr>
+<td class="k">实施</td>
+<td>章程写死决胜规则，避免「再协商」坏均衡</td>
+</tr>
+</tbody>
+</table></div>
+<p>跨域同构：拍卖的保留价 ↔ 保险免赔 ↔ 平台最低抽成 ↔ 监管最低资本——都是「截断低类型 / 买激励」。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>一句话目标</strong>：效率？收入？覆盖？写出可测指标。</li>
+<li><strong>信息图</strong>：谁知道什么、何时知道。</li>
+<li><strong>解概念</strong>：占优还是贝叶斯？参与人是否老练？</li>
+<li><strong>基准机制</strong>：Vickrey / 邮资定价 / 随机独裁——先有可辩护基准。</li>
+<li><strong>扭曲清单</strong>：保留价、配额、预留份额——每条写清代价。</li>
+<li><strong>攻击面</strong>：合谋、假名、预算、后悔、诉讼。</li>
+<li><strong>翻译与试点</strong>：间接格式 + 小流量 A/B 或实验室。</li>
+<li><strong>迭代</strong>：把操纵事件写进规则补丁，而不是道德谴责。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>S1 语言层</summary><div class="dbody"><p>会区分机制 / 博弈 / 社会选择函数；会写 (x,p)；会陈述 IC。【验收】用 5 句话解释启示原理给非技术同事。</p></div></details>
+<details><summary>S2 经典机制层</summary><div class="dbody"><p>会证二价说真话；会算 Clarke 支付；会写 (\phi(v)) 并求 (\phi(r)=0)。【验收】均匀 [0,1] 口述保留价 1/2 与二人期望收入 5/12。</p></div></details>
+<details><summary>S3 权衡层</summary><div class="dbody"><p>会解释效率—收入权衡；会用 Bulow–Klemperer 做「招人 vs 精修」决策。【验收】给案例选「加竞买人」或「加保留价」。</p></div></details>
+<details><summary>S4 不可能性与域</summary><div class="dbody"><p>知道 G–S、预算平衡冲突、Maskin 单调性直觉。【验收】说明为何 VCG 不受 G–S 直接打击。</p></div></details>
+<details><summary>S5 现场工程层</summary><div class="dbody"><p>能把直接机制译成升价/匹配程序；能列合谋与 OSP 检查表。【验收】一页频谱/广告/校招机制评审意见。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是「规则建筑师」。关卡：柠檬车拍卖 → 公共品筹资 → 双物品合谋攻击 → 监管要求收入下限。经验值来自：<strong>在攻击下目标仍成立的次数</strong>，不是规则有多炫。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>产出</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 二价手算</td>
+<td>估值表 + 真话/假话效用</td>
+<td>假话效用 ≤ 真话</td>
+</tr>
+<tr>
+<td class="k">T2 Myerson 保留价</td>
+<td>给定 F 求 r*</td>
+<td>(\phi(r^*)=0)</td>
+</tr>
+<tr>
+<td class="k">T3 VCG 公共品</td>
+<td>两人估值与成本 → 支付</td>
+<td>与模型默认一致</td>
+</tr>
+<tr>
+<td class="k">T4 攻击演练</td>
+<td>写出一种合谋或假名</td>
+<td>指出 DSIC 哪条被绕过</td>
+</tr>
+<tr>
+<td class="k">T5 目标声明</td>
+<td>半页 f 与不可接受损失</td>
+<td>同事能复述</td>
+</tr>
+<tr>
+<td class="k">T6 现实拆解</td>
+<td>一份招标文件</td>
+<td>标出消息/分配/支付</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>四个可调模型：二价激励、Myerson 保留价收入、VCG 公共品枢轴支付、Bulow–Klemperer「多一人」。</p>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">模型1 二价 · 说真话</button><button class="tab" data-pane="tb1-1">模型2 Myerson 保留价</button><button class="tab" data-pane="tb1-2">模型3 VCG 公共品 · Clarke</button><button class="tab" data-pane="tb1-3">模型4 多一人 vs 最优保留价</button></div>
+<div class="pane on" id="tb1-0"><p>单物品密封二价：最高价获胜，付第二高价。占优策略：出价 = 真实估值。拖动「你的估值 / 你的出价 / 对手最高价」，看真话与假话效用差。默认 v=80, b=80, s=60 → 获胜、支付 60、效用 <strong>20</strong>；若改 b=50 而 s=60 则落败效用 <strong>0</strong>。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool-vk">
+  <div class="ctrl">
+    <label>你的真实估值 v <output id="vk_vO">80</output></label>
+    <input type="range" id="vk_v" min="10" max="100" step="1" value="80"/>
+    <label>你的出价 b <output id="vk_bO">80</output></label>
+    <input type="range" id="vk_b" min="0" max="100" step="1" value="80"/>
+    <label>对手最高出价 s <output id="vk_sO">60</output></label>
+    <input type="range" id="vk_s" min="0" max="100" step="1" value="60"/>
+  </div>
+  <div class="readout">
+    <div class="ro">结果 <b id="vk_res">获胜</b></div>
+    <div class="ro">支付 / 效用 <b id="vk_pay">60 / 20</b></div>
+    <div class="ro">若改报 b′=v 效用 <b id="vk_truth">20</b></div>
+    <div class="ro">效用缺口（假−真） <b id="vk_gap">0</b></div>
+    <div id="vk_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="vkChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-1"><p>n 名竞买人 i.i.d. 均匀 [0,1]，二价 + 保留价 r。虚拟估值 (\phi(v)=2v-1)，(\phi(r)=0\Rightarrow r^<em>=0.5)。默认 n=2,r=0.5 → 期望收入约 </em><em>0.417</em><em>（理论 5/12）；r=0 时约 </em><em>0.333</em>*（理论 1/3）。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="tool-my">
+  <div class="ctrl">
+    <label>竞买人数 n <output id="my_nO">2</output></label>
+    <input type="range" id="my_n" min="1" max="8" step="1" value="2"/>
+    <label>保留价 r <output id="my_rO">0.50</output></label>
+    <input type="range" id="my_r" min="0.00" max="0.90" step="0.01" value="0.50"/>
+  </div>
+  <div class="readout">
+    <div class="ro">E[收入]（模拟） <b id="my_rev">0.417</b></div>
+    <div class="ro">r=0 对照 <b id="my_r0">0.333</b></div>
+    <div class="ro">相对提升 <b id="my_lift">+25.2%</b></div>
+    <div class="ro">φ(r)=2r−1 <b id="my_phi">0.00</b></div>
+    <div id="my_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="myChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-2"><p>两人公共项目成本 C，估值 v₁,v₂。若 v₁+v₂≥C 则建造；i 的 Clarke 支付 = max(0, C−v₋ᵢ)（建造时）。默认 v₁=8,v₂=6,C=10 → 建造，支付 <strong>4 与 2</strong>，社会剩余 <strong>4</strong>。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool-vc">
+  <div class="ctrl">
+    <label>估值 v₁ <output id="vc_v1O">8.0</output></label>
+    <input type="range" id="vc_v1" min="0" max="20" step="0.5" value="8"/>
+    <label>估值 v₂ <output id="vc_v2O">6.0</output></label>
+    <input type="range" id="vc_v2" min="0" max="20" step="0.5" value="6"/>
+    <label>项目成本 C <output id="vc_cO">10.0</output></label>
+    <input type="range" id="vc_c" min="1" max="30" step="0.5" value="10"/>
+  </div>
+  <div class="readout">
+    <div class="ro">是否建造 <b id="vc_build">是</b></div>
+    <div class="ro">支付 p₁ / p₂ <b id="vc_pay">4.0 / 2.0</b></div>
+    <div class="ro">社会剩余 <b id="vc_sur">4.0</b></div>
+    <div class="ro">支付合计（可有缺口） <b id="vc_sum">6.0</b></div>
+    <div id="vc_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="vcChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-3"><p>Bulow–Klemperer 直觉：n+1 人无保留价二价 vs n 人最优保留价（此处 r=0.5）。默认比较 n=2 最优 vs n=3 无保留：后者期望收入约 <strong>0.50</strong>，前者约 <strong>0.417</strong>——多一人更赚。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="tool-bk">
+  <div class="ctrl">
+    <label>基准人数 n <output id="bk_nO">2</output></label>
+    <input type="range" id="bk_n" min="1" max="6" step="1" value="2"/>
+  </div>
+  <div class="readout">
+    <div class="ro">n 人 · r=0.5 <b id="bk_opt">0.417</b></div>
+    <div class="ro">n+1 人 · r=0 <b id="bk_more">0.500</b></div>
+    <div class="ro">差额（多一人−最优） <b id="bk_diff">+0.083</b></div>
+    <div class="ro">建议 <b id="bk_rec">优先扩场</b></div>
+    <div id="bk_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="bkChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>验收动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识骨</td>
+<td>能指出规则里的消息/分配/支付</td>
+<td>拆一份招标文件</td>
+</tr>
+<tr>
+<td class="k">L2 算账</td>
+<td>会算二价效用、保留价、Clarke 支付</td>
+<td>模型默认值口述对</td>
+</tr>
+<tr>
+<td class="k">L3 权衡</td>
+<td>会在效率/收入/简单性间取舍</td>
+<td>3 分钟给案例选机制族</td>
+</tr>
+<tr>
+<td class="k">L4 设计</td>
+<td>能写一页机制说明 + 攻击面</td>
+<td>同事按说明可模拟一轮</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一个你熟悉的分配场景（会议室预订、团购、内部招标、家庭旅行决策）。</li>
+<li>用 10 分钟写：参与人、私人信息、目标 f（一句话）。</li>
+<li>用 10 分钟设计「密封报价 + 二价」或「报估值 + Clarke」最小规则。</li>
+<li>用 10 分钟做一次桌面推演：每人试一次谎报，记录谁受益——若谎报严格更赚，改支付直到说真话不吃亏。</li>
+</ol>
+<p>验收：一张纸上有「真话效用 ≥ 假话效用」的数字对照。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>诺奖通俗文 + 本手册 L1–L3</td>
+<td>术语卡 12 张</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>手算二价与 VCG 公共品</td>
+<td>两道题满分</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>Myerson (\phi) 与保留价</td>
+<td>一个分布的 r*</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>读一篇简单 vs 最优</td>
+<td>半页笔记</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>拆真实拍卖公告</td>
+<td>标注三元组</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>合谋/假名头脑风暴</td>
+<td>攻击清单</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘 + 30 分钟实践升级版</td>
+<td>一页机制草稿</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>经典机制</td>
+<td>二价、VCG、Myerson 默认可心算</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>不可能性与域</td>
+<td>能解释 G–S 与 VCG 逃逸</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>现场格式</td>
+<td>升价/匹配/广告之一深挖</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>完整小设计</td>
+<td>目标→机制→攻击→修订闭环</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>启示原理</td>
+<td>最优可在直接 IC 机制中搜索</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>激励相容</td>
+<td>真话是均衡（占优或贝叶斯）</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>Vickrey 二价</td>
+<td>付第二高价 ⇒ 说真话占优</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>VCG / Groves</td>
+<td>付外部性 ⇒ 效率 + DSIC（准线性）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>Myerson 引理</td>
+<td>E[收入]=E[虚拟福利]</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>虚拟估值 (\phi)</td>
+<td>收入最优按 (\phi) 分配</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>收益等价</td>
+<td>同分配+边界 ⇒ 同期望收入</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>Bulow–Klemperer</td>
+<td>多一人常优于精修最优</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>Gibbard–Satterthwaite</td>
+<td>一般投票域策略证明≈独裁</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>Maskin 实施</td>
+<td>合意结果须排除坏均衡</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 我的目标是效率还是收入？</summary><div class="dbody"><p>写下来；二者冲突时先定权重，再选 VCG 族或 Myerson 族。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q2 参与人是否理解占优策略？</summary><div class="dbody"><p>若否，考虑英式拍卖或 OSP 友好格式，而不是复杂密封直接机制。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q3 先验 F 从哪来？</summary><div class="dbody"><p>错先验 → 错保留价；可用非参或「简单机制」对先验更稳健。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>Q4 有没有货币转移？</summary><div class="dbody"><p>无转移则小心 G–S；有准线性转移才谈 VCG。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q5 预算必须平衡吗？</summary><div class="dbody"><p>公共品常无法同时效率+IC+预算平衡；要明确谁补缺口。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q6 合谋空间多大？</summary><div class="dbody"><p>侧支付、行业协会、多账号——DSIC 挡不住。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q7 相关价值还是独立私有价值？</summary><div class="dbody"><p>矿物权/频谱常有共同价值成分，胜利诅咒改变策略。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q8 监管要的是收入下限还是配置效率？</summary><div class="dbody"><p>决定保留价与预留份额政治约束。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q9 间接翻译是否保持 IC？</summary><div class="dbody"><p>升价拍卖在 IPV 下可实现 Vickrey 结果；改错细节会破。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q10 失败时改规则还是训参与人？</summary><div class="dbody"><p>优先改规则；把「教育用户」当辅助。<span class="tag t-inf">推论</span></p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>与《委托—代理：IC+IR》对照：同一约束语言，不同应用舞台（合同 vs 规则空间）。</li>
+<li>深入匹配市场（Gale–Shapley）、动态机制、算法机制设计（逼近比）。</li>
+<li>阅读 Nobel 2007 通俗说明与 Myerson（1981）<em>Optimal Auction Design</em> 导读。</li>
+<li>关注明显策略证明（OSP）与「简单 vs 最优」前沿对平台规则的含义。<span class="tag t-ana">分析</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">2007 诺奖授予 Hurwicz/Maskin/Myerson</td>
+<td>官方</td>
+<td>NobelPrize.org 新闻稿与通俗说明</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">启示原理与实施理论定位</td>
+<td>官方/教材</td>
+<td>Nobel 2007 Popular information；标准教材</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Vickrey–Clarke–Groves 机制</td>
+<td>经典论文/综述</td>
+<td>Vickrey 1961；Clarke 1971；Groves 1973</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Myerson 最优拍卖与虚拟估值</td>
+<td>经典论文</td>
+<td>Myerson (1981) Math. Oper. Res.；均匀 [0,1] 例</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">二人均匀二价+保留价收入 5/12</td>
+<td>标准推导</td>
+<td>课堂/教材一致结果；本手册模拟复核</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Bulow–Klemperer 多一人结论</td>
+<td>经典论文</td>
+<td>Bulow &amp; Klemperer；Roughgarden 等综述</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Gibbard–Satterthwaite 不可能</td>
+<td>经典定理</td>
+<td>Gibbard 1973；Satterthwaite 1975</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">OSP 与多物品限制</td>
+<td>学术</td>
+<td>Li (2015/2017)；Ashlagi–Gonczarowski 等</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">频谱拍卖现场复杂性</td>
+<td>政策/学术</td>
+<td>FCC 实践；Cramton 等 package bidding 讨论</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">GSP 非 DSIC</td>
+<td>产业/学术</td>
+<td>搜索广告机制文献共识</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或经典定理；<span class="tag t-ana">分析</span>权威判断或结构化推理；<span class="tag t-inf">推论</span>由模型推出；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或易过时数字。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与决策框架学习材料，<strong>不构成</strong>投资、采购、招标、拍卖策略或法律建议。机制设计模型依赖偏好域、信息结构与理性假设；现实中的合谋、预算、共同价值、政治约束与认知限制可能导致结论偏移。任何将本手册用于商业竞价或公共资源配置的决策，应另行咨询具备资质的专业人士并完成独立尽职调查。作者与发布方不对依据本手册采取的行动承担损失责任。</p>
+</section>
+<footer>  <p>《机制设计（Mechanism Design）：反向博弈论 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 7 分 58 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《机制设计（Mechanism Design）：反向博弈论》主题脚本
+   四个可调模型：
+     1. 二价拍卖 · 说真话激励
+     2. Myerson 保留价 · 期望收入
+     3. VCG 公共品 · Clarke 支付
+     4. Bulow–Klemperer · 多一人 vs 最优保留价
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t && t.classList && t.classList.contains('tab')) setTimeout(fn, 40);
+    });
+    window.addEventListener('resize', function () { setTimeout(fn, 40); });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, items, ymin, ymax) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    if (ymin == null || ymax == null) {
+      var vs = items.map(function (x) { return x.v; });
+      ymin = Math.min.apply(null, vs.concat([0])) - 0.02;
+      ymax = Math.max.apply(null, vs.concat([0])) + 0.02;
+      if (ymax <= ymin) { ymax = ymin + 1; }
+    }
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (items.length * 1.45);
+    var span = ymax - ymin || 1;
+    items.forEach(function (it, i) {
+      var x = pl + (i + 0.5) * (bw / items.length) - barW / 2;
+      var y = y1 - ((it.v - ymin) / span) * bh;
+      var zeroY = y1 - ((0 - ymin) / span) * bh;
+      var top = Math.min(y, zeroY), bot = Math.max(y, zeroY);
+      ctx.fillStyle = it.c;
+      ctx.fillRect(x, top, barW, Math.max(2, bot - top));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+      var lab = (typeof it.v === 'number' ? it.v.toFixed(it.dp != null ? it.dp : 2) : String(it.v));
+      var lw = ctx.measureText(lab).width;
+      var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 2), w - pr - lw / 2 - 2);
+      ctx.fillText(lab, lx, top - 6);
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(items._axis || '数值', pl + bw, y1 + 31);
+  }
+
+  /* ---------- 1. Vickrey ---------- */
+  function vickreyUtil(v, b, s) {
+    if (b > s) return { win: true, pay: s, u: v - s };
+    if (b < s) return { win: false, pay: 0, u: 0 };
+    // tie: treat as win with pay s (conservative display)
+    return { win: true, pay: s, u: v - s };
+  }
+  function updVk() {
+    var v = +($('vk_v') && $('vk_v').value);
+    var b = +($('vk_b') && $('vk_b').value);
+    var s = +($('vk_s') && $('vk_s').value);
+    txt($('vk_vO'), String(v));
+    txt($('vk_bO'), String(b));
+    txt($('vk_sO'), String(s));
+    var cur = vickreyUtil(v, b, s);
+    var truth = vickreyUtil(v, v, s);
+    var gap = cur.u - truth.u;
+    txt($('vk_res'), cur.win ? '获胜' : '落败');
+    txt($('vk_pay'), cur.pay.toFixed(0) + ' / ' + cur.u.toFixed(0));
+    txt($('vk_truth'), truth.u.toFixed(0));
+    txt($('vk_gap'), (gap >= 0 ? '+' : '') + gap.toFixed(0));
+    var vh = $('vk_vh');
+    if (gap > 0.01) {
+      txt(vh, '判定：当前出价优于说真话 — 检查是否平局边界；一般应 ≤0');
+      tint(vh, C.amber);
+    } else if (Math.abs(gap) < 0.01 && b === v) {
+      txt(vh, '判定：说真话 · 效用缺口 0 · DSIC 成立');
+      tint(vh, C.green);
+    } else if (gap < -0.01) {
+      txt(vh, '判定：假话吃亏 ' + (-gap).toFixed(0) + ' · 应回到 b=v');
+      tint(vh, C.red);
+    } else {
+      txt(vh, '判定：效用与说真话相同（可能未改变胜负）');
+      tint(vh, C.blue);
+    }
+    var items = [
+      { lab: '当前效用', v: cur.u, c: C.blue, dp: 0 },
+      { lab: '真话效用', v: truth.u, c: C.green, dp: 0 },
+      { lab: '支付', v: cur.pay, c: C.amber, dp: 0 }
+    ];
+    items._axis = '效用 / 支付';
+    bars($('vkChart'), items, Math.min(0, cur.u, truth.u) - 5, Math.max(cur.u, truth.u, cur.pay, 10) + 5);
+  }
+
+  /* ---------- 2. Myerson SPA + reserve ---------- */
+  function spaRev(n, r, trials) {
+    trials = trials || 40000;
+    var sum = 0, i, j, vs, hi, lo;
+    for (i = 0; i < trials; i++) {
+      vs = [];
+      for (j = 0; j < n; j++) vs.push(Math.random());
+      vs.sort(function (a, b) { return b - a; });
+      hi = vs[0];
+      lo = n >= 2 ? vs[1] : 0;
+      if (hi < r) sum += 0;
+      else if (n === 1) sum += r;
+      else if (lo >= r) sum += lo;
+      else sum += r;
+    }
+    return sum / trials;
+  }
+  var myCache = {};
+  function spaRevCached(n, r) {
+    var key = n + ':' + r.toFixed(2);
+    if (myCache[key] == null) myCache[key] = spaRev(n, r, 50000);
+    return myCache[key];
+  }
+  function updMy() {
+    var n = +($('my_n') && $('my_n').value);
+    var r = +($('my_r') && $('my_r').value);
+    txt($('my_nO'), String(n));
+    txt($('my_rO'), r.toFixed(2));
+    var rev = spaRevCached(n, r);
+    var r0 = spaRevCached(n, 0);
+    var lift = r0 > 1e-9 ? (rev - r0) / r0 * 100 : 0;
+    var phi = 2 * r - 1;
+    txt($('my_rev'), rev.toFixed(3));
+    txt($('my_r0'), r0.toFixed(3));
+    txt($('my_lift'), (lift >= 0 ? '+' : '') + lift.toFixed(1) + '%');
+    txt($('my_phi'), phi.toFixed(2));
+    var vh = $('my_vh');
+    if (Math.abs(r - 0.5) < 0.015 && n >= 1) {
+      txt(vh, '判定：r≈0.5 使 φ(r)=0 · 规则分布下收入最优保留价');
+      tint(vh, C.green);
+    } else if (phi < 0) {
+      txt(vh, '判定：φ(r)<0 · 保留价偏低，低类型仍可能成交');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：φ(r)>0 · 保留价偏高侧，成交率下降换单笔抽成');
+      tint(vh, C.blue);
+    }
+    var items = [
+      { lab: '当前E[收入]', v: rev, c: C.blue },
+      { lab: 'r=0对照', v: r0, c: C.ink3 },
+      { lab: 'φ(r)', v: phi, c: phi >= 0 ? C.green : C.red }
+    ];
+    items._axis = '期望收入 / 虚拟值';
+    bars($('myChart'), items, Math.min(0, phi) - 0.05, Math.max(rev, r0, 0.55) + 0.05);
+  }
+
+  /* ---------- 3. VCG public good ---------- */
+  function updVc() {
+    var v1 = +($('vc_v1') && $('vc_v1').value);
+    var v2 = +($('vc_v2') && $('vc_v2').value);
+    var C0 = +($('vc_c') && $('vc_c').value);
+    txt($('vc_v1O'), v1.toFixed(1));
+    txt($('vc_v2O'), v2.toFixed(1));
+    txt($('vc_cO'), C0.toFixed(1));
+    var build = (v1 + v2) >= C0;
+    var p1 = build ? Math.max(0, C0 - v2) : 0;
+    var p2 = build ? Math.max(0, C0 - v1) : 0;
+    var sur = build ? (v1 + v2 - C0) : 0;
+    var sump = p1 + p2;
+    txt($('vc_build'), build ? '是' : '否');
+    txt($('vc_pay'), p1.toFixed(1) + ' / ' + p2.toFixed(1));
+    txt($('vc_sur'), sur.toFixed(1));
+    txt($('vc_sum'), sump.toFixed(1));
+    var vh = $('vc_vh');
+    if (!build) {
+      txt(vh, '判定：不建造 · 社会剩余 0 · 支付全 0');
+      tint(vh, C.ink3);
+    } else if (sump + 1e-9 < C0) {
+      txt(vh, '判定：建造 · 支付合计 ' + sump.toFixed(1) + ' < 成本 ' + C0.toFixed(1) + ' · 预算缺口需补贴');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：建造 · Clarke 支付覆盖成本 · 效率+DSIC');
+      tint(vh, C.green);
+    }
+    var items = [
+      { lab: 'p₁', v: p1, c: C.blue },
+      { lab: 'p₂', v: p2, c: C.blue },
+      { lab: '剩余', v: sur, c: C.green },
+      { lab: '成本C', v: C0, c: C.amber }
+    ];
+    items._axis = '支付 / 剩余 / 成本';
+    bars($('vcChart'), items, 0, Math.max(C0, sur, p1, p2, 1) * 1.15);
+  }
+
+  /* ---------- 4. Bulow-Klemperer ---------- */
+  function updBk() {
+    var n = +($('bk_n') && $('bk_n').value);
+    txt($('bk_nO'), String(n));
+    var opt = spaRevCached(n, 0.5);
+    var more = spaRevCached(n + 1, 0);
+    var diff = more - opt;
+    txt($('bk_opt'), opt.toFixed(3));
+    txt($('bk_more'), more.toFixed(3));
+    txt($('bk_diff'), (diff >= 0 ? '+' : '') + diff.toFixed(3));
+    var rec = diff >= 0 ? '优先扩场' : '精修保留价';
+    txt($('bk_rec'), rec);
+    var vh = $('bk_vh');
+    if (diff >= 0) {
+      txt(vh, '判定：n+1 无保留价 ≥ n 人 r=0.5 · 扩场杠杆更强');
+      tint(vh, C.green);
+    } else {
+      txt(vh, '判定：此参数下最优保留价略优 · 检查模拟噪声或扩场成本');
+      tint(vh, C.amber);
+    }
+    var items = [
+      { lab: 'n人·r=0.5', v: opt, c: C.blue },
+      { lab: 'n+1·r=0', v: more, c: C.green },
+      { lab: '差额', v: diff, c: diff >= 0 ? C.green : C.red }
+    ];
+    items._axis = '期望收入';
+    bars($('bkChart'), items, Math.min(0, diff) - 0.05, Math.max(opt, more) + 0.08);
+  }
+
+  function boot() {
+    bind(['vk_v', 'vk_b', 'vk_s'], updVk);
+    bind(['my_n', 'my_r'], updMy);
+    bind(['vc_v1', 'vc_v2', 'vc_c'], updVc);
+    bind(['bk_n'], updBk);
+    updVk();
+    updMy();
+    updVc();
+    updBk();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+</script>
+</body>
+</html>

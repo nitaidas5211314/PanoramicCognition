@@ -739,11 +739,14 @@
     {
       "slug": "机制设计（Mechanism Design）：反向博弈论——先设定想要的结果，再设计让理性人自愿达成它的规则",
       "title": "机制设计（Mechanism Design）：反向博弈论——先设定想要的结果，再设计让理性人自愿达成它的规则",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 03:19:24",
+      "finished": "2026-09-19 03:27:22",
+      "duration_sec": 478,
+      "outputs": [
+        "reports/机制设计（Mechanism Design）：反向博弈论——先设定想要的结果，再设计让理性人自愿达成它的规则.html",
+        "reports/机制设计（Mechanism Design）：反向博弈论——先设定想要的结果，再设计让理性人自愿达成它的规则.md"
+      ],
       "error": null
     },
     {
@@ -1864,7 +1867,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 03:11",
+  "updated": "2026-09-19 03:27",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
