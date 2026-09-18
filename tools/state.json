@@ -1051,12 +1051,12 @@
     {
       "slug": "消耗战（War of Attrition）：双方持续付出成本直至一方退出，沉没成本诱发非理性坚持",
       "title": "消耗战（War of Attrition）：双方持续付出成本直至一方退出，沉没成本诱发非理性坚持",
-      "status": "pending",
-      "started": null,
-      "finished": null,
+      "status": "failed",
+      "started": "2026-09-19 06:47:40",
+      "finished": "2026-09-19 06:52:06",
       "duration_sec": null,
       "outputs": [],
-      "error": null
+      "error": "Agent 未正常收尾（超时或异常退出），见 logs/runs/2026-09-19_064730.jsonl"
     },
     {
       "slug": "先动优势与后动优势：斯塔克伯格模型中承诺产能者获利，而信息不充分时后动者可观察学习",
@@ -1936,7 +1936,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 06:47",
+  "updated": "2026-09-19 06:52",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

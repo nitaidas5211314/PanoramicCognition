@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>消耗战（War of Attrition） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>War of Attrition × ESS × Sunk Cost</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">现实映射</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <div class="navgroup">模拟与实践</div>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与问题</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>消耗战（War of Attrition）</h1>
+  <p class="sub">双方持续付出成本直至一方退出——均衡上<strong>没有纯坚持时长</strong>，唯一混合 ESS 是负指数分布；期望支付归零，沉没成本在理性续战决策里<strong>不该出现</strong>，却在现实里诱发非理性坚持。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>消耗战（War of Attrition）</strong>：两个对手各自选定「最多愿意坚持到多贵」；谁先退出谁输，双方都支付<strong>已经发生的成本</strong>（等于较短那一方的坚持成本），胜者再拿走资源价值 (V)。<span class="tag t-fact">事实</span></p>
+<p>Maynard Smith（1974）证明：任何固定坚持成本 (m) 都不是 ESS——略长一点的突变体能入侵；唯一混合 ESS 是负指数密度 (p(x)=(1/V)e^{-x/V})。在此 ESS 上，计划坚持的期望 (E[X]=V)，对局实际持续时间 (E[\min(X_1,X_2)]=V/2)，<strong>每个参与人期望支付恰好为 0</strong>（租金完全耗散）。<span class="tag t-fact">事实</span></p>
+<p>默认教学参数 (V=10)：(P(X&gt;5)=e^{-0.5}\approx0.6065)，(P(\text{对局}&gt;5)=e^{-1}\approx0.3679)，中位数坚持 (V\ln2\approx6.93)。理性续战只看「对手下一刻退出的危险率 × (V)」是否覆盖瞬时成本——<strong>已花掉的钱不进公式</strong>；沉没成本谬误正是把已付成本塞回决策。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「谁更狠」，而是：<strong>在持续支付流成本的僵持里，什么坚持规则不可被入侵，以及人为什么会在租金已耗尽后还加码</strong>。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：对称消耗战 ESS、负指数无记忆、租金耗散、非对称角色（所有者/入侵者）、与全支付拍卖的对照、企业退出战、诉讼/军备僵持、沉没成本与承诺升级。</li>
+<li><strong>在界外</strong>：具体物种打斗解剖学、某场商业并购的胜负预测、需要多阶段谈判细节的鲁宾斯坦议价——除非压成「坚持成本 vs 奖品」的消耗结构。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>僵持中退出时机的策略与演化稳定分布</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到支付 = (V) − 较短坚持成本 可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>坚持成本 (x)、资源 (V)、ESS 密度、危险率、租金耗散</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>动物个体、企业、诉讼当事人、游说者、谈判双方</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(V)、成本流率 (c)、信息不对称、角色不对称、退出期权</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>对局时长、累计花费、谁先退出、市场份额争夺时长</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>私有估值、真实危险率信念、面子/声誉效用</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>双方坚持分布 → 时长 → 成本 → 谁赢 → 策略更新</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>无纯 ESS ⇒ 必须混合；指数 ESS ⇒ 期望支付 0</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「打得久」≠「更有价值」；也可能是估值接近<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>对峙、价格战、专利诉讼、军备竞赛、拖延谈判</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>第二价格式成本（付较短者）+ 频率依赖选择</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。越久越「已投入太多」→ 行为上更难退出（心理）</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。信息揭示、融资约束、董事会决策周期</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>沉没成本心理正反馈加码；理性危险率平衡可负反馈截断</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>消耗战的均衡不是「比谁更能忍」，而是：<strong>忍的分布必须让任何固定忍法都占不到便宜——结果是大家把奖品价值在期望上打光。</strong></p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它解释「为什么没有固定坚持时长」</h4><p>任何 (m) 都会被 (m+\varepsilon) 入侵；混合 ESS 是数学必然，不是「动物很随机」。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它把沉没成本谬误钉在公式上</h4><p>续战条件里没有 (L(t))（已付成本）；把 (L(t)) 写进去，就是在偏离 ESS/理性。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它同构拍卖、退出战与诉讼</h4><p>全支付拍卖、双寡头消耗、专利诉讼和解时刻——同一「双方都付钱、一人拿走奖」结构。<span class="tag t-inf">推论</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>「已经打了这么久，再撑一下对方就会退。」在对称 ESS 下危险率是常数 (1/V)，<strong>与已经打了多久无关</strong>（无记忆）。用「已经很久」推断「对方快退」是在赌一个模型禁止的相关。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看消耗战如何从「支付规则」长到「制度与心理」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="woaL9" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度出口 · 角色惯例、第三方仲裁、承诺装置打断僵持</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 行为扭曲 · 沉没成本、过度自信、承诺升级</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 应用同构 · 企业退出战、诉讼、游说、军备</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 机制对照 · 消耗战 vs 全支付拍卖（赢家付第二价 vs 自出价）</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 非对称 · 所有者/入侵者 · 谁更有赚头谁该赢</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 租金耗散 · E[支付]=0 · 总期望成本 = V</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 混合 ESS · p(x)=(1/V)e^{−x/V} · 无记忆危险率 1/V</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 无纯 ESS · 任何固定 m 可被 m+ε 入侵</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 支付规则 · 胜者 V−min · 负者 −min · 平局均分</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2→L4</strong>：接受「必须混合」和「期望净收益为零」；进阶卡在 <strong>L5→L8</strong>：角色不对称可缩短冲突，行为偏差可把租金耗散推到超过 (V)。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象支付到可操作的危险率检验。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="woaCmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="woaCmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="80" y="16" width="520" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">支付规则 → 混合 ESS → 危险率/退出检验</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">V · 坚持 x · 耗散</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">指数 ESS · λ=1/V</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">忽略沉没 · 估 λ</text>
+
+  <line x1="280" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#woaCmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#woaCmA)"/>
+  <line x1="400" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#woaCmA)"/>
+
+  <rect x="40" y="180" width="180" height="70" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="208" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">胜者付「第二价」</text><text x="130" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">成本 = 负者坚持</text>
+  <rect x="250" y="180" width="180" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="208" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">E[时长]=V/2</text><text x="340" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">E[支付]=0</text>
+  <rect x="460" y="180" width="180" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="208" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">续战：λV ≥ c</text><text x="550" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">L(t) 不进式</text>
+
+  <path d="M130 246 L130 280 L340 280 L340 250" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#woaCmB)"/>
+  <text x="200" y="272" fill="#d5342c" font-size="11" font-family="sans-serif">心理把 L(t) 塞回 → 过度坚持</text>
+
+  <rect x="100" y="310" width="480" height="50" rx="8" fill="#f3f5f8" stroke="#e2e6ec"/><text x="340" y="340" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">跨域同构：动物展示 · 价格战 · 专利诉讼 · 美元拍卖 · 游说竞赛</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="grid g2">
+<div class="card"><h4>对称对手</h4><p>估值与成本结构相同。理论基准：混合 ESS、完全租金耗散。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>非对称角色</h4><p>所有者 vs 入侵者、在位 vs 进入、资金充裕 vs 紧绷。连续成本下，ESS 通常把资源判给「更有赚头或成本更低」的一方。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>拍卖人 / 奖品设计者</h4><p>全支付与消耗战可提高卖方收益（相对标准拍卖，在关联信号等条件下）。<span class="tag t-chk">待验证</span>Krishna &amp; Morgan（1997）。</p></div>
+<div class="card"><h4>第三方打断者</h4><p>仲裁、监管、停火协议、董事会「止损授权」——改变博弈规则，而不是在同一条消耗曲线上加码。<span class="tag t-ana">分析</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号</th>
+<th>系统中的作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">资源价值</td>
+<td>(V)</td>
+<td>奖品大小；ESS 尺度；危险率 (1/V)</td>
+</tr>
+<tr>
+<td class="k">计划坚持成本</td>
+<td>(x)</td>
+<td>纯策略；混合时从 (p(x)) 抽样</td>
+</tr>
+<tr>
+<td class="k">实际对局成本</td>
+<td>(\min(x_1,x_2))</td>
+<td>双方共同支付的「第二价」</td>
+</tr>
+<tr>
+<td class="k">成本流率</td>
+<td>(c)</td>
+<td>单位时间成本；企业战里 (h=c/\Pi)</td>
+</tr>
+<tr>
+<td class="k">已付沉没</td>
+<td>(L(t))</td>
+<td>理性续战<strong>不应</strong>依赖；行为上常依赖</td>
+</tr>
+<tr>
+<td class="k">退出危险率</td>
+<td>(\lambda)</td>
+<td>ESS 下常数 (1/V)；无记忆</td>
+</tr>
+<tr>
+<td class="k">角色误差</td>
+<td>(\varepsilon)</td>
+<td>认错所有者/入侵者可打开悖论性 ESS 窗口<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="woaCa" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="woaCb" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="120" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="80" y="58" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">双方抽 x</text>
+  <rect x="180" y="30" width="120" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="240" y="58" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">对局时长</text>
+  <rect x="340" y="30" width="120" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="400" y="58" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">双方付 min</text>
+  <rect x="500" y="30" width="140" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="570" y="58" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">胜者 +V</text>
+
+  <line x1="140" y1="54" x2="180" y2="54" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#woaCa)"/>
+  <line x1="300" y1="54" x2="340" y2="54" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#woaCa)"/>
+  <line x1="460" y1="54" x2="500" y2="54" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#woaCa)"/>
+
+  <rect x="180" y="140" width="160" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="260" y="168" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">种群策略分布</text>
+  <rect x="400" y="140" width="160" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="480" y="168" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">适应度 / 利润</text>
+
+  <line x1="260" y1="78" x2="260" y2="140" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#woaCa)"/>
+  <line x1="340" y1="164" x2="400" y2="164" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#woaCa)"/>
+  <path d="M480 188 L480 250 L260 250 L260 188" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#woaCb)"/>
+  <text x="370" y="242" fill="#d5342c" font-size="11" font-family="sans-serif">选择反馈 → 推向指数 ESS</text>
+
+  <rect x="20" y="270" width="640" height="36" rx="6" fill="#f3f5f8"/><text x="340" y="293" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">实线 = 单次对局因果；红虚线 = 种群层面频率依赖</text>
+</svg>
+<p>关键因果链：</p>
+<ol>
+<li><strong>支付定义</strong> → 略长者总占固定 (m) 的便宜 → 无纯 ESS。<span class="tag t-fact">事实</span></li>
+<li><strong>无原子混合</strong> + 无差异条件 → 负指数唯一 ESS（Bishop &amp; Cannings 1978）。<span class="tag t-fact">事实</span></li>
+<li><strong>指数无记忆</strong> → 「已坚持多久」不改变续战最优（给定对称）。<span class="tag t-fact">事实</span></li>
+<li><strong>行为层把 (L(t)) 加回</strong> → 危险率被低估或奖品被高估 → 超长僵持。<span class="tag t-ana">分析</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="grid g2">
+<div class="card"><h4>第二价格结构藏在时间里</h4><p>消耗战赢家支付的是对手退出时的成本，等价于「第二高出价」——与英式/二价拍卖同构，只是双方都付钱。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>无记忆 ≈ 无法从时长推断</h4><p>指数分布的危险率恒定：时长本身不提供「对方快撑不住」的证据。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>对称完美信息下的「零期望」</h4><p>能抢到奖品的概率优势，在期望上正好被成本吃掉——这不是bug，是均衡。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>沉没成本与「完成效应」纠缠</h4><p>实验与元分析显示：人们继续失败项目，既因已投入，也因「快做完了」的动机（Arkes &amp; Blumer；后续元分析）。<span class="tag t-chk">待验证</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<div class="flow "><p>选择坚持分布 <code>hi</code> → 相遇对局 → 付 min 成本 → 适应度更新 → ESS 检验</p></div>
+<p>运行要点：</p>
+<ol>
+<li><strong>个体层</strong>：抽一个最大成本 (x)（或等价地以常数危险率决定每时点是否退出）。</li>
+<li><strong>对局层</strong>：较短者决定时长；双方付该成本；较长者得 (V)。</li>
+<li><strong>种群层</strong>：任何偏离指数的分布可被合适突变入侵，直到回到 (p(x)=(1/V)e^{-x/V})。<span class="tag t-fact">事实</span></li>
+<li><strong>行为层</strong>：若决策者盯着累计亏损加码，系统离开 ESS，进入「美元拍卖式」过度竞价区。<span class="tag t-ana">分析</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="woaT" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="2"/>
+  <circle cx="80" cy="110" r="10" fill="#0f8a4d"/><text x="80" y="140" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">t0 相遇</text>
+  <circle cx="200" cy="110" r="10" fill="#1d4ed8"/><text x="200" y="140" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">对峙升温</text>
+  <circle cx="340" cy="110" r="10" fill="#b8730a"/><text x="340" y="140" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">成本累积</text>
+  <circle cx="480" cy="110" r="10" fill="#d5342c"/><text x="480" y="140" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">一方退出</text>
+  <circle cx="600" cy="110" r="10" fill="#15181d"/><text x="600" y="140" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">奖品易手</text>
+  <line x1="90" y1="110" x2="190" y2="110" stroke="#1d4ed8" stroke-width="2" marker-end="url(#woaT)"/>
+  <line x1="210" y1="110" x2="330" y2="110" stroke="#1d4ed8" stroke-width="2" marker-end="url(#woaT)"/>
+  <line x1="350" y1="110" x2="470" y2="110" stroke="#1d4ed8" stroke-width="2" marker-end="url(#woaT)"/>
+  <line x1="490" y1="110" x2="590" y2="110" stroke="#1d4ed8" stroke-width="2" marker-end="url(#woaT)"/>
+  <text x="340" y="50" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">对称 ESS：时长 ~ Exp(rate=2/V)，均值 V/2；危险率不随已用时间上升</text>
+  <text x="340" y="75" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">行为扭曲：已用时间 ↑ → 主观「再撑一下」↑ → 尾部变厚</text>
+</svg>
+<p>演化三阶段（种群尺度）：固定坚持流行 → 略长突变入侵 → 分布扩散至指数 ESS。企业尺度：进入重叠市场 → 价格/广告消耗 → 一方退出或兼并打断。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>想要什么</th>
+<th>激励扭曲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">参与者</td>
+<td>得 (V) 且少付成本</td>
+<td>高估自己危险率优势；沉没成本合理化</td>
+</tr>
+<tr>
+<td class="k">代理人（经理）</td>
+<td>证明「没放弃」</td>
+<td>用公司的钱买个人声誉<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">律师/顾问</td>
+<td>拉长计费时长</td>
+<td>与尽早和解激励冲突<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">奖品设计者</td>
+<td>最大化总出价</td>
+<td>选用全支付/消耗结构<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">旁观者社会</td>
+<td>减少无谓损失</td>
+<td>推动惯例、仲裁、止损规则</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note red"><b>代理人陷阱</b><p>消耗战最毒的版本往往不是两个主人在打，而是<strong>两个代理人用别人的资源证明自己没错</strong>——私人收益（面子）进入 (V)，社会成本留在 (c)。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="woaF" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+    <marker id="woaFg" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0f8a4d"/></marker>
+  </defs>
+  <rect x="40" y="30" width="140" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="110" y="65" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">甲方金库</text>
+  <rect x="500" y="30" width="140" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="570" y="65" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">乙方金库</text>
+  <rect x="240" y="20" width="200" height="80" rx="8" fill="#15181d"/><text x="340" y="55" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">奖品池 V</text><text x="340" y="78" text-anchor="middle" fill="#9aa3ad" font-size="11" font-family="sans-serif">唯一有社会价值的块</text>
+
+  <path d="M110 90 L110 150 L300 150 L300 100" fill="none" stroke="#d5342c" stroke-width="2" marker-end="url(#woaF)"/>
+  <path d="M570 90 L570 150 L380 150 L380 100" fill="none" stroke="#d5342c" stroke-width="2" marker-end="url(#woaF)"/>
+  <text x="340" y="175" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">双方持续抽血 → 耗散池（广告/诉讼/军备）</text>
+
+  <rect x="200" y="195" width="280" height="44" rx="8" fill="#fde8e8" stroke="#d5342c"/><text x="340" y="222" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">均衡上期望总抽血 ≈ V（对称 ESS）</text>
+</svg>
+<p>信息流：对称完全信息下，时长<strong>不</strong>揭示新信息（无记忆）；不完全信息下，坚持本身是信号——高估值者更愿坚持，时长开始携带信息，耗散可变为部分。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 重要性×杠杆率×可操作性÷学习成本 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为什么锋利</th>
+<th>操作成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>事前写死止损线</strong></td>
+<td>把 (L(t)) 从决策里物理切除</td>
+<td>低：纸面规则</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>重估前方 (V) 与 (c)，忽略已付</strong></td>
+<td>直接对齐理性续战条件</td>
+<td>低：清单</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>制造不对称惯例</strong></td>
+<td>所有者优先等可缩短冲突</td>
+<td>中：需共同知识</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>引入第三方裁决</strong></td>
+<td>改变博弈，而非加码</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>降低代理人私人 (V)</strong></td>
+<td>拆掉「用公款买面子」</td>
+<td>高：治理</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>提高己方成本透明度</strong></td>
+<td>让对方看到你的危险率可信</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>缩小奖品或拆分奖品</strong></td>
+<td>降低 (V) → 缩短期望时长</td>
+<td>视场景</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>承诺装置（预授权退出）</strong></td>
+<td>实验显示可抑制沉没成本敏感<span class="tag t-chk">待验证</span></td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>改机制：别用全支付结构</strong></td>
+<td>游说/军备式机制天然耗散</td>
+<td>高</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>校准「对方快退」信念</strong></td>
+<td>对称下危险率常数，防幻觉</td>
+<td>低</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「已经投入这么多，不能停」</summary><div class="dbody"><p>沉没成本谬误经典句。理性公式里没有 (L(t))。Arkes &amp; Blumer（1985）定义：一旦投入金钱/努力/时间，更倾向继续。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>2. 「打得越久，对方越快放弃」</summary><div class="dbody"><p>对称 ESS 无记忆：危险率不随时长上升。专利诉讼研究中曾观察到和解危险率近似与已进行时长无关（MBA 讲义引 Myhrvold 等）<span class="tag t-chk">待验证</span>——与指数结构一致。</p></div></details>
+<details><summary>3. 「固定坚持 m* = V/2 最稳」</summary><div class="dbody"><p>(E(m,m)=V/2-m)；任何 (m+\varepsilon) 对固定 (m) 的期望严格更好。不存在纯 ESS。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 「赢了就赚了 V」</summary><div class="dbody"><p>忽略已付成本。对称 ESS 上期望净收益为 0；「赢」在平均意义上只是拿回成本。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>5. 「加码成本流能逼退对方」</summary><div class="dbody"><p>把 (c) 从 1 加到 2，对称模型里期望支付不变、只是时间尺度压缩——耗散总量仍对齐奖品。<span class="tag t-ana">分析</span>（见 Morgan 讲义直觉）</p></div></details>
+<details><summary>6. 「我对 V 的估值更高所以一定该打到底」</summary><div class="dbody"><p>若对方成本更低或更有耐心，高估值仍可能该早退；非对称 ESS 看的是「相对赚头」，不是单边 (V)。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>7. 「消耗战 = 鹰鸽」</summary><div class="dbody"><p>鹰鸽是离散升级/伤害；消耗战是连续坚持成本。解的结构不同（混合点质量 vs 指数密度）。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>8. 「全支付拍卖和消耗战一样」</summary><div class="dbody"><p>都让失败者付钱；但赢家在消耗战付第二价，在全支付付自己的出价。收益排序在关联信息下可不同。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>9. 「实验室里人会收敛到 ESS」</summary><div class="dbody"><p>Gneezy &amp; Smorodinsky 等全支付实验常见过度出价，总收益可达奖品 2–3 倍。<span class="tag t-fact">事实</span>行为层常偏离。</p></div></details>
+<details><summary>10. 「停战=认输=永久弱势」</summary><div class="dbody"><p>退出消耗战是支付已实现损失、停止未来耗散；与「能力信号」混淆会导致为声誉继续流血。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="woaM" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="40" y="20" width="180" height="70" rx="8" fill="#15181d"/><text x="130" y="50" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">抽象</text><text x="130" y="70" text-anchor="middle" fill="#9aa3ad" font-size="11" font-family="sans-serif">V, x, ESS, λ</text>
+  <rect x="250" y="20" width="180" height="70" rx="8" fill="#1d4ed8"/><text x="340" y="50" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">机制</text><text x="340" y="70" text-anchor="middle" fill="#eaf0ff" font-size="11" font-family="sans-serif">第二价成本·耗散</text>
+  <rect x="460" y="20" width="180" height="70" rx="8" fill="#0f8a4d"/><text x="550" y="50" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">操作</text><text x="550" y="70" text-anchor="middle" fill="#e8f8ef" font-size="11" font-family="sans-serif">止损·估危险率</text>
+  <line x1="220" y1="55" x2="250" y2="55" stroke="#1d4ed8" stroke-width="2" marker-end="url(#woaM)"/>
+  <line x1="430" y1="55" x2="460" y2="55" stroke="#1d4ed8" stroke-width="2" marker-end="url(#woaM)"/>
+
+  <rect x="40" y="120" width="600" height="160" rx="10" fill="#f8fdfa" stroke="#e2e6ec"/>
+  <text x="60" y="150" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">映射例句</text>
+  <text x="60" y="178" fill="#454c56" font-size="12" font-family="sans-serif">动物展示对峙 → x = 时间/能量；V = 领地/配偶</text>
+  <text x="60" y="202" fill="#454c56" font-size="12" font-family="sans-serif">双寡头价格战 → c = 每期亏损；Π = 垄断租金</text>
+  <text x="60" y="226" fill="#454c56" font-size="12" font-family="sans-serif">专利诉讼 → c = 律师费+ distraction；V = 专利租</text>
+  <text x="60" y="250" fill="#454c56" font-size="12" font-family="sans-serif">美元拍卖/便士拍卖 → 显式全支付 + 沉没成本敏感</text>
+</svg>
+<p>HBS 案例「Hold or Fold?」指出：任意事先承诺的坚持时长都能被「再多撑 ε」合理化——这正是无纯 ESS 在商业语言里的回声。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">识别结构</button><button class="tab" data-pane="tb1-1">校准数字</button><button class="tab" data-pane="tb1-2">设计出口</button><button class="tab" data-pane="tb1-3">防代理人</button></div>
+<div class="pane on" id="tb1-0"><p>问四件事：是否双方持续付成本？是否一人拿走奖品？退出是否可由单方决定？已付成本是否不可收回？四者皆是 → 按消耗战建模，而不是按「谁更勇敢」叙事。</p></div><div class="pane" id="tb1-1"><p>写下前方 (V)（还能带来的净值）、流成本 (c)、主观危险率 (\hat\lambda)。续战仅当 (\hat\lambda \cdot V \ge c)。把已付 (L) 写在纸上但圈起来标注「禁止进入不等式」。</p></div><div class="pane" id="tb1-2"><p>止损授权、第三方调解、角色惯例（先占者优先）、拆分奖品降低 (V)。优先改规则，其次改信念，最后才是「再撑一下」。</p></div><div class="pane" id="tb1-3"><p>若决策者不是出资人：要求书面说明「若换成今天才开工，是否仍进入」——把沉没成本从合理化话术里抽掉。</p></div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>Lv1 概念辨识</summary><div class="dbody"><p>能区分消耗战 / 鹰鸽 / 囚徒困境 / 标准拍卖；能写出支付 (V-\min)。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Lv2 ESS 推导直觉</summary><div class="dbody"><p>说明为何无纯 ESS；写出 (p(x)=(1/V)e^{-x/V}) 与 (E[\text{支付}]=0)。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Lv3 危险率决策</summary><div class="dbody"><p>在真实冲突里列出 (V,c,\hat\lambda)，做一次忽略沉没的续战判定。</p></div></details>
+<details><summary>Lv4 非对称与机制</summary><div class="dbody"><p>能讨论所有者惯例、消耗战 vs 全支付、不完全信息下的部分耗散。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Lv5 治理设计</summary><div class="dbody"><p>能为组织设计止损、预授权退出、代理人激励隔离。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你掉进一个叫 <strong>「耗散平原」</strong> 的世界：每一步双方都掉血，先撑不住的人失去中央水晶 (V)。平原的物理定律是负指数——<strong>地图不告诉你对方还剩多少血</strong>。唯一稳定的生存法则是随机化离场时刻；任何「我固定撑到 7」都会被「撑到 7.1」的人收割。平原边缘有三座塔：<strong>止损塔</strong>（预写退出）、<strong>仲裁塔</strong>（第三方打断）、<strong>角色塔</strong>（所有者优先）。大多数新手死在第四座幻觉塔：<strong>「已经掉了这么多血，水晶快到手了」</strong>。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>目标</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">主线 1</td>
+<td>用 (V=10) 手算 (E[X],E[\min],P(X&gt;10))</td>
+<td>10 / 5 / 0.3679</td>
+</tr>
+<tr>
+<td class="k">主线 2</td>
+<td>找一件正在拖延的争执，写续战不等式</td>
+<td>纸面含 (V,c,\lambda)，无 (L)</td>
+</tr>
+<tr>
+<td class="k">支线 A</td>
+<td>对比一次价格战新闻与消耗战清单</td>
+<td>四要素打勾表</td>
+</tr>
+<tr>
+<td class="k">支线 B</td>
+<td>读懂「第二价成本」一句话</td>
+<td>能向他人复述</td>
+</tr>
+<tr>
+<td class="k">日常</td>
+<td>任何「不能白费」念头触发 10 秒冷静</td>
+<td>重写前方净值</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>下面四个工具都参与真计算（见 HTML 版滑块）。</p>
+<div class="tool" id="tool-ess">
+  <h3>模型 1 · 对称 ESS：价值 V 如何缩放时长与耗散</h3>
+  <div class="ctrl">
+    <label>资源价值 V <output id="ess_vO">10</output></label>
+    <input type="range" id="ess_v" min="2" max="40" step="0.5" value="10"/>
+  </div>
+  <div class="readout">
+    <div class="ro">E[计划坚持] <b id="ess_ex">10.0</b></div>
+    <div class="ro">E[对局时长] <b id="ess_emin">5.0</b></div>
+    <div class="ro">危险率 λ <b id="ess_lam">0.100</b></div>
+    <div class="ro">E[支付] <b id="ess_pay">0.00</b></div>
+    <div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ess_vh" style="font-size:13px;color:#1d4ed8">V=10 → 指数 ESS；总期望耗散 = V；个人期望净收益 = 0</span></div>
+  </div>
+  <canvas id="essChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<div class="tool" id="tool-pure">
+  <h3>模型 2 · 为何没有纯 ESS：固定 m 被 m+ε 入侵</h3>
+  <div class="ctrl">
+    <label>种群固定坚持 m <output id="pure_mO">6</output></label>
+    <input type="range" id="pure_m" min="0" max="20" step="0.5" value="6"/>
+    <label>资源 V <output id="pure_vO">10</output></label>
+    <input type="range" id="pure_v" min="2" max="30" step="0.5" value="10"/>
+  </div>
+  <div class="readout">
+    <div class="ro">居民互遇支付 <b id="pure_res">−1.0</b></div>
+    <div class="ro">略长突变支付 <b id="pure_mut">4.0</b></div>
+    <div class="ro">入侵优势 <b id="pure_adv">5.0</b></div>
+    <div class="ro">零策略 vs 居民 <b id="pure_zero">0.0</b></div>
+    <div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="pure_vh" style="font-size:13px;color:#d5342c">m=6&lt;∞ → 突变 m+ε 优势 = V/2 = 5.0；无纯 ESS</span></div>
+  </div>
+  <canvas id="pureChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<div class="tool" id="tool-firm">
+  <h3>模型 3 · 企业消耗战：流成本 c 与垄断租金 Π</h3>
+  <div class="ctrl">
+    <label>每期对峙成本 c <output id="firm_cO">2</output></label>
+    <input type="range" id="firm_c" min="0.5" max="10" step="0.5" value="2"/>
+    <label>胜者垄断租金 Π <output id="firm_piO">20</output></label>
+    <input type="range" id="firm_pi" min="4" max="60" step="1" value="20"/>
+  </div>
+  <div class="readout">
+    <div class="ro">退出危险率 h <b id="firm_h">0.100</b></div>
+    <div class="ro">E[对峙期数] <b id="firm_dur">5.0</b></div>
+    <div class="ro">双方总期望成本 <b id="firm_tot">20.0</b></div>
+    <div class="ro">耗散比 <b id="firm_ratio">1.00</b></div>
+    <div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="firm_vh" style="font-size:13px;color:#1d4ed8">对称完全信息基准：h=c/Π，总耗散≈Π（租金打光）</span></div>
+  </div>
+  <canvas id="firmChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<div class="tool" id="tool-sunk">
+  <h3>模型 4 · 沉没成本幻觉：L 不该进入续战</h3>
+  <div class="ctrl">
+    <label>前方净值 V <output id="sunk_vO">10</output></label>
+    <input type="range" id="sunk_v" min="1" max="30" step="0.5" value="10"/>
+    <label>瞬时成本 c <output id="sunk_cO">1</output></label>
+    <input type="range" id="sunk_c" min="0.2" max="5" step="0.1" value="1"/>
+    <label>主观危险率 λ <output id="sunk_lO">0.12</output></label>
+    <input type="range" id="sunk_l" min="0.02" max="0.5" step="0.01" value="0.12"/>
+    <label>已付沉没 L（仅展示） <output id="sunk_LO">8</output></label>
+    <input type="range" id="sunk_L" min="0" max="40" step="1" value="8"/>
+  </div>
+  <div class="readout">
+    <div class="ro">理性续战指标 λV−c <b id="sunk_rat">0.20</b></div>
+    <div class="ro">谬误指标（把 L 当损失） <b id="sunk_fall">−7.80</b></div>
+    <div class="ro">理性建议 <b id="sunk_dec">续战</b></div>
+    <div class="ro">若用 L 误判 <b id="sunk_dec2">停</b></div>
+    <div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="sunk_vh" style="font-size:13px;color:#0f8a4d">λV=1.20 ≥ c=1.0 → 理性续战；L=8 不改变该不等式</span></div>
+  </div>
+  <canvas id="sunkChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>标志性产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识结构</td>
+<td>认出消耗战四要素</td>
+<td>一页对照表</td>
+</tr>
+<tr>
+<td class="k">L2 算均衡</td>
+<td>会用指数 ESS 与耗散比</td>
+<td>手算与滑块一致</td>
+</tr>
+<tr>
+<td class="k">L3 做决策</td>
+<td>忽略沉没的续战判定</td>
+<td>真实案例纸面不等式</td>
+</tr>
+<tr>
+<td class="k">L4 改规则</td>
+<td>止损/仲裁/角色惯例</td>
+<td>可执行的出口设计</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li><strong>5 分钟</strong>：选一件你正在「再坚持一下」的事（项目、争论、订阅、持仓叙事皆可）。</li>
+<li><strong>10 分钟</strong>：只写三个数——前方还能带来的净值 (V)、继续下去的单位成本 (c)、你对「对方/情况下一刻好转」的主观概率强度 (\hat\lambda)（没有对手就用「环境好转危险率」）。</li>
+<li><strong>5 分钟</strong>：算 (\hat\lambda V - c)。(L=)已花多少写在旁边但划掉。</li>
+<li><strong>10 分钟</strong>：若指标为负，写下一句退出执行句（取消、和解、止损单）；若为正，写下一句「重新评估日期」而不是「无限再撑」。</li>
+</ol>
+<p>验收：纸上有三个数、一个不等式、一个执行句；(L) 被明确排除。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>练习</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>重算 (V=10) 的 ESS 四个数字（E[X], E[min], λ, 支付）</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>用模型 2 感受「任何 m 都被入侵」</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>找一则价格战/诉讼新闻，标四要素</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>对自己的一件事做沉没成本隔离练习</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>写一条止损/退出预授权</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>对比消耗战 vs 全支付：赢家付什么</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘：哪次「再撑一下」其实指标已为负</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<ul>
+<li><strong>第 1 周</strong>：吃透对称 ESS 与无纯策略（手册 + 滑块）。</li>
+<li><strong>第 2 周</strong>：收集 3 个现实消耗战案例，统一用 (V,c,\lambda) 记账。</li>
+<li><strong>第 3 周</strong>：设计组织级出口（止损权限、第三方条款）。</li>
+<li><strong>第 4 周</strong>：做一次「代理人隔离」——若你是出资人，要求决策备忘录写「今日零基是否仍进入」。</li>
+</ul>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<ol>
+<li><strong>对称消耗战支付</strong>：胜 (V-\min)，负 (-\min)。</li>
+<li><strong>无纯 ESS</strong>：(m+\varepsilon) 入侵任意固定 (m)。</li>
+<li><strong>负指数混合 ESS</strong>：(p(x)=(1/V)e^{-x/V})。</li>
+<li><strong>无记忆危险率</strong>：(\lambda=1/V)。</li>
+<li><strong>租金完全耗散</strong>：(E[\text{支付}]=0)，总期望成本 (=V)。</li>
+<li><strong>对局时长</strong>：(\min\sim\mathrm{Exp}(2/V))，均值 (V/2)。</li>
+<li><strong>企业战危险率</strong>：(h=c/\Pi)。</li>
+<li><strong>第二价成本结构</strong>：与二价拍卖同构、双方付款。</li>
+<li><strong>非对称惯例</strong>：连续成本下资源归相对优势角色。</li>
+<li><strong>沉没成本隔离</strong>：续战条件 (\lambda V\ge c)，不含 (L(t))。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 为什么动物不「约好只展示很短」？</summary><div class="dbody"><p>短展示约定不是 ESS：稍微多展示者会赢走资源。群体最优 ≠ 演化稳定。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q2 期望支付为 0，为什么还要打？</summary><div class="dbody"><p>若不打，突变「略打一点」会偷走资源；均衡是「不得不随机化」，不是「乐意打光」。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q3 和懦夫博弈（Chicken）什么关系？</summary><div class="dbody"><p>Chicken/鹰鸽是离散行动；消耗战是连续坚持。都关于升级与先退，但数学解不同。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q4 不完全信息会改善耗散吗？</summary><div class="dbody"><p>通常带来部分揭示与部分耗散；高类型坚持更久。对称完全信息的「打光」是基准上界直觉。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q5 为什么诉讼常常拖很久？</summary><div class="dbody"><p>结构像消耗战；律师激励、信息不对称、沉没成本心理叠加。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q6 止损会不会变成「可被利用的软」？</summary><div class="dbody"><p>可能。需要同时管理声誉与规则：公开的是「原则」，不是「软靶」。可用第三方触发降低被剥削。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q7 全支付实验为何过度出价？</summary><div class="dbody"><p>损失厌恶、沉没成本敏感、高兴感等行为因素；收入可达奖品数倍。<span class="tag t-fact">事实</span><span class="tag t-chk">待验证</span>幅度依设计而变。</p></div></details>
+<details><summary>Q8 Bourgeois「所有者赢」一定出现吗？</summary><div class="dbody"><p>在离散鹰鸽非对称里常见；连续消耗战在角色识别近乎完美时，通常是「常识性」把资源给优势角色，悖论性 ESS 需要额外离散承诺结构。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q9 如何估计主观 λ？</summary><div class="dbody"><p>用历史类似冲突的退出频率，或把「我觉得对方再撑一周的概率」换成危险率；写范围而非单点。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q10 今天就能做的最小干预是什么？</summary><div class="dbody"><p>预写止损句 + 续战不等式把 (L) 划掉。见 §22。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>Bishop &amp; Cannings（1978）广义消耗战与有限策略收敛。</li>
+<li>Krishna &amp; Morgan（1997）消耗战与全支付的收益排序。</li>
+<li>行为：Augenblick 便士拍卖中的沉没成本；慈善全支付中的承诺装置。</li>
+<li>相邻手册：ESS、鹰鸽/Chicken、拍卖与收益等价、可信承诺、BATNA。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">消耗战模型与无纯 ESS</td>
+<td>经典论文</td>
+<td>Maynard Smith &amp; Price 1973 <em>Nature</em>；Maynard Smith 1974 <em>JTB</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">负指数唯一 ESS</td>
+<td>经典论文</td>
+<td>Bishop &amp; Cannings 1978 <em>JTB</em>；Cannings 讲义</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">消耗战 vs 全支付收益</td>
+<td>理论论文</td>
+<td>Krishna &amp; Morgan 1997</td>
+<td><span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">非对称消耗战</td>
+<td>理论论文</td>
+<td>Hammerstein &amp; Parker 1982；Maynard Smith &amp; Parker 1976</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">沉没成本定义与升级</td>
+<td>行为文献</td>
+<td>Arkes &amp; Blumer 1985；Staw 1976；元分析 2014</td>
+<td><span class="tag t-fact">事实</span><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">全支付过度出价</td>
+<td>实验</td>
+<td>Gneezy &amp; Smorodinsky 等</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">企业消耗战直觉</td>
+<td>教学讲义</td>
+<td>Morgan (Haas) War of Attrition notes；HBS Hold or Fold</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">手册默认数值 V=10</td>
+<td>教学设定</td>
+<td>本文验算</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或可直接从模型推出；<span class="tag t-ana">分析</span>权威推演/教材共识；<span class="tag t-inf">推论</span>跨域类比；<span class="tag t-hyp">假设</span>未验证机制；<span class="tag t-chk">待验证</span>单一来源或实验幅度依赖设计。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是博弈论与决策框架的认知训练材料，<strong>不是</strong>投资建议、法律意见、商业尽调结论或谈判代理方案。模型高度简化；真实冲突含声誉、流动性、法律约束与代理人问题。数字为教学默认值与经典结果复算，不构成对任何具体争端结局的预测。你需对自身决策独立负责。</p>
+</section>
+<footer>  <p>《消耗战（War of Attrition） · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 3 分 24 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《消耗战 War of Attrition》主题脚本
+   四个可调模型：
+     1. 对称 ESS（V → 时长 / 危险率 / 耗散）
+     2. 无纯 ESS（固定 m 被入侵）
+     3. 企业消耗战（c, Π）
+     4. 沉没成本幻觉（λV−c vs L）
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function r1(x) { return (Math.round(x * 10) / 10).toFixed(1); }
+  function r2(x) { return (Math.round(x * 100) / 100).toFixed(2); }
+  function r3(x) { return (Math.round(x * 1000) / 1000).toFixed(3); }
+  function clampLabel(ctx, lab, x, y, align, pl, w) {
+    var lw = ctx.measureText(lab).width;
+    ctx.textAlign = align;
+    var lx = align === 'left' ? Math.min(x, w - lw - 6) : Math.max(x, pl + 6);
+    ctx.fillText(lab, lx, y);
+  }
+
+  /* ── 1. Symmetric ESS ── */
+  (function ess() {
+    var vEl = $('ess_v');
+    if (!vEl) return;
+    var cv = $('essChart');
+
+    function upd() {
+      var V = parseFloat(vEl.value);
+      var ex = V;
+      var emin = V / 2;
+      var lam = 1 / V;
+      var pay = 0;
+      var med = V * Math.log(2);
+      var p10 = Math.exp(-10 / V);
+      var pCont5 = Math.exp(-2 * 5 / V);
+
+      txt($('ess_vO'), r1(V));
+      txt($('ess_ex'), r1(ex));
+      txt($('ess_emin'), r1(emin));
+      txt($('ess_lam'), r3(lam));
+      txt($('ess_pay'), r2(pay));
+
+      var msg = 'V=' + r1(V) + ' → E[X]=' + r1(ex) + '，E[对局]=' + r1(emin) +
+        '，中位数=' + r1(med) + '；P(对局>5)=' + r2(pCont5) +
+        '；总期望耗散=V，个人E[支付]=0';
+      txt($('ess_vh'), msg);
+      tint($('ess_vh'), C.blue);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var xmax = Math.max(12, Math.ceil((V * 3) / 6) * 6);
+      var ymax = 1 / V * 1.15;
+
+      function sx(x) { return pl + (x / xmax) * bw; }
+      function sy(y) { return y1 - (y / ymax) * bh; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth = 1;
+      for (var i = 0; i <= 6; i++) {
+        var xx = sx((xmax / 6) * i);
+        ctx.beginPath(); ctx.moveTo(xx, pt); ctx.lineTo(xx, y1); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(String(Math.round((xmax / 6) * i)), xx, y1 + 13);
+      }
+      ctx.fillStyle = C.ink2; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('坚持成本 x', pl + bw / 2, y1 + 31);
+
+      ctx.strokeStyle = C.blue; ctx.lineWidth = 2; ctx.beginPath();
+      for (var t = 0; t <= xmax; t += xmax / 200) {
+        var dens = Math.exp(-t / V) / V;
+        var X = sx(t), Y = sy(dens);
+        if (t === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
+      }
+      ctx.stroke();
+
+      // mean marker
+      ctx.strokeStyle = C.amber; ctx.setLineDash([4, 3]); ctx.beginPath();
+      ctx.moveTo(sx(ex), pt); ctx.lineTo(sx(ex), y1); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = C.amber; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('E[X]=' + r1(ex), sx(ex), pt + 12);
+
+      // contest mean
+      ctx.strokeStyle = C.green; ctx.setLineDash([4, 3]); ctx.beginPath();
+      ctx.moveTo(sx(emin), pt); ctx.lineTo(sx(emin), y1); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = C.green; ctx.font = '11px sans-serif';
+      var lab = 'E[min]=' + r1(emin);
+      var lx = sx(emin);
+      if (Math.abs(sx(ex) - lx) < 50) lx = sx(emin) + (emin < ex ? -40 : 40);
+      ctx.textAlign = 'center';
+      ctx.fillText(lab, lx, pt + 26);
+
+      ctx.fillStyle = C.ink3; ctx.font = '11px sans-serif'; ctx.textAlign = 'right';
+      ctx.fillText('p(x)=(1/V)e^(−x/V)', pl + bw, pt + 12);
+    }
+    bind(['ess_v'], upd);
+    upd();
+  })();
+
+  /* ── 2. No pure ESS ── */
+  (function pure() {
+    var mEl = $('pure_m'), vEl = $('pure_v');
+    if (!mEl || !vEl) return;
+    var cv = $('pureChart');
+
+    function upd() {
+      var m = parseFloat(mEl.value), V = parseFloat(vEl.value);
+      var res = V / 2 - m;
+      var mut = V - m; // m+eps vs m
+      var adv = mut - res; // = V/2
+      var zero = 0; // strategy 0 vs m: lose immediately, payoff 0
+      var zeroBeats = zero > res;
+
+      txt($('pure_mO'), r1(m));
+      txt($('pure_vO'), r1(V));
+      txt($('pure_res'), r1(res));
+      txt($('pure_mut'), r1(mut));
+      txt($('pure_adv'), r1(adv));
+      txt($('pure_zero'), r1(zero));
+      tint($('pure_adv'), C.red);
+      tint($('pure_res'), res < 0 ? C.red : C.green);
+
+      var msg;
+      if (m > V / 2 && zeroBeats) {
+        msg = '居民互遇支付 ' + r1(res) + ' < 0 → 零策略（立即退出）也能入侵；同时 m+ε 对固定 m 优势恒为 V/2=' + r1(V / 2);
+      } else {
+        msg = 'm=' + r1(m) + ' → 突变 m+ε 支付 ' + r1(mut) + '，居民 ' + r1(res) +
+          '，优势 = V/2 = ' + r1(adv) + '；无纯 ESS';
+      }
+      txt($('pure_vh'), msg);
+      tint($('pure_vh'), C.red);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var vals = [res, mut, zero];
+      var labs = ['居民互遇', '略长突变', '零策略'];
+      var colors = [C.amber, C.red, C.green];
+      var minV = Math.min(0, res, mut, zero);
+      var maxV = Math.max(0.1, res, mut, zero);
+      var span = maxV - minV || 1;
+      function sx(v) { return pl + ((v - minV) / span) * bw; }
+      var zeroX = sx(0);
+      var barH = 28, gap = 18;
+      var startY = pt + 20;
+
+      ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(zeroX, pt); ctx.lineTo(zeroX, y1); ctx.stroke();
+
+      for (var i = 0; i < 3; i++) {
+        var y = startY + i * (barH + gap);
+        var x0 = sx(0), x1 = sx(vals[i]);
+        ctx.fillStyle = colors[i];
+        ctx.fillRect(Math.min(x0, x1), y, Math.abs(x1 - x0), barH);
+        ctx.fillStyle = C.ink; ctx.font = '12px sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText(labs[i], pl, y - 4);
+        var lab = r1(vals[i]);
+        ctx.fillStyle = C.ink2;
+        clampLabel(ctx, lab, vals[i] >= 0 ? x1 + 8 : x1 - 8, y + barH / 2 + 4,
+          vals[i] >= 0 ? 'left' : 'right', pl, w);
+      }
+      ctx.fillStyle = C.ink3; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('期望支付（对固定种群 m）', pl + bw / 2, y1 + 31);
+    }
+    bind(['pure_m', 'pure_v'], upd);
+    upd();
+  })();
+
+  /* ── 3. Firm war of attrition ── */
+  (function firm() {
+    var cEl = $('firm_c'), piEl = $('firm_pi');
+    if (!cEl || !piEl) return;
+    var cv = $('firmChart');
+
+    function upd() {
+      var c = parseFloat(cEl.value), Pi = parseFloat(piEl.value);
+      var h = c / Pi;
+      var dur = Pi / (2 * c);
+      var tot = 2 * c * dur; // = Pi
+      var ratio = tot / Pi;
+
+      txt($('firm_cO'), r1(c));
+      txt($('firm_piO'), String(Math.round(Pi)));
+      txt($('firm_h'), r3(h));
+      txt($('firm_dur'), r1(dur));
+      txt($('firm_tot'), r1(tot));
+      txt($('firm_ratio'), r2(ratio));
+      tint($('firm_ratio'), Math.abs(ratio - 1) < 0.01 ? C.amber : C.blue);
+
+      var msg = 'h=c/Π=' + r3(h) + '；E[期数]=' + r1(dur) +
+        '；双方总期望成本=' + r1(tot) + ' ≈ Π（对称完全信息租金打光）';
+      txt($('firm_vh'), msg);
+      tint($('firm_vh'), C.blue);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, hgt = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = hgt - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var T = Math.max(12, Math.ceil((dur * 3 + 3) / 6) * 6);
+      function sx(t) { return pl + (t / T) * bw; }
+      function sy(p) { return y1 - p * bh; }
+
+      // survival of contest P(min > t) = exp(-2 h t)
+      ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+      for (var i = 0; i <= 6; i++) {
+        var xx = sx((T / 6) * i);
+        ctx.beginPath(); ctx.moveTo(xx, pt); ctx.lineTo(xx, y1); ctx.stroke();
+        ctx.fillStyle = C.ink3; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(String(Math.round((T / 6) * i)), xx, y1 + 13);
+      }
+      ctx.fillStyle = C.ink2; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('对峙期数 t', pl + bw / 2, y1 + 31);
+
+      ctx.strokeStyle = C.blue; ctx.lineWidth = 2; ctx.beginPath();
+      for (var t = 0; t <= T; t += T / 200) {
+        var surv = Math.exp(-2 * h * t);
+        var X = sx(t), Y = sy(surv);
+        if (t === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = C.amber; ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(sx(dur), pt); ctx.lineTo(sx(dur), y1); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = C.amber; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('E[t]=' + r1(dur), sx(dur), pt + 12);
+
+      ctx.fillStyle = C.ink3; ctx.font = '11px sans-serif'; ctx.textAlign = 'right';
+      ctx.fillText('P(仍在对峙)', pl + bw, pt + 12);
+    }
+    bind(['firm_c', 'firm_pi'], upd);
+    upd();
+  })();
+
+  /* ── 4. Sunk cost illusion ── */
+  (function sunk() {
+    var vEl = $('sunk_v'), cEl = $('sunk_c'), lEl = $('sunk_l'), LEl = $('sunk_L');
+    if (!vEl || !cEl || !lEl || !LEl) return;
+    var cv = $('sunkChart');
+
+    function upd() {
+      var V = parseFloat(vEl.value), c = parseFloat(cEl.value);
+      var lam = parseFloat(lEl.value), L = parseFloat(LEl.value);
+      var rat = lam * V - c;
+      var fall = lam * V - c - L; // wrong: treat L as extra loss to "recover"
+      var decide = rat >= 0;
+      var decide2 = fall >= 0;
+
+      txt($('sunk_vO'), r1(V));
+      txt($('sunk_cO'), r1(c));
+      txt($('sunk_lO'), r2(lam));
+      txt($('sunk_LO'), String(Math.round(L)));
+      txt($('sunk_rat'), r2(rat));
+      txt($('sunk_fall'), r2(fall));
+      txt($('sunk_dec'), decide ? '续战' : '停止');
+      txt($('sunk_dec2'), decide2 ? '续战' : '停止');
+      tint($('sunk_dec'), decide ? C.green : C.red);
+      tint($('sunk_dec2'), decide2 ? C.amber : C.red);
+      tint($('sunk_rat'), decide ? C.green : C.red);
+
+      var msg = 'λV=' + r2(lam * V) + (decide ? ' ≥ ' : ' < ') + 'c=' + r1(c) +
+        ' → 理性' + (decide ? '续战' : '停止') + '；L=' + Math.round(L) +
+        ' 不改变该不等式' +
+        (decide !== decide2 ? '——若把 L 塞进公式会误判为' + (decide2 ? '续战' : '停止') : '');
+      txt($('sunk_vh'), msg);
+      tint($('sunk_vh'), decide !== decide2 ? C.red : (decide ? C.green : C.amber));
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var vals = [lam * V, c, L, rat];
+      var labs = ['λV 收益', '瞬时成本 c', '沉没 L(禁)', '理性 λV−c'];
+      var colors = [C.blue, C.amber, C.ink3, decide ? C.green : C.red];
+      var minV = Math.min(0, vals[0], vals[1], vals[2], vals[3]);
+      var maxV = Math.max(0.1, vals[0], vals[1], vals[2], vals[3]);
+      var span = maxV - minV || 1;
+      function sx(v) { return pl + ((v - minV) / span) * bw; }
+      var zeroX = sx(0);
+      var barH = 22, gap = 14;
+      var startY = pt + 16;
+
+      ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(zeroX, pt); ctx.lineTo(zeroX, y1); ctx.stroke();
+
+      for (var i = 0; i < 4; i++) {
+        var y = startY + i * (barH + gap);
+        var x0 = sx(0), x1 = sx(vals[i]);
+        ctx.globalAlpha = i === 2 ? 0.45 : 1;
+        ctx.fillStyle = colors[i];
+        ctx.fillRect(Math.min(x0, x1), y, Math.abs(x1 - x0) || 1, barH);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = C.ink; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText(labs[i], pl, y - 3);
+        clampLabel(ctx, r2(vals[i]), vals[i] >= 0 ? x1 + 8 : x1 - 8, y + barH / 2 + 4,
+          vals[i] >= 0 ? 'left' : 'right', pl, w);
+      }
+      ctx.fillStyle = C.ink3; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('续战只比较 λV 与 c；L 灰色表示禁止入式', pl + bw / 2, y1 + 31);
+    }
+    bind(['sunk_v', 'sunk_c', 'sunk_l', 'sunk_L'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
