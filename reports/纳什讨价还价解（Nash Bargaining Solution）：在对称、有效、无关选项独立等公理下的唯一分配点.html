@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>纳什讨价还价解（Nash Bargaining Solution） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Nash Bargaining × Cooperative Games</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>纳什讨价还价解（Nash Bargaining Solution）</h1>
+  <p class="sub">在<strong>对称、帕累托有效、无关选项独立、仿射不变</strong>四公理下，可行协议中最大化纳什乘积 \((u_1-d_1)(u_2-d_2)\) 的唯一分配点——从工资谈判到专利许可、转让定价。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>纳什讨价还价解（Nash bargaining solution, NBS）</strong>是二人讨价还价问题 ((S,d)) 上的<strong>唯一</strong>单值解：在紧凸可行集 (S) 与破裂点 (d) 下，它挑出最大化<strong>纳什乘积</strong>的协议</p>
+<p>[\max_{(u_1,u_2)\in S,\,u\ge d}\;(u_1-d_1)(u_2-d_2)]</p>
+<p>并被证明是同时满足<strong>帕累托有效（PO）、对称（SYM）、正仿射变换不变（INV）、无关选项独立（IIA）</strong>四公理的唯一映射。<span class="tag t-fact">事实</span></p>
+<p>John Nash 1950 年论文 <em>The Bargaining Problem</em>（<em>Econometrica</em>）给出公理刻画；1953 年又给出需求博弈的非合作极限解释。Harsanyi 指出它与 Zeuthen 的让步规则等价。<span class="tag t-fact">事实</span></p>
+<p>与相邻概念分工：<strong>纳什均衡</strong>问「策略是否互为最佳反应」；<strong>沙普利值</strong>问「多人合作剩余按边际怎么分」；NBS 问「<strong>两人</strong>在给定可行效用集与外部选项下，公理上应落在哪一点」。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「怎么开口要价」的话术，而是：给定双方能共同达到的效用集合 (S) 与达不成协议时的效用 (d)，有没有一套<strong>公理上唯一</strong>的规则，挑出协议点 (f(S,d)\in S)。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：二人合作讨价还价、公理解、广义纳什（不对称权重）、与 Rubinstein 交替出价的极限联系、与 Kalai–Smorodinsky（KS）对照。</li>
+<li><strong>在界外</strong>：多方联盟稳定（核）、特征函数多人分账（沙普利）、法庭判决措辞——除非压成 ((S,d)) 与解概念。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>二人如何唯一、公平地分配合作剩余</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「可行效用集 + 破裂点 + 公理解」为止；过程可另建非合作模型</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>(S,d)、纳什乘积、四公理、广义权重 (\tau)、乌托邦点</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>谈判双方；仲裁者/监管；旁观者（消费者、未入局第三方）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>破裂点、可行前沿形状、风险态度、贴现/破裂风险、议价力</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>合同价、分成比例、工资、许可费、成交区间</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实效用刻度、私下外部选项、对方耐心</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>(d)↑ → 己方份额↑；前沿扩张 → 双方都可能改善</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>四公理 ⇒ 唯一 NBS；δ→1 的交替出价 ⇒ 逼近 NBS<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「嗓门大」≠议价力；议价力应进 (d) 或 (\tau)，不是进口号<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>五五开、先开高价、僵局、仲裁</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>最大化超额效用乘积（几何上最大面积矩形）</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。份额不公 → 拒签/诉讼 → 改变有效 (S) 或 (d)</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。拖延本身折现剩余；Rubinstein 把耐心写进均衡</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>改善外部选项强化地位；虚假威胁若被识破则 (d) 回落</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>NBS 不问「谁更会吵架」，而问：在所有不低于破裂点的可行协议里，哪一点让双方<strong>超额效用的乘积</strong>最大——四条公理把它钉死。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它把「公平成交」钉成可复算点</h4><p>PO+SYM+INV+IIA ⇒ 唯一解；公式就是纳什乘积，白板可验。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它同时服务规范与预测</h4><p>既是仲裁基准，又在耐心趋于无限耐心时与交替出价 SPE 极限重合（Binmore–Rubinstein–Wolinsky 1986）。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它暴露「五五开」的陷阱</h4><p>分的是<strong>扣除双方外部选项后的剩余</strong>，不是总蛋糕；许可费案例里剩余可能只有 \$1，五五开后一方仍拿 \$8.5。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「50/50」当成 NBS，却忘了先减破裂点。专利诉讼里原告专家常引用纳什却只对总利润五五开——LESI 明确批评：应分的是合作收益减去双方保留收益后的<strong>剩余</strong>。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层从「破裂点」爬到「制度与多方扩展」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="nbArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度军备 · 仲裁规则 / 转让定价 / 反垄断纵向议价</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 实证与现场 · 工资合同 / 许可费 / 并购区间 / Nash-in-Nash</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 非合作基础 · Rubinstein 交替出价 · BRW 极限 · 需求博弈</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 跨域同构 · 几何平均 · 凯利/信道 · 风险分担</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 竞争解 · Kalai–Smorodinsky · 均等收益 · 核仁（多人）</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 经典算例 · 分蛋糕 · 许可剩余 · 非对称前沿 · 工资乘积</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 公理 · PO · SYM · INV · IIA（及对 IIA 的批评）</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 几何直觉 · 最大面积轴对齐矩形 · 纳什乘积等高线</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 原语 · 可行集 S（紧凸）+ 破裂点 d</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L1–L4</strong>：会画 (S)、标 (d)、手算线性前沿上的 NBS；进阶卡在 <strong>L5</strong> 与 <strong>L7</strong>——何时改用 KS，以及贴现因子如何映射到议价力。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从公理公平到可操作成交价。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="80" y="16" width="520" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">公理 → 纳什乘积最大化 → 合同价 / 分成 / 许可费</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">PO·SYM·INV·IIA</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">max (u−d) 乘积</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">价格·工资·特许费</text>
+
+  <line x1="280" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="180" width="180" height="70" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">S 与 d</text><text x="130" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">可行集·外部选项</text>
+  <rect x="250" y="180" width="180" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">NBS 点</text><text x="340" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">或广义 τ-Nash</text>
+  <rect x="460" y="180" width="180" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">成交映射</text><text x="550" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">效用→货币</text>
+
+  <line x1="130" y1="146" x2="130" y2="180" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="146" x2="340" y2="180" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="550" y1="146" x2="550" y2="180" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <path d="M220 215 H250" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <path d="M430 215 H460" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <text x="340" y="280" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">红虚线 = 反馈：拒签/诉讼 → 改 d 或改 S → 新的 NBS</text>
+  <text x="340" y="310" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">跨域同构：几何平均分配 · 风险中性下线性货币分剩余</text>
+  <text x="340" y="340" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">Nash 计划：公理解 ↔ 非合作极限（需求博弈 / 交替出价）</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>目标</th>
+<th>信息位置</th>
+<th>典型工具</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">买方 / 资方</td>
+<td>max 己方超额效用</td>
+<td>知己方 (d)，猜对方</td>
+<td>外部报价、拖延、BATNA</td>
+</tr>
+<tr>
+<td class="k">卖方 / 劳方</td>
+<td>max 己方超额效用</td>
+<td>对称</td>
+<td>罢工威胁、替代客户</td>
+</tr>
+<tr>
+<td class="k">仲裁者</td>
+<td>选「公理公平」点</td>
+<td>需双方披露 (S,d)</td>
+<td>NBS / KS / 均等收益</td>
+</tr>
+<tr>
+<td class="k">监管 / 税务</td>
+<td>独立交易原则、防利润转移</td>
+<td>可比交易稀缺时用议价模型</td>
+<td>转让定价中的 NBS<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">旁观者</td>
+<td>少承担外部性</td>
+<td>常被忽略</td>
+<td>消费者剩余、第三方效应</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号/度量</th>
+<th>为何关键</th>
+<th>杠杆方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">破裂点</td>
+<td>(d=(d_1,d_2))</td>
+<td>一切超额由此量</td>
+<td>改善 BATNA 直接抬份额</td>
+</tr>
+<tr>
+<td class="k">可行集</td>
+<td>(S) 紧凸</td>
+<td>决定前沿与乌托邦</td>
+<td>创造协同 = 扩大 (S)</td>
+</tr>
+<tr>
+<td class="k">纳什乘积</td>
+<td>((u_1-d_1)(u_2-d_2))</td>
+<td>目标函数</td>
+<td>在前沿上求切点</td>
+</tr>
+<tr>
+<td class="k">议价权重</td>
+<td>(\tau\in(0,1))</td>
+<td>广义纳什</td>
+<td>(\tau)↑ → 方 1 份额↑</td>
+</tr>
+<tr>
+<td class="k">贴现因子</td>
+<td>(\delta_i)</td>
+<td>Rubinstein 耐心</td>
+<td>(\delta\to1) → 逼近对称 NBS</td>
+</tr>
+<tr>
+<td class="k">乌托邦点</td>
+<td>(a(S,d))</td>
+<td>KS 用它</td>
+<td>个人最大值影响 KS，不影响 IIA 路径下的 NBS</td>
+</tr>
+<tr>
+<td class="k">风险态度</td>
+<td>效用凹性</td>
+<td>改变 (S) 形状</td>
+<td>更厌恶风险者常吃亏<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">货币转移</td>
+<td>可转移效用</td>
+<td>线性前沿 (u_1+u_2=\pi)</td>
+<td>此时 NBS = 均分剩余</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="40" width="120" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="80" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">BATNA / 技术</text>
+  <rect x="180" y="40" width="120" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="240" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">S 与 d</text>
+  <rect x="340" y="40" width="120" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="400" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">纳什乘积</text>
+  <rect x="500" y="40" width="140" height="50" rx="8" fill="#15181d"/><text x="570" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">NBS 协议</text>
+
+  <line x1="140" y1="65" x2="180" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="300" y1="65" x2="340" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="460" y1="65" x2="500" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+
+  <rect x="180" y="160" width="120" height="50" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="240" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">耐心 δ</text>
+  <rect x="340" y="160" width="120" height="50" rx="8" fill="#fee2e2" stroke="#d5342c"/><text x="400" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">拒签/拖延</text>
+  <rect x="500" y="160" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="570" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">再谈判</text>
+
+  <line x1="240" y1="90" x2="240" y2="160" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="400" y1="90" x2="400" y2="160" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="570" y1="90" x2="570" y2="160" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="300" y1="185" x2="340" y2="185" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+  <line x1="460" y1="185" x2="500" y2="185" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+
+  <path d="M570 210 Q340 280 80 90" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+  <text x="340" y="300" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">反馈：拖延消耗剩余 → 改变有效 δ 与 d → 新协议点</text>
+</svg>
+<p>因果链（实线）与反馈（红虚线）必须分清：</p>
+<ol>
+<li><strong>BATNA/协同 → ((S,d))</strong>：没有正剩余（个人理性集为空）就没有协议。<span class="tag t-ana">分析</span></li>
+<li><strong>((S,d)) → 乘积最大化 → NBS</strong>：公理钉死映射。<span class="tag t-fact">事实</span></li>
+<li><strong>耐心/破裂风险 → 非合作份额</strong>：再映射回广义纳什权重。<span class="tag t-fact">事实</span></li>
+<li><strong>反馈</strong>：拒签改变威胁点；拖延折现蛋糕。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>IIA 与「全局选项」张力</strong>：缩小可行集若砍掉对方乌托邦，NBS 可能不变——Kalai–Smorodinsky (1975) 据此换公理。<span class="tag t-fact">事实</span></li>
+<li><strong>效用刻度假装客观</strong>：INV 说仿射变换不改解，但把「货币」当效用时，风险态度已被藏进 (S)。<span class="tag t-ana">分析</span></li>
+<li><strong>五五开幻觉</strong>：对称 + 可转移效用 ⇒ 均分<strong>剩余</strong>；若 (d) 不对称，绝对份额也不对称。<span class="tag t-inf">推论</span></li>
+<li><strong>与沙普利的同构</strong>：二人 TU 下，NBS 均分剩余 (\Leftrightarrow) 沙普利（两人时边际贡献平均）。<span class="tag t-inf">推论</span></li>
+<li><strong>Nash-in-Nash</strong>：多方双边议价里「每对 NBS + 对其他对取纳什」成了实证产业组织常用简约式（Collard-Wexler et al.）。<span class="tag t-ana">分析</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="30" y="30" width="140" height="70" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="100" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">披露 / 估计</text><text x="100" y="80" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">Ŝ, d̂</text>
+  <rect x="200" y="30" width="140" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="270" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">选解概念</text><text x="270" y="80" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">NBS / KS / τ</text>
+  <rect x="370" y="30" width="140" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="440" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">算协议点</text><text x="440" y="80" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">u* → 价格</text>
+  <rect x="540" y="30" width="110" height="70" rx="8" fill="#15181d"/><text x="595" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">签约</text>
+  <line x1="170" y1="65" x2="200" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="340" y1="65" x2="370" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <line x1="510" y1="65" x2="540" y2="65" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#flA)"/>
+  <rect x="120" y="150" width="440" height="70" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/>
+  <text x="340" y="180" text-anchor="middle" fill="#15181d" font-size="13" font-family="sans-serif">运行约束：个人理性 u≥d · 帕累托前沿 · 效用可比仅到仿射</text>
+  <text x="340" y="202" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">失败模式：虚报 d · 误把总利润当剩余 · 用错 IIA/IM 语境</text>
+</svg>
+<p>系统稳态：双方接受 (u^*)，没有单方能在可行集内同时改善自己且不损对方（弱帕累托）。扰动来自 (d) 的重新评估与 (S) 的技术冲击。</p>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#e2e6ec" stroke-width="3"/>
+  <circle cx="80" cy="100" r="8" fill="#0f8a4d"/><text x="80" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1950 公理</text>
+  <circle cx="200" cy="100" r="8" fill="#1d4ed8"/><text x="200" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1953 需求博弈</text>
+  <circle cx="320" cy="100" r="8" fill="#b8730a"/><text x="320" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1975 KS</text>
+  <circle cx="440" cy="100" r="8" fill="#1d4ed8"/><text x="440" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1982 Rubinstein</text>
+  <circle cx="560" cy="100" r="8" fill="#15181d"/><text x="560" y="70" text-anchor="middle" fill="#fff" font-size="11" font-family="sans-serif"></text>
+  <text x="560" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1986 BRW</text>
+  <text x="340" y="150" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">公理 → 批评与替代 → 非合作微观基础 → 应用建模指南</text>
+  <text x="340" y="175" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">之后：不对称纳什、Nash-in-Nash、实验检验 IIA vs IM</text>
+</svg>
+<p>短周期：一轮谈判里，提议—拒绝—折现。长周期：产业里议价制度（强制仲裁、冷却期）改变有效 (\delta) 与 (d)。</p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>激励</th>
+<th>扭曲风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">强 BATNA 方</td>
+<td>抬高 (d) 逼份额</td>
+<td>虚报外部选项</td>
+</tr>
+<tr>
+<td class="k">弱方</td>
+<td>寻求仲裁/监管保护</td>
+<td>过度依赖「公平」口号而无数字</td>
+</tr>
+<tr>
+<td class="k">代理人（律师/投行）</td>
+<td>按成交或按争议收费</td>
+<td>拖延耗剩余</td>
+</tr>
+<tr>
+<td class="k">税务当局</td>
+<td>防利润转移</td>
+<td>机械套 NBS 忽视可比法<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>线性货币、风险中性时：激励兼容的核心是<strong>诚实披露 (d)</strong>——而这正是机制设计要另做的事；NBS 本身不解决谎报。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 240" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="resA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="resB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="40" y="40" width="160" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="120" y="75" text-anchor="middle" fill="#15181d" font-size="13" font-family="sans-serif">合作剩余池 π</text>
+  <rect x="260" y="20" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="330" y="50" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">方1：d₁+份额</text>
+  <rect x="260" y="90" width="140" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="330" y="120" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">方2：d₂+份额</text>
+  <rect x="460" y="40" width="160" height="60" rx="8" fill="#fee2e2" stroke="#d5342c"/><text x="540" y="75" text-anchor="middle" fill="#15181d" font-size="13" font-family="sans-serif">谈判成本/拖延</text>
+  <line x1="200" y1="60" x2="260" y2="45" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#resA)"/>
+  <line x1="200" y1="80" x2="260" y2="115" stroke="#b8730a" stroke-width="1.5" marker-end="url(#resA)"/>
+  <path d="M400 45 Q500 0 540 40" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#resB)"/>
+  <text x="340" y="190" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">信息流：BATNA 证据 · 协同测算 · 效用/风险偏好（常缺失）</text>
+  <text x="340" y="215" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">抽水：信息不对称租金、代理费、时间折现——缩小可分剩余</text>
+</svg>
+<p>资源流的关键不对称：谁掌握「外部选项可验证证据」，谁就能合法上移 (d)。信息流若断裂，双方在错误的 ((S,d)) 上算「公平」，签约后才发现剩余为负。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>写清并抬高真实 BATNA</td>
+<td>(d) 一阶决定份额</td>
+<td>备选报价书面化</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>先算剩余再谈比例</td>
+<td>避免五五开总利润</td>
+<td>一页剩余表</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>创造协同扩大 (S)</td>
+<td>做大蛋糕双方可改善</td>
+<td>联合成本/收入模型</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>选对解概念（NBS vs KS）</td>
+<td>IIA 争议场景改 KS</td>
+<td>看乌托邦是否被砍</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>用 (\tau) 编码不对称力</td>
+<td>比空谈「强势」可复算</td>
+<td>由 δ 或制度校准</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>缩短回合间隔</td>
+<td>δ→1 时份额趋于对称 NBS</td>
+<td>冷却期/截止时钟设计</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>可验证披露</td>
+<td>降低谎报 (d)</td>
+<td>第三方审计、托管</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>风险分担条款</td>
+<td>改变有效效用前沿</td>
+<td>或有支付、里程碑</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>仲裁条款预载解</td>
+<td>事前承诺减少事中扯皮</td>
+<td>合同写「按 NBS 仲裁」</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>多方时谨慎套用</td>
+<td>Nash-in-Nash 有微观条件</td>
+<td>读 Collard-Wexler 等</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱1：把总利润五五开叫「纳什」</summary><div class="dbody"><p>错。应分 (π-d_1-d_2)。许可例：总利 \$10，保留 \$8+\$1，剩余 \$1 → \$8.5 / \$1.5，不是 \$5/\$5。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱2：忽略破裂点不对称</summary><div class="dbody"><p>(d=(2,1))、蛋糕 10 → NBS 为 <strong>5.5 / 4.5</strong>，不是 5/5。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>陷阱3：把 NBS 当「谈判一定会到的点」</summary><div class="dbody"><p>它是公理/极限基准；现实有行为偏差、不完全信息、代理问题。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱4：效用与货币混用却忘风险态度</summary><div class="dbody"><p>凹效用使前沿弯曲，均分货币 ≠ 均分效用。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱5：迷信 IIA「砍掉无关选项不影响」</summary><div class="dbody"><p>若砍的是对方最佳期望，实验与 KS 理论都质疑其规范性。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱6：用嗓门代理议价力</summary><div class="dbody"><p>议价力应进入 (d) 或 (\tau)；嗓门只是廉价谈话。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱7：多人场景直接两两 NBS 却无视外部性</summary><div class="dbody"><p>需 Nash-in-Nash 或合作解；随意两两乘积可能不一致。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱8：把 Rubinstein 先手优势当成永久特权</summary><div class="dbody"><p>δ→1 时先手优势消失，逼近对称 NBS。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱9：转让定价机械套 NBS 替代可比法</summary><div class="dbody"><p>可比交易优先；NBS 是稀缺可比时的辅助/复核。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱10：以为对称公理要求「人一样强」</summary><div class="dbody"><p>对称是「问题本身对称则解对称」；问题不对称时解也不对称。<span class="tag t-fact">事实</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>机制</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">((S,d))</td>
+<td>可行效用与威胁点</td>
+<td>列出成交区间与 BATNA 现金流</td>
+</tr>
+<tr>
+<td class="k">纳什乘积</td>
+<td>几何平均公平</td>
+<td>电子表格最大化 ((u_1-d_1)(u_2-d_2))</td>
+</tr>
+<tr>
+<td class="k">IIA</td>
+<td>局部无关选项</td>
+<td>问：砍掉的选项是否改变「期望锚」？</td>
+</tr>
+<tr>
+<td class="k">(\tau)-Nash</td>
+<td>加权乘积</td>
+<td>用相对耐心或制度权重校准</td>
+</tr>
+<tr>
+<td class="k">BRW 极限</td>
+<td>交替出价→公理解</td>
+<td>用 δ 解释为何接近五五剩余</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>建表</strong>：合作总价值、各方单干价值、可分剩余。  </li>
+<li><strong>算点</strong>：对称 NBS 与（如有）不对称 (\tau)。  </li>
+<li><strong>对照</strong>：KS（看乌托邦）、均分总蛋糕（暴露陷阱）。  </li>
+<li><strong>映射货币</strong>：把 (u^*) 译成价格/工资/费率。  </li>
+<li><strong>压力测试</strong>：(d) ±10%、π ±10%，看份额弹性。  </li>
+<li><strong>写入流程</strong>：下次谈判议程第一项是「核对剩余表」，不是「先喊价」。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>主干 A · 公理与公式</summary><div class="dbody"><p>四公理、存在唯一、纳什乘积、矩形几何。</p></div></details>
+<details><summary>主干 B · 算例手算</summary><div class="dbody"><p>线性前沿、许可剩余、工资乘积、非对称二次前沿。</p></div></details>
+<details><summary>主干 C · 竞争解</summary><div class="dbody"><p>KS、均等收益增益、独裁解；何时换轨。</p></div></details>
+<details><summary>主干 D · 非合作基础</summary><div class="dbody"><p>Rubinstein、BRW、需求博弈；δ 与 (\tau) 对照。</p></div></details>
+<details><summary>主干 E · 应用翻译</summary><div class="dbody"><p>许可、并购、工资、转让定价、双边寡头。</p></div></details>
+<details><summary>主干 F · 批评与边界</summary><div class="dbody"><p>IIA 争议、实验、多人扩展、激励相容缺口。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>把谈判当成合作副本：(d) 是「不组队时的单刷收益」，(S) 是组队可达成的奖励集合。NBS 不是把 Boss 掉落五五开，而是先各自拿走单刷保底，再把<strong>多出来的那部分</strong>按乘积最大来分。虚报单刷收益 = 伪造装备评分，仲裁者（副本规则）若信了，队友会退队——剩余归零。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>产出</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 线性分蛋糕</td>
+<td>π,d → NBS</td>
+<td>默认 10;(2,1)→5.5/4.5</td>
+</tr>
+<tr>
+<td class="k">T2 许可剩余</td>
+<td>保留收益表</td>
+<td>8.5/1.5</td>
+</tr>
+<tr>
+<td class="k">T3 二次前沿</td>
+<td>NBS vs KS</td>
+<td>≈0.577/0.667 vs 0.618/0.618</td>
+</tr>
+<tr>
+<td class="k">T4 Rubinstein</td>
+<td>δ→份额</td>
+<td>δ=0.9→先手≈52.6%</td>
+</tr>
+<tr>
+<td class="k">T5 现实拆解</td>
+<td>一份合同</td>
+<td>标出隐含 (S,d)</td>
+</tr>
+<tr>
+<td class="k">T6 对照陷阱</td>
+<td>五五总利 vs NBS</td>
+<td>写出差额</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>四个可调模型：剩余分割、不对称权重、Nash vs KS、Rubinstein 耐心。</p>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">模型1 剩余分割（经典 NBS）</button><button class="tab" data-pane="tb1-1">模型2 广义纳什（议价权重 τ）</button><button class="tab" data-pane="tb1-2">模型3 Nash vs Kalai–Smorodinsky</button><button class="tab" data-pane="tb1-3">模型4 Rubinstein 耐心 → 纳什极限</button></div>
+<div class="pane on" id="tb1-0"><p>可转移效用：总蛋糕 <code>π</code>，破裂点 <code>d₁,d₂</code>。剩余 (s=π-d_1-d_2)（须 ≥0）。对称 NBS：<strong>(d_1+s/2)</strong> 与 <strong>(d_2+s/2)</strong>。默认 π=10, d=(2,1) → <strong>5.50 / 4.50</strong>，乘积 <strong>12.25</strong>。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool-sp">
+  <div class="ctrl">
+    <label>总蛋糕 π <output id="sp_piO">10</output></label>
+    <input type="range" id="sp_pi" min="1" max="40" step="0.5" value="10"/>
+    <label>破裂点 d₁ <output id="sp_d1O">2</output></label>
+    <input type="range" id="sp_d1" min="0" max="20" step="0.5" value="2"/>
+    <label>破裂点 d₂ <output id="sp_d2O">1</output></label>
+    <input type="range" id="sp_d2" min="0" max="20" step="0.5" value="1"/>
+  </div>
+  <div class="readout">
+    <div class="ro">剩余 s <b id="sp_s">7.00</b></div>
+    <div class="ro">方1 / 方2 <b id="sp_u">5.50 / 4.50</b></div>
+    <div class="ro">纳什乘积 <b id="sp_prod">12.25</b></div>
+    <div class="ro">五五总蛋糕对照 <b id="sp_half">5.00 / 5.00</b></div>
+    <div id="sp_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="spChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-1"><p>最大化 ((u_1-d_1)^\tau(u_2-d_2)^{1-\tau})。线性前沿上：方1拿 (d_1+\tau\cdot s)。默认 π=10,d=(2,1),τ=0.67 → 约 <strong>6.69 / 3.31</strong>。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool-gn">
+  <div class="ctrl">
+    <label>总蛋糕 π <output id="gn_piO">10</output></label>
+    <input type="range" id="gn_pi" min="1" max="40" step="0.5" value="10"/>
+    <label>d₁ <output id="gn_d1O">2</output></label>
+    <input type="range" id="gn_d1" min="0" max="20" step="0.5" value="2"/>
+    <label>d₂ <output id="gn_d2O">1</output></label>
+    <input type="range" id="gn_d2" min="0" max="20" step="0.5" value="1"/>
+    <label>方1 权重 τ <output id="gn_tO">0.67</output></label>
+    <input type="range" id="gn_t" min="0.05" max="0.95" step="0.01" value="0.67"/>
+  </div>
+  <div class="readout">
+    <div class="ro">方1 / 方2 <b id="gn_u">6.69 / 3.31</b></div>
+    <div class="ro">剩余中方1占比 <b id="gn_share">67%</b></div>
+    <div class="ro">对称对照 τ=0.5 <b id="gn_sym">5.50 / 4.50</b></div>
+    <div class="ro">加权乘积 <b id="gn_prod">—</b></div>
+    <div id="gn_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="gnChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-2"><p>前沿 (u_2=1-u_1^2)（(u_1\in[0,1])），(d=(0,0))。NBS ≈ <strong>0.577 / 0.667</strong>（乘积≈0.385）；KS 沿乌托邦对角线得 <strong>0.618 / 0.618</strong>。可调曲率 (k)：(u_2=1-u_1^k)。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool-ks">
+  <div class="ctrl">
+    <label>前沿指数 k <output id="ks_kO">2.0</output></label>
+    <input type="range" id="ks_k" min="1.2" max="4" step="0.1" value="2"/>
+  </div>
+  <div class="readout">
+    <div class="ro">Nash u₁/u₂ <b id="ks_n">0.577 / 0.667</b></div>
+    <div class="ro">KS u₁/u₂ <b id="ks_ks">0.618 / 0.618</b></div>
+    <div class="ro">Nash 乘积 <b id="ks_np">0.385</b></div>
+    <div class="ro">|Δu₁| <b id="ks_du">0.041</b></div>
+    <div id="ks_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="ksChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-3"><p>双方贴现 (\delta_1,\delta_2)。方1先手均衡份额 ((1-\delta_2)/(1-\delta_1\delta_2))。δ₁=δ₂=0.9 → <strong>0.526</strong>；δ→1 → <strong>0.5</strong>（对称 NBS）。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="tool-rb">
+  <div class="ctrl">
+    <label>方1 贴现 δ₁ <output id="rb_d1O">0.90</output></label>
+    <input type="range" id="rb_d1" min="0.50" max="0.99" step="0.01" value="0.90"/>
+    <label>方2 贴现 δ₂ <output id="rb_d2O">0.90</output></label>
+    <input type="range" id="rb_d2" min="0.50" max="0.99" step="0.01" value="0.90"/>
+  </div>
+  <div class="readout">
+    <div class="ro">方1 先手份额 <b id="rb_x">0.526</b></div>
+    <div class="ro">方2 份额 <b id="rb_y">0.474</b></div>
+    <div class="ro">对称 NBS 对照 <b id="rb_nbs">0.500</b></div>
+    <div class="ro">|先手−0.5| <b id="rb_gap">0.026</b></div>
+    <div id="rb_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="rbChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>验收动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识骨</td>
+<td>能陈述四公理与乘积公式</td>
+<td>对外讲清「不是总蛋糕五五开」</td>
+</tr>
+<tr>
+<td class="k">L2 算账</td>
+<td>会算线性/许可/二次前沿</td>
+<td>模型默认值口述对</td>
+</tr>
+<tr>
+<td class="k">L3 对照</td>
+<td>会比 KS、Rubinstein、τ-Nash</td>
+<td>指出案例该用哪种</td>
+</tr>
+<tr>
+<td class="k">L4 设计</td>
+<td>能建剩余表 + 选解 + 写进合同附件</td>
+<td>同事可按说明复算</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一场真实二人谈判（房租续约、项目分成、二手成交）。  </li>
+<li>写出各方 BATNA（年化或一次性现金）与合作总价值。  </li>
+<li>用模型 1 算 NBS，并与「总价五五开」并排。  </li>
+<li>若一方明显更有耐心/制度优势，用模型 2 试 τ=0.6–0.7。  </li>
+<li>产出：一页「剩余表 + NBS + 五五差 + 一句下一步要价」。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>公理与乘积几何</td>
+<td>手绘矩形</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>线性 + 许可算例</td>
+<td>两张表</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>KS 对照</td>
+<td>二次前沿图</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>Rubinstein</td>
+<td>δ 扫描笔记</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>工资/并购一篇翻译</td>
+<td>隐含 (d)</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>IIA 批评精读</td>
+<td>半页立场</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘最小实践</td>
+<td>修订剩余表</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>公式与经典算例</td>
+<td>四个模型默认值倒背</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>竞争解与实验</td>
+<td>NBS vs KS 一页对照</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>非合作基础</td>
+<td>BRW 论点口述</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>领域落地</td>
+<td>选许可或合伙写完整附件</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>纳什乘积</td>
+<td>(\max(u_1-d_1)(u_2-d_2))</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>四公理刻画</td>
+<td>PO·SYM·INV·IIA ⇒ 唯一 NBS</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>广义纳什</td>
+<td>权重 (\tau) 编码议价力</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>可转移效用特例</td>
+<td>均分剩余 (s=π-d_1-d_2)</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>Kalai–Smorodinsky</td>
+<td>用个人单调性替换 IIA</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>Rubinstein 交替出价</td>
+<td>SPE 份额由贴现决定</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>BRW 极限</td>
+<td>短回合 → 逼近 NBS</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>Zeuthen–Harsanyi</td>
+<td>让步规则与 NBS 等价</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>需求博弈（Nash 1953）</td>
+<td>不确定可行集时的非合作极限</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>Nash-in-Nash</td>
+<td>多对双边议价的应用简约式</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 纳什讨价还价解和纳什均衡是一回事吗？</summary><div class="dbody"><p>不是。纳什均衡是策略互为最佳反应；NBS 是合作讨价还价的公理分配点。二者可通过「纳什计划」联系，但解概念不同。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q2 为什么一定要 IIA？</summary><div class="dbody"><p>它保证「大集合里选中的点，在缩小后仍含该点的子集里仍被选中」。仲裁语境下自然；描述真实议价时争议大，KS 用个人单调性替换它。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q3 什么时候用 KS 而不是 NBS？</summary><div class="dbody"><p>当「对方最佳期望被砍掉却份额不变」让你觉得不公时；或实验/规范上更重视乌托邦比例。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q4 不对称权重 τ 从哪来？</summary><div class="dbody"><p>可从相对贴现、破裂风险、制度议价力估计；也可由事后校准。需披露，避免事后调参。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q5 和沙普利值怎么选？</summary><div class="dbody"><p>二人 TU 剩余分配二者常重合；三人及以上有外部联盟时优先合作博弈工具（沙普利/核）。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q6 效用不能比怎么办？</summary><div class="dbody"><p>INV 只允许仿射；若只观测货币，需假设风险中性或显式建模效用。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q7 先手一定赚更多吗？</summary><div class="dbody"><p>有限耐心下是；δ→1 时先手优势趋于 0。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q8 转让定价能直接用 NBS 定特许费吗？</summary><div class="dbody"><p>可作稀缺可比时的参考/复核，不能替代法定可比方法与文档义务。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q9 多方并购怎么用？</summary><div class="dbody"><p>简单两两 NBS 可能忽略交叉外部性；需联盟价值或 Nash-in-Nash 类结构。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q10 合同里怎么写？</summary><div class="dbody"><p>可写「争议时由仲裁员根据附件剩余表按纳什乘积最大化确定分成；破裂点以附件 BATNA 证据为准」。<span class="tag t-inf">推论</span></p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>实验讨价还价：IIA vs 个人单调性的实验室证据。  </li>
+<li>不完全信息讨价还价与推迟协议。  </li>
+<li>NTU（不可转移效用）讨价还价解族。  </li>
+<li>随机破裂风险模型与时间偏好模型的对照（BRW）。  </li>
+<li>纵向结构中的 Nash-in-Nash 实证（医院—保险、制造商—零售）。  </li>
+<li>与「核」「核仁」在多人剩余分配上的分工。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">四公理与纳什乘积</td>
+<td>经典论文</td>
+<td>Nash 1950, <em>The Bargaining Problem</em>, Econometrica 18(2)</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">需求博弈极限</td>
+<td>经典论文</td>
+<td>Nash 1953, <em>Two-Person Cooperative Games</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">KS 替代公理</td>
+<td>期刊</td>
+<td>Kalai &amp; Smorodinsky 1975, <em>Econometrica</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">交替出价 SPE</td>
+<td>期刊</td>
+<td>Rubinstein 1982</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">公理↔策略极限</td>
+<td>期刊</td>
+<td>Binmore, Rubinstein &amp; Wolinsky 1986, <em>RAND J. Econ.</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Zeuthen 等价</td>
+<td>综述/经典</td>
+<td>Harsanyi 对 Zeuthen 的整理</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">许可剩余五五开误用</td>
+<td>行业文</td>
+<td>LESI <em>The Nash Bargaining Solution</em></td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">转让定价应用</td>
+<td>专业分析</td>
+<td>Tax Notes 等转让定价讨论文</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">Nash-in-Nash 微观基础</td>
+<td>工作论文</td>
+<td>Collard-Wexler, Gowrisankaran, Lee (NBER w20641)</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">工资乘积有效合同</td>
+<td>教科书表述</td>
+<td>工会—厂商 ((U-U_0)(P-P_0))</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">本手册默认数值</td>
+<td>推演</td>
+<td>node 验算</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或原始定义；<span class="tag t-ana">分析</span>权威推导或机构判断；<span class="tag t-inf">推论</span>由模型推出；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单篇算例或转引链过长。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与实践框架，<strong>不构成</strong>投资、法律、税务、劳动争议或监管合规建议。纳什讨价还价解是规范/极限基准，不保证现实谈判结果。许可费、转让定价、并购估值等场景的数字多为教学推演或公开二手讨论，落地前须用自有数据与合格专业意见复核。互动模型中的默认参数仅为演示。</p>
+</section>
+<footer>  <p>《纳什讨价还价解（Nash Bargaining Solution） · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 8 分 9 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《纳什讨价还价解（Nash Bargaining Solution）》主题脚本
+   四个可调模型：
+     1. 剩余分割（经典对称 NBS）
+     2. 广义纳什（权重 τ）
+     3. Nash vs Kalai–Smorodinsky
+     4. Rubinstein 耐心 → 纳什极限
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t && t.classList && t.classList.contains('tab')) setTimeout(fn, 40);
+    });
+    window.addEventListener('resize', function () { setTimeout(fn, 40); });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, items, ymin, ymax) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    if (ymin == null || ymax == null) {
+      var vs = items.map(function (x) { return x.v; });
+      ymin = Math.min.apply(null, vs.concat([0])) - 0.02;
+      ymax = Math.max.apply(null, vs.concat([0])) + 0.02;
+      if (ymax <= ymin) { ymax = ymin + 1; }
+    }
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (items.length * 1.45);
+    var span = ymax - ymin || 1;
+    items.forEach(function (it, i) {
+      var x = pl + (i + 0.5) * (bw / items.length) - barW / 2;
+      var y = y1 - ((it.v - ymin) / span) * bh;
+      var zeroY = y1 - ((0 - ymin) / span) * bh;
+      var top = Math.min(y, zeroY), bot = Math.max(y, zeroY);
+      ctx.fillStyle = it.c;
+      ctx.fillRect(x, top, barW, Math.max(2, bot - top));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+      var lab = (typeof it.v === 'number' ? it.v.toFixed(it.dp != null ? it.dp : 2) : String(it.v));
+      var lw = ctx.measureText(lab).width;
+      var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 2), w - pr - lw / 2 - 2);
+      ctx.fillText(lab, lx, top - 6);
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(items._axis || '效用 / 份额', pl + bw, y1 + 31);
+  }
+
+  function fmt2(x) { return (Math.round(x * 100) / 100).toFixed(2); }
+  function fmt3(x) { return (Math.round(x * 1000) / 1000).toFixed(3); }
+
+  /* ---- 1. Surplus split ---- */
+  function updSp() {
+    var pi = +$('sp_pi').value, d1 = +$('sp_d1').value, d2 = +$('sp_d2').value;
+    txt($('sp_piO'), pi.toFixed(1));
+    txt($('sp_d1O'), d1.toFixed(1));
+    txt($('sp_d2O'), d2.toFixed(1));
+    var s = pi - d1 - d2;
+    var ok = s >= -1e-9;
+    if (!ok) s = 0;
+    var u1 = d1 + s / 2, u2 = d2 + s / 2;
+    var prod = (u1 - d1) * (u2 - d2);
+    txt($('sp_s'), fmt2(s));
+    txt($('sp_u'), fmt2(u1) + ' / ' + fmt2(u2));
+    txt($('sp_prod'), fmt2(prod));
+    txt($('sp_half'), fmt2(pi / 2) + ' / ' + fmt2(pi / 2));
+    var vh = $('sp_vh');
+    if (!ok) {
+      txt(vh, '剩余为负：个人理性集为空，无协议');
+      tint(vh, C.red);
+    } else {
+      var gap = Math.abs(u1 - pi / 2);
+      txt(vh, '判定：均分剩余（非总蛋糕）· 相对五五总价偏差 ' + fmt2(gap));
+      tint(vh, gap > 0.05 ? C.amber : C.green);
+    }
+    bars($('spChart'), [
+      { lab: '方1 NBS', v: u1, c: C.blue, dp: 2 },
+      { lab: '方2 NBS', v: u2, c: C.amber, dp: 2 },
+      { lab: '方1 五五总', v: pi / 2, c: '#93c5fd', dp: 2 },
+      { lab: '方2 五五总', v: pi / 2, c: '#fcd34d', dp: 2 }
+    ], 0, Math.max(pi, u1, u2) * 1.05);
+  }
+
+  /* ---- 2. Generalized Nash ---- */
+  function updGn() {
+    var pi = +$('gn_pi').value, d1 = +$('gn_d1').value, d2 = +$('gn_d2').value, t = +$('gn_t').value;
+    txt($('gn_piO'), pi.toFixed(1));
+    txt($('gn_d1O'), d1.toFixed(1));
+    txt($('gn_d2O'), d2.toFixed(1));
+    txt($('gn_tO'), t.toFixed(2));
+    var s = pi - d1 - d2;
+    var ok = s >= -1e-9;
+    if (!ok) s = 0;
+    var u1 = d1 + t * s, u2 = d2 + (1 - t) * s;
+    var e1 = Math.max(u1 - d1, 0), e2 = Math.max(u2 - d2, 0);
+    var wprod = (e1 > 0 && e2 > 0) ? Math.pow(e1, t) * Math.pow(e2, 1 - t) : 0;
+    var s1 = d1 + 0.5 * s, s2 = d2 + 0.5 * s;
+    txt($('gn_u'), fmt2(u1) + ' / ' + fmt2(u2));
+    txt($('gn_share'), Math.round(t * 100) + '%');
+    txt($('gn_sym'), fmt2(s1) + ' / ' + fmt2(s2));
+    txt($('gn_prod'), fmt3(wprod));
+    var vh = $('gn_vh');
+    if (!ok) {
+      txt(vh, '剩余为负：无协议');
+      tint(vh, C.red);
+    } else {
+      txt(vh, '判定：τ=' + t.toFixed(2) + ' → 方1多拿剩余的 ' + Math.round(t * 100) + '%');
+      tint(vh, Math.abs(t - 0.5) > 0.15 ? C.amber : C.green);
+    }
+    bars($('gnChart'), [
+      { lab: '方1 τ-Nash', v: u1, c: C.blue, dp: 2 },
+      { lab: '方2 τ-Nash', v: u2, c: C.amber, dp: 2 },
+      { lab: '方1 对称', v: s1, c: '#93c5fd', dp: 2 },
+      { lab: '方2 对称', v: s2, c: '#fcd34d', dp: 2 }
+    ], 0, Math.max(pi, u1, u2) * 1.05);
+  }
+
+  /* ---- 3. Nash vs KS ---- */
+  function nashOnPower(k) {
+    // max u * (1-u^k), u in [0,1]
+    var best = -1, bu = 0, bv = 0;
+    for (var i = 0; i <= 10000; i++) {
+      var u = i / 10000;
+      var v = 1 - Math.pow(u, k);
+      if (v < 0) continue;
+      var p = u * v;
+      if (p > best) { best = p; bu = u; bv = v; }
+    }
+    return { u: bu, v: bv, p: best };
+  }
+  function ksOnPower(k) {
+    // utopia (1,1), line v=u; intersect u = 1 - u^k
+    // solve u^k + u - 1 = 0
+    var lo = 0, hi = 1;
+    for (var it = 0; it < 60; it++) {
+      var mid = (lo + hi) / 2;
+      if (Math.pow(mid, k) + mid - 1 > 0) hi = mid; else lo = mid;
+    }
+    var u = (lo + hi) / 2;
+    return { u: u, v: u };
+  }
+  function updKs() {
+    var k = +$('ks_k').value;
+    txt($('ks_kO'), k.toFixed(1));
+    var n = nashOnPower(k);
+    var ks = ksOnPower(k);
+    txt($('ks_n'), fmt3(n.u) + ' / ' + fmt3(n.v));
+    txt($('ks_ks'), fmt3(ks.u) + ' / ' + fmt3(ks.v));
+    txt($('ks_np'), fmt3(n.p));
+    txt($('ks_du'), fmt3(Math.abs(n.u - ks.u)));
+    var vh = $('ks_vh');
+    var du = Math.abs(n.u - ks.u);
+    txt(vh, du < 0.01 ? '判定：两解几乎重合' : '判定：IIA 路径(Nash)与乌托邦比例(KS)分叉 Δu₁=' + fmt3(du));
+    tint(vh, du < 0.01 ? C.green : C.amber);
+
+    // chart: curve + two points as bars for u1 comparison + products sense
+    var g = fit($('ksChart'), 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 44, pr = 16, pt = 20, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    // draw frontier
+    ctx.strokeStyle = C.grid;
+    ctx.beginPath();
+    for (var gi = 0; gi <= 4; gi++) {
+      var yy = pt + (bh * gi) / 4;
+      ctx.moveTo(pl, yy); ctx.lineTo(pl + bw, yy);
+    }
+    ctx.stroke();
+    ctx.strokeStyle = C.blue;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (var i = 0; i <= 200; i++) {
+      var u = i / 200;
+      var v = 1 - Math.pow(u, k);
+      var x = pl + u * bw;
+      var y = y1 - v * bh;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    // utopia diagonal
+    ctx.strokeStyle = C.amber;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(pl, y1);
+    ctx.lineTo(pl + bw, pt);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // points
+    function dot(u, v, col, lab) {
+      var x = pl + u * bw, y = y1 - v * bh;
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      var labx = Math.min(x + 8, pl + bw - 40);
+      ctx.fillText(lab, labx, y - 8);
+    }
+    dot(n.u, n.v, C.blue, 'Nash');
+    dot(ks.u, ks.v, C.amber, 'KS');
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('u₁ →', pl + bw / 2, y1 + 13);
+    ctx.textAlign = 'right';
+    ctx.fillText('前沿 u₂=1−u₁^k · 虚线=乌托邦对角', pl + bw, y1 + 31);
+  }
+
+  /* ---- 4. Rubinstein ---- */
+  function updRb() {
+    var d1 = +$('rb_d1').value, d2 = +$('rb_d2').value;
+    txt($('rb_d1O'), d1.toFixed(2));
+    txt($('rb_d2O'), d2.toFixed(2));
+    var den = 1 - d1 * d2;
+    var x = den > 1e-12 ? (1 - d2) / den : 0.5;
+    var y = 1 - x;
+    txt($('rb_x'), fmt3(x));
+    txt($('rb_y'), fmt3(y));
+    txt($('rb_nbs'), '0.500');
+    txt($('rb_gap'), fmt3(Math.abs(x - 0.5)));
+    var vh = $('rb_vh');
+    var gap = Math.abs(x - 0.5);
+    txt(vh, gap < 0.02 ? '判定：接近对称 NBS（短回合/高耐心极限）' : '判定：耐心差或有限 δ 造成先手偏离 0.5');
+    tint(vh, gap < 0.02 ? C.green : C.amber);
+    bars($('rbChart'), [
+      { lab: '方1 SPE', v: x, c: C.blue, dp: 3 },
+      { lab: '方2 SPE', v: y, c: C.amber, dp: 3 },
+      { lab: '对称 NBS', v: 0.5, c: C.green, dp: 3 }
+    ], 0, 1);
+  }
+
+  function all() { updSp(); updGn(); updKs(); updRb(); }
+  bind(['sp_pi', 'sp_d1', 'sp_d2'], updSp);
+  bind(['gn_pi', 'gn_d1', 'gn_d2', 'gn_t'], updGn);
+  bind(['ks_k'], updKs);
+  bind(['rb_d1', 'rb_d2'], updRb);
+  all();
+})();
+</script>
+</body>
+</html>
