@@ -921,11 +921,14 @@
     {
       "slug": "序贯均衡（Sequential Equilibrium）：动态不完全信息博弈中，策略与信念必须相互一致",
       "title": "序贯均衡（Sequential Equilibrium）：动态不完全信息博弈中，策略与信念必须相互一致",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 05:14:35",
+      "finished": "2026-09-19 05:20:48",
+      "duration_sec": 373,
+      "outputs": [
+        "reports/序贯均衡（Sequential Equilibrium）：动态不完全信息博弈中，策略与信念必须相互一致.html",
+        "reports/序贯均衡（Sequential Equilibrium）：动态不完全信息博弈中，策略与信念必须相互一致.md"
+      ],
       "error": null
     },
     {
@@ -1906,7 +1909,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 05:14",
+  "updated": "2026-09-19 05:20",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

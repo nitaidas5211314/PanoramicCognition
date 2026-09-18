@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>序贯均衡（Sequential Equilibrium） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Sequential Equilibrium × Belief Consistency</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践转化</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">能力路线</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>序贯均衡（Sequential Equilibrium）</h1>
+  <p class="sub">动态不完全信息里，<strong>策略与信念必须相互一致</strong>——路径上贝叶斯更新，离径信念是「完全混合扰动」的极限；每个信息集上给定信念仍要序贯理性。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>序贯均衡（Sequential Equilibrium, SE）</strong>：扩展型博弈上的一个<strong>评估（assessment）</strong>——行为策略剖面 (\pi) 与信念系统 (\mu)——同时满足：<span class="tag t-fact">事实</span></p>
+<ol>
+<li><strong>序贯理性（sequential rationality）</strong>：在每一个信息集上，给定 (\mu) 与对手后续策略，自己的续贯策略最大化期望支付。</li>
+<li><strong>一致性（consistency）</strong>：((\mu,\pi)) 是某列<strong>完全混合</strong>策略 (\pi^k\to\pi) 及其贝叶斯信念 (\mu^k) 的极限。</li>
+</ol>
+<p>直觉：均衡不仅要「路径上对」，还要回答「若出现零概率事件，你会怎么想、怎么做」——且离径信念不能任意编造，必须能被「越来越小的失误」合理化。<span class="tag t-ana">分析</span></p>
+<p>Kreps &amp; Wilson（1982, <em>Econometrica</em> 50(4):863–894）提出；有限扩展型博弈至少存在一个序贯均衡；每个扩展型颤抖手完美均衡都是序贯均衡，但反之不必然。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是再发明一个纳什，而是：<strong>在不完美信息动态博弈中，如何同时规定策略与离径信念，使二者相互支撑、且信念可被扰动极限约束</strong>。它填补了 SPNE 在「非单点信息集」上失效的空白，并把 PBE 里往往任意的离径信念收紧。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：评估、信念系统、序贯理性、一致性、与 PBE/颤抖手/proper 的嵌套、信号传递与声誉应用。</li>
+<li><strong>在界外</strong>：某次诉讼胜负预测、具体股价「庄家类型」实时识别——除非压成「策略+信念+一致性」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>策略与信念互相一致的动态解概念</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「评估 + 序贯理性 + 一致性」可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>评估 ((\mu,\pi))、信息集、完全混合扰动序列</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>持私人信息的动态决策者：企业、竞标者、谈判方、算法 agent</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>先验、信号策略、离径颤抖比、后验 (\mu)、续贯支付</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>公开行动、信号、进入/退出、价格战是否发生</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实类型、离径信念、失误结构</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>策略 → 可达概率 → 信念；信念 → 最优续贯 → 策略</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>完全混合扰动 ⇒ 贝叶斯 (\mu^k) ⇒ 极限一致性 ⇒ 约束离径</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「看起来合理的故事」≠ 一致评估<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>分离/混同信号、空头威胁、声誉捕食</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>评估的序贯理性 + 扰动极限一致性</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。行动更新信念，信念改写后续最优</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。声誉积累、学习失误率需要重复</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>声誉可正反馈；披露与承诺可负反馈纠偏</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>序贯均衡问的是：「给定我在这个信息集上的信念，我的计划还最优吗？而这个信念，是否能被一列越来越小的失误所逼近？」</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它给离径信念加「物理约束」</h4><p>PBE 常允许任意离径信念；SE 要求信念是完全混合策略贝叶斯更新的极限。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它比颤抖手更容易检验</h4><p>Kreps–Wilson：验证 SE 通常远比验证完美均衡省事；有限博弈存在性有保证。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它是信号与声誉的母语</h4><p>Spence 信号、进入威慑、连锁店悖论的不完全信息版，都用 SE/PBE 语言写均衡。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>看见「零概率偏离」就随口编一个惩罚信念（「一定是坏人」），再宣称均衡。那可能是 PBE，却不是 SE——一致性可能禁止这种信念。<span class="tag t-inf">推论</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看「信念」如何从自由变量变成受约束对象。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="seArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 更强精炼 · 扩展型完美 / Proper / 稳定结果 / CSE</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 应用族 · 信号传递 · 声誉捕食 · 进入威慑 · 拍卖动态</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 与颤抖手 · 完美 ⇒ SE；SE 只在极限要求理性，完美沿途也要求</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 与 PBE · SE ⊂ PBE（一般）；差距在离径信念约束强度</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 存在性 · 有限扩展型 ⇒ ∃ SE；策略剖面是 SPNE</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 一致性 · πᵏ 完全混合 → μᵏ 贝叶斯 → (μ,π)=极限</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 序贯理性 · 每个信息集上给定 μ 的续贯最优</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 评估 · 策略 π + 信念系统 μ（每个信息集上节点分布）</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 问题 · 不完美信息：多节点信息集，SPNE 精炼力不足</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2→L4</strong>：会写评估、会做路径上贝叶斯、会用颤抖比约束离径；进阶卡在 <strong>L6–L7</strong>：SE 与 PBE、完美的精确差距。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>抽象定义 → 机制 → 操作。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="160" y="16" width="360" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">评估 (μ, π)：信念 × 策略</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">序贯理性 + 一致性</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">扰动极限逼近 μ</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">验 BR / 验颤抖比</text>
+
+  <line x1="280" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="60" y="190" width="560" height="70" rx="8" fill="#f8fafc" stroke="#e2e6ec"/>
+  <text x="80" y="220" fill="#15181d" font-size="13" font-family="sans-serif">判别两问：① 给定 μ，每个信息集上的行动是否最优？② 该 μ 能否由某列完全混合 πᵏ 的贝叶斯极限得到？</text>
+  <text x="80" y="242" fill="#7c848f" font-size="12" font-family="sans-serif">只过① ≈ 弱 PBE；①+② = 序贯均衡（教学口径）</text>
+
+  <rect x="60" y="290" width="260" height="60" rx="8" fill="#fef2f2" stroke="#d5342c"/>
+  <text x="190" y="316" text-anchor="middle" fill="#d5342c" font-size="12" font-weight="700" font-family="sans-serif">任意离径信念</text>
+  <text x="190" y="336" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">可撑起「假威胁」PBE</text>
+  <rect x="360" y="290" width="260" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="490" y="316" text-anchor="middle" fill="#0f8a4d" font-size="12" font-weight="700" font-family="sans-serif">一致离径信念</text>
+  <text x="490" y="336" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">颤抖比极限约束</text>
+  <line x1="320" y1="320" x2="360" y2="320" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>在系统里做什么</th>
+<th>典型失败模式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">策略制定者</td>
+<td>选每个信息集上的行动分布</td>
+<td>只优化路径，忽略离径</td>
+</tr>
+<tr>
+<td class="k">信念持有者</td>
+<td>在每个信息集上赋节点概率</td>
+<td>离径任意编「坏人故事」</td>
+</tr>
+<tr>
+<td class="k">自然 / 类型</td>
+<td>抽私人类型，制造不完全信息</td>
+<td>被当成确定已知</td>
+</tr>
+<tr>
+<td class="k">精炼理论家</td>
+<td>Kreps–Wilson / Selten / Fudenberg–Tirole</td>
+<td>把规范精炼当实证必然</td>
+</tr>
+<tr>
+<td class="k">实验 / CSE 研究者</td>
+<td>测诅咒信念、声誉偏离</td>
+<td>用 SE 硬套有限理性数据</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号直觉</th>
+<th>为何重要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">行为策略</td>
+<td>(\pi_i(a\mid h))</td>
+<td>每个信息集上的行动分布</td>
+</tr>
+<tr>
+<td class="k">信念</td>
+<td>(\mu(x\mid h))</td>
+<td>信息集 (h) 上节点 (x) 的概率</td>
+</tr>
+<tr>
+<td class="k">先验</td>
+<td>(\pi)（类型）</td>
+<td>路径上贝叶斯的起点</td>
+</tr>
+<tr>
+<td class="k">颤抖比</td>
+<td>(r=\varepsilon_H/\varepsilon_L)</td>
+<td>决定离径后验极限</td>
+</tr>
+<tr>
+<td class="k">后验</td>
+<td>(\mu)</td>
+<td>序贯理性的输入</td>
+</tr>
+<tr>
+<td class="k">可达概率</td>
+<td>(P^\pi(h))</td>
+<td>(&gt;0) 时信念由贝叶斯钉死</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cfA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cfB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="130" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="85" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">完全混合 πᵏ</text>
+  <rect x="180" y="30" width="130" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="245" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">处处贝叶斯 μᵏ</text>
+  <rect x="340" y="30" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="410" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">极限 (μ,π)</text>
+  <rect x="510" y="30" width="150" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="585" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">一致性成立</text>
+  <line x1="150" y1="55" x2="180" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+  <line x1="310" y1="55" x2="340" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+  <line x1="480" y1="55" x2="510" y2="55" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+
+  <rect x="80" y="140" width="220" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="190" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">给定 μ 的续贯最优</text>
+  <rect x="360" y="140" width="240" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="480" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">序贯理性 ⇒ SE 候选</text>
+  <line x1="300" y1="165" x2="360" y2="165" stroke="#1d4ed8" marker-end="url(#cfA)"/>
+
+  <text x="340" y="240" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">实线：扰动 → 信念极限 → 一致性 · 红色虚线：无扰动约束时「任意 μ」可撑假威胁</text>
+  <text x="340" y="265" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">结构一致性（structural consistency）是必要但非充分；SE 用扰动极限收紧</text>
+  <line x1="190" y1="190" x2="245" y2="30" stroke="#d5342c" stroke-dasharray="5 4" marker-end="url(#cfB)" opacity="0"/>
+</svg>
+<p>教学公式（两类型离径信号 (S')，均衡下双方几乎不发）：</p>
+<p>[
+\mu(H\mid S')=\lim_{k\to\infty}\frac{\pi\,\varepsilon_H^k}{\pi\,\varepsilon_H^k+(1-\pi)\,\varepsilon_L^k}=\frac{\pi\,r}{\pi\,r+(1-\pi)},\quad r=\lim\frac{\varepsilon_H^k}{\varepsilon_L^k}
+]</p>
+<p>若 (r=1)（同等相对失误），离径后验回到先验 (\pi)；若 (r\to 0)（H 相对几乎不抖），则 (\mu\to 0)。<span class="tag t-fact">事实</span></p>
+<p>默认 (\pi=0.3)：(r=1\Rightarrow\mu=0.300)；(r=0.1\Rightarrow\mu=0.041)；(r=10\Rightarrow\mu=0.811)。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>表面</th>
+<th>底下</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">「信念随便设」</td>
+<td>SE 要求存在颤抖序列逼近</td>
+</tr>
+<tr>
+<td class="k">PBE 与 SE「差不多」</td>
+<td>一般 SE 真包含于 PBE；差距可实质<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">SPNE 已够</td>
+<td>多节点信息集不是子博弈根，SPNE 无力<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">完美更强所以只用完美</td>
+<td>SE 更易验证；完美沿扰动路径也要 BR<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">零概率事件「不会发生」</td>
+<td>均衡推理必须规定「若发生」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="20" y="40" width="120" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="80" y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">写策略 π</text><text x="80" y="90" text-anchor="middle" font-size="11" fill="#7c848f" font-family="sans-serif">行为策略</text>
+  <rect x="170" y="40" width="120" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="230" y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">路径贝叶斯</text><text x="230" y="90" text-anchor="middle" font-size="11" fill="#7c848f" font-family="sans-serif">钉死 on-path μ</text>
+  <rect x="320" y="40" width="120" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="380" y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">离径用颤抖</text><text x="380" y="90" text-anchor="middle" font-size="11" fill="#7c848f" font-family="sans-serif">定 μ 极限</text>
+  <rect x="470" y="40" width="190" height="70" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="565" y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">验序贯理性</text><text x="565" y="90" text-anchor="middle" font-size="11" fill="#7c848f" font-family="sans-serif">处处 BR ⇒ SE</text>
+  <line x1="140" y1="75" x2="170" y2="75" stroke="#1d4ed8" marker-end="url(#flA)"/>
+  <line x1="290" y1="75" x2="320" y2="75" stroke="#1d4ed8" marker-end="url(#flA)"/>
+  <line x1="440" y1="75" x2="470" y2="75" stroke="#1d4ed8" marker-end="url(#flA)"/>
+  <text x="340" y="160" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">运行三句：路径上贝叶斯钉死；离径用相对失误率；每个信息集给定信念最优</text>
+  <text x="340" y="185" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">完美均衡额外要求：沿整条扰动序列策略始终是精确 BR（不只极限）</text>
+</svg>
+<div class="note purple"><b>资金流抽水（激励流）</b><p>「任意离径信念」把威胁租金抽给会讲故事的一方；一致性把租金抽回——威胁信念必须能被共同的失误结构支撑，否则虚假租金归识破者。<span class="tag t-ana">分析</span></p></div>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="pumpA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+    <marker id="pumpB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0f8a4d"/></marker>
+  </defs>
+  <rect x="40" y="30" width="160" height="50" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="120" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">任意信念方</text>
+  <rect x="260" y="30" width="160" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">威胁/信号租金</text>
+  <rect x="480" y="30" width="160" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="560" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">一致约束方</text>
+  <line x1="200" y1="55" x2="260" y2="55" stroke="#d5342c" marker-end="url(#pumpA)"/>
+  <line x1="420" y1="55" x2="480" y2="55" stroke="#0f8a4d" stroke-dasharray="4 3" marker-end="url(#pumpB)"/>
+  <text x="340" y="120" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">弱 PBE：租金可流向「会编离径故事」的一方（红）</text>
+  <text x="340" y="145" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">SE 一致性：租金被颤抖极限抽走，流向可共同合理化的评估（绿虚）</text>
+  <text x="340" y="175" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">机制含义：披露、菜单甄别、承诺 = 减少对任意离径信念的依赖</text>
+</svg>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 160" width="100%" style="max-width:680px">
+  <rect x="20" y="40" width="100" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="70" y="65" text-anchor="middle" font-size="11" font-weight="600" fill="#15181d" font-family="sans-serif">1950–51</text><text x="70" y="85" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Nash NE</text>
+  <rect x="130" y="40" width="100" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="180" y="65" text-anchor="middle" font-size="11" font-weight="600" fill="#15181d" font-family="sans-serif">1965/75</text><text x="180" y="85" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">SPNE / 完美</text>
+  <rect x="250" y="40" width="120" height="60" rx="8" fill="#1d4ed8"/><text x="310" y="65" text-anchor="middle" font-size="11" font-weight="600" fill="#fff" font-family="sans-serif">1982</text><text x="310" y="85" text-anchor="middle" font-size="11" fill="#eaf0ff" font-family="sans-serif">Kreps–Wilson SE</text>
+  <rect x="390" y="40" width="110" height="60" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="445" y="65" text-anchor="middle" font-size="11" font-weight="600" fill="#15181d" font-family="sans-serif">1991</text><text x="445" y="85" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">F–T PBE 澄清</text>
+  <rect x="520" y="40" width="140" height="60" rx="8" fill="#f8fafc" stroke="#e2e6ec"/><text x="590" y="65" text-anchor="middle" font-size="11" font-weight="600" fill="#15181d" font-family="sans-serif">2024–25</text><text x="590" y="85" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">稳定结果 / CSE</text>
+  <text x="340" y="140" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">精炼阶梯：NE → SPNE → PBE → SE → 扩展型完美 / proper（约束递增）</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>发生了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1950s</td>
+<td>Nash：相互最优，不问动态离径</td>
+</tr>
+<tr>
+<td class="k">1965–75</td>
+<td>Selten：SPNE 与颤抖手完美</td>
+</tr>
+<tr>
+<td class="k">1982</td>
+<td>Kreps–Wilson：评估 + 一致性；声誉与连锁店<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">1991 前后</td>
+<td>Fudenberg–Tirole 等澄清 PBE 定义层次<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">2016–2024</td>
+<td>Bonanno 等刻画 PBE–SE 间隙；Sequentially Stable Outcomes（2024）<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">2025</td>
+<td>Cursed Sequential Equilibrium（<em>AER</em>）：有限理性诅咒信念<span class="tag t-fact">事实</span>【待验证：期刊页码以正式刊为准】</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>想要什么</th>
+<th>SE 如何改变激励</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">信号发送者</td>
+<td>用行动改变对方信念</td>
+<td>信念更新规则被一致性钉死</td>
+</tr>
+<tr>
+<td class="k">信号接收者</td>
+<td>在后验下最优反应</td>
+<td>离径不能随意「惩罚信念」</td>
+</tr>
+<tr>
+<td class="k">在位者 / 进入者</td>
+<td>威慑或试探</td>
+<td>声誉策略须序贯理性</td>
+</tr>
+<tr>
+<td class="k">机制设计师</td>
+<td>缩小预测集</td>
+<td>用 SE 剔任意离径支撑的假均衡</td>
+</tr>
+<tr>
+<td class="k">实验者</td>
+<td>解释偏离 SE 的数据</td>
+<td>CSE 等行为扩展</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>流</th>
+<th>内容</th>
+<th>卡点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">类型信息</td>
+<td>私人成本/质量/强弱势</td>
+<td>不可直接观察</td>
+</tr>
+<tr>
+<td class="k">信号流</td>
+<td>教育、价格、广告、战斗</td>
+<td>成本结构决定可分离性</td>
+</tr>
+<tr>
+<td class="k">信念流</td>
+<td>先验 → 后验 → 离径 μ</td>
+<td>零概率处贝叶斯失效</td>
+</tr>
+<tr>
+<td class="k">颤抖流</td>
+<td>相对失误率 (r)</td>
+<td>不可观察，需理论/实验假设</td>
+</tr>
+<tr>
+<td class="k">精炼流</td>
+<td>PBE → SE → 完美</td>
+<td>验证成本上升</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>序</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+<th>怎么撬</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>显式写评估 ((\mu,\pi))</td>
+<td>强迫信念与策略成对出现</td>
+<td>每个信息集列出 μ 与行动</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>路径上贝叶斯钉死</td>
+<td>消除一半自由度</td>
+<td>先算 (P(h)&gt;0) 处的后验</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>颤抖比 (r)</td>
+<td>一参数决定离径 μ</td>
+<td>问「哪类人更易误触」</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>序贯理性门槛 (\mu^*)</td>
+<td>一眼看威胁是否可信</td>
+<td>算 EU(fight)≥EU(accom) 的 μ</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>SE vs 任意 PBE</td>
+<td>识破假威胁故事</td>
+<td>问该 μ 能否由扰动极限来</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>分离 vs 混同</td>
+<td>决定信息是否披露</td>
+<td>改信号成本结构</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>承诺 / 沉没成本</td>
+<td>改续贯支付，放宽理性</td>
+<td>合同罚则、公开投资</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>信息集设计</td>
+<td>改变可达与更新</td>
+<td>披露、审计、菜单</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>与 SPNE 对照</td>
+<td>完美信息时 SE≈SPNE</td>
+<td>先判信息结构</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>行为扩展（CSE）</td>
+<td>解释实验偏离</td>
+<td>加入诅咒参数 χ</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「纳什路径对了就够」</summary><div class="dbody"><p>动态不完全信息必须规定离径信念与续贯最优，否则威胁可空头。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>2. 「SPNE 已经精炼完了」</summary><div class="dbody"><p>多节点信息集不是子博弈；SPNE 在那里没有额外约束。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>3. 「PBE = SE」</summary><div class="dbody"><p>一般 SE 是 PBE 的真精炼；PBE 的离径信念可更任意。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 「离径信念可以随便设成惩罚」</summary><div class="dbody"><p>SE 一致性可能禁止「看到偏离就 μ=1 坏人」这类故事，除非颤抖比支持。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>5. 「一致性就是结构一致性」</summary><div class="dbody"><p>结构一致性较弱；Kreps–Wilson 一致性是扰动极限，更强。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>6. 「SE 与颤抖手完美一样」</summary><div class="dbody"><p>完美 ⇒ SE；SE 只在极限要求序贯理性，完美要求扰动路径上始终 BR。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>7. 「零概率事件不需要建模」</summary><div class="dbody"><p>均衡推理的核心恰恰是反事实：「若到达，你会怎么做」。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>8. 「后验可以不服从贝叶斯」</summary><div class="dbody"><p>路径上 (P(h)&gt;0) 时必须贝叶斯；否则连弱 PBE 都不满足。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>9. 「人真的按 SE 玩」</summary><div class="dbody"><p>SE 是规范筛选器；实验室常见偏离，CSE 等尝试解释。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>10. 「算不出颤抖序列就没法用」</summary><div class="dbody"><p>操作上先钉路径贝叶斯 + 序贯理性，再对可疑离径 μ 问「相对失误率是否合理」。<span class="tag t-inf">推论</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <rect x="30" y="40" width="180" height="100" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="120" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">抽象</text>
+  <text x="120" y="105" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">(μ,π) 一致+理性</text>
+  <rect x="250" y="40" width="180" height="100" rx="10" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="340" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">机制</text>
+  <text x="340" y="105" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">贝叶斯+颤抖极限</text>
+  <rect x="470" y="40" width="180" height="100" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="560" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">现实</text>
+  <text x="560" y="105" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">信号/威慑压力测</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>领域</th>
+<th>抽象对应</th>
+<th>现实操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">学历信号</td>
+<td>Spence：教育成本分离类型</td>
+<td>问证书是否真降低模仿成本</td>
+</tr>
+<tr>
+<td class="k">进入威慑</td>
+<td>声誉捕食 SE</td>
+<td>若对手「误进入」，你是否真打价格战</td>
+</tr>
+<tr>
+<td class="k">谈判</td>
+<td>离径惩罚信念</td>
+<td>违约后的信念是否可用失误合理化</td>
+</tr>
+<tr>
+<td class="k">平台审核</td>
+<td>信号+后验</td>
+<td>异常行为后验是否贝叶斯一致</td>
+</tr>
+<tr>
+<td class="k">多智能体</td>
+<td>策略+信念状态</td>
+<td>把信念显式进状态，别只存策略</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="flow "><p>画扩展树 <i>→</i> 写策略 π <i>→</i> 路径贝叶斯钉 μ <i>→</i> 离径用颤抖比 <i>→</i> {.hi}验序贯理性 <i>→</i> 对照任意 PBE</p></div>
+<p>行动清单：</p>
+<ol>
+<li>把局面压成带信息集的扩展树（哪怕两类型两行动）。</li>
+<li>写出候选行为策略，标出 (P(h)&gt;0) 的信息集。</li>
+<li>对正概率信息集用贝叶斯算 μ（工具 1）。</li>
+<li>对零概率信息集用相对失误率 (r) 定 μ（工具 2）。</li>
+<li>给定 μ 验接收方最优（工具 3）；对照「任意 μ」的 PBE 故事（工具 4）。</li>
+</ol>
+<h3>工具 1：路径上贝叶斯后验</h3>
+<p>发送者类型 H 先验 (\pi)，发信号 S 的概率：H 为 1，L 为 (\alpha)。后验 (\mu(H\mid S)=\pi/(\pi+(1-\pi)\alpha))。默认 (\pi=0.3,\alpha=0.5\Rightarrow\mu=0.4615)。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="toolBay">
+  <div class="ctrl">
+    <label>先验 π=P(H) <output id="bay_piO">30%</output></label>
+    <input type="range" id="bay_pi" min="5" max="95" step="1" value="30">
+    <label>L 发 S 的概率 α <output id="bay_aO">50%</output></label>
+    <input type="range" id="bay_a" min="0" max="100" step="1" value="50">
+  </div>
+  <div class="readout">
+    <div class="ro">后验 μ(H\|S) <b id="bay_mu">0.4615</b></div>
+    <div class="ro">似然比 L(S\|H)/L(S\|L) <b id="bay_lr">2.000</b></div>
+    <div class="ro">相对先验提升 <b id="bay_lift">+0.1615</b></div>
+    <div class="ro">信息性 <b id="bay_info">部分分离</b></div>
+    <div id="bay_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="bayChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<h3>工具 2：离径信念的颤抖比一致性</h3>
+<p>均衡下几乎无人发 (S')。相对失误率 (r=\varepsilon_H/\varepsilon_L) 决定 (\mu=\pi r/(\pi r+(1-\pi)))。默认 (\pi=0.3,r=1\Rightarrow\mu=0.300)。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="toolTrem">
+  <div class="ctrl">
+    <label>先验 π <output id="tr_piO">30%</output></label>
+    <input type="range" id="tr_pi" min="5" max="95" step="1" value="30">
+    <label>相对失误比 r=ε_H/ε_L <output id="tr_rO">1.00</output></label>
+    <input type="range" id="tr_r" min="0.05" max="20" step="0.05" value="1">
+  </div>
+  <div class="readout">
+    <div class="ro">一致离径 μ <b id="tr_mu">0.300</b></div>
+    <div class="ro">若 r→0（H 几乎不抖） <b id="tr_lo">→ 0</b></div>
+    <div class="ro">若 r→∞（H 更易抖） <b id="tr_hi">→ 1</b></div>
+    <div class="ro">相对先验 <b id="tr_cmp">= 先验</b></div>
+    <div id="tr_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="trChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<h3>工具 3：序贯理性门槛</h3>
+<p>接收方：斗争支付对 H 为 (u_H)、对 L 为 (u_L)；默许为 0。EU[斗争]=(\mu u_H+(1-\mu)u_L)。默认 (u_H=-1,u_L=1\Rightarrow) 门槛 (\mu^*=0.5)；(\mu=0.30) 时 EU=+0.400，选斗争。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="toolSeq">
+  <div class="ctrl">
+    <label>信念 μ=P(H) <output id="sq_muO">30%</output></label>
+    <input type="range" id="sq_mu" min="0" max="100" step="1" value="30">
+    <label>对 H 斗争支付 <output id="sq_uhO">-1.0</output></label>
+    <input type="range" id="sq_uh" min="-3" max="2" step="0.1" value="-1">
+    <label>对 L 斗争支付 <output id="sq_ulO">1.0</output></label>
+    <input type="range" id="sq_ul" min="-2" max="3" step="0.1" value="1">
+  </div>
+  <div class="readout">
+    <div class="ro">EU[斗争] <b id="sq_eu">0.400</b></div>
+    <div class="ro">EU[默许] <b id="sq_ac">0.000</b></div>
+    <div class="ro">门槛 μ* <b id="sq_star">0.500</b></div>
+    <div class="ro">序贯最优 <b id="sq_br">斗争</b></div>
+    <div id="sq_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="sqChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<h3>工具 4：SE 一致 μ vs 任意 PBE μ</h3>
+<p>固定颤抖比给出的 SE 信念 (\mu_{SE})，对比你手填的「故事信念」(\mu_{story})。若两者差大，且故事支撑不同行动，则该故事可能是 PBE 但非 SE。<span class="tag t-ana">分析</span></p>
+<div class="tool" id="toolGap">
+  <div class="ctrl">
+    <label>先验 π <output id="gp_piO">30%</output></label>
+    <input type="range" id="gp_pi" min="5" max="95" step="1" value="30">
+    <label>颤抖比 r <output id="gp_rO">1.00</output></label>
+    <input type="range" id="gp_r" min="0.05" max="20" step="0.05" value="1">
+    <label>故事信念 μ_story <output id="gp_stO">90%</output></label>
+    <input type="range" id="gp_st" min="0" max="100" step="1" value="90">
+    <label>门槛 μ*（斗争） <output id="gp_thO">50%</output></label>
+    <input type="range" id="gp_th" min="5" max="95" step="1" value="50">
+  </div>
+  <div class="readout">
+    <div class="ro">μ_SE <b id="gp_se">0.300</b></div>
+    <div class="ro">μ_story <b id="gp_story">0.900</b></div>
+    <div class="ro">|差距| <b id="gp_gap">0.600</b></div>
+    <div class="ro">行动是否一致 <b id="gp_same">否</b></div>
+    <div id="gp_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="gpChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>① 扩展树与信息集</summary><div class="dbody"><p>能画多节点信息集，区分完美/不完美、完全/不完全信息。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>② 行为策略</summary><div class="dbody"><p>在每个信息集上写行动分布，而不是只写终点路径。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>③ 路径贝叶斯</summary><div class="dbody"><p>(P(h)&gt;0) 时用定义算条件概率，不凭感觉。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>④ 序贯理性</summary><div class="dbody"><p>给定 μ 比较续贯期望支付，找出 BR。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>⑤ 一致性直觉</summary><div class="dbody"><p>用相对失误率解释离径 μ，而非任意赋值。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>⑥ SE vs PBE 辨析</summary><div class="dbody"><p>能举「PBE 但非 SE」的信念故事（教学级）。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>⑦ 与颤抖手/SPNE 嵌套</summary><div class="dbody"><p>记住：完美 ⇒ SE ⇒（通常）PBE；SE 策略是 SPNE。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>⑧ 信号博弈分类</summary><div class="dbody"><p>分离 / 混同 / 半分离；单交叉条件直觉。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>⑨ 声誉模型入口</summary><div class="dbody"><p>Kreps–Wilson 连锁店：小概率强硬类型如何支撑捕食。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>⑩ 行为扩展意识</summary><div class="dbody"><p>知道 CSE 等放松「正确推断行动—类型相关」。<span class="tag t-chk">待验证</span></p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你进入「信念竞技场」：每个关卡给你一棵带信息集的树。胜负不看路径支付高低，而看你能否提交一份<strong>通过序贯理性与一致性检查</strong>的评估。随意编「坏人信念」会被裁判（一致性）判负。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>目标</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1</td>
+<td>画一个两类型信号树</td>
+<td>含自然、发送、接收信息集</td>
+</tr>
+<tr>
+<td class="k">T2</td>
+<td>算一条混同路径的后验</td>
+<td>与工具 1 一致</td>
+</tr>
+<tr>
+<td class="k">T3</td>
+<td>用 r 定一个离径 μ</td>
+<td>写出极限公式</td>
+</tr>
+<tr>
+<td class="k">T4</td>
+<td>给定 μ 验接收方 BR</td>
+<td>报告 EU 与门槛</td>
+</tr>
+<tr>
+<td class="k">T5</td>
+<td>找一个「故事 μ」与 μ_SE 分歧</td>
+<td>说明行动是否翻转</td>
+</tr>
+<tr>
+<td class="k">T6</td>
+<td>对照进入博弈的颤抖手手册</td>
+<td>一句话区分 SE vs 完美</td>
+</tr>
+<tr>
+<td class="k">T7</td>
+<td>读 Kreps–Wilson 摘要定义</td>
+<td>能复述 assessment</td>
+</tr>
+<tr>
+<td class="k">T8</td>
+<td>用现实案例套评估语言</td>
+<td>写出 π、信号、μ、行动</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若离径信念完全任意</button><button class="tab" data-pane="tb1-1">若要求一致性（SE）</button><button class="tab" data-pane="tb1-2">若升级到扩展型完美</button><button class="tab" data-pane="tb1-3">若参与人「诅咒」相关</button></div>
+<div class="pane on" id="tb1-0"><p>弱 PBE 膨胀：许多空头威胁可被「惩罚信念」支撑；预测集过大，几乎什么故事都能讲。<span class="tag t-ana">分析</span></p></div><div class="pane" id="tb1-1"><p>离径 μ 被颤抖比约束；部分假威胁出局；仍可能比完美均衡宽松。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-2"><p>沿扰动序列处处 BR；集合更小，验证更难；Kreps–Wilson 强调 SE「远更易验证」。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-3"><p>CSE：低估行动与类型相关 → 声誉更难建立、进入更多——实验室模式常见。<span class="tag t-fact">事实</span>【待验证：效应量依实验】</p></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>你能交付什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识记</td>
+<td>说出 SE 两条件</td>
+<td>30 秒电梯稿</td>
+</tr>
+<tr>
+<td class="k">L2 计算</td>
+<td>路径贝叶斯 + 序贯理性</td>
+<td>完整作业级算例</td>
+</tr>
+<tr>
+<td class="k">L3 精炼</td>
+<td>用颤抖比约束离径并对比 PBE</td>
+<td>挑剔假均衡故事</td>
+</tr>
+<tr>
+<td class="k">L4 迁移</td>
+<td>信号/声誉/机制里选用 SE</td>
+<td>建模备忘录</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<p>成本≈0，产出可验证：</p>
+<ol>
+<li>选一个你最近遇到的「威胁/信号」故事（工作或新闻，10 分钟）。</li>
+<li>压成：类型两档、一个信号、一个响应（5 分钟）。</li>
+<li>用工具 1–3 算出路径后验、一个离径 μ（设 (r=1)）、响应是否 BR（10 分钟）。</li>
+<li>用工具 4 把「故事里的坏人信念」拖到极端，看行动是否翻转（5 分钟）。</li>
+<li>写下结论一句：该故事是 SE 候选，还是仅靠任意离径的 PBE 故事？</li>
+</ol>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>重画信息集与评估定义</td>
+<td>一页笔记</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>路径贝叶斯三道题</td>
+<td>与工具 1 对答案</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>序贯理性与 μ*</td>
+<td>工具 3 截图</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>颤抖比离径</td>
+<td>工具 2 三组 r</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>SE vs PBE</td>
+<td>工具 4 一例分歧</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>读 Wikipedia/教材 SE 节</td>
+<td>对照本手册标记</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>现实案例评估</td>
+<td>半页备忘录</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>定义与计算</td>
+<td>独立完成混同/分离算例</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>精炼嵌套</td>
+<td>一张 SE–PBE–完美对照表</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>信号与声誉</td>
+<td>解读一个经典模型的评估</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>迁移</td>
+<td>把本职场景写成评估 + 压力测试</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>评估 ((\mu,\pi))</td>
+<td>信念与策略成对</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>序贯理性</td>
+<td>每个信息集给定 μ 最优</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>一致性</td>
+<td>完全混合扰动的贝叶斯极限</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>路径贝叶斯</td>
+<td>(P&gt;0) 处信念钉死</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>颤抖比 (r)</td>
+<td>离径后验的充分统计（两类型）</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>SE ⊂ PBE</td>
+<td>一般真包含</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>完美 ⇒ SE</td>
+<td>更强，更难验</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>分离/混同</td>
+<td>信号均衡类型</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>声誉捕食</td>
+<td>小概率强硬类型支撑战斗</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>CSE</td>
+<td>诅咒信念下的序贯扩展</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 为什么 SPNE 不够？</summary><div class="dbody"><p>非单点信息集不是子博弈根，SPNE 无额外约束。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q2 SE 一定存在吗？</summary><div class="dbody"><p>有限扩展型博弈：是。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q3 每个 SE 都是 NE 吗？</summary><div class="dbody"><p>是；且策略剖面是 SPNE。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q4 为何引入信念？</summary><div class="dbody"><p>离径无法用策略本身的贝叶斯更新；必须显式 μ。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q5 一致性直观是什么？</summary><div class="dbody"><p>「偏离像极小独立失误」，相对速率决定后验。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q6 和直觉标准（intuitive criterion）什么关系？</summary><div class="dbody"><p>直觉标准等是信号博弈上对 PBE/SE 的进一步精炼，另册。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q7 完美信息时 SE 是什么？</summary><div class="dbody"><p>与 SPNE 一致（信念平凡）。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q8 为何说 SE 比完美好用？</summary><div class="dbody"><p>验证成本更低，同时保留对离径的纪律。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q9 实验室偏离怎么办？</summary><div class="dbody"><p>考虑学习、诅咒信念（CSE）、量化反应等行为解。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q10 最小实践卡在哪？</summary><div class="dbody"><p>不会写离径 μ：先设 (r=1)（回到先验），再讨论是否合理。<span class="tag t-inf">推论</span></p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>精读 Kreps–Wilson（1982）一致性拓扑与存在性证明草图。</li>
+<li>对照 Bonanno（2016/）对 PBE–SE 间隙的「无极限」刻画。<span class="tag t-chk">待验证</span></li>
+<li>进入 Spence / Cho–Kreps 直觉标准 / Banks–Sobel 神谕精炼。</li>
+<li>读 <em>Sequentially Stable Outcomes</em>（Econometrica 2024）看结果层面的稳定。<span class="tag t-fact">事实</span></li>
+<li>行为线：Cursed Sequential Equilibrium（AER 2025）与实验。<span class="tag t-fact">事实</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">SE 定义、存在性、与完美关系</td>
+<td>经典论文</td>
+<td>Kreps &amp; Wilson, <em>Econometrica</em> 1982, 50(4):863–894</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Wikipedia 综述（SE vs PBE）</td>
+<td>百科综述</td>
+<td>Sequential equilibrium 条目</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">PBE–SE 间隙</td>
+<td>期刊</td>
+<td>Bonanno 等, <em>Games</em> 2016「Exploring the Gap…」</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">完美 vs SE（ε-最优沿途）</td>
+<td>讲义/论文</td>
+<td>Cramton 精炼讲义；Halpern 等非标准概率刻画</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">Sequentially Stable Outcomes</td>
+<td>期刊</td>
+<td><em>Econometrica</em> 2024</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">CSE</td>
+<td>期刊</td>
+<td>Fong–Lin–Palfrey, <em>AER</em> 2025</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">教学数值（π,α,r,μ*）</td>
+<td>自算</td>
+<td>本手册 node 验算</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">中文教材口径（精炼贝叶斯）</td>
+<td>教学 PDF</td>
+<td>人大等「不完全信息动态博弈」讲义</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记：<span class="tag t-fact">事实</span>可多方核对；<span class="tag t-ana">分析</span>权威整理；<span class="tag t-inf">推论</span>本手册推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单源或转载链。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为博弈论概念的认知与实践框架，用于训练「策略—信念一致性」思维，<strong>不是</strong>投资、法律、商业谈判的操作建议，也不构成对任何市场结果的预测。文中支付与概率均为教学约定数字；将模型套用于现实决策时，须自行核验信息结构、先验与激励，并承担相应风险。</p>
+</section>
+<footer>  <p>《序贯均衡（Sequential Equilibrium） · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 6 分 13 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《序贯均衡》主题脚本
+   四个可调模型：
+     1. 路径贝叶斯后验
+     2. 离径颤抖比一致性
+     3. 序贯理性门槛
+     4. SE μ vs 任意 PBE 故事 μ
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, vals, ymin, ymax) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (vals.length * 1.5);
+    vals.forEach(function (o, i) {
+      var x = pl + (i + 0.5) * (bw / vals.length) - barW / 2;
+      var y0 = y1 - ((0 - ymin) / (ymax - ymin)) * bh;
+      var yv = y1 - ((o.v - ymin) / (ymax - ymin)) * bh;
+      var top = Math.min(y0, yv), ht = Math.abs(y0 - yv);
+      ctx.fillStyle = o.c;
+      ctx.fillRect(x, top, barW, Math.max(ht, 1));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      var lab = o.v.toFixed(3);
+      var lx = x + barW / 2;
+      var ly = o.v >= 0 ? Math.max(yv - 6, pt + 10) : Math.min(yv + 14, y1 - 4);
+      ctx.fillText(lab, lx, ly);
+      ctx.fillStyle = C.ink2;
+      ctx.font = '10px sans-serif';
+      var lines = (o.lab || '').split('\n');
+      lines.forEach(function (ln, j) {
+        ctx.fillText(ln, lx, y1 + 13 + j * 12);
+      });
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('概率 / 支付', pl + bw / 2, y1 + 31);
+  }
+
+  /* ── 1. 路径贝叶斯 ── */
+  (function bay() {
+    if (!$('bay_pi')) return;
+    var cv = $('bayChart');
+    function upd() {
+      var pi = parseFloat($('bay_pi').value) / 100;
+      var a = parseFloat($('bay_a').value) / 100;
+      txt($('bay_piO'), Math.round(pi * 100) + '%');
+      txt($('bay_aO'), Math.round(a * 100) + '%');
+
+      var den = pi + (1 - pi) * a;
+      var mu = den > 0 ? pi / den : 0;
+      var lr = a > 1e-12 ? 1 / a : Infinity;
+      var lift = mu - pi;
+      var info;
+      if (a < 1e-9) info = '完全分离';
+      else if (Math.abs(a - 1) < 1e-9) info = '完全混同';
+      else info = '部分分离';
+
+      txt($('bay_mu'), mu.toFixed(4));
+      txt($('bay_lr'), lr > 100 ? '>100' : lr.toFixed(3));
+      txt($('bay_lift'), (lift >= 0 ? '+' : '') + lift.toFixed(4));
+      txt($('bay_info'), info);
+      var msg = 'π=' + (pi * 100).toFixed(0) + '%、α=' + (a * 100).toFixed(0) +
+        '% → μ(H|S)=' + mu.toFixed(4) + '（分母 π+(1-π)α=' + den.toFixed(4) + '）';
+      txt($('bay_vh'), msg);
+      tint($('bay_vh'), C.blue);
+
+      bars(cv, [
+        { lab: '先验π', v: pi, c: C.amber },
+        { lab: '后验μ', v: mu, c: C.green },
+        { lab: 'α', v: a, c: C.blue },
+        { lab: '提升', v: lift, c: lift >= 0 ? C.red : C.green }
+      ], Math.min(0, lift) - 0.05, Math.max(1, pi, mu, a) + 0.05);
+    }
+    bind(['bay_pi', 'bay_a'], upd);
+    upd();
+  })();
+
+  /* ── 2. 颤抖比离径 ── */
+  (function trem() {
+    if (!$('tr_pi')) return;
+    var cv = $('trChart');
+    function upd() {
+      var pi = parseFloat($('tr_pi').value) / 100;
+      var r = parseFloat($('tr_r').value);
+      txt($('tr_piO'), Math.round(pi * 100) + '%');
+      txt($('tr_rO'), r.toFixed(2));
+
+      var mu = (pi * r) / (pi * r + (1 - pi));
+      var cmp = Math.abs(mu - pi) < 1e-9 ? '= 先验' : (mu > pi ? '> 先验' : '< 先验');
+
+      txt($('tr_mu'), mu.toFixed(3));
+      txt($('tr_lo'), '→ 0');
+      txt($('tr_hi'), '→ 1');
+      txt($('tr_cmp'), cmp);
+      var msg = 'r=' + r.toFixed(2) + ' → μ=' + mu.toFixed(3) +
+        '；r=1 时回到先验 ' + pi.toFixed(3) + '。一致性把离径信念钉在颤抖比上。';
+      txt($('tr_vh'), msg);
+      tint($('tr_vh'), Math.abs(mu - pi) < 0.02 ? C.green : C.amber);
+
+      bars(cv, [
+        { lab: '先验π', v: pi, c: C.amber },
+        { lab: 'μ(r)', v: mu, c: C.green },
+        { lab: 'r/(1+r)', v: r / (1 + r), c: C.blue }
+      ], 0, 1.05);
+    }
+    bind(['tr_pi', 'tr_r'], upd);
+    upd();
+  })();
+
+  /* ── 3. 序贯理性 ── */
+  (function seq() {
+    if (!$('sq_mu')) return;
+    var cv = $('sqChart');
+    function upd() {
+      var mu = parseFloat($('sq_mu').value) / 100;
+      var uh = parseFloat($('sq_uh').value);
+      var ul = parseFloat($('sq_ul').value);
+      txt($('sq_muO'), Math.round(mu * 100) + '%');
+      txt($('sq_uhO'), uh.toFixed(1));
+      txt($('sq_ulO'), ul.toFixed(1));
+
+      var eu = mu * uh + (1 - mu) * ul;
+      var ac = 0;
+      var star = null;
+      if (Math.abs(uh - ul) > 1e-12) {
+        star = ul / (ul - uh);
+      }
+      var fight = eu >= ac - 1e-12;
+      var starTxt = (star === null || star < 0 || star > 1) ? '—' : star.toFixed(3);
+
+      txt($('sq_eu'), eu.toFixed(3));
+      txt($('sq_ac'), ac.toFixed(3));
+      txt($('sq_star'), starTxt);
+      txt($('sq_br'), fight ? '斗争' : '默许');
+      tint($('sq_br'), fight ? C.red : C.green);
+      var msg = fight
+        ? ('μ=' + mu.toFixed(2) + ' 时 EU[斗争]=' + eu.toFixed(3) + ' ≥ 0 → 序贯理性选斗争' +
+          (star !== null && star >= 0 && star <= 1 ? '（门槛 μ*=' + star.toFixed(3) + '）' : ''))
+        : ('μ=' + mu.toFixed(2) + ' 时 EU[斗争]=' + eu.toFixed(3) + ' < 0 → 序贯理性选默许' +
+          (star !== null && star >= 0 && star <= 1 ? '（门槛 μ*=' + star.toFixed(3) + '）' : ''));
+      txt($('sq_vh'), msg);
+      tint($('sq_vh'), fight ? C.red : C.green);
+
+      var ymin = Math.min(eu, ac, uh, ul, 0) - 0.3;
+      var ymax = Math.max(eu, ac, uh, ul, 0) + 0.3;
+      bars(cv, [
+        { lab: 'EU斗争', v: eu, c: fight ? C.red : C.amber },
+        { lab: 'EU默许', v: ac, c: C.green },
+        { lab: 'u_H', v: uh, c: C.ink2 },
+        { lab: 'u_L', v: ul, c: C.blue }
+      ], ymin, ymax);
+    }
+    bind(['sq_mu', 'sq_uh', 'sq_ul'], upd);
+    upd();
+  })();
+
+  /* ── 4. SE vs PBE 故事 ── */
+  (function gap() {
+    if (!$('gp_pi')) return;
+    var cv = $('gpChart');
+    function upd() {
+      var pi = parseFloat($('gp_pi').value) / 100;
+      var r = parseFloat($('gp_r').value);
+      var st = parseFloat($('gp_st').value) / 100;
+      var th = parseFloat($('gp_th').value) / 100;
+      txt($('gp_piO'), Math.round(pi * 100) + '%');
+      txt($('gp_rO'), r.toFixed(2));
+      txt($('gp_stO'), Math.round(st * 100) + '%');
+      txt($('gp_thO'), Math.round(th * 100) + '%');
+
+      var se = (pi * r) / (pi * r + (1 - pi));
+      var gapv = Math.abs(se - st);
+      var fightSE = se <= th + 1e-12;
+      var fightST = st <= th + 1e-12;
+      var same = fightSE === fightST;
+
+      txt($('gp_se'), se.toFixed(3));
+      txt($('gp_story'), st.toFixed(3));
+      txt($('gp_gap'), gapv.toFixed(3));
+      txt($('gp_same'), same ? '是' : '否');
+      tint($('gp_same'), same ? C.green : C.red);
+      var msg = same
+        ? ('μ_SE=' + se.toFixed(3) + ' 与故事 ' + st.toFixed(3) + ' 相对门槛 ' + th.toFixed(2) +
+          ' 给出相同行动（' + (fightSE ? '斗争' : '默许') + '）——故事碰巧与 SE 同侧')
+        : ('μ_SE=' + se.toFixed(3) + '→' + (fightSE ? '斗争' : '默许') +
+          '，故事 μ=' + st.toFixed(3) + '→' + (fightST ? '斗争' : '默许') +
+          '：行动翻转——该故事可作为弱 PBE，但未必是一致 SE');
+      txt($('gp_vh'), msg);
+      tint($('gp_vh'), same ? C.green : C.red);
+
+      bars(cv, [
+        { lab: 'μ_SE', v: se, c: C.green },
+        { lab: '故事', v: st, c: C.red },
+        { lab: '门槛', v: th, c: C.amber },
+        { lab: '|差|', v: gapv, c: C.blue }
+      ], 0, 1.05);
+    }
+    bind(['gp_pi', 'gp_r', 'gp_st', 'gp_th'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
