@@ -451,6 +451,1166 @@
       "error": null
     },
     {
+      "slug": "参与人（Player）：做决策的主体，假定是理性的、追求自身收益最大化",
+      "title": "参与人（Player）：做决策的主体，假定是理性的、追求自身收益最大化",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "策略（Strategy）：参与人在每种情形下的完整行动方案；分纯策略与混合策略（按概率随机化）",
+      "title": "策略（Strategy）：参与人在每种情形下的完整行动方案；分纯策略与混合策略（按概率随机化）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "收益-支付（Payoff）：结果对每个参与人的效用值，博弈的本质是-收益矩阵-而非道德评价",
+      "title": "收益/支付（Payoff）：结果对每个参与人的效用值，博弈的本质是\"收益矩阵\"而非道德评价",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "信息集（Information Set）：参与人决策时知道什么；分完全信息-不完全信息、完美信息-不完美信息",
+      "title": "信息集（Information Set）：参与人决策时知道什么；分完全信息/不完全信息、完美信息/不完美信息",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "共同知识（Common Knowledge）：我知道，你知道我知道，我知道你知道我知道……无限递归，这是均衡成立的前提",
+      "title": "共同知识（Common Knowledge）：我知道，你知道我知道，我知道你知道我知道……无限递归，这是均衡成立的前提",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "纳什均衡（Nash Equilibrium）：给定他人策略，无人能通过单方面改变策略获益的状态；有限博弈必存在（可能是混合策略）",
+      "title": "纳什均衡（Nash Equilibrium）：给定他人策略，无人能通过单方面改变策略获益的状态；有限博弈必存在（可能是混合策略）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "占优策略（Dominant Strategy）：无论他人如何做，某策略总优于其他策略；反复剔除劣势策略可简化博弈",
+      "title": "占优策略（Dominant Strategy）：无论他人如何做，某策略总优于其他策略；反复剔除劣势策略可简化博弈",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "囚徒困境（Prisoner's Dilemma）：个体理性导致集体非理性，纳什均衡劣于帕累托最优",
+      "title": "囚徒困境（Prisoner's Dilemma）：个体理性导致集体非理性，纳什均衡劣于帕累托最优",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "帕累托最优（Pareto Optimality）：无法在不损害任何人的前提下改善任何人；与纳什均衡经常不重合",
+      "title": "帕累托最优（Pareto Optimality）：无法在不损害任何人的前提下改善任何人；与纳什均衡经常不重合",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "子博弈精炼纳什均衡（SPNE）：用逆向归纳法剔除-不可置信的威胁-，动态博弈的核心解法",
+      "title": "子博弈精炼纳什均衡（SPNE）：用逆向归纳法剔除\"不可置信的威胁\"，动态博弈的核心解法",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "贝叶斯纳什均衡：不完全信息下，参与人对他人类型持有先验概率并按贝叶斯法则更新",
+      "title": "贝叶斯纳什均衡：不完全信息下，参与人对他人类型持有先验概率并按贝叶斯法则更新",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "逆向归纳（Backward Induction）：从最后一步倒推，动态博弈的标准求解思路",
+      "title": "逆向归纳（Backward Induction）：从最后一步倒推，动态博弈的标准求解思路",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "重复博弈与阴影效应：未来的重复交互使合作可能内生出现，贴现因子越高越易合作",
+      "title": "重复博弈与阴影效应：未来的重复交互使合作可能内生出现，贴现因子越高越易合作",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "无名氏定理（Folk Theorem）：无限重复博弈中，任何优于最小最大值的收益组合都可以是均衡",
+      "title": "无名氏定理（Folk Theorem）：无限重复博弈中，任何优于最小最大值的收益组合都可以是均衡",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "一报还一报（Tit-for-Tat）：善意、可激怒、宽恕、清晰——Axelrod 竞赛中胜出的简单策略",
+      "title": "一报还一报（Tit-for-Tat）：善意、可激怒、宽恕、清晰——Axelrod 竞赛中胜出的简单策略",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "可信承诺（Credible Commitment）：主动放弃选择权（烧船、自缚手脚）反而增强谈判力",
+      "title": "可信承诺（Credible Commitment）：主动放弃选择权（烧船、自缚手脚）反而增强谈判力",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "威慑与边缘政策（Brinkmanship）：制造可控的失控风险，让威胁变得可信",
+      "title": "威慑与边缘政策（Brinkmanship）：制造可控的失控风险，让威胁变得可信",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "信号传递（Signaling）：高质量方发出低质量方模仿代价过高的信号（学历、担保、自购股票）",
+      "title": "信号传递（Signaling）：高质量方发出低质量方模仿代价过高的信号（学历、担保、自购股票）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "信息甄别（Screening）：信息劣势方设计菜单让对方自我分类（保险免赔额、价格歧视）",
+      "title": "信息甄别（Screening）：信息劣势方设计菜单让对方自我分类（保险免赔额、价格歧视）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "逆向选择（Adverse Selection）：签约前的信息不对称导致劣币驱逐良币（柠檬市场）",
+      "title": "逆向选择（Adverse Selection）：签约前的信息不对称导致劣币驱逐良币（柠檬市场）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "道德风险（Moral Hazard）：签约后行为不可观测导致的努力不足或过度冒险",
+      "title": "道德风险（Moral Hazard）：签约后行为不可观测导致的努力不足或过度冒险",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "委托—代理问题：激励相容约束 + 参与约束，机制设计的基本框架",
+      "title": "委托—代理问题：激励相容约束 + 参与约束，机制设计的基本框架",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "机制设计（Mechanism Design）：反向博弈论——先设定想要的结果，再设计让理性人自愿达成它的规则",
+      "title": "机制设计（Mechanism Design）：反向博弈论——先设定想要的结果，再设计让理性人自愿达成它的规则",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "显示原理（Revelation Principle）：任何可实现的结果都可由一个-说真话是最优-的直接机制实现",
+      "title": "显示原理（Revelation Principle）：任何可实现的结果都可由一个\"说真话是最优\"的直接机制实现",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "零和 vs 非零和：零和下合作无空间，非零和下存在正和交易，判断博弈类型是第一步",
+      "title": "零和 vs 非零和：零和下合作无空间，非零和下存在正和交易，判断博弈类型是第一步",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "协调博弈与谢林点（Schelling Point）：多重均衡时，人们靠显著的共同焦点自发协调",
+      "title": "协调博弈与谢林点（Schelling Point）：多重均衡时，人们靠显著的共同焦点自发协调",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "鹰鸽博弈 - 懦夫博弈（Chicken）：冲突升级模型，先动者示弱可获益也可致灾",
+      "title": "鹰鸽博弈 / 懦夫博弈（Chicken）：冲突升级模型，先动者示弱可获益也可致灾",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "猎鹿博弈（Stag Hunt）：信任决定均衡选择，风险占优 vs 收益占优",
+      "title": "猎鹿博弈（Stag Hunt）：信任决定均衡选择，风险占优 vs 收益占优",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "公地悲剧与集体行动逻辑：分散的收益、集中的成本，导致公共资源被过度消耗",
+      "title": "公地悲剧与集体行动逻辑：分散的收益、集中的成本，导致公共资源被过度消耗",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "选美博弈（Keynesian Beauty Contest）：猜别人猜什么而非猜真相，金融市场的核心结构",
+      "title": "选美博弈（Keynesian Beauty Contest）：猜别人猜什么而非猜真相，金融市场的核心结构",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "层级推理（k-level thinking）：多数人只推理 1–2 层，深一层即有优势",
+      "title": "层级推理（k-level thinking）：多数人只推理 1–2 层，深一层即有优势",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "沙普利值（Shapley Value）：合作博弈中按边际贡献分配收益的唯一公平解",
+      "title": "沙普利值（Shapley Value）：合作博弈中按边际贡献分配收益的唯一公平解",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "演化稳定策略（ESS）：不要求理性，只要求可复制——策略靠淘汰而非计算而胜出",
+      "title": "演化稳定策略（ESS）：不要求理性，只要求可复制——策略靠淘汰而非计算而胜出",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "极大极小定理（Minimax, von Neumann）：二人零和博弈中-最大化最小收益-与-最小化最大损失-必然相等，博弈论的起点定理",
+      "title": "极大极小定理（Minimax, von Neumann）：二人零和博弈中\"最大化最小收益\"与\"最小化最大损失\"必然相等，博弈论的起点定理",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "相关均衡（Correlated Equilibrium）：引入公共信号协调行动，可达到优于纳什均衡的结果（红绿灯原理）",
+      "title": "相关均衡（Correlated Equilibrium）：引入公共信号协调行动，可达到优于纳什均衡的结果（红绿灯原理）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "颤抖手完美均衡（Trembling-Hand Perfect）：要求均衡在对手偶尔犯错时依然稳健，剔除脆弱均衡",
+      "title": "颤抖手完美均衡（Trembling-Hand Perfect）：要求均衡在对手偶尔犯错时依然稳健，剔除脆弱均衡",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "序贯均衡（Sequential Equilibrium）：动态不完全信息博弈中，策略与信念必须相互一致",
+      "title": "序贯均衡（Sequential Equilibrium）：动态不完全信息博弈中，策略与信念必须相互一致",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "直觉标准（Intuitive Criterion）：用-谁不可能有动机发这个信号-来筛掉不合理的信号博弈均衡",
+      "title": "直觉标准（Intuitive Criterion）：用\"谁不可能有动机发这个信号\"来筛掉不合理的信号博弈均衡",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "核心（Core）：合作博弈中没有任何子联盟愿意脱离的分配集合；核为空意味着联盟必然破裂",
+      "title": "核心（Core）：合作博弈中没有任何子联盟愿意脱离的分配集合；核为空意味着联盟必然破裂",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "纳什讨价还价解（Nash Bargaining Solution）：在对称、有效、无关选项独立等公理下的唯一分配点",
+      "title": "纳什讨价还价解（Nash Bargaining Solution）：在对称、有效、无关选项独立等公理下的唯一分配点",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "鲁宾斯坦轮流出价模型：耐心（贴现率低）的一方获得更大份额，时间成本即谈判权",
+      "title": "鲁宾斯坦轮流出价模型：耐心（贴现率低）的一方获得更大份额，时间成本即谈判权",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "威胁点 - BATNA：谈判力来源于-谈崩后的最佳替代方案-，而非口头强硬",
+      "title": "威胁点 / BATNA：谈判力来源于\"谈崩后的最佳替代方案\"，而非口头强硬",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "拍卖理论与收益等价定理：在标准假设下，一价、二价、英式、荷式拍卖的期望收益相同",
+      "title": "拍卖理论与收益等价定理：在标准假设下，一价、二价、英式、荷式拍卖的期望收益相同",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "维克里拍卖（二价拍卖）：出价说真话是占优策略，机制设计的经典范例",
+      "title": "维克里拍卖（二价拍卖）：出价说真话是占优策略，机制设计的经典范例",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "赢家诅咒（Winner's Curse）：共同价值拍卖中出价最高者往往是高估最多者，需事前下调报价",
+      "title": "赢家诅咒（Winner's Curse）：共同价值拍卖中出价最高者往往是高估最多者，需事前下调报价",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "全局博弈（Global Games）：加入微小私有噪声可消除多重均衡，为货币危机、银行挤兑给出唯一临界点",
+      "title": "全局博弈（Global Games）：加入微小私有噪声可消除多重均衡，为货币危机、银行挤兑给出唯一临界点",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "消耗战（War of Attrition）：双方持续付出成本直至一方退出，沉没成本诱发非理性坚持",
+      "title": "消耗战（War of Attrition）：双方持续付出成本直至一方退出，沉没成本诱发非理性坚持",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "先动优势与后动优势：斯塔克伯格模型中承诺产能者获利，而信息不充分时后动者可观察学习",
+      "title": "先动优势与后动优势：斯塔克伯格模型中承诺产能者获利，而信息不充分时后动者可观察学习",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "声誉模型（Kreps-Wilson）：少量-非理性类型-的存在，使长期参与者值得付出成本维护声誉",
+      "title": "声誉模型（Kreps-Wilson）：少量\"非理性类型\"的存在，使长期参与者值得付出成本维护声誉",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "搜寻与匹配理论（Gale-Shapley）：延迟接受算法产生稳定匹配，且对提出方最优",
+      "title": "搜寻与匹配理论（Gale-Shapley）：延迟接受算法产生稳定匹配，且对提出方最优",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "共同代理与多任务委托：可测任务被过度激励，不可测任务被忽视（教育、KPI 扭曲的根源）",
+      "title": "共同代理与多任务委托：可测任务被过度激励，不可测任务被忽视（教育、KPI 扭曲的根源）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "有限理性与量子响应均衡（QRE）：现实中人按收益差的概率而非绝对最优选择",
+      "title": "有限理性与量子响应均衡（QRE）：现实中人按收益差的概率而非绝对最优选择",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "焦点效应与路径依赖的策略锁定：先出现的均衡会因协调成本而被长期锁死（QWERTY 效应）",
+      "title": "焦点效应与路径依赖的策略锁定：先出现的均衡会因协调成本而被长期锁死（QWERTY 效应）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "免费搭便车（Free Riding）：集体收益不可排他时，个体最优是不出力，团队规模越大越严重",
+      "title": "免费搭便车（Free Riding）：集体收益不可排他时，个体最优是不出力，团队规模越大越严重",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "承诺装置与自我博弈：把当下的自己与未来的自己视为不同参与人（时间不一致、双曲贴现）",
+      "title": "承诺装置与自我博弈：把当下的自己与未来的自己视为不同参与人（时间不一致、双曲贴现）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "共识与拜占庭将军问题：不可信节点下的协调博弈，区块链机制设计的理论母题",
+      "title": "共识与拜占庭将军问题：不可信节点下的协调博弈，区块链机制设计的理论母题",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "零和错觉（Zero-Sum Bias）：人类默认把非零和情境误判为零和，是谈判破裂的常见心理起点",
+      "title": "零和错觉（Zero-Sum Bias）：人类默认把非零和情境误判为零和，是谈判破裂的常见心理起点",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "大数公理：预测对象必须是足够庞大的人口（银河级），个体行为的随机性才能被统计规律抹平",
+      "title": "大数公理：预测对象必须是足够庞大的人口（银河级），个体行为的随机性才能被统计规律抹平",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "无知公理（不可观测性原理）：被预测的人群必须不知道预测结果，否则行为改变会使预测失效",
+      "title": "无知公理（不可观测性原理）：被预测的人群必须不知道预测结果，否则行为改变会使预测失效",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "人性恒常假设：在预测时间尺度内，人类的基本反应模式保持稳定",
+      "title": "人性恒常假设：在预测时间尺度内，人类的基本反应模式保持稳定",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "气体分子类比：单个分子轨迹不可知，但温度压强可精确预测；单人不可测，文明可测",
+      "title": "气体分子类比：单个分子轨迹不可知，但温度压强可精确预测；单人不可测，文明可测",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "概率而非确定性：所有结论都是概率分布，谢顿计划给出的是-最可能路径-而非命运",
+      "title": "概率而非确定性：所有结论都是概率分布，谢顿计划给出的是\"最可能路径\"而非命运",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "谢顿计划与心理史学方程：把社会变量编码为可运算的数学形式，在-主辐射器-上呈现分叉路径",
+      "title": "谢顿计划与心理史学方程：把社会变量编码为可运算的数学形式，在\"主辐射器\"上呈现分叉路径",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "谢顿危机（Seldon Crisis）：外部压力将社会的可选路径压缩到唯一，此时历史进程最可预测",
+      "title": "谢顿危机（Seldon Crisis）：外部压力将社会的可选路径压缩到唯一，此时历史进程最可预测",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "最小干预原理：在分叉点施加极小的推力，即可将长期轨迹导向另一条路径（杠杆点）",
+      "title": "最小干预原理：在分叉点施加极小的推力，即可将长期轨迹导向另一条路径（杠杆点）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "必然性与自由意志并存：个体自由不妨碍总体趋势，宏观决定论与微观自由不矛盾",
+      "title": "必然性与自由意志并存：个体自由不妨碍总体趋势，宏观决定论与微观自由不矛盾",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "第二基地的纠偏机制：任何长期计划都需要一个隐蔽的反馈修正系统，因为模型必定漂移",
+      "title": "第二基地的纠偏机制：任何长期计划都需要一个隐蔽的反馈修正系统，因为模型必定漂移",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "黑天鹅击穿模型（-骡-）：单一超常个体（突变、强人、新技术）可整体摧毁统计预测，模型无法预测自身框架外的变量",
+      "title": "黑天鹅击穿模型（\"骡\"）：单一超常个体（突变、强人、新技术）可整体摧毁统计预测，模型无法预测自身框架外的变量",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "社会物理学 - 计算社会科学：用大规模行为数据做统计推断，是心理史学最接近的现实形态",
+      "title": "社会物理学 / 计算社会科学：用大规模行为数据做统计推断，是心理史学最接近的现实形态",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "人口结构决定论：年龄结构、抚养比、城市化率具有数十年惯性，是最可靠的长期预测变量",
+      "title": "人口结构决定论：年龄结构、抚养比、城市化率具有数十年惯性，是最可靠的长期预测变量",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "长周期理论：康德拉季耶夫周期、代际理论（Strauss–Howe）、帝国兴衰周期——争议大但常被引用",
+      "title": "长周期理论：康德拉季耶夫周期、代际理论（Strauss–Howe）、帝国兴衰周期——争议大但常被引用",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "反身性原理（Soros）：预测本身改变被预测对象，与-无知公理-正好互为表里",
+      "title": "反身性原理（Soros）：预测本身改变被预测对象，与\"无知公理\"正好互为表里",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "卢卡斯批判：基于历史行为拟合的参数，会在政策改变后失效——模型的结构性失效风险",
+      "title": "卢卡斯批判：基于历史行为拟合的参数，会在政策改变后失效——模型的结构性失效风险",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "古德哈特定律：一旦指标成为目标，它就不再是好指标",
+      "title": "古德哈特定律：一旦指标成为目标，它就不再是好指标",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "临界点与相变：社会系统在临界态附近，微小扰动引发级联（自组织临界性、渗流模型）",
+      "title": "临界点与相变：社会系统在临界态附近，微小扰动引发级联（自组织临界性、渗流模型）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "心理史学（deMause 学派）：现实中另一同名学科，用精神分析方法解释群体历史行为的情绪动因，与阿西莫夫设定无关",
+      "title": "心理史学（deMause 学派）：现实中另一同名学科，用精神分析方法解释群体历史行为的情绪动因，与阿西莫夫设定无关",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "结构人口理论（Turchin, Cliodynamics）：精英过度生产 + 平民生活水平下降 + 国家财政危机 → 社会动荡，可量化的历史周期学",
+      "title": "结构人口理论（Turchin, Cliodynamics）：精英过度生产 + 平民生活水平下降 + 国家财政危机 → 社会动荡，可量化的历史周期学",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "世俗周期（Secular Cycles）：约 150–300 年的扩张—滞涨—危机—萧条四阶段，与人口承载力挂钩",
+      "title": "世俗周期（Secular Cycles）：约 150–300 年的扩张—滞涨—危机—萧条四阶段，与人口承载力挂钩",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "幂律与厚尾分布：战争规模、城市大小、金融波动均服从幂律，均值无意义、极端事件才是主导项",
+      "title": "幂律与厚尾分布：战争规模、城市大小、金融波动均服从幂律，均值无意义、极端事件才是主导项",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "自组织临界性（沙堆模型）：系统自发演化到临界状态，崩塌规模不可预测但分布可知",
+      "title": "自组织临界性（沙堆模型）：系统自发演化到临界状态，崩塌规模不可预测但分布可知",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "传染模型（SIR - 信息级联）：观念、恐慌、行情的扩散服从流行病学方程，R0 与临界密度决定是否爆发",
+      "title": "传染模型（SIR / 信息级联）：观念、恐慌、行情的扩散服从流行病学方程，R0 与临界密度决定是否爆发",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "网络结构决定论：结果更多取决于连接拓扑（枢纽节点、弱连接）而非个体属性",
+      "title": "网络结构决定论：结果更多取决于连接拓扑（枢纽节点、弱连接）而非个体属性",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "涌现（Emergence）：宏观规律无法从微观规则线性推导，但一旦形成就具有独立的稳定性",
+      "title": "涌现（Emergence）：宏观规律无法从微观规则线性推导，但一旦形成就具有独立的稳定性",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "元胞自动机与基于主体建模（ABM）：用简单个体规则模拟复杂社会演化，心理史学的现实计算工具",
+      "title": "元胞自动机与基于主体建模（ABM）：用简单个体规则模拟复杂社会演化，心理史学的现实计算工具",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "路径依赖与锁定效应：历史的偶然选择通过正反馈被固化，-初始条件敏感-限制长期可预测性",
+      "title": "路径依赖与锁定效应：历史的偶然选择通过正反馈被固化，\"初始条件敏感\"限制长期可预测性",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "确定性混沌与李雅普诺夫时间：即使方程完全确定，误差指数放大也使预测存在天然时间上限",
+      "title": "确定性混沌与李雅普诺夫时间：即使方程完全确定，误差指数放大也使预测存在天然时间上限",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "参照类预测（Reference Class Forecasting）：不要建模个案，先找同类事件的基准率",
+      "title": "参照类预测（Reference Class Forecasting）：不要建模个案，先找同类事件的基准率",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "基准率忽视（Base Rate Neglect）：预测失败的首要原因是用生动叙事替代统计先验",
+      "title": "基准率忽视（Base Rate Neglect）：预测失败的首要原因是用生动叙事替代统计先验",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "超级预测者原则（Tetlock）：狐狸胜刺猬——多模型、小幅频繁更新、概率化表达、事后计分",
+      "title": "超级预测者原则（Tetlock）：狐狸胜刺猬——多模型、小幅频繁更新、概率化表达、事后计分",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "布莱尔评分（Brier Score）：预测必须可量化打分，否则无法区分洞见与运气",
+      "title": "布莱尔评分（Brier Score）：预测必须可量化打分，否则无法区分洞见与运气",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "林迪效应（Lindy Effect）：非易逝事物的预期剩余寿命与已存续时间成正比，长期预测的简易先验",
+      "title": "林迪效应（Lindy Effect）：非易逝事物的预期剩余寿命与已存续时间成正比，长期预测的简易先验",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "反脆弱与凸性（Taleb）：不预测具体事件，而是构造在意外中获益的头寸结构",
+      "title": "反脆弱与凸性（Taleb）：不预测具体事件，而是构造在意外中获益的头寸结构",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "叙事经济学（Shiller）：可传播的故事本身是驱动经济周期的变量，模因动力学可观测",
+      "title": "叙事经济学（Shiller）：可传播的故事本身是驱动经济周期的变量，模因动力学可观测",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "模因与文化演化：观念按复制率而非真实性传播，社会趋势可用演化动力学建模",
+      "title": "模因与文化演化：观念按复制率而非真实性传播，社会趋势可用演化动力学建模",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "人口金字塔与青年膨胀（Youth Bulge）：15–29 岁人口占比过高与动荡风险高度相关，提前 20 年可见",
+      "title": "人口金字塔与青年膨胀（Youth Bulge）：15–29 岁人口占比过高与动荡风险高度相关，提前 20 年可见",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "技术 S 曲线与扩散理论（Rogers）：采用率遵循可预测曲线，拐点位置比终点更有价值",
+      "title": "技术 S 曲线与扩散理论（Rogers）：采用率遵循可预测曲线，拐点位置比终点更有价值",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "社会临界质量（Critical Mass, ~25%）：少数派规模越过阈值后，社会规范会迅速整体翻转",
+      "title": "社会临界质量（Critical Mass, ~25%）：少数派规模越过阈值后，社会规范会迅速整体翻转",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "偏好伪装（Preference Falsification, Kuran）：公开表态与真实想法背离，使革命与崩塌-永远出乎意料-",
+      "title": "偏好伪装（Preference Falsification, Kuran）：公开表态与真实想法背离，使革命与崩塌\"永远出乎意料\"",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "不可预测性定理（Popper 反驳）：知识增长不可预测，因而依赖知识的历史进程原则上不可预测——对心理史学最有力的哲学反驳",
+      "title": "不可预测性定理（Popper 反驳）：知识增长不可预测，因而依赖知识的历史进程原则上不可预测——对心理史学最有力的哲学反驳",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "观测者效应与自证-自败预言：预言被公布后会自我实现或自我毁灭，两种方向都破坏原模型",
+      "title": "观测者效应与自证/自败预言：预言被公布后会自我实现或自我毁灭，两种方向都破坏原模型",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "市场是重复非零和博弈：参与者持续互动，声誉与可预期性本身构成资产",
+      "title": "市场是重复非零和博弈：参与者持续互动，声誉与可预期性本身构成资产",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "价格是共同知识的凝结：能预测的部分已被定价，超额收益只存在于-尚未成为共同知识-的信息层",
+      "title": "价格是共同知识的凝结：能预测的部分已被定价，超额收益只存在于\"尚未成为共同知识\"的信息层",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "拥挤交易 = 纳什均衡崩塌点：所有人采用同一占优策略时，该策略自动失效（策略容量衰减）",
+      "title": "拥挤交易 = 纳什均衡崩塌点：所有人采用同一占优策略时，该策略自动失效（策略容量衰减）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "宏观可测、微观不可测：仓位结构、资金流、情绪指标可统计，单笔行情不可预测——大数公理的市场版本",
+      "title": "宏观可测、微观不可测：仓位结构、资金流、情绪指标可统计，单笔行情不可预测——大数公理的市场版本",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "信号发布即信号失效：策略公开后被套利，对应无知公理与反身性",
+      "title": "信号发布即信号失效：策略公开后被套利，对应无知公理与反身性",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "黑天鹅优先于精度：模型再精密也挡不住框架外变量，风控高于预测（-骡-原则）",
+      "title": "黑天鹅优先于精度：模型再精密也挡不住框架外变量，风控高于预测（\"骡\"原则）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "信息级联与羊群效应：后来者放弃私有信息跟随公开行为，价格偏离基本面且极不稳定",
+      "title": "信息级联与羊群效应：后来者放弃私有信息跟随公开行为，价格偏离基本面且极不稳定",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "共同知识与协调型崩盘：不是-坏消息-引发抛售，而是-人人都知道人人都看到了坏消息-的那一刻",
+      "title": "共同知识与协调型崩盘：不是\"坏消息\"引发抛售，而是\"人人都知道人人都看到了坏消息\"的那一刻",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "反射性泡沫结构：价格→基本面→价格的正反馈，繁荣与崩溃不对称（缓涨急跌）",
+      "title": "反射性泡沫结构：价格→基本面→价格的正反馈，繁荣与崩溃不对称（缓涨急跌）",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "多空博弈中的逼空均衡：空头的平仓需求构成买盘，仓位分布本身是收益函数的一部分",
+      "title": "多空博弈中的逼空均衡：空头的平仓需求构成买盘，仓位分布本身是收益函数的一部分",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "有限套利（Limits to Arbitrage）：即使知道错价，融资约束与保证金也可能让你先于市场纠错而爆仓",
+      "title": "有限套利（Limits to Arbitrage）：即使知道错价，融资约束与保证金也可能让你先于市场纠错而爆仓",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "策略拥挤度即风险因子：把-多少人在做同一件事-作为可观测变量纳入风控",
+      "title": "策略拥挤度即风险因子：把\"多少人在做同一件事\"作为可观测变量纳入风控",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "元博弈（Metagame）：赚钱的不是最优策略，而是针对当前流行策略的最优反制",
+      "title": "元博弈（Metagame）：赚钱的不是最优策略，而是针对当前流行策略的最优反制",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "样本外与制度切换：任何回测都隐含-制度不变-假设，卢卡斯批判在量化中的直接体现",
+      "title": "样本外与制度切换：任何回测都隐含\"制度不变\"假设，卢卡斯批判在量化中的直接体现",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "凯利公式与生存约束：长期复利由几何均值决定，破产概率非零即长期收益为零",
+      "title": "凯利公式与生存约束：长期复利由几何均值决定，破产概率非零即长期收益为零",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
+      "slug": "预测分层：区分-可统计的宏观结构-、-可博弈的参与者行为-、-不可知的外生冲击-，对三者用完全不同的方法",
+      "title": "预测分层：区分\"可统计的宏观结构\"、\"可博弈的参与者行为\"、\"不可知的外生冲击\"，对三者用完全不同的方法",
+      "status": "pending",
+      "started": null,
+      "finished": null,
+      "duration_sec": null,
+      "outputs": [],
+      "error": null
+    },
+    {
       "slug": "量化交易与博弈论的关系",
       "title": "量化交易与博弈论的关系",
       "status": "removed",
@@ -638,7 +1798,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-17 01:11",
+  "updated": "2026-09-19 00:00",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
