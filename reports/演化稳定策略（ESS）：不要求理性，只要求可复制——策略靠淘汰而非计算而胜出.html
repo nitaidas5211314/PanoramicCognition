@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>演化稳定策略（ESS）：不要求理性，只要求可复制 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>ESS × Evolutionary Game Theory × Replicator</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">现实映射</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <div class="navgroup">模拟与实践</div>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与问题</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>演化稳定策略（ESS）：不要求理性，只要求可复制</h1>
+  <p class="sub">策略靠<strong>淘汰</strong>而非计算而胜出——ESS 不问「你是否理性算出最优」，只问「稀有突变能否入侵」。它是纳什均衡的精炼：每个 ESS 都是对称 NE，但<strong>不是每个 NE 都能扛住漂移与入侵</strong>。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>演化稳定策略（Evolutionarily Stable Strategy, ESS）</strong>：若几乎全体成员都采用策略 (I)，则任何稀有突变策略 (J) 在自然选择下都无法入侵——(I) 靠<strong>可复制的适应度优势</strong>站住，不要求个体会算博弈。<span class="tag t-fact">事实</span></p>
+<p>Maynard Smith &amp; Price（1973 <em>Nature</em>「The Logic of Animal Conflict」）给出经典条件：对一切 (J\neq I)，要么 (E(I,I)&gt;E(J,I))（一阶严格优），要么 (E(I,I)=E(J,I)) 且 (E(I,J)&gt;E(J,J))（二阶抗漂移）。<span class="tag t-fact">事实</span>每个 ESS 都是对称纳什均衡；严格 NE 一定是 ESS；但存在「弱 NE」可被中性漂移打开缺口后被淘汰。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></p>
+<p>默认教学参数（鹰鸽）：(V=50,\,C=100) → 混合 ESS 的鹰频率 (p^<em>=V/C=0.50)，均衡期望支付 (12.5)，全鸽分享 (25)——群体在 ESS 上</em><em>严格帕累托劣于</em>*全鸽。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「聪明人如何算最优」，而是：<strong>在复制、突变与选择下，哪些行为表型能抵抗入侵</strong>。支付被解释为适应度贡献（或相对增长率），「解」是不可入侵性，不是理性共识。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：ESS 定义（2.4a/b）、与 NE 的包含关系、2×2 分类、鹰鸽混合 ESS (p^*=V/C)、复制者动态、演化稳定态（种群多态）vs 个体混合 ESS、方法论局限（静态 vs 动态）。</li>
+<li><strong>在界外</strong>：具体物种行为学细节、某只股票买卖点、需要完全理性共同知识的经典求解——除非压成「策略是否可入侵」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>策略/表型在选择压力下的不可入侵性</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到支付 + 种群动态可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>ESS、突变、适应度、复制者方程、吸引盆</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>基因/文化表型、企业惯例、交易策略、制度规范</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>支付矩阵、突变频率 (\varepsilon)、种群结构、学习规则</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>行为频率、冲突结果、市场占有率、规范遵从率</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实适应度尺度、隐性突变池、吸引盆边界</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>频率 → 相对适应度 → 频率变化 → 可否入侵</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>一阶/二阶 ESS 条件 ⇒ 局部抗突变；动态决定能否到达</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「常见」≠ ESS；流行可相关于路径依赖<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>有限打斗、礼仪化冲突、惯例、文化规范、策略淘汰</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>相对增长率差驱动复制；不可入侵 = 局部适应度峰</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。频率改变平均支付，再反馈到增长率</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。世代重叠、学习滞后、制度惯性</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>协调博弈可正反馈锁死；频率依赖可负反馈回 ESS</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>ESS 问的不是「你会不会算」，而是：<strong>当你几乎统治种群时，稀有的另一套做法还能不能涨上来。</strong></p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它卸掉「理性共同知识」的重负</h4><p>动物、惯例、文化规范、算法 agent 往往不会做无限递归推理；ESS 用选择代替计算。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它是 NE 的锋利精炼刀</h4><p>找到对称 NE 只是起点；二阶条件把「中性可漂移」的弱均衡剔掉。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它连接生物、制度与市场淘汰</h4><p>同一数学结构出现在动物冲突、社会规范演化、市场选择假说与文化传播偏差里。<span class="tag t-inf">推论</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「已经是纳什均衡」当成「演化上安全」。弱 NE 在理性模型里「没人有严格动机偏离」，但在复制世界里，中性突变可漂到足够多，再靠二阶劣势把在位策略吃掉。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看 ESS 如何从「适应度支付」长成「动态与制度」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="essL9" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度 / 文化 / 市场选择 · 规范与策略的长期淘汰</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 方法论边界 · 静态 ESS ≠ 动态必达（Huttegger–Zollman）</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 结构扩展 · 非对称博弈 · 有限种群 · 空间结构</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 复制者动态 · ṗ = p(f−f̄)；吸引盆决定命运</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 多态稳定态 · 遗传多态 vs 个体混合 ESS</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 二阶条件 · E(I,I)=E(J,I) 时须 E(I,J)&gt;E(J,J)</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 与 NE 关系 · ESS ⊂ 对称 NE；严格 NE ⇒ ESS</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 不可入侵定义 · 稀有突变适应度劣势</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 支付 = 适应度 · 对称两人偶遇 · 无限无性种群原型</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2→L4</strong>：会写两条件、会判弱 NE；进阶卡在 <strong>L6→L8</strong>：ESS 只保证局部抗入侵，不保证从任意初值到达，也不穷尽所有演化显著吸引子。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到可操作判据。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="essCmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="essCmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="100" y="16" width="480" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">不可入侵 → 一阶/二阶条件 → 频率动态检验</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">ESS · 适应度</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">2.4a/b · 复制者</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">判矩阵 · 画轨迹</text>
+
+  <line x1="280" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#essCmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#essCmA)"/>
+  <line x1="400" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#essCmA)"/>
+
+  <rect x="40" y="180" width="180" height="70" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="208" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">I 统治时 J 更差</text><text x="130" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">或平手时打 J 更强</text>
+  <rect x="250" y="180" width="180" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="208" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">E(I,I)≥E(J,I)</text><text x="340" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">等号 ⇒ 二阶严格</text>
+  <rect x="460" y="180" width="180" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="208" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">2×2 闭式分类</text><text x="550" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">p*=V/C · 入侵差</text>
+
+  <path d="M130 260 v30 H340 v-30" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#essCmB)"/>
+  <text x="340" y="310" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">反馈：频率变了，谁「算赢」也可能变</text>
+  <rect x="160" y="330" width="360" height="36" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="340" y="353" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">静态 ESS 过关 ≠ 动态一定收敛到它</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="grid g3">
+<div class="card"><h4>理论奠基者</h4><p>John Maynard Smith、George Price（1973）；Maynard Smith《Evolution and the Theory of Games》（1982）系统化。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>动态扩展者</h4><p>Taylor &amp; Jonker（1978）复制者动态；此后 Weibull、Hofbauer &amp; Sigmund 等把 ESS 接到动力系统。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>应用与批评者</h4><p>行为生态学家用鹰鸽/消耗战；经济学家用演化博弈解释规范与惯例（Young 等）；哲学家批评「只做静态精炼」的方法论（Huttegger &amp; Zollman）。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>今日「玩家」</h4><p>制度设计者、平台规则制定者、策略型交易/agent 系统、企业文化与规范变革推动者——凡关心「稀有异见能否长成主流」。<span class="tag t-inf">推论</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+<th>杠杆作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">(E(X,Y))</td>
+<td>(X) 对 (Y) 的期望适应度</td>
+<td>ESS 条件的原材料</td>
+</tr>
+<tr>
+<td class="k">(\varepsilon)</td>
+<td>突变/入侵者频率</td>
+<td>定义要求对充分小 (\varepsilon) 成立</td>
+</tr>
+<tr>
+<td class="k">(V,C)</td>
+<td>资源价值 / 打斗成本（鹰鸽）</td>
+<td>(p^*=V/C)；(V\ge C) 时纯鹰 ESS</td>
+</tr>
+<tr>
+<td class="k">(p)</td>
+<td>某策略当前频率</td>
+<td>复制者状态变量</td>
+</tr>
+<tr>
+<td class="k">(f-\bar f)</td>
+<td>相对适应度</td>
+<td>决定 (\dot p) 符号</td>
+</tr>
+<tr>
+<td class="k">种群结构</td>
+<td>配对相关、空间、有限规模</td>
+<td>可改写有效支付与 ESS</td>
+</tr>
+<tr>
+<td class="k">学习/选择规则</td>
+<td>复制者、最优反应、模仿</td>
+<td>吸引盆可几乎不相交<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<div class="note green"><b>默认数字锚点</b><p>下文交互默认：鹰鸽 (V=50,\,C=100) → (p^<em>=0.50)，(\bar f^</em>=12.5)，全鸽 (25)，全鹰 (-25)；入侵者频率 (\varepsilon=0.10) 时，纯鹰或纯鸽相对混合 ESS 的适应度差约为 (-1.25)（突变更差）。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="essCa" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="essCb" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="140" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="90" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">支付矩阵 A</text>
+  <rect x="200" y="30" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="270" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">相对适应度</text>
+  <rect x="380" y="30" width="140" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="450" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">频率变化 ṗ</text>
+  <rect x="520" y="30" width="140" height="50" rx="8" fill="#15181d"/><text x="590" y="60" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">ESS / 淘汰</text>
+  <line x1="160" y1="55" x2="198" y2="55" stroke="#1d4ed8" marker-end="url(#essCa)"/>
+  <line x1="340" y1="55" x2="378" y2="55" stroke="#1d4ed8" marker-end="url(#essCa)"/>
+  <line x1="520" y1="55" x2="518" y2="55" stroke="#1d4ed8"/><line x1="520" y1="55" x2="558" y2="55" stroke="#1d4ed8" marker-end="url(#essCa)"/>
+
+  <rect x="80" y="140" width="200" height="44" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="180" y="167" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">弱 NE：E(I,I)=E(J,I)</text>
+  <rect x="360" y="140" width="240" height="44" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="480" y="167" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">漂移抬高 ε → 二阶决胜负</text>
+  <line x1="280" y1="162" x2="358" y2="162" stroke="#d5342c" stroke-dasharray="4 3" marker-end="url(#essCb)"/>
+
+  <text x="340" y="230" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">实线 = 因果主链；红虚线 = 反馈/漂移通道</text>
+  <text x="340" y="260" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">C&gt;V ⇒ 混合 ESS；V≥C ⇒ 纯鹰 ESS（鹰鸽）</text>
+</svg>
+<p>因果要点：</p>
+<ol>
+<li><strong>支付差驱动选择</strong>：(f_i&gt;\bar f) 的策略扩张。<span class="tag t-fact">事实</span></li>
+<li><strong>一阶 ESS = 严格优于一切突变（对自身）</strong>：直接挡住入侵。<span class="tag t-fact">事实</span></li>
+<li><strong>二阶 ESS = 平手时打突变更狠</strong>：挡住「先漂移、再反超」。<span class="tag t-fact">事实</span></li>
+<li><strong>动态路径独立</strong>：同一 ESS 可从大吸引盆进入，也可几乎达不到——静态条件不负责「怎么到」。<span class="tag t-ana">分析</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="grid g2">
+<div class="card"><h4>ESS ⊂ 对称 NE，但 ≠「理性共识」</h4><p>ESS 的存在性证明常借用 NE 语言，但动机假设完全不同：选择替代共同知识。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>个体混合 ESS ≠ 种群多态稳定态</h4><p>严格说，ESS 是个体采用的混合策略；遗传多态可处在演化稳定<strong>状态</strong>，却无人采用该混合。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>全鸽更好，却不是 ESS</h4><p>鹰鸽在 (C&gt;V) 时，全鸽平均支付 (V/2) 高于混合 ESS 的 (V(C-V)/(2C))，但纯鸽可被稀有鹰入侵。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>「无 ESS」仍可演化</h4><p>猜拳式循环、集合稳定、椭圆吸引——非 ESS 吸引子可以演化显著（Huttegger &amp; Zollman 等）。<span class="tag t-ana">分析</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">一阶条件</button><button class="tab" data-pane="tb1-1">二阶条件</button><button class="tab" data-pane="tb1-2">复制者方程</button><button class="tab" data-pane="tb1-3">Bishop–Cannings</button></div>
+<div class="pane on" id="tb1-0"><p>(E(I,I)&gt;E(J,I))：在几乎全是 (I) 的世界里，突变 (J) 一上来就吃亏。严格纳什 ⇒ 自动满足，故严格 NE 都是 ESS。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-1"><p>若 (E(I,I)=E(J,I))，则必须 (E(I,J)&gt;E(J,J))。否则 (J) 可中性漂到不可忽视的频率，再在 (J)-(J) 相遇中占优。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-2"><p>两策略时 (\dot p = p(1-p)(f_1-f_2))。鹰鸽：(\dot p = p(1-p)(V-Cp)/2)。内部不动点 (p^*=V/C)（需 (C&gt;V)）局部渐近稳定，且与混合 ESS 重合。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-3"><p>2×2 内部点稳定当且仅当 (a+d &lt; b+c)（反协调）。协调博弈则两纯策略可为 ESS，内部点不稳定。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="essT" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="80" cy="110" r="10" fill="#0f8a4d"/><text x="80" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1973</text><text x="80" y="145" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">ESS 提出</text>
+  <circle cx="220" cy="110" r="10" fill="#1d4ed8"/><text x="220" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1978</text><text x="220" y="145" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">复制者动态</text>
+  <circle cx="360" cy="110" r="10" fill="#b8730a"/><text x="360" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1982</text><text x="360" y="145" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">专著系统化</text>
+  <circle cx="500" cy="110" r="10" fill="#5b8def"/><text x="500" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">1990s+</text><text x="500" y="145" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">经济/规范应用</text>
+  <circle cx="620" cy="110" r="10" fill="#15181d"/><text x="620" y="70" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">2010s+</text><text x="620" y="145" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">动态方法论批评</text>
+  <line x1="90" y1="110" x2="208" y2="110" stroke="#1d4ed8" marker-end="url(#essT)"/>
+  <line x1="230" y1="110" x2="348" y2="110" stroke="#1d4ed8" marker-end="url(#essT)"/>
+  <line x1="370" y1="110" x2="488" y2="110" stroke="#1d4ed8" marker-end="url(#essT)"/>
+  <line x1="510" y1="110" x2="608" y2="110" stroke="#1d4ed8" marker-end="url(#essT)"/>
+  <text x="340" y="195" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">时间轴：概念 → 动态 → 跨学科 → 边界反思</text>
+</svg>
+<p>种群内的时间尺度：复制者连续近似下，默认 (V=50,C=100)、欧拉步长 (0.1) 时，从 (p=0.05) 或 (0.95) 到距 (p^<em>) 约 (0.01) 量级只需约 </em><em>4</em>* 步——说明该参数下回拉很强；换学习规则或弱选择，时间尺度会差数量级。<span class="tag t-inf">推论</span><span class="tag t-chk">待验证</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<p>谁在 ESS 世界里「赢」？</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>激励</th>
+<th>ESS 含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">在位策略 (I)</td>
+<td>保持不可入侵</td>
+<td>一阶/二阶条件成立</td>
+</tr>
+<tr>
+<td class="k">突变 (J)</td>
+<td>在稀有时相对适应度 &gt;0</td>
+<td>被 ESS 定义禁止</td>
+</tr>
+<tr>
+<td class="k">群体整体</td>
+<td>往往想要更高平均支付</td>
+<td>可与 ESS <strong>冲突</strong>（鹰鸽帕累托隙）</td>
+</tr>
+<tr>
+<td class="k">制度设计者</td>
+<td>改支付以移动 ESS</td>
+<td>提高 (C)、降低 (V)、改变配对</td>
+</tr>
+<tr>
+<td class="k">挑战者文化</td>
+<td>先制造相关/聚类再扩散</td>
+<td>绕开「随机稀有突变」假设<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<div class="note red"><b>激励错位</b><p>个体层面「可复制的赢」可以系统性地牺牲群体平均福利。ESS 稳定 ≠ 社会合意——这是机制设计要动手的地方。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="essFl" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="30" y="40" width="150" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="105" y="75" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">资源 V / 成本 C</text>
+  <rect x="220" y="40" width="150" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="295" y="75" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">偶遇配对</text>
+  <rect x="410" y="40" width="150" height="60" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="485" y="75" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">适应度结算</text>
+  <rect x="265" y="150" width="150" height="60" rx="8" fill="#15181d"/><text x="340" y="185" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">频率更新</text>
+  <line x1="180" y1="70" x2="218" y2="70" stroke="#1d4ed8" marker-end="url(#essFl)"/>
+  <line x1="370" y1="70" x2="408" y2="70" stroke="#1d4ed8" marker-end="url(#essFl)"/>
+  <line x1="485" y1="100" x2="360" y2="150" stroke="#1d4ed8" marker-end="url(#essFl)"/>
+  <line x1="300" y1="150" x2="105" y2="100" stroke="#d5342c" stroke-dasharray="4 3" marker-end="url(#essFl)"/>
+  <text x="340" y="240" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">信息流：谁与谁相遇、频率可见性，决定有效支付</text>
+</svg>
+<ul>
+<li><strong>抽走的</strong>：打斗成本 (C)、冲突损耗、错误配对带来的福利隙（ESS vs 全鸽差 (12.5) 在默认参数下）。<span class="tag t-fact">事实</span></li>
+<li><strong>流入的</strong>：资源 (V)、学习信号、规范制裁信息、制度规则变更。<span class="tag t-ana">分析</span></li>
+<li><strong>关键瓶颈</strong>：无限随机配对假设一旦被空间结构/亲缘打破，信息流改道，ESS 预测可翻转。<span class="tag t-ana">分析</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何锋利</th>
+<th>操作提示</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>改 (V/C)</td>
+<td>直接移动 (p^*)</td>
+<td>提高冲突成本、降低争产价值</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>把弱 NE 升为严格</td>
+<td>堵死二阶漂移</td>
+<td>给偏差一点点惩罚/奖励差</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>改配对相关</td>
+<td>合作/鸽策略可抵抗入侵</td>
+<td>聚类、重复互动、声誉</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>扩大合意吸引盆</td>
+<td>静态 ESS 不够</td>
+<td>初值干预、示范、补贴过渡</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>选择规则设计</td>
+<td>复制者≠最优反应</td>
+<td>平台激励、模仿对象</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>突变供给管理</td>
+<td>(\varepsilon) 太大静态局部失效</td>
+<td>合规、准入、实验沙盒</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>透明化频率</td>
+<td>加速/减速收敛</td>
+<td>公开占比 vs 隐蔽实验</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>非对称化角色</td>
+<td>打破对称 ESS 框架</td>
+<td>所有者–入侵者、先到后到</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>多群体耦合</td>
+<td>改变有效矩阵</td>
+<td>跨市场/跨部门联动</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>明确「稳定态 vs ESS」</td>
+<td>避免概念误用</td>
+<td>问清是个体混合还是多态</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「ESS = 最理性的策略」</summary><div class="dbody"><p>ESS 不要求理性计算；它要求在复制系统里扛得住突变。愚蠢但可复制的惯例可以是 ESS。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. 「是纳什均衡就演化安全」</summary><div class="dbody"><p>弱 NE 允许中性替代；二阶条件失败就会被吃掉。ESS 是精炼，不是同义词。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>3. 「ESS 一定社会最优」</summary><div class="dbody"><p>鹰鸽混合 ESS 的平均支付可远低于全鸽。稳定可以很贵。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 「找到 ESS 就预测了结果」</summary><div class="dbody"><p>还要问吸引盆、噪声、结构。静态不可入侵 ≠ 动态必达。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>5. 「混合 ESS 必须人人随机化」</summary><div class="dbody"><p>种群半鹰半鸽的稳定态，与每个个体 50% 随机，动力学上可相似，生物学解释不同。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>6. 「无纯策略 ESS = 混乱」</summary><div class="dbody"><p>可以有唯一混合 ESS；也可以是循环/集合稳定。先分类再下结论。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>7. 「把 Chicken 的承诺故事直接叫 ESS」</summary><div class="dbody"><p>承诺改的是博弈本身；ESS 是给定博弈下的抗入侵性。两者相关但层级不同。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>8. 「有限种群照搬无限 ESS」</summary><div class="dbody"><p>漂移与固定概率改变结论；小群体要用有限种群修正。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>9. 「文化/市场 = 基因复制者」</summary><div class="dbody"><p>传递偏差、选择性模仿、制度强制会改动力学；类比有用，等式危险。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>10. 「二阶条件可忽略」</summary><div class="dbody"><p>教学里最容易只背一阶。弱均衡案例全栽在二阶上。<span class="tag t-fact">事实</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实例子</th>
+<th>操作含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">混合 ESS (p^*=V/C)</td>
+<td>有限打斗、仪式化展示</td>
+<td>提高「认真打」的成本可降低攻击频率</td>
+</tr>
+<tr>
+<td class="k">弱 NE 非 ESS</td>
+<td>「大家都可以、谁先变谁吃亏」的空洞惯例</td>
+<td>需要一点点奖惩差才能稳住</td>
+</tr>
+<tr>
+<td class="k">帕累托劣 ESS</td>
+<td>军备/价格战强度停在痛苦均衡</td>
+<td>改支付或改配对，而不是喊口号</td>
+</tr>
+<tr>
+<td class="k">复制者收敛</td>
+<td>策略回测后资金占比迁移</td>
+<td>看相对增长率，不只看绝对收益<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">吸引盆</td>
+<td>规范从示范社区扩散</td>
+<td>先堆临界质量再谈全局</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="grid g3">
+<div class="card"><h4>诊断题</h4><p>这是对称两人偶遇吗？支付差是否频率依赖？你以为的「均衡」是严格的还是弱的？<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>计算题</h4><p>写出 2×2；判纯 ESS；算内部 (x^*=(d-b)/((a-c)+(d-b)))；查 (a+d?b+c)。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>干预题</h4><p>你要移 (p^*)、扩吸引盆，还是制造相关配对？三者工具不同。<span class="tag t-inf">推论</span></p></div>
+</div>
+:::raw
+<div class="tool" id="tool_cl">
+  <div class="ctrl">
+    <label>a（1 vs 1） <output id="cl_aO">-25</output></label>
+    <input type="range" id="cl_a" min="-50" max="50" step="1" value="-25"/>
+    <label>b（1 vs 2） <output id="cl_bO">50</output></label>
+    <input type="range" id="cl_b" min="-50" max="50" step="1" value="50"/>
+    <label>c（2 vs 1） <output id="cl_cO">0</output></label>
+    <input type="range" id="cl_c" min="-50" max="50" step="1" value="0"/>
+    <label>d（2 vs 2） <output id="cl_dO">25</output></label>
+    <input type="range" id="cl_d" min="-50" max="50" step="1" value="25"/>
+  </div>
+  <div class="readout">
+    <div class="ro">纯1 ESS <strong id="cl_p1">否</strong></div>
+    <div class="ro">纯2 ESS <strong id="cl_p2">否</strong></div>
+    <div class="ro">混合 x* <strong id="cl_x">0.50</strong></div>
+    <div class="ro">内部稳定 <strong id="cl_st">是</strong></div>
+    <div id="cl_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="cl_vh">默认鹰鸽：两纯皆非 ESS，混合 ESS 在 0.50</span></div>
+  </div>
+  <canvas id="clChart" height="214"></canvas>
+</div>
+:::
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>Ⅰ 入门：会背两条件</summary><div class="dbody"><p>能陈述 2.4a/b；能说明 ESS 与理性共同知识无关；能举鹰鸽 (p^*=V/C)。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Ⅱ 熟练：会判 2×2</summary><div class="dbody"><p>对任意 (a,b,c,d) 判定纯/混 ESS；能指出弱 NE 反例；能算帕累托隙。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Ⅲ 进阶：接上动态</summary><div class="dbody"><p>会写复制者、画轨迹、谈吸引盆；知道静态 ESS 方法论的边界。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Ⅳ 迁移：改结构</summary><div class="dbody"><p>会用配对相关、非对称角色、制度支付改写「什么可入侵」。<span class="tag t-inf">推论</span></p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你进入的不是「智囊推演室」，而是<strong>复制竞技场</strong>：</p>
+<ul>
+<li><strong>生命值</strong> = 相对适应度缓冲</li>
+<li><strong>经验</strong> = 识别博弈类型（协调 / 反协调 / 困局）</li>
+<li><strong>装备</strong> = (V,C) 旋钮、配对相关、奖惩差</li>
+<li><strong>Boss</strong> = 弱均衡伪装成的「没人想动」+ 帕累托劣稳定态</li>
+<li><strong>通关</strong> = 能解释为何某惯例扛得住异见，或设计一次改支付实验</li>
+</ul>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>难度</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">用自己的话讲清 ESS 不需要理性</td>
+<td>★</td>
+<td>30 秒口述无「算纳什」依赖</td>
+</tr>
+<tr>
+<td class="k">手算默认鹰鸽 (p^<em>) 与 (\bar f^</em>)</td>
+<td>★</td>
+<td>得 0.50 与 12.5</td>
+</tr>
+<tr>
+<td class="k">构造一个 NE 但非 ESS 的 2×2</td>
+<td>★★</td>
+<td>一阶平、二阶失败</td>
+</tr>
+<tr>
+<td class="k">调高 (C) 观察 (p^*) 下降</td>
+<td>★★</td>
+<td>滑块与公式一致</td>
+</tr>
+<tr>
+<td class="k">写一条「改支付移 ESS」的制度草案</td>
+<td>★★★</td>
+<td>含前后 (p^*) 对比</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb2"><button class="tab on" data-pane="tb2-0">若冲突成本翻倍</button><button class="tab" data-pane="tb2-1">若资源更值钱</button><button class="tab" data-pane="tb2-2">若 V≥C</button><button class="tab" data-pane="tb2-3">若只停留在弱 NE</button></div>
+<div class="pane on" id="tb2-0"><p>(C:100\to200)，(V=50) → (p^<em>:0.50\to0.25)，(\bar f^</em>:12.5\to18.75)，帕累托隙 (25-18.75=6.25)（缩小）。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb2-1"><p>(V:50\to80)，(C=100) → (p^<em>=0.80)，(\bar f^</em>=8)，隙 (40-8=32) 扩大——更「鹰」、更痛苦。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb2-2"><p>(V=120,C=100) → 纯鹰是 ESS；鸽无法入侵。世界变成永久升级。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb2-3"><p>矩阵 (\begin{pmatrix}1&amp;0\1&amp;1\end{pmatrix})：策略1是对称 NE 但非 ESS；策略2是严格 NE/ESS。理性叙事说「可以停在1」，演化叙事说「撑不久」。<span class="tag t-fact">事实</span></p></div>
+:::raw
+<div class="tool" id="tool_hd">
+  <div class="ctrl">
+    <label>资源 V <output id="hd_vO">50</output></label>
+    <input type="range" id="hd_v" min="10" max="150" step="1" value="50"/>
+    <label>成本 C <output id="hd_cO">100</output></label>
+    <input type="range" id="hd_c" min="20" max="200" step="1" value="100"/>
+    <label>入侵 ε <output id="hd_eO">0.10</output></label>
+    <input type="range" id="hd_e" min="0.01" max="0.40" step="0.01" value="0.10"/>
+  </div>
+  <div class="readout">
+    <div class="ro">p* <strong id="hd_p">0.50</strong></div>
+    <div class="ro">ESS 支付 <strong id="hd_m">12.5</strong></div>
+    <div class="ro">全鸽支付 <strong id="hd_d">25.0</strong></div>
+    <div class="ro">帕累托隙 <strong id="hd_g">12.5</strong></div>
+    <div id="hd_vrow" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="hd_vh">混合 ESS；ε=0.10 时纯鹰入侵差 −1.25</span></div>
+  </div>
+  <canvas id="hdChart" height="214"></canvas>
+</div>
+:::
+:::raw
+<div class="tool" id="tool_rp">
+  <div class="ctrl">
+    <label>初值 p₀ <output id="rp_p0O">0.10</output></label>
+    <input type="range" id="rp_p0" min="0.02" max="0.98" step="0.01" value="0.10"/>
+    <label>资源 V <output id="rp_vO">50</output></label>
+    <input type="range" id="rp_v" min="10" max="150" step="1" value="50"/>
+    <label>成本 C <output id="rp_cO">100</output></label>
+    <input type="range" id="rp_c" min="20" max="200" step="1" value="100"/>
+  </div>
+  <div class="readout">
+    <div class="ro">p* <strong id="rp_ps">0.50</strong></div>
+    <div class="ro">终值 p<sub>T</sub> <strong id="rp_pt">0.50</strong></div>
+    <div class="ro">|p<sub>T</sub>−p*| <strong id="rp_err">0.00</strong></div>
+    <div class="ro">类型 <strong id="rp_ty">混合回拉</strong></div>
+    <div id="rp_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="rp_vh">从 0.10 被拉回混合 ESS 0.50</span></div>
+  </div>
+  <canvas id="rpChart" height="214"></canvas>
+</div>
+:::
+:::raw
+<div class="tool" id="tool_wk">
+  <div class="ctrl">
+    <label>E(I,I)=E(J,I) <output id="wk_eqO">1.0</output></label>
+    <input type="range" id="wk_eq" min="0" max="5" step="0.1" value="1.0"/>
+    <label>E(I,J) <output id="wk_ijO">0.0</output></label>
+    <input type="range" id="wk_ij" min="0" max="5" step="0.1" value="0.0"/>
+    <label>E(J,J) <output id="wk_jjO">1.0</output></label>
+    <input type="range" id="wk_jj" min="0" max="5" step="0.1" value="1.0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">一阶（NE） <strong id="wk_ne">过</strong></div>
+    <div class="ro">二阶（ESS） <strong id="wk_ess">不过</strong></div>
+    <div class="ro">判定 <strong id="wk_lab">弱 NE · 非 ESS</strong></div>
+    <div class="ro">二阶差额 <strong id="wk_df">-1.0</strong></div>
+    <div id="wk_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="wk_vh">E(I,J)−E(J,J)=−1.0 &lt; 0 → 漂移后 J 占优</span></div>
+  </div>
+  <canvas id="wkChart" height="214"></canvas>
+</div>
+:::
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>验收项目</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>概念分离</td>
+<td>ESS / NE / 社会最优 三者分清</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>计算</td>
+<td>任意 2×2 分类 + 鹰鸽公式</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>动态</td>
+<td>复制者轨迹 + 吸引盆叙事</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>设计</td>
+<td>提出可移 ESS 或扩盆的干预并估算前后数字</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一个你关心的「惯例/策略冲突」（开会打断、价格战、开源贡献规范等）。</li>
+<li>压成 2×2：强硬/温和 或 遵守/偏离。</li>
+<li>粗估支付（相对分即可），用模型①看是否有纯/混 ESS。</li>
+<li>若像鹰鸽，估 (V/C)，写出「若把冲突成本提高 20%，(p^*) 怎么变」。</li>
+<li>产出：<strong>一张手写矩阵 + 一个 (p^*)（或「纯 ESS」结论）+ 一条改支付建议</strong>。成本接近 0，可验证。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>定义与两条件</td>
+<td>卡片：2.4a / 2.4b</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>ESS vs NE</td>
+<td>一个弱 NE 反例矩阵</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>鹰鸽公式</td>
+<td>(p^<em>)、(\bar f^</em>)、隙 手算</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>复制者</td>
+<td>跑模型③ 三组初值截图笔记</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>跨域同构</td>
+<td>写 3 条「生物↔制度↔市场」映射</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>方法论边界</td>
+<td>读 Huttegger–Zollman 摘要三点</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘</td>
+<td>把 30 分钟实践升级成一页备忘</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<ul>
+<li><strong>周1</strong>：吃透定义、包含关系、2×2 全部分类。</li>
+<li><strong>周2</strong>：鹰鸽 + 消耗战直觉；专练帕累托劣稳定。</li>
+<li><strong>周3</strong>：复制者与吸引盆；对比最优反应动态（只需定性）。</li>
+<li><strong>周4</strong>：选一个真实组织惯例，做「支付审计 → ESS 诊断 → 干预试点设计」。</li>
+</ul>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<ol>
+<li><strong>ESS 两条件（Maynard Smith）</strong> — 不可入侵的充要骨架。</li>
+<li><strong>严格 NE ⇒ ESS</strong> — 最快判定捷径。</li>
+<li><strong>弱 NE 漂移缺口</strong> — 二阶条件的存在理由。</li>
+<li><strong>鹰鸽混合 ESS (p^*=V/C)</strong> — 频率依赖冲突的闭式解。</li>
+<li><strong>Bishop–Cannings (a+d&lt;b+c)</strong> — 2×2 内部稳定判据。</li>
+<li><strong>复制者 (\dot p=p(f-\bar f))</strong> — 选择动力学最小模型。</li>
+<li><strong>帕累托隙 (\frac{V}{2}-\frac{V(C-V)}{2C})</strong> — 稳定与合意的裂缝。</li>
+<li><strong>多态稳定态 vs 个体混合 ESS</strong> — 解释层级防混。</li>
+<li><strong>市场/文化选择类比</strong> — 策略占比随相对表现更新。<span class="tag t-ana">分析</span></li>
+<li><strong>静态精炼之限</strong> — 非 ESS 吸引子亦可演化显著。<span class="tag t-ana">分析</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>我的「均衡」是严格的还是弱的？</summary><div class="dbody"><p>查偏离是否严格更差。若只是一样好，立刻做二阶检验。</p></div></details>
+<details><summary>群体平均支付能否更高？</summary><div class="dbody"><p>算合意点与 ESS 点之差。差大 → 制度空间大。</p></div></details>
+<details><summary>初值在哪个吸引盆？</summary><div class="dbody"><p>协调型双 ESS 时，历史与示范决定命运。</p></div></details>
+<details><summary>配对是随机的吗？</summary><div class="dbody"><p>相关配对可救合作/鸽策略。</p></div></details>
+<details><summary>突变是稀有随机，还是有组织扩散？</summary><div class="dbody"><p>ESS 局部定义可能被「成团入侵」绕开。</p></div></details>
+<details><summary>角色对称吗？</summary><div class="dbody"><p>所有者–挑战者非对称常改结论。</p></div></details>
+<details><summary>用的是哪一种动态？</summary><div class="dbody"><p>复制者与最优反应吸引盆可几乎不交。</p></div></details>
+<details><summary>有限种群修正要不要？</summary><div class="dbody"><p>N 小则漂移主导，ESS 近似变差。</p></div></details>
+<details><summary>我在优化个体可复制性还是群体福利？</summary><div class="dbody"><p>目标函数不同，工具不同。</p></div></details>
+<details><summary>下一步是改支付、改结构，还是改初值？</summary><div class="dbody"><p>三者对应不同杠杆（见第 13 节）。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>非对称 ESS / 角色条件 ESS</li>
+<li>演化稳定集（ES set）、中性稳定策略（NSS）</li>
+<li>随机稳定均衡（Young）与规范选择</li>
+<li>空间博弈与结构化种群</li>
+<li>与 Tit-for-Tat / 重复博弈阴影效应的接合</li>
+<li>有限理性学习与实验博弈对 ESS 预测的检验</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">ESS 定义与两条件</td>
+<td>经典论文/专著</td>
+<td>Maynard Smith &amp; Price 1973；Maynard Smith 1982</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">ESS ⊂ 对称 NE；严格 NE⇒ESS</td>
+<td>综述</td>
+<td>Stanford Encyclopedia「Evolutionary Game Theory」</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">鹰鸽 (p^<em>=V/C)、(\bar f^</em>=V(C-V)/(2C))</td>
+<td>教材标准结果</td>
+<td>演化博弈论通行推导；本手册 node 复算</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">复制者与内部稳定 (a+d&lt;b+c)</td>
+<td>标准结果</td>
+<td>Taylor–Jonker；Bishop–Cannings</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">静态 ESS 方法论局限</td>
+<td>学术批评</td>
+<td>Huttegger &amp; Zollman「The Limits of ESS Methodology」等</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">规范/制度演化应用</td>
+<td>综述</td>
+<td>Peyton Young 社会规范综述；文化演化制度文献</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">市场选择与复制者类比</td>
+<td>研究文献</td>
+<td>内生状态下的 market selection；演化金融综述</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">2024 鹰鸽扩展（表型依赖支付）</td>
+<td>期刊</td>
+<td>BMC Ecol Evol 等「evolutionarily stable payoff matrix」线</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或可复算；<span class="tag t-ana">分析</span>权威推断；<span class="tag t-inf">推论</span>本手册推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单源或外推。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与实践框架，用于理解演化稳定策略、频率依赖选择与制度/策略淘汰的结构逻辑，<strong>不构成</strong>投资建议、交易信号、生物防治方案、军事或公共政策处方。文中数值为教学默认参数与公式复算，不代表任何真实种群、市场或组织的估计。将文化/市场类比到基因复制者时存在机制差异，决策前需结合具体结构、法律与伦理约束单独论证。</p>
+</section>
+<footer>  <p>《演化稳定策略（ESS）：不要求理性，只要求可复制 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 8 分 59 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《演化稳定策略 ESS》主题脚本
+   四个可调模型：
+     1. 2×2 ESS 分类器
+     2. 鹰鸽 ESS / 帕累托隙 / 入侵差
+     3. 复制者轨迹
+     4. 弱 NE vs ESS 二阶解剖
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function r2(x) { return (Math.round(x * 100) / 100).toFixed(2); }
+  function r1(x) { return (Math.round(x * 10) / 10).toFixed(1); }
+  function yn(b) { return b ? '是' : '否'; }
+  function clampLabel(ctx, lab, x, y, align, pl, w) {
+    var lw = ctx.measureText(lab).width;
+    ctx.textAlign = align;
+    var lx = align === 'left' ? Math.min(x, w - lw - 6) : Math.max(x, pl + 6);
+    ctx.fillText(lab, lx, y);
+  }
+
+  function classify(a, b, c, d) {
+    var pure1 = (a > c) || (a === c && b > d);
+    var pure2 = (d > b) || (d === b && c > a);
+    var den = (a - c) + (d - b);
+    var xStar = Math.abs(den) < 1e-12 ? NaN : (d - b) / den;
+    var stable = (a + d) < (b + c);
+    var interior = isFinite(xStar) && xStar > 0 && xStar < 1 && stable;
+    return { pure1: pure1, pure2: pure2, xStar: xStar, stable: stable, interior: interior };
+  }
+
+  /* ── 1. 2×2 classifier ── */
+  (function cl() {
+    var aEl = $('cl_a'), bEl = $('cl_b'), cEl = $('cl_c'), dEl = $('cl_d');
+    if (!aEl || !bEl || !cEl || !dEl) return;
+    var cv = $('clChart');
+
+    function upd() {
+      var a = parseFloat(aEl.value), b = parseFloat(bEl.value);
+      var c = parseFloat(cEl.value), d = parseFloat(dEl.value);
+      var r = classify(a, b, c, d);
+      txt($('cl_aO'), String(a));
+      txt($('cl_bO'), String(b));
+      txt($('cl_cO'), String(c));
+      txt($('cl_dO'), String(d));
+      txt($('cl_p1'), yn(r.pure1));
+      txt($('cl_p2'), yn(r.pure2));
+      tint($('cl_p1'), r.pure1 ? C.green : C.ink3);
+      tint($('cl_p2'), r.pure2 ? C.green : C.ink3);
+      var xOk = isFinite(r.xStar) && r.xStar > 0 && r.xStar < 1;
+      txt($('cl_x'), xOk ? r2(r.xStar) : (isFinite(r.xStar) ? r2(r.xStar) + '·界外' : '—'));
+      txt($('cl_st'), yn(r.stable));
+      tint($('cl_st'), r.stable ? C.green : C.amber);
+
+      var msg, col = C.blue;
+      if (r.interior) {
+        msg = '混合 ESS 在 x*=' + r2(r.xStar) + '（策略1频率）；a+d=' + r1(a + d) + ' < b+c=' + r1(b + c);
+        col = C.green;
+      } else if (r.pure1 && r.pure2) {
+        msg = '双纯 ESS（协调型）：内部点不稳定，历史/初值选均衡';
+        col = C.amber;
+      } else if (r.pure1) {
+        msg = '纯策略1 是 ESS' + (r.pure2 ? '' : '；策略2 不可入侵阻挡失败');
+        col = C.green;
+      } else if (r.pure2) {
+        msg = '纯策略2 是 ESS';
+        col = C.green;
+      } else {
+        msg = '无纯 ESS' + (xOk ? '，且内部不稳定——检查是否循环/其他结构' : '，内部点不在 (0,1)');
+        col = C.red;
+      }
+      txt($('cl_vh'), msg);
+      tint($('cl_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr;
+      var items = [
+        { lab: '纯1', v: r.pure1 ? 1 : 0, c: C.green },
+        { lab: '纯2', v: r.pure2 ? 1 : 0, c: C.blue },
+        { lab: '混ESS', v: r.interior ? 1 : 0, c: C.amber },
+        { lab: '内稳', v: r.stable ? 1 : 0, c: C.ink2 }
+      ];
+      var barH = 28, gap = 14, startY = pt + 20;
+      items.forEach(function (it, i) {
+        var y = startY + i * (barH + gap);
+        var len = it.v * bw * 0.85;
+        ctx.fillStyle = C.grid;
+        ctx.fillRect(pl, y, bw * 0.85, barH);
+        ctx.fillStyle = it.c;
+        ctx.fillRect(pl, y, Math.max(it.v ? 8 : 0, len), barH);
+        ctx.fillStyle = C.ink;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(it.lab + (it.v ? ' ✓' : ' ·'), pl, y - 4);
+      });
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('ESS 分类指示（1=成立）', pl + bw / 2, y1 + 31);
+    }
+    bind(['cl_a', 'cl_b', 'cl_c', 'cl_d'], upd);
+    upd();
+  })();
+
+  /* ── 2. Hawk–Dove ── */
+  (function hd() {
+    var vEl = $('hd_v'), cEl = $('hd_c'), eEl = $('hd_e');
+    if (!vEl || !cEl || !eEl) return;
+    var cv = $('hdChart');
+
+    function fitQ(q, pop, V, C) {
+      // expected payoff of playing Hawk with prob q against pop Hawk-freq
+      var fH = pop * (V - C) / 2 + (1 - pop) * V;
+      var fD = (1 - pop) * V / 2;
+      return q * fH + (1 - q) * fD;
+    }
+
+    function upd() {
+      var V = parseFloat(vEl.value), Ccost = parseFloat(cEl.value), eps = parseFloat(eEl.value);
+      txt($('hd_vO'), String(V));
+      txt($('hd_cO'), String(Ccost));
+      txt($('hd_eO'), r2(eps));
+
+      var pureHawk = V >= Ccost;
+      var pStar = pureHawk ? 1 : V / Ccost;
+      var meanESS, dovePay = V / 2, gap, msg, col;
+      if (pureHawk) {
+        meanESS = (V - Ccost) / 2;
+        gap = dovePay - meanESS;
+        msg = 'V≥C → 纯鹰 ESS；全鹰支付 ' + r1(meanESS) + '；鸽无法入侵';
+        col = C.red;
+      } else {
+        meanESS = V * (Ccost - V) / (2 * Ccost);
+        gap = dovePay - meanESS;
+        var popH = (1 - eps) * pStar + eps * 1;
+        var popD = (1 - eps) * pStar + eps * 0;
+        var dH = fitQ(1, popH, V, Ccost) - fitQ(pStar, popH, V, Ccost);
+        var dD = fitQ(0, popD, V, Ccost) - fitQ(pStar, popD, V, Ccost);
+        msg = '混合 ESS；ε=' + r2(eps) + ' 时纯鹰入侵差 ' + r2(dH) + '，纯鸽入侵差 ' + r2(dD);
+        col = (dH < 0 && dD < 0) ? C.green : C.amber;
+      }
+
+      txt($('hd_p'), r2(pStar));
+      txt($('hd_m'), r1(meanESS));
+      txt($('hd_d'), r1(dovePay));
+      txt($('hd_g'), r1(gap));
+      tint($('hd_g'), gap > 0.05 ? C.red : C.ink);
+      txt($('hd_vh'), msg);
+      tint($('hd_vh'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 52, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr;
+      var items = [
+        { lab: 'ESS 支付', v: meanESS, c: C.amber },
+        { lab: '全鸽支付', v: dovePay, c: C.green },
+        { lab: '帕累托隙', v: Math.max(0, gap), c: C.red }
+      ];
+      var maxV = Math.max(0.01, dovePay, Math.abs(meanESS), gap);
+      var minV = Math.min(0, meanESS);
+      var span = Math.max(0.01, maxV - minV);
+      var barH = 32, gapY = 18, startY = pt + 24;
+      items.forEach(function (it, i) {
+        var y = startY + i * (barH + gapY);
+        var zeroX = pl + ((0 - minV) / span) * bw;
+        var x2 = pl + ((it.v - minV) / span) * bw;
+        var left = Math.min(zeroX, x2), width = Math.max(2, Math.abs(x2 - zeroX));
+        ctx.fillStyle = it.c;
+        ctx.fillRect(left, y, width, barH);
+        ctx.fillStyle = C.ink;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(it.lab, pl, y - 4);
+        var lab = r1(it.v);
+        ctx.fillStyle = C.ink2;
+        clampLabel(ctx, lab, x2 + 8, y + barH / 2 + 4, 'left', pl, w);
+      });
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(pl + ((0 - minV) / span) * bw, pt);
+      ctx.lineTo(pl + ((0 - minV) / span) * bw, y1);
+      ctx.stroke();
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('支付对照（涨红跌绿语义：隙越大越痛苦）', pl + bw / 2, y1 + 31);
+    }
+    bind(['hd_v', 'hd_c', 'hd_e'], upd);
+    upd();
+  })();
+
+  /* ── 3. Replicator trajectory ── */
+  (function rp() {
+    var p0El = $('rp_p0'), vEl = $('rp_v'), cEl = $('rp_c');
+    if (!p0El || !vEl || !cEl) return;
+    var cv = $('rpChart');
+
+    function traj(p0, V, Ccost, steps, dt) {
+      var out = [p0], p = p0, i;
+      for (i = 0; i < steps; i++) {
+        var dp;
+        if (V >= Ccost) {
+          // pure hawk ESS: dp/dt = p(1-p)(V - C*p)/2 still, but equilibrium at 1
+          dp = p * (1 - p) * (V - Ccost * p) / 2;
+        } else {
+          dp = p * (1 - p) * (V - Ccost * p) / 2;
+        }
+        p = Math.max(1e-6, Math.min(1 - 1e-6, p + dt * dp));
+        out.push(p);
+      }
+      return out;
+    }
+
+    function upd() {
+      var p0 = parseFloat(p0El.value), V = parseFloat(vEl.value), Ccost = parseFloat(cEl.value);
+      txt($('rp_p0O'), r2(p0));
+      txt($('rp_vO'), String(V));
+      txt($('rp_cO'), String(Ccost));
+      var pureHawk = V >= Ccost;
+      var pStar = pureHawk ? 1 : V / Ccost;
+      var series = traj(p0, V, Ccost, 60, 0.08);
+      var pT = series[series.length - 1];
+      var err = Math.abs(pT - pStar);
+      var ty = pureHawk ? '趋纯鹰' : '混合回拉';
+      txt($('rp_ps'), r2(pStar));
+      txt($('rp_pt'), r2(pT));
+      txt($('rp_err'), r2(err));
+      txt($('rp_ty'), ty);
+      tint($('rp_ty'), pureHawk ? C.red : C.green);
+      var msg = pureHawk
+        ? 'V≥C：从 ' + r2(p0) + ' 推向纯鹰 ESS'
+        : '从 ' + r2(p0) + ' 被拉回混合 ESS ' + r2(pStar);
+      txt($('rp_vh'), msg);
+      tint($('rp_vh'), C.blue);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 44, pr = 14, pt = 16, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var T = series.length - 1;
+      function sx(t) { return pl + (t / T) * bw; }
+      function sy(p) { return y1 - p * bh; }
+      // grid
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth = 1;
+      var gi;
+      for (gi = 0; gi <= 4; gi++) {
+        var gy = y1 - (gi / 4) * bh;
+        ctx.beginPath();
+        ctx.moveTo(pl, gy);
+        ctx.lineTo(pl + bw, gy);
+        ctx.stroke();
+        ctx.fillStyle = C.ink3;
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(r2(gi / 4), pl - 6, gy + 3);
+      }
+      // p* line
+      ctx.strokeStyle = C.amber;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(pStar));
+      ctx.lineTo(pl + bw, sy(pStar));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // trajectory
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      series.forEach(function (p, t) {
+        var x = sx(t), y = sy(p);
+        if (t === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.fillStyle = C.green;
+      ctx.beginPath();
+      ctx.arc(sx(0), sy(p0), 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = C.red;
+      ctx.beginPath();
+      ctx.arc(sx(T), sy(pT), 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('p*= ' + r2(pStar), pl + bw - 4, sy(pStar) - 6);
+      ctx.textAlign = 'center';
+      ctx.fillText('时间步 →', pl + bw / 2, y1 + 31);
+      ctx.fillText('鹰频率 p', pl + bw / 2, pt - 2);
+    }
+    bind(['rp_p0', 'rp_v', 'rp_c'], upd);
+    upd();
+  })();
+
+  /* ── 4. Weak NE vs ESS ── */
+  (function wk() {
+    var eqEl = $('wk_eq'), ijEl = $('wk_ij'), jjEl = $('wk_jj');
+    if (!eqEl || !ijEl || !jjEl) return;
+    var cv = $('wkChart');
+
+    function upd() {
+      var eq = parseFloat(eqEl.value); // E(I,I)=E(J,I)
+      var ij = parseFloat(ijEl.value);
+      var jj = parseFloat(jjEl.value);
+      txt($('wk_eqO'), r1(eq));
+      txt($('wk_ijO'), r1(ij));
+      txt($('wk_jjO'), r1(jj));
+      // First order: E(I,I) >= E(J,I). Here they are set equal by construction → NE passes (weak)
+      var nePass = true;
+      var df = ij - jj;
+      var essPass = df > 0; // need E(I,J) > E(J,J)
+      // If we allowed E(I,I) > E(J,I) it would be strict; here equality → need second order
+      txt($('wk_ne'), '过（弱）');
+      tint($('wk_ne'), C.amber);
+      txt($('wk_ess'), essPass ? '过' : '不过');
+      tint($('wk_ess'), essPass ? C.green : C.red);
+      txt($('wk_df'), r1(df));
+      tint($('wk_df'), df > 0 ? C.green : C.red);
+      var lab = essPass ? '弱一阶 + 二阶成立 → ESS' : '弱 NE · 非 ESS';
+      txt($('wk_lab'), lab);
+      tint($('wk_lab'), essPass ? C.green : C.red);
+      var msg = 'E(I,J)−E(J,J)=' + r1(df) + (df > 0 ? ' > 0 → 抗漂移' : ' < 0 → 漂移后 J 占优');
+      if (Math.abs(df) < 1e-9) msg = '二阶差额≈0 → 仍非严格 ESS（中性）';
+      txt($('wk_vh'), msg);
+      tint($('wk_vh'), essPass ? C.green : C.red);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 52, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr;
+      var items = [
+        { lab: 'E(I,·)平手值', v: eq, c: C.blue },
+        { lab: 'E(I,J)', v: ij, c: C.amber },
+        { lab: 'E(J,J)', v: jj, c: C.red },
+        { lab: '二阶差额', v: df, c: df > 0 ? C.green : C.red }
+      ];
+      var maxV = Math.max(0.01, eq, ij, jj, Math.abs(df));
+      var minV = Math.min(0, df, ij, jj, eq);
+      var span = Math.max(0.01, maxV - minV);
+      var barH = 28, gapY = 14, startY = pt + 20;
+      items.forEach(function (it, i) {
+        var y = startY + i * (barH + gapY);
+        var zeroX = pl + ((0 - minV) / span) * bw;
+        var x2 = pl + ((it.v - minV) / span) * bw;
+        var left = Math.min(zeroX, x2), width = Math.max(2, Math.abs(x2 - zeroX));
+        ctx.fillStyle = C.grid;
+        ctx.fillRect(pl, y, bw, barH);
+        ctx.fillStyle = it.c;
+        ctx.fillRect(left, y, width, barH);
+        ctx.fillStyle = C.ink;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(it.lab, pl, y - 4);
+        clampLabel(ctx, r1(it.v), x2 + 6, y + barH / 2 + 4, 'left', pl, w);
+      });
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('一阶已平手时，二阶差额决定能否叫 ESS', pl + bw / 2, y1 + 31);
+    }
+    bind(['wk_eq', 'wk_ij', 'wk_jj'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
