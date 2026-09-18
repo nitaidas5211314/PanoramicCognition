@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>赢家诅咒（Winner&#x27;s Curse） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Winner&#x27;s Curse × Common-Value Auctions</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践转化</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>赢家诅咒（Winner&#x27;s Curse）</h1>
+  <p class="sub">共同价值拍卖里，<strong>出价最高者往往是高估最多者</strong>——「中标」本身是坏消息；理性人必须事前下调报价，否则赢了却亏钱。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>赢家诅咒（Winner's Curse）</strong>：在<strong>共同价值</strong>拍卖中，标的对所有人事后价值大致相同，但事前每人只有带噪声的估值。谁赢了，往往就是谁估得最高——于是<strong>中标本身透露「你偏乐观」</strong>。若不把这条逆向选择信息算进出价，系统性地<strong>赢了却赚不到预期利润，甚至亏钱</strong>。<span class="tag t-fact">事实</span></p>
+<p>解药不是「别赢」，而是<strong>事前下调（bid shading）</strong>：出价应对齐 (\mathbb{E}[V\mid \text{我的信号},\text{且我会赢}])，而不是无条件估计 (\mathbb{E}[V\mid \text{我的信号}])。竞争者越多、噪声越大，下调幅度越大。<span class="tag t-fact">事实</span></p>
+<p>术语有两层：业界/实验里「诅咒」指<strong>没下调、亏了钱</strong>；部分理论文献用同一词指「条件期望与无条件期望之差」本身——读文献时先分清作者说的是<strong>失败行为</strong>还是<strong>应修正的统计量</strong>。<span class="tag t-ana">分析</span></p>
+<p>与相邻手册：《拍卖理论与收益等价》讲四标准格式何时同收益；《维克里拍卖》讲私有价值下真话占优；本手册专剖<strong>共同价值下的逆向选择</strong>——油气租赁、并购、招聘抢人、AI 算力军备，结构同构。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「怎么把东西拍贵」，而是：<strong>当价值共享、信号有噪时，胜出事件如何扭曲你对价值的信念，以及理性出价必须如何条件化。</strong></p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：共同/关联价值、顺序统计量、条件期望下调、实验室与油田证据、并购傲慢假说、公开信息与拍卖格式如何缓解/加剧诅咒。</li>
+<li><strong>在界外</strong>：纯私有价值里的「压价技巧」、企业文化口号式「别太乐观」——除非压成「信号—胜出事件—条件价值—出价」链条。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>共同价值拍卖中胜出带来的逆向选择与理性下调</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「信念更新 + 出价规则 + 实证/实验」；不含具体行业钻探术</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>共同价值 (V)、私人信号 (X_i)、竞买人数 (n)、噪声 (\sigma)</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>竞买人、卖方、分析师/地质队、监管、实验被试</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(n)、(\sigma)、先验、拍卖格式（密封一价/英式）、公开信息</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>出价、成交价、事后产量/回报、实验利润</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实 (V)、每人信号、是否做了条件化</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>(n\uparrow,\sigma\uparrow) → 胜者高估更极端 → 需更大下调</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>胜出 ⇒ 你的信号常为最高阶统计量 ⇒ (E[V\mid win]&lt;E[V\mid X_i])</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「溢价高」≠一定诅咒（也可能真协同）；需对照基准</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>油田低回报、罐子拍卖亏钱、并购方股价跌</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>顺序统计量 + 忽略条件化 = 系统性负利润</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。亏损→学习/破产→幸存者更保守；卖方收入短期可能因诅咒抬高</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。储量/协同事后才知；实验室即时结算</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>经验与破产淘汰可缓解；竞争加剧可重新点燃诅咒</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>「我赢了」在共同价值世界里是坏消息——先假设你的估计是全场最高，再决定愿付多少。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它是拍卖理论的分水岭</h4><p>私有价值下维克里可真话；共同价值下一价密封里「报估计」会系统亏损。格式选择、信息公开、人数效应全改写。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它在实验室几乎「必现」</h4><p>罐子拍卖、矿物权实验：新手持续负利润；人数从 3–4 升到 6–7，经验被试利润可从正变近零/负。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它跨域同构极强</h4><p>油气租赁、公司并购（傲慢假说）、自由球员合同、出版预付金、招聘抢人、算力军备——结构都是「最高信号者得标」。<span class="tag t-ana">分析</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误读</b><p>把「赢家诅咒」理解成「拍卖不公平」或「别参与」。正确动作是<strong>参与但条件化出价</strong>；完全退出是把租金留给仍会下调的对手。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层从「共同价值原语」爬到「场域与政策」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="wcLArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 场域 · 并购 / 招聘 / 军备竞赛叙事 · 监管与披露</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 缓解器 · 英式信息公开 · 联合竞标 · 经验与破产淘汰</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 实证层 · OCS 租赁 · 实验室 · 并购事件研究</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 跨域同构 · 逆向选择 · 顺序统计 · 傲慢假说</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 均衡层 · 对称 BNE：按 E[V｜信号且临界胜出] 出价</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 行为层 · 忽略条件化 → 负利润「诅咒」</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 统计核 · 胜者 ≈ 最高信号 · E[V｜win] &lt; E[V｜X]</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 信号层 · Xᵢ = V + εᵢ · 无偏但有噪</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 价值原语 · 共同价值 V（事后对人人近似相同）</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2–L4</strong>：会算「最高信号偏差」、会说「中标是坏消息」；进阶在 <strong>L5</strong> 与 <strong>L8</strong>——写出条件化出价，并知道英式升价如何释放对手信息以缓解诅咒。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>抽象统计 → 机制出价 → 操作清单。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="wcCmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="wcCmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="60" y="16" width="560" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">信号 → 胜出筛选 → 条件价值 → 下调出价</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">顺序统计 / 条件期望</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">一价密封 · 英式学习</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">估 σ·n · 写下调表</text>
+
+  <line x1="280" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#wcCmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#wcCmA)"/>
+  <line x1="400" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#wcCmA)"/>
+
+  <rect x="40" y="180" width="180" height="72" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">无条件：E[V｜X]=X*</text><text x="130" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">*平坦先验示意</text>
+  <rect x="250" y="180" width="180" height="72" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">条件：E[V｜X,win]&lt;X</text><text x="340" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">下调幅度随 n,σ</text>
+  <rect x="460" y="180" width="180" height="72" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">出价 ≤ 条件价值</text><text x="550" y="228" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">再加战略压价</text>
+
+  <path d="M130,252 L130,280 L340,280 L340,300" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#wcCmB)"/>
+  <rect x="180" y="308" width="320" height="48" rx="8" fill="#fde8e6" stroke="#d5342c"/><text x="340" y="338" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">反馈：忽略条件化 → 负利润 → 学习或出局</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>目标</th>
+<th>信息</th>
+<th>典型动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">竞买人</td>
+<td>最大化 (E[\pi\mid win])</td>
+<td>私人信号 (X_i)</td>
+<td>下调 / 合谋 / 退出</td>
+</tr>
+<tr>
+<td class="k">卖方</td>
+<td>收益与出清</td>
+<td>可释公共信息</td>
+<td>选格式、披露、入场门槛</td>
+</tr>
+<tr>
+<td class="k">分析师 / 地质队</td>
+<td>估 (V)</td>
+<td>模型与样本</td>
+<td>给无条件估计（易被直接当出价）</td>
+</tr>
+<tr>
+<td class="k">董事会 / CEO</td>
+<td>增长叙事、控制权</td>
+<td>内部乐观偏差</td>
+<td>并购溢价（傲慢通道）</td>
+</tr>
+<tr>
+<td class="k">实验被试</td>
+<td>现金利润</td>
+<td>受控信号</td>
+<td>展示诅咒稳健性</td>
+</tr>
+<tr>
+<td class="k">监管</td>
+<td>公平、反串标</td>
+<td>事后审计</td>
+<td>租赁规则、并购披露</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号直觉</th>
+<th>为何重要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">共同价值</td>
+<td>(V)</td>
+<td>事后人人相同；诅咒的舞台</td>
+</tr>
+<tr>
+<td class="k">私人信号</td>
+<td>(X_i=V+\varepsilon_i)</td>
+<td>无偏但有噪；胜者筛选极值</td>
+</tr>
+<tr>
+<td class="k">噪声</td>
+<td>(\sigma)</td>
+<td>越大，最高信号越离谱</td>
+</tr>
+<tr>
+<td class="k">人数</td>
+<td>(n)</td>
+<td>越大，最高阶统计量越大</td>
+</tr>
+<tr>
+<td class="k">先验</td>
+<td>对 (V) 的信念</td>
+<td>决定贝叶斯收缩强度</td>
+</tr>
+<tr>
+<td class="k">拍卖格式</td>
+<td>一价密封 / 英式</td>
+<td>英式释放对手信息，常缓解诅咒</td>
+</tr>
+<tr>
+<td class="k">公开信息</td>
+<td>公共信号</td>
+<td>降不确定；若已有诅咒，对卖方收入效应可反向</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="wcCaA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="wcCaB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="140" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="90" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">共同 V + 噪声</text>
+  <rect x="200" y="30" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="270" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">最高信号胜出</text>
+  <rect x="380" y="30" width="140" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="450" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">E[V｜win]&lt;X</text>
+  <rect x="520" y="30" width="140" height="50" rx="8" fill="#15181d"/><text x="590" y="60" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="sans-serif">须下调出价</text>
+  <line x1="160" y1="55" x2="200" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#wcCaA)"/>
+  <line x1="340" y1="55" x2="380" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#wcCaA)"/>
+  <line x1="520" y1="55" x2="520" y2="55" stroke="#1d4ed8" stroke-width="1.5"/>
+  <path d="M450,80 L450,100 L590,100 L590,80" fill="none" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#wcCaA)"/>
+
+  <rect x="80" y="160" width="160" height="50" rx="8" fill="#fde8e6" stroke="#d5342c"/><text x="160" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">按 X 原价出价</text>
+  <rect x="320" y="160" width="160" height="50" rx="8" fill="#fde8e6" stroke="#d5342c"/><text x="400" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">赢时系统性高估</text>
+  <rect x="520" y="160" width="140" height="50" rx="8" fill="#fde8e6" stroke="#d5342c"/><text x="590" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">负期望利润</text>
+  <line x1="240" y1="185" x2="320" y2="185" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#wcCaB)"/>
+  <line x1="480" y1="185" x2="520" y2="185" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#wcCaB)"/>
+
+  <rect x="140" y="250" width="400" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="277" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">蓝实线=理性路径；红虚线=忽略条件化的诅咒路径</text>
+</svg>
+<p><strong>主因果（实线）</strong>：共同价值 + 噪声信号 → 最高信号者更易胜出 → 条件期望低于信号 → 理性下调。<span class="tag t-fact">事实</span></p>
+<p><strong>反馈（红虚线）</strong>：若按信号原价密封一价出价，胜出利润期望为负——这就是业界说的「你赢了，你亏了，你诅咒」。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>表层说法</th>
+<th>隐藏结构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">「出价最高的人最懂行」</td>
+<td>也可能是<strong>噪声最大的乐观者</strong></td>
+</tr>
+<tr>
+<td class="k">「竞争越激烈越好」</td>
+<td>对卖方短期抬价；对买方诅咒更深</td>
+</tr>
+<tr>
+<td class="k">「有经验就不会中招」</td>
+<td>小市场可缓解；人数一升诅咒可回潮（实验室）<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">「公开信息总抬卖方收入」</td>
+<td>无诅咒时抬；有诅咒时公开信息可<strong>降</strong>卖方收入（被试更敢出）<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">「并购溢价=协同」</td>
+<td>也可能是<strong>估值误差的右尾被选中</strong>（傲慢）</td>
+</tr>
+<tr>
+<td class="k">「二价就没事」</td>
+<td>共同价值下二价仍有信息问题；英式因公开退出而不同</td>
+</tr>
+<tr>
+<td class="k">「别参与就安全」</td>
+<td>放弃正 NPV 交易；正确是条件化</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p><strong>教学用矿物权模型（示意）</strong>：</p>
+<ol>
+<li>真实价值 (V) 对所有人相同，事前未知。</li>
+<li>每人独立得到 (X_i=V+\varepsilon_i)，(\varepsilon_i\sim\mathcal{N}(0,\sigma^2))（无偏）。</li>
+<li>密封一价：出价最高者得标并付自己的价。</li>
+<li><strong>天真策略</strong> (b_i=X_i)：胜者近似拥有 (\max_i X_i)，其期望高估约 (\sigma\cdot\mathbb{E}[Z_{(n)}])，其中 (Z_{(n)}) 为 (n) 个标准正态的最大值。<span class="tag t-inf">推论</span></li>
+<li><strong>理性策略</strong>：令出价对齐「信号为最高时」的条件价值，并再按一价战略压价。</li>
+</ol>
+<p>默认数值：(V=100)，(\sigma=20)，(n=5) → (\mathbb{E}[Z_{(5)}]\approx 1.163) → 胜者期望高估约 <strong>23.3</strong>；若按最高信号原价成交，期望利润约 <strong>−23.3</strong>（相对真 (V)）。<span class="tag t-inf">推论</span></p>
+<p><strong>Capen–Clapp–Campbell（1971）</strong>：墨西哥湾 OCS 密封租赁中，行业回报常低于目标；他们强调「赢的往往是高估最多者」，并建议系统下调。<span class="tag t-fact">事实</span>Thaler 等转述：有竞争标的上，次高价平均约只有最高价的 <strong>2/3</strong> 量级——出价分歧本身很大。<span class="tag t-chk">待验证</span></p>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="wcTArw" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="70" cy="110" r="10" fill="#0f8a4d"/><text x="70" y="50" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">1971</text><text x="70" y="68" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">CCC 油田论文</text>
+  <circle cx="200" cy="110" r="10" fill="#1d4ed8"/><text x="200" y="50" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">1983</text><text x="200" y="68" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">罐子拍卖实验</text>
+  <circle cx="330" cy="110" r="10" fill="#1d4ed8"/><text x="330" y="50" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">1986</text><text x="330" y="68" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">Kagel–Levin；Roll</text>
+  <circle cx="460" cy="110" r="10" fill="#b8730a"/><text x="460" y="50" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">1988+</text><text x="460" y="68" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">Thaler 异象专栏</text>
+  <circle cx="590" cy="110" r="10" fill="#d5342c"/><text x="590" y="50" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">2000s–</text><text x="590" y="68" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">并购检验争议</text>
+  <text x="340" y="170" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">从石油工程直觉 → 实验室稳健现象 → 公司金融「傲慢」叙事</text>
+  <text x="340" y="195" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">【事实】CCC 1971；Bazerman–Samuelson 1983；Kagel–Levin AER 1986；Roll 1986；Thaler JEP 1988</text>
+</svg>
+<p>Bazerman &amp; Samuelson（1983）课堂罐子拍卖：真值 \$8，平均估计约 \$5.13（偏低），但平均胜出价约 <strong>\$10.01</strong>，胜者平均亏约 <strong>\$2.01</strong>，逾半数拍卖胜者亏损。<span class="tag t-fact">事实</span>Kagel &amp; Levin（1986）：经验被试在 <strong>3–4</strong> 人市场可获正利润（约 \$4.32 量级报道），<strong>6–7</strong> 人市场利润骤降（约 \$0.54）并再现更强诅咒。<span class="tag t-fact">事实</span>【待验证：美元精确值以原文表为准】</p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>激励</th>
+<th>与诅咒的张力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">买方分析师</td>
+<td>报「最佳点估计」</td>
+<td>点估计被直接当出价 → 诅咒</td>
+</tr>
+<tr>
+<td class="k">买方决策者</td>
+<td>赢下交易、叙事</td>
+<td>赢的效用 ≠ 股东 NPV</td>
+</tr>
+<tr>
+<td class="k">卖方</td>
+<td>高成交价</td>
+<td>买方诅咒可抬短期收入</td>
+</tr>
+<tr>
+<td class="k">联合竞标方</td>
+<td>分摊信息</td>
+<td>降有效 (n)，缓和极值</td>
+</tr>
+<tr>
+<td class="k">投资人</td>
+<td>事后回报</td>
+<td>惩罚过度乐观收购方</td>
+</tr>
+<tr>
+<td class="k">实验者</td>
+<td>识别机制</td>
+<td>用破产/经验分离学习</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="wcFArw" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="40" y="30" width="120" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="100" y="55" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">信号 Xᵢ</text><text x="100" y="73" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">私有、有噪</text>
+  <rect x="280" y="30" width="120" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="55" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">拍卖筛选</text><text x="340" y="73" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">max 胜出</text>
+  <rect x="520" y="30" width="120" height="60" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="580" y="55" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">现金流出</text><text x="580" y="73" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">付价 ≥ 真值?</text>
+  <line x1="160" y1="60" x2="280" y2="60" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#wcFArw)"/>
+  <line x1="400" y1="60" x2="520" y2="60" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#wcFArw)"/>
+  <text x="340" y="20" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">信息流被「胜出」截断放大；支付流单向抽出</text>
+
+  <rect x="100" y="140" width="480" height="90" rx="10" fill="#f8f9fb" stroke="#e2e6ec"/>
+  <text x="340" y="170" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">「抽水」发生在条件化失败时</text>
+  <text x="340" y="195" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">卖方抽走的是买方对极值信号的过度支付</text>
+  <text x="340" y="215" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">英式公开退出 = 把对手信号灌回信息流，减轻抽水【分析】</text>
+</svg>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+<th>怎么撬</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>先判定：共同 vs 私有价值</td>
+<td>决定要不要诅咒框架</td>
+<td>一页「事后价值是否共享」</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>强制条件化检查表</td>
+<td>把「若我最高」写进标书</td>
+<td>出价 = f(X,n,σ)</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>估计 (\sigma) 与 (n)</td>
+<td>下调幅度的两根轴</td>
+<td>历史分歧、竞品名单</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>选英式 / 披露公共信息</td>
+<td>降信息不对称</td>
+<td>共同价值优先公开学习</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>联合竞标 / 信息池</td>
+<td>降有效竞争极值</td>
+<td>合规前提下共享信号</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>分离「估计」与「出价」</td>
+<td>防分析师点估计直通</td>
+<td>流程闸门</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>对照「不买」基准</td>
+<td>并购勿只看赢了没</td>
+<td>收购方 CAR、协同实现率</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>人数敏感压力测试</td>
+<td>6–7 人市场实验室易翻车</td>
+<td>情景：n±50%</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>破产/止损纪律</td>
+<td>实验室靠淘汰改善</td>
+<td>仓位上限</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>董事会挑战乐观</td>
+<td>打通傲慢通道</td>
+<td>红队估值、独立顾问</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱1：「我的模型无偏，所以出价=估计」</summary><div class="dbody"><p>无偏是对<strong>随机一次估计</strong>；拍卖只在你最高时成交——条件分布已偏。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱2：「人越多越好办，竞争出真价」</summary><div class="dbody"><p>人多抬高最高阶统计量；天真买方诅咒更深。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱3：「二价拍卖没有赢家诅咒」</summary><div class="dbody"><p>支付规则不同，但共同价值下信息问题仍在；英式因公开信息更常被讨论为缓解器。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱4：「有经验就不会亏」</summary><div class="dbody"><p>小 (n) 可缓解；(n) 增大诅咒可回潮（Kagel–Levin）。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱5：「公开信息总对卖方有利」</summary><div class="dbody"><p>已有诅咒时，公开信息可能让被试出得更猛，卖方收入反而降。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱6：「字段里经济学家说不存在，所以是假的」</summary><div class="dbody"><p>理论均衡无「持续亏损」；实验室与部分字段显示学习慢、破产筛选。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱7：「并购溢价高=协同大」</summary><div class="dbody"><p>也可能是估值误差被拍卖选中（Roll 傲慢假说）；需事后绩效对照。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱8：「下调就是懦弱，会输掉好资产」</summary><div class="dbody"><p>目标是 (E[\pi\mid win]\ge 0)，不是胜率最大；过度下调另当别论。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>陷阱9：「罐子实验不现实」</summary><div class="dbody"><p>它把共同价值与噪声纯化；机制同构到租赁/并购。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱10：「AI/算力军备不是拍卖」</summary><div class="dbody"><p>资本支出竞速仍是「最高乐观者先下注」；共同价值是未来现金流。<span class="tag t-hyp">假设</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实翻译</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">(E[V\mid X,win]&lt;X)</td>
+<td>油田：中标后再看储量常「没那么多」</td>
+</tr>
+<tr>
+<td class="k">(\sigma\cdot E[Z_{(n)}])</td>
+<td>竞标人数翻倍 → 下调表加码</td>
+</tr>
+<tr>
+<td class="k">罐子 \$10 胜出/\$8 真值</td>
+<td>课堂：看得见的亏 \$2</td>
+</tr>
+<tr>
+<td class="k">英式信息公开</td>
+<td>现场喊价观察对手退出</td>
+</tr>
+<tr>
+<td class="k">傲慢假说</td>
+<td>收购方付过高溢价，目标股东受益</td>
+</tr>
+<tr>
+<td class="k">联合竞标</td>
+<td>财团共享地震资料</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note green"><b>对照基准（别只报「赢了」）</b><p>胜率、得标次数不是目标。基准是：<strong>条件于得标，利润是否 ≥ 不参与（0）</strong>；并购则对照收购方异常收益与「不收购」。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>写清价值类型</strong>：共同 / 私有 / 混合。</li>
+<li><strong>列出 (n) 与信号分歧史</strong>（估 (\sigma)）。</li>
+<li><strong>用顺序统计下调</strong>：先算 (\sigma E[Z_{(n)}]) 作下限修正。</li>
+<li><strong>再叠加一价战略压价</strong>（若格式是一价）。</li>
+<li><strong>能公开学就用英式或披露</strong>。</li>
+<li><strong>事后复盘</strong>：得标项目 IRR vs 标书假设——专查「赢时高估」。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>S1 一句话</summary><div class="dbody"><p>能向同事说清：「中标=坏消息，要事前下调。」<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>S2 共同 vs 私有</summary><div class="dbody"><p>给三个案例分类，并指出诅咒是否适用。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>S3 顺序统计手算</summary><div class="dbody"><p>对给定 (n,\sigma) 算出胜者期望高估 (\sigma E[Z_{(n)}])。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>S4 出价表</summary><div class="dbody"><p>把「估计→条件价值→密封出价」写成一页流程。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>S5 并购红队</summary><div class="dbody"><p>用傲慢清单挑战溢价：协同可测吗？不买的 NPV？<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<ul>
+<li><strong>主线</strong>：矿物权密封场，用下调通关正期望利润。</li>
+<li><strong>副本</strong>：罐子拍卖、人数骤增、公开信息陷阱、并购溢价 Boss。</li>
+<li><strong>Boss</strong>：经验队在 7 人市场再度亏损——迫使你改格式或合信息。</li>
+<li><strong>成就</strong>：首次把分析师「点估计」拦在出价闸门外；首次用 (E[Z_{(n)}]) 改标书。</li>
+</ul>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>产出</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 电梯稿</td>
+<td>共同价值+坏消息+下调</td>
+<td>外行复述</td>
+</tr>
+<tr>
+<td class="k">T2 高估表</td>
+<td>n=3,5,8 的 (\sigma E[Z_{(n)}])</td>
+<td>与手册默认一致</td>
+</tr>
+<tr>
+<td class="k">T3 罐子复盘</td>
+<td>解释 \$10 vs \$8</td>
+<td>点出逆向选择</td>
+</tr>
+<tr>
+<td class="k">T4 格式选择</td>
+<td>密封 vs 英式备忘</td>
+<td>共同价值优先公开</td>
+</tr>
+<tr>
+<td class="k">T5 并购对照</td>
+<td>溢价 vs 收购方 CAR</td>
+<td>不单看「赢了」</td>
+</tr>
+<tr>
+<td class="k">T6 真实标书</td>
+<td>一页条件化检查表</td>
+<td>含 n、σ、下调格</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>四个可调模型：胜者高估、下调出价、人数放大、并购傲慢筛选。</p>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">模型1 胜者高估（顺序统计）</button><button class="tab" data-pane="tb1-1">模型2 下调出价</button><button class="tab" data-pane="tb1-2">模型3 人数放大（实验室结构）</button><button class="tab" data-pane="tb1-3">模型4 并购傲慢筛选</button></div>
+<div class="pane on" id="tb1-0"><p>(n) 人独立 (\mathcal{N}(0,\sigma^2)) 误差，胜者期望高估 (\approx\sigma\cdot\mathbb{E}[Z_{(n)}])。默认 (n=5,\sigma=20) → (\mathbb{E}[Z_{(5)}]\approx\mathbf{1.163}) → 高估 <strong>23.3</strong>；相对 (V=100)，天真成交期望利润 <strong>−23.3</strong>。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool-bias">
+  <div class="ctrl">
+    <label>竞买人数 n <output id="bias_nO">5</output></label>
+    <input type="range" id="bias_n" min="2" max="12" step="1" value="5"/>
+    <label>信号噪声 σ <output id="bias_sO">20</output></label>
+    <input type="range" id="bias_s" min="5" max="40" step="1" value="20"/>
+    <label>真值 V（示意） <output id="bias_vO">100</output></label>
+    <input type="range" id="bias_v" min="50" max="200" step="1" value="100"/>
+  </div>
+  <div class="readout">
+    <div class="ro">E[Z<sub>(n)</sub>] <b id="bias_z">1.163</b></div>
+    <div class="ro">胜者期望高估 <b id="bias_over">23.3</b></div>
+    <div class="ro">天真期望利润 <b id="bias_pi">-23.3</b></div>
+    <div class="ro">高估/V <b id="bias_pct">23.3%</b></div>
+    <div id="bias_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="biasChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-1"><p>平坦先验示意下，条件价值 (\approx X-\sigma E[Z_{(n)}])；再取「条件价值」为理性上限出价（忽略额外一价战略压价）。默认 (X=120,n=5,\sigma=20) → 下调 <strong>23.3</strong> → 建议出价上限 <strong>96.7</strong>。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool-shade">
+  <div class="ctrl">
+    <label>你的信号 X <output id="sh_xO">120</output></label>
+    <input type="range" id="sh_x" min="60" max="180" step="1" value="120"/>
+    <label>竞买人数 n <output id="sh_nO">5</output></label>
+    <input type="range" id="sh_n" min="2" max="12" step="1" value="5"/>
+    <label>噪声 σ <output id="sh_sO">20</output></label>
+    <input type="range" id="sh_s" min="5" max="40" step="1" value="20"/>
+  </div>
+  <div class="readout">
+    <div class="ro">下调幅度 <b id="sh_d">23.3</b></div>
+    <div class="ro">条件价值≈出价上限 <b id="sh_b">96.7</b></div>
+    <div class="ro">天真出价(=X) <b id="sh_naive">120</b></div>
+    <div class="ro">差额 <b id="sh_gap">23.3</b></div>
+    <div id="sh_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="shChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-2"><p>固定 (\sigma=20,V=100)：比较不同 (n) 下天真期望利润。默认对照 (n=3) → <strong>−16.9</strong> 与 (n=7) → <strong>−27.0</strong>——人数↑，诅咒更深（与 Kagel–Levin「大市场更糟」同向）。<span class="tag t-inf">推论</span><span class="tag t-ana">分析</span></p>
+<div class="tool" id="tool-nfx">
+  <div class="ctrl">
+    <label>人数 A <output id="nfx_aO">3</output></label>
+    <input type="range" id="nfx_a" min="2" max="12" step="1" value="3"/>
+    <label>人数 B <output id="nfx_bO">7</output></label>
+    <input type="range" id="nfx_b" min="2" max="12" step="1" value="7"/>
+    <label>噪声 σ <output id="nfx_sO">20</output></label>
+    <input type="range" id="nfx_s" min="5" max="40" step="1" value="20"/>
+  </div>
+  <div class="readout">
+    <div class="ro">A 天真利润 <b id="nfx_pa">-16.9</b></div>
+    <div class="ro">B 天真利润 <b id="nfx_pb">-27.0</b></div>
+    <div class="ro">差额 B−A <b id="nfx_diff">-10.1</b></div>
+    <div class="ro">E[Z] A/B <b id="nfx_z">0.846 / 1.352</b></div>
+    <div id="nfx_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="nfxChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-3"><p>目标市值 (M)，估值误差 (\varepsilon\sim\mathcal{N}(0,\sigma))，仅当估计 (M+\varepsilon&gt;M(1+p_{\min})) 才出价（最低溢价门槛）。默认 (M=100,\sigma=15,p_{\min}=20\%) → 出价概率约 <strong>9.1%</strong>，条件于出价的期望溢价误差约 <strong>+27.0</strong>（点）——右尾被选中。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool-ma">
+  <div class="ctrl">
+    <label>目标市值 M <output id="ma_mO">100</output></label>
+    <input type="range" id="ma_m" min="50" max="200" step="1" value="100"/>
+    <label>估值噪声 σ <output id="ma_sO">15</output></label>
+    <input type="range" id="ma_s" min="5" max="40" step="1" value="15"/>
+    <label>最低溢价门槛 % <output id="ma_pO">20</output></label>
+    <input type="range" id="ma_p" min="0" max="50" step="1" value="20"/>
+  </div>
+  <div class="readout">
+    <div class="ro">出价概率 <b id="ma_prob">9.1%</b></div>
+    <div class="ro">条件期望误差 <b id="ma_err">+27.0</b></div>
+    <div class="ro">门槛估计 <b id="ma_thr">120</b></div>
+    <div class="ro">相对 M <b id="ma_pct">+27.0%</b></div>
+    <div id="ma_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="maChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识咒</td>
+<td>说出共同价值+坏消息</td>
+<td>不与「别参与」混淆</td>
+</tr>
+<tr>
+<td class="k">L2 会算</td>
+<td>用 (n,\sigma) 算高估与下调</td>
+<td>与模型1–2一致</td>
+</tr>
+<tr>
+<td class="k">L3 选制</td>
+<td>共同价值下优先公开学习格式</td>
+<td>能写密封/英式对照</td>
+</tr>
+<tr>
+<td class="k">L4 治组织</td>
+<td>估计与出价分离+并购红队</td>
+<td>流程落地一页纸</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一件你近期「竞价式」决策（竞标、抢人、并购意向、甚至抢限量）。（5 分）</li>
+<li>写：共同价值成分有多高？信号噪声从何而来？对手大约几人？（10 分）</li>
+<li>用本手册模型1：代入 (n,\sigma)，算出胜者期望高估。（10 分）</li>
+<li>把「条件价值」写进出价上限；若超过，明确接受「可能输」。（5 分）</li>
+</ol>
+<p>验收：一页纸上有 (n,\sigma)、高估数、下调后上限——不是口号。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>精读 CCC 1971 摘要 + Thaler JEP 异象文结构</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>手算 n=3,5,8 的 (E[Z_{(n)}]) 表</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>复盘罐子实验数字（\$8 / \$10.01）</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>对比密封一价 vs 英式：信息流差异一页</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>找一例并购：溢价 vs 收购方公告日反应</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>写组织闸门：估计≠出价</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>用四个滑块各跑 3 组参数，记直觉校准</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>统计核</td>
+<td>自建 (E[Z_{(n)}]) 速查表</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>实验室</td>
+<td>读书笔记：Kagel–Levin 人数效应</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>字段</td>
+<td>OCS/行业租赁或采购案例一则</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>组织</td>
+<td>并购/竞标条件化检查表 v1 + 复盘会</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>共同价值</td>
+<td>事后 (V) 共享，事前信号有噪</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>顺序统计诅咒</td>
+<td>胜者 ≈ 最高信号</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>条件期望下调</td>
+<td>(E[V\mid X,win]&lt;E[V\mid X])</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>人数放大</td>
+<td>(n\uparrow\Rightarrow E[Z_{(n)}]\uparrow)</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>噪声放大</td>
+<td>(\sigma\uparrow\Rightarrow) 高估绝对值↑</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>矿物权 BNE</td>
+<td>按临界胜出条件化出价</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>英式信息外溢</td>
+<td>公开退出缓解诅咒</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>公开信息双刃</td>
+<td>有诅咒时卖方收入可降</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>傲慢假说</td>
+<td>并购溢价含估值误差右尾</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>学习与破产</td>
+<td>经验+出局改变市场平均</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 这是共同价值还是私有价值？</summary><div class="dbody"><p>决定诅咒框架是否成立。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q2 我的点估计无偏吗？胜出后还无偏吗？</summary><div class="dbody"><p>后者才是出价该用的。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>Q3 \(n\) 与 \(\sigma\) 各是多少？</summary><div class="dbody"><p>下调的两根轴。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>Q4 格式能否释放对手信息？</summary><div class="dbody"><p>英式/多轮常优于纯密封。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q5 估计流程是否直通出价？</summary><div class="dbody"><p>要闸门。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q6 赢的效用是否混入叙事/控制权？</summary><div class="dbody"><p>委托代理放大诅咒。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q7 不参与的 NPV 对照算了吗？</summary><div class="dbody"><p>基准是 0，不是「赢了」。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q8 联合信息是否合规可行？</summary><div class="dbody"><p>降有效极值。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q9 事后复盘是否专查「赢时高估」？</summary><div class="dbody"><p>否则组织不学习。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>Q10 我在读文献时，「诅咒」指亏损还是指条件差？</summary><div class="dbody"><p>术语分裂。<span class="tag t-fact">事实</span></p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>关联价值（affiliated values）与联动原理（linkage）：英式为何常抬卖方收入。<span class="tag t-fact">事实</span></li>
+<li>钱包博弈（wallet game）作为二人共同价值教学。<span class="tag t-fact">事实</span></li>
+<li>字段识别难题：低回报是诅咒还是卡特尔协调叙事？（Kagel 综述的争议）<span class="tag t-ana">分析</span></li>
+<li>多单位 / 组合拍卖中的诅咒变体。<span class="tag t-ana">分析</span></li>
+<li>与《逆向选择》《拍卖理论》《维克里拍卖》手册交叉阅读。<span class="tag t-ana">分析</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">诅咒概念起源</td>
+<td>行业论文</td>
+<td>Capen, Clapp, Campbell, <em>JPT</em> 1971</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">罐子实验</td>
+<td>实验</td>
+<td>Bazerman &amp; Samuelson 1983；Thaler JEP 1988 转述</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">人数效应</td>
+<td>实验</td>
+<td>Kagel &amp; Levin, <em>AER</em> 1986</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">次高/最高≈2/3</td>
+<td>二手转述</td>
+<td>Thaler 等对早期租赁出价分歧的描述</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">并购傲慢</td>
+<td>理论/实证</td>
+<td>Roll, <em>Journal of Business</em> 1986；后续混合证据</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">(E[Z_{(n)}]) 表</td>
+<td>自算</td>
+<td>标准正态最大值数值积分（本手册脚本）</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">教学下调公式</td>
+<td>示意模型</td>
+<td>(X-\sigma E[Z_{(n)}])（平坦先验+胜者为最高信号）</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">AI 军备类比</td>
+<td>评论</td>
+<td>公开财经评论中的隐喻用法</td>
+<td><span class="tag t-hyp">假设</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记：<span class="tag t-fact">事实</span>一手/多方一致；<span class="tag t-ana">分析</span>权威判断或机制推理；<span class="tag t-inf">推论</span>由模型导出；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或转述链。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与决策框架学习材料，<strong>不构成</strong>投资、并购、投标或采购建议。交互模型为教学简化（正态误差、平坦先验、忽略部分战略压价），数值用于建立直觉，不替代尽职调查、工程估值或法律合规审查。字段拍卖与并购结果受制度、合谋、融资约束等多重因素影响，不能单用「赢家诅咒」一句话解释。你需对自己的出价与交易决策负责。</p>
+</section>
+<footer>  <p>《赢家诅咒（Winner&#x27;s Curse） · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 9 分 24 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《赢家诅咒（Winner's Curse）》主题脚本
+   四个可调模型：
+     1. 胜者高估 bias
+     2. 下调出价 shade
+     3. 人数放大 nfx
+     4. 并购傲慢 ma
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  /* E[max of n i.i.d. N(0,1)] for n=2..12 */
+  var EMAX = [0.5642, 0.8463, 1.0294, 1.163, 1.2672, 1.3522, 1.4236, 1.485, 1.5388, 1.5864, 1.6292];
+  function eMaxN(n) {
+    n = Math.max(2, Math.min(12, Math.round(n)));
+    return EMAX[n - 2];
+  }
+
+  function phi(x) { return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI); }
+  function Phi(x) {
+    var t = 1 / (1 + 0.2316419 * Math.abs(x));
+    var d = 0.3989423 * Math.exp(-x * x / 2);
+    var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+    return x > 0 ? 1 - p : p;
+  }
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t && t.classList && t.classList.contains('tab')) setTimeout(fn, 40);
+    });
+    window.addEventListener('resize', function () { setTimeout(fn, 40); });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(1), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, items, ymin, ymax) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    if (ymin == null || ymax == null) {
+      var vs = items.map(function (x) { return x.v; });
+      ymin = Math.min.apply(null, vs.concat([0])) - 0.5;
+      ymax = Math.max.apply(null, vs.concat([0])) + 0.5;
+      if (ymax <= ymin) { ymax = ymin + 1; }
+    }
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (items.length * 1.45);
+    var span = ymax - ymin || 1;
+    items.forEach(function (it, i) {
+      var x = pl + (i + 0.5) * (bw / items.length) - barW / 2;
+      var y = y1 - ((it.v - ymin) / span) * bh;
+      var zeroY = y1 - ((0 - ymin) / span) * bh;
+      var top = Math.min(y, zeroY), bot = Math.max(y, zeroY);
+      ctx.fillStyle = it.c;
+      ctx.fillRect(x, top, barW, Math.max(2, bot - top));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+      var lab = (typeof it.v === 'number' ? it.v.toFixed(it.dp != null ? it.dp : 1) : String(it.v));
+      var lw = ctx.measureText(lab).width;
+      var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 2), w - pr - lw / 2 - 2);
+      ctx.fillText(lab, lx, top - 6);
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(items._axis || '数值', pl + bw, y1 + 31);
+  }
+
+  /* ---- 1 bias ---- */
+  function updBias() {
+    var n = +$('bias_n').value, s = +$('bias_s').value, V = +$('bias_v').value;
+    txt($('bias_nO'), n); txt($('bias_sO'), s); txt($('bias_vO'), V);
+    var z = eMaxN(n);
+    var over = s * z;
+    var pi = -over;
+    var pct = (over / V) * 100;
+    txt($('bias_z'), z.toFixed(3));
+    txt($('bias_over'), over.toFixed(1));
+    txt($('bias_pi'), pi.toFixed(1));
+    txt($('bias_pct'), pct.toFixed(1) + '%');
+    var vh = $('bias_vh');
+    if (over > V * 0.25) {
+      txt(vh, '判定：高估超过 V 的 25%——天真出价极危险，必须大幅下调。');
+      tint(vh, C.red);
+    } else if (over > V * 0.12) {
+      txt(vh, '判定：中等诅咒强度——下调表应写进标书硬门槛。');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：相对温和——仍应用条件价值，勿按信号原价出价。');
+      tint(vh, C.green);
+    }
+    var items = [
+      { lab: '高估', v: over, c: C.red, dp: 1 },
+      { lab: '天真利润', v: pi, c: C.amber, dp: 1 },
+      { lab: '0基准', v: 0, c: C.blue, dp: 1 }
+    ];
+    items._axis = '相对真值 V';
+    bars($('biasChart'), items, Math.min(pi, -1) - 2, Math.max(over, 1) + 2);
+  }
+
+  /* ---- 2 shade ---- */
+  function updShade() {
+    var X = +$('sh_x').value, n = +$('sh_n').value, s = +$('sh_s').value;
+    txt($('sh_xO'), X); txt($('sh_nO'), n); txt($('sh_sO'), s);
+    var d = s * eMaxN(n);
+    var b = X - d;
+    txt($('sh_d'), d.toFixed(1));
+    txt($('sh_b'), b.toFixed(1));
+    txt($('sh_naive'), String(X));
+    txt($('sh_gap'), d.toFixed(1));
+    var vh = $('sh_vh');
+    if (b <= 0) {
+      txt(vh, '判定：条件价值≤0——在此 n、σ 下不应参与（或先降噪/合信息）。');
+      tint(vh, C.red);
+    } else if (d / X > 0.25) {
+      txt(vh, '判定：下调超过信号的 25%——竞争/噪声过强，优先改格式或共享信息。');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：建议出价上限 = 条件价值 ' + b.toFixed(1) + '（再视一价战略略压）。');
+      tint(vh, C.green);
+    }
+    var items = [
+      { lab: '信号X', v: X, c: C.blue, dp: 1 },
+      { lab: '条件价值', v: b, c: C.green, dp: 1 },
+      { lab: '下调', v: d, c: C.red, dp: 1 }
+    ];
+    items._axis = '出价尺度';
+    bars($('shChart'), items, 0, Math.max(X, b, d) * 1.1);
+  }
+
+  /* ---- 3 nfx ---- */
+  function updNfx() {
+    var a = +$('nfx_a').value, b = +$('nfx_b').value, s = +$('nfx_s').value;
+    txt($('nfx_aO'), a); txt($('nfx_bO'), b); txt($('nfx_sO'), s);
+    var za = eMaxN(a), zb = eMaxN(b);
+    var pa = -s * za, pb = -s * zb;
+    var diff = pb - pa;
+    txt($('nfx_pa'), pa.toFixed(1));
+    txt($('nfx_pb'), pb.toFixed(1));
+    txt($('nfx_diff'), diff.toFixed(1));
+    txt($('nfx_z'), za.toFixed(3) + ' / ' + zb.toFixed(3));
+    var vh = $('nfx_vh');
+    if (diff < -5) {
+      txt(vh, '判定：B 市场天真亏损明显更深——人数↑放大诅咒（实验室大市场同向）。');
+      tint(vh, C.red);
+    } else if (Math.abs(diff) < 2) {
+      txt(vh, '判定：两档人数差异不大——仍应用条件化，勿因「差不多」跳过下调。');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：人数结构已改变期望亏损幅度，标书应按实际 n 重算。');
+      tint(vh, C.green);
+    }
+    var items = [
+      { lab: 'n=' + a, v: pa, c: C.amber, dp: 1 },
+      { lab: 'n=' + b, v: pb, c: C.red, dp: 1 },
+      { lab: '0基准', v: 0, c: C.blue, dp: 1 }
+    ];
+    items._axis = '天真期望利润';
+    bars($('nfxChart'), items, Math.min(pa, pb, -1) - 2, 2);
+  }
+
+  /* ---- 4 ma ---- */
+  function updMa() {
+    var M = +$('ma_m').value, s = +$('ma_s').value, p = +$('ma_p').value;
+    txt($('ma_mO'), M); txt($('ma_sO'), s); txt($('ma_pO'), p);
+    var thr = M * (1 + p / 100);
+    var a = (thr - M) / s;
+    var surv = Math.max(1e-12, 1 - Phi(a));
+    var prob = surv * 100;
+    var err = s * phi(a) / surv;
+    txt($('ma_prob'), prob.toFixed(1) + '%');
+    txt($('ma_err'), '+' + err.toFixed(1));
+    txt($('ma_thr'), thr.toFixed(0));
+    txt($('ma_pct'), '+' + ((err / M) * 100).toFixed(1) + '%');
+    var vh = $('ma_vh');
+    if (err / M > 0.2) {
+      txt(vh, '判定：条件于「愿意出溢价」，期望估值误差已很大——傲慢通道开通。');
+      tint(vh, C.red);
+    } else if (prob < 15) {
+      txt(vh, '判定：出价稀少但一旦出价误差偏右——需红队挑战协同故事。');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：筛选仍在，但强度可控——对照不收购基准再拍板。');
+      tint(vh, C.green);
+    }
+    var items = [
+      { lab: '门槛', v: thr - M, c: C.blue, dp: 1 },
+      { lab: '条件误差', v: err, c: C.red, dp: 1 },
+      { lab: 'σ', v: s, c: C.amber, dp: 1 }
+    ];
+    items._axis = '相对市值的点数';
+    bars($('maChart'), items, 0, Math.max(thr - M, err, s) * 1.15);
+  }
+
+  function all() { updBias(); updShade(); updNfx(); updMa(); }
+
+  bind(['bias_n', 'bias_s', 'bias_v'], updBias);
+  bind(['sh_x', 'sh_n', 'sh_s'], updShade);
+  bind(['nfx_a', 'nfx_b', 'nfx_s'], updNfx);
+  bind(['ma_m', 'ma_s', 'ma_p'], updMa);
+  all();
+})();
+</script>
+</body>
+</html>
