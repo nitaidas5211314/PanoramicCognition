@@ -505,11 +505,14 @@
     {
       "slug": "共同知识（Common Knowledge）：我知道，你知道我知道，我知道你知道我知道……无限递归，这是均衡成立的前提",
       "title": "共同知识（Common Knowledge）：我知道，你知道我知道，我知道你知道我知道……无限递归，这是均衡成立的前提",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 00:38:43",
+      "finished": "2026-09-19 00:46:03",
+      "duration_sec": 440,
+      "outputs": [
+        "reports/共同知识（Common Knowledge）：我知道，你知道我知道，我知道你知道我知道……无限递归，这是均衡成立的前提.html",
+        "reports/共同知识（Common Knowledge）：我知道，你知道我知道，我知道你知道我知道……无限递归，这是均衡成立的前提.md"
+      ],
       "error": null
     },
     {
@@ -1810,7 +1813,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 00:38",
+  "updated": "2026-09-19 00:46",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
