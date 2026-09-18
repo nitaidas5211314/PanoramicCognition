@@ -778,11 +778,14 @@
     {
       "slug": "协调博弈与谢林点（Schelling Point）：多重均衡时，人们靠显著的共同焦点自发协调",
       "title": "协调博弈与谢林点（Schelling Point）：多重均衡时，人们靠显著的共同焦点自发协调",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-19 03:42:06",
+      "finished": "2026-09-19 03:49:35",
+      "duration_sec": 449,
+      "outputs": [
+        "reports/协调博弈与谢林点（Schelling Point）：多重均衡时，人们靠显著的共同焦点自发协调.html",
+        "reports/协调博弈与谢林点（Schelling Point）：多重均衡时，人们靠显著的共同焦点自发协调.md"
+      ],
       "error": null
     },
     {
@@ -1873,7 +1876,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-19 03:41",
+  "updated": "2026-09-19 03:49",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

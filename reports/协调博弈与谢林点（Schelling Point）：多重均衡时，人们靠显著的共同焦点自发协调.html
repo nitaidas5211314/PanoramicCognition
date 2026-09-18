@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>协调博弈与谢林点（Schelling Point）：多重均衡时，靠显著共同焦点自发协调 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Schelling Point × Coordination Games</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践路径</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>协调博弈与谢林点（Schelling Point）：多重均衡时，靠显著共同焦点自发协调</h1>
+  <p class="sub">纳什只告诉你「哪些组合稳定」；当稳定点有很多个时，人们靠<strong>显著性（salience）</strong>收敛到同一个——这就是谢林点。对称时它很强；收益稍不对称，焦点可瞬间失效。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>谢林点（Schelling point / focal point）</strong>：在无法通信的纯协调（或近纯协调）博弈里，某个均衡因其<strong>显著性（salience）</strong>——文化、历史、标签、对称、先例——成为彼此预期的「对方也会选它」的共同焦点，从而把多重纳什均衡收敛到一个。<span class="tag t-fact">事实</span></p>
+<p>Thomas Schelling《冲突的策略》（<em>The Strategy of Conflict</em>, 1960）提出：人们往往能「在不知道对方会选什么的情况下，猜到对方会猜自己猜什么」。经典思想实验：纽约见面——多数人选正午 + Grand Central 问讯处；红蓝方格——多数人选唯一的红格。<span class="tag t-fact">事实</span></p>
+<p>关键边界：焦点在<strong>支付对称</strong>时极强（实验期望协调率常 &gt;80%）；一旦出现<strong>哪怕极小的支付不对称</strong>，标签显著性常被支付显著性抢走，期望协调率可跌到接近混合均衡的 ~50%。<span class="tag t-fact">事实</span>（Crawford–Gneezy–Rottenstreich, <em>AER</em> 2008）</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「怎么算纳什均衡」，而是：当纳什均衡<strong>不止一个</strong>且支付无法挑出唯一解时，<strong>共享的认知结构</strong>如何完成均衡选择。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：纯协调、猎鹿、性别战、默契谈判、标签显著性、团队推理、level-k、先例与公约、公共信号当焦点。</li>
+<li><strong>在界外</strong>：单均衡的占优解算、具体城市导游、某币种炒作口号——除非压成「多重均衡如何被选中」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>多重均衡下的默契协调与焦点选择</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「显著性 / 标签 / 预期嵌套」可操作化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>协调博弈、均衡集合、显著性、共同预期</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>需对齐行动却难（或不能）通信的人/组织/算法</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>选项数、显著性强度、支付对称性、先例、沟通带宽</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>标签、地标、默认规则、历史份额、公开锚点</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>对方脑中的显著性排序、高阶预期</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>显著线索 → 共同预期 → 均衡选择 → 先例强化</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>共享显著性 ⇒ 收敛期望 ⇒ 协调成功</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「大家都选过」≠ 焦点；相关但可能是支付驱动<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>见面地点、行业标准、键盘布局、链上最长链、语言拼写</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>显著性 + 高阶信念（「我想你也觉得它显著」）</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。成功协调沉淀为先例，强化下一轮焦点</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。新文化/新标签要时间成为共同显著</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>标准锁定是正反馈；支付冲突可负反馈摧毁焦点</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>谢林点回答的是「在众多稳定点里，哪一个会被共同看见」——不是「哪一个对社会最优」。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它补上纳什的缺口</h4><p>纳什存在性不保证唯一性。没有焦点理论，多重均衡博弈在预测上几乎空白。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它解释「无通信的秩序」</h4><p>货币、交通规则、技术标准、见面惯例——大量秩序来自默契而非合同。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它警告「焦点很脆」</h4><p>对称实验里很灵的标签，在微小利益冲突下可失效——谈判与机制设计不能迷信「大家都懂」。<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>以为「有个明显默认选项」就等于协调成功。若对方因一点点额外利益觉得「该我占优」，你的显著性对他可能只是噪音。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看谢林点如何从「标签」长成「制度与锁定」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="spArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 机制设计 · 故意制造公共焦点（锚点/默认/标准）</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 制度锁定 · 路径依赖、网络效应、切换成本</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 冲突协调 · 默契谈判、势力范围、边缘政策</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 认知模型 · 团队推理 / level-k / 可变框架</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 脆弱边界 · 支付不对称摧毁标签焦点（AER 2008）</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 实验核校 · Mehta–Starmer–Sugden 激励实验</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 谢林点 · 显著性引导的均衡选择</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 多重 NE · 纯协调 / 猎鹿 / 性别战</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 协调需求 · 对齐行动才有正支付</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2→L3</strong>：先承认「多个稳定点」，再问「显著性选哪一个」。进阶卡在 <strong>L5</strong>：把「焦点万能」打回原形。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到可操作判别。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="200" y="16" width="280" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">多重纳什均衡集合</text>
+
+  <rect x="40" y="100" width="180" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">支付无法挑唯一</text>
+  <rect x="250" y="100" width="180" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">共享显著性线索</text>
+  <rect x="460" y="100" width="180" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="550" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">收敛共同预期</text>
+
+  <line x1="280" y1="60" x2="130" y2="100" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="200" width="280" height="56" rx="8" fill="#fce8e8" stroke="#d5342c"/><text x="180" y="234" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">支付不对称 → 焦点失效</text>
+  <rect x="360" y="200" width="280" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="500" y="234" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">先例/标准 → 锁定焦点</text>
+
+  <line x1="340" y1="152" x2="180" y2="200" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#cmB)"/>
+  <line x1="340" y1="152" x2="500" y2="200" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="120" y="290" width="440" height="48" rx="8" fill="#f8fafc" stroke="#94a3b8"/><text x="340" y="320" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">操作层：找唯一显著线索 · 或主动制造公共锚点</text>
+</svg>
+<p>抽象层是「均衡选择问题」；机制层是「显著性如何进入预期」；操作层是「找焦点或造焦点」。</p>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>在系统里做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">协调双方（或多方）</td>
+<td>在无法通信时选择行动，靠共享线索对齐</td>
+</tr>
+<tr>
+<td class="k">标签/环境设计师</td>
+<td>无意或有意地提供显著性（地图、UI 默认、法规默认）</td>
+</tr>
+<tr>
+<td class="k">先例与标准制定者</td>
+<td>把一次协调写进历史，降低下一轮搜寻成本</td>
+</tr>
+<tr>
+<td class="k">实验经济学家</td>
+<td>测量焦点在对称/不对称下的真实效力</td>
+</tr>
+<tr>
+<td class="k">理论家（Sugden / Bacharach / Crawford 等）</td>
+<td>形式化显著性、团队推理、level-k</td>
+</tr>
+<tr>
+<td class="k">「搅局者」</td>
+<td>用微小利益差或新标签破坏旧焦点</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号直觉</th>
+<th>为何关键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">选项数</td>
+<td>(n)</td>
+<td>均匀随机时匹配率仅 (1/n)</td>
+</tr>
+<tr>
+<td class="k">焦点选择率</td>
+<td>(f)</td>
+<td>双方独立以 (f) 选焦点时，期望协调率可远高于 (1/n)</td>
+</tr>
+<tr>
+<td class="k">支付对称性</td>
+<td>(\delta)</td>
+<td>(\delta=0) 焦点强；(\delta) 极小即可大幅降效</td>
+</tr>
+<tr>
+<td class="k">显著性类型</td>
+<td>标签/对称/先例/唯一性</td>
+<td>不同类型在冲突时互相竞争</td>
+</tr>
+<tr>
+<td class="k">沟通带宽</td>
+<td>0 / 廉价谈 / 有约束力</td>
+<td>通信可替代或强化焦点</td>
+</tr>
+<tr>
+<td class="k">文化共享度</td>
+<td>共同背景知识</td>
+<td>跨文化时「明显」不再明显</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="caA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="caB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="120" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="80" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">共享线索</text>
+  <rect x="180" y="30" width="120" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="240" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">共同预期</text>
+  <rect x="340" y="30" width="120" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="400" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">选同一均衡</text>
+  <rect x="500" y="30" width="140" height="50" rx="8" fill="#15181d"/><text x="570" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#fff" font-family="sans-serif">协调成功</text>
+  <line x1="140" y1="55" x2="180" y2="55" stroke="#1d4ed8" stroke-width="2" marker-end="url(#caA)"/>
+  <line x1="300" y1="55" x2="340" y2="55" stroke="#1d4ed8" stroke-width="2" marker-end="url(#caA)"/>
+  <line x1="460" y1="55" x2="500" y2="55" stroke="#1d4ed8" stroke-width="2" marker-end="url(#caA)"/>
+
+  <rect x="180" y="160" width="160" height="50" rx="8" fill="#fce8e8" stroke="#d5342c"/><text x="260" y="190" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">支付不对称 δ</text>
+  <rect x="400" y="160" width="160" height="50" rx="8" fill="#fce8e8" stroke="#d5342c"/><text x="480" y="190" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">焦点失效/错配</text>
+  <line x1="260" y1="160" x2="260" y2="80" stroke="#d5342c" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#caB)"/>
+  <line x1="340" y1="185" x2="400" y2="185" stroke="#d5342c" stroke-width="2" marker-end="url(#caB)"/>
+
+  <text x="40" y="270" font-size="12" fill="#454c56" font-family="sans-serif">实线=因果链；红虚线=反馈干扰（利益冲突打断预期收敛）</text>
+</svg>
+<p>因果主链：<strong>线索 → 预期 → 选择 → 成功</strong>。隐藏杀手是支付显著性与标签显著性的竞争。</p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>焦点 ≠ 最优</strong>：红格并不比蓝格支付更高，它只是更「跳眼」。<span class="tag t-fact">事实</span></li>
+<li><strong>一级显著 vs 二级显著</strong>：Mehta 等区分「我对什么显著」与「我认为对方会对什么显著」——真正管用的常是后者。<span class="tag t-ana">分析</span></li>
+<li><strong>团队推理 vs 个体最优反应</strong>：Schelling 更接近「我们一起找一个突显方案」；level-k 则从天真 L0 往上推。两者在对称与不对称下解释力不同。<span class="tag t-ana">分析</span></li>
+<li><strong>先例是焦点工厂</strong>：一次成功协调把随机结果变成下一轮的显著性。<span class="tag t-inf">推论</span></li>
+<li><strong>区块链最长链</strong>：挖矿协议存在多均衡；参考实现与最长链规则充当焦点，但分叉/太阳黑子仍可能触发另一均衡。<span class="tag t-ana">分析</span>（Biais 等 <em>RFS</em>「区块链民间定理」）</li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<pre><code>无法通信的协调需求
+        ↓
+识别候选均衡集合（全是 NE）
+        ↓
+扫描共享显著性（唯一性/对称/文化/先例）
+        ↓
+形成「你也会选它」的共同预期
+        ↓
+对齐行动 → 成功则沉淀先例；失败则换线索或求通信
+</code></pre>
+<div class="note purple"><b>与共同知识的接口</b><p>焦点要工作，至少需要对线索的<strong>近似共同知识</strong>：「我看见红格」不够，还要「我知道你也看见、且你知道我看见」。细节见《共同知识》手册。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="80" cy="110" r="10" fill="#0f8a4d"/><text x="80" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1960</text><text x="80" y="150" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Schelling</text><text x="80" y="168" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">提出焦点</text>
+  <circle cx="220" cy="110" r="10" fill="#1d4ed8"/><text x="220" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">1994</text><text x="220" y="150" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Mehta 等</text><text x="220" y="168" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">激励实验</text>
+  <circle cx="360" cy="110" r="10" fill="#b8730a"/><text x="360" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">2005</text><text x="360" y="150" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">诺贝尔奖</text><text x="360" y="168" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">Schelling</text>
+  <circle cx="500" cy="110" r="10" fill="#d5342c"/><text x="500" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">2008</text><text x="500" y="150" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">AER</text><text x="500" y="168" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">焦点脆弱</text>
+  <circle cx="620" cy="110" r="10" fill="#15181d"/><text x="620" y="60" text-anchor="middle" font-size="11" fill="#15181d" font-family="sans-serif">2010s+</text><text x="620" y="150" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">链/平台</text><text x="620" y="168" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">标准即焦点</text>
+</svg>
+<p>从思想实验 → 实验室确认 → 发现边界条件 → 进入数字协议与平台默认设计。</p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>参与方</th>
+<th>激励</th>
+<th>扭曲风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">对称协调者</td>
+<td>最大化匹配概率</td>
+<td>过度自信「我的显著=你的显著」</td>
+</tr>
+<tr>
+<td class="k">不对称支付方</td>
+<td>想协调在对自己更有利的均衡</td>
+<td>破坏标签焦点，导致双输</td>
+</tr>
+<tr>
+<td class="k">平台/标准方</td>
+<td>锁定用户到自家默认</td>
+<td>用假「自然焦点」掩盖锁定</td>
+</tr>
+<tr>
+<td class="k">监管者</td>
+<td>指定默认规则降低协调成本</td>
+<td>选错默认造成长期路径依赖</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="30" y="40" width="140" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="100" y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">文化/标签库</text><text x="100" y="92" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">共享显著性原料</text>
+  <rect x="220" y="40" width="140" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="290" y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">预期市场</text><text x="290" y="92" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">猜你猜我</text>
+  <rect x="410" y="40" width="140" height="70" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="480" y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">行动对齐</text><text x="480" y="92" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">匹配成功</text>
+  <rect x="560" y="40" width="90" height="70" rx="8" fill="#15181d"/><text x="605" y="80" text-anchor="middle" font-size="12" font-weight="600" fill="#fff" font-family="sans-serif">先例</text>
+  <line x1="170" y1="75" x2="220" y2="75" stroke="#1d4ed8" stroke-width="2" marker-end="url(#flA)"/>
+  <line x1="360" y1="75" x2="410" y2="75" stroke="#1d4ed8" stroke-width="2" marker-end="url(#flA)"/>
+  <line x1="550" y1="75" x2="560" y2="75" stroke="#1d4ed8" stroke-width="2" marker-end="url(#flA)"/>
+  <path d="M605,110 Q340,210 100,110" fill="none" stroke="#0f8a4d" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#flA)"/>
+  <text x="340" y="200" text-anchor="middle" font-size="11" fill="#0f8a4d" font-family="sans-serif">成功先例回流，强化下一轮标签库</text>
+  <text x="40" y="245" font-size="11" fill="#454c56" font-family="sans-serif">「抽水」也可发生：平台把自然焦点换成自家默认，抽取锁定租金【分析】</text>
+</svg>
+<p>信息流的核心资产是<strong>共享显著性</strong>；回流的是<strong>先例</strong>；可能被抽走的是<strong>默认权</strong>。</p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」粗排：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>序</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>制造唯一公共锚点</strong></td>
+<td>一个突显默认可把 (1/n) 抬到接近 1</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>消除支付不对称冲突</strong></td>
+<td>微小 δ 可毁掉焦点——先对齐利益再靠标签</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>写清先例</strong></td>
+<td>「上次怎么做的」常是最强焦点</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>压缩选项数</strong></td>
+<td>(n) 下降直接抬高随机匹配底线</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>廉价但公共的通信</strong></td>
+<td>一句话可替代复杂显著性推理</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>对称化标签</strong></td>
+<td>让「公平分割」成为显著规则</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>跨文化校准</strong></td>
+<td>换语境时重测「什么算明显」</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>时间锚</strong></td>
+<td>「正午」「整点」比任意时刻显著</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>视觉唯一性</strong></td>
+<td>唯一红格、唯一大按钮</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>拒绝假焦点</strong></td>
+<td>识破被设计来锁定你的「自然默认」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱 1 · 把「我想到的」当成「共同显著」</summary><div class="dbody"><p>显著性是群体属性。你的灵感若无法被对方一眼看见，就不是谢林点。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱 2 · 以为焦点永远有效</summary><div class="dbody"><p>AER 2008：芝加哥摩天楼对称时期望协调率约 <strong>82%</strong>；支付改为 \$100 vs \$101 后约 <strong>52%</strong>——接近抛硬币。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 3 · 混淆协调与冲突</summary><div class="dbody"><p>性别战里双方都想匹配，但偏好不同；焦点若与利益冲突，可能帮倒忙。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱 4 · 迷信「数学最优均衡」</summary><div class="dbody"><p>风险占优与支付占优可以分家；人们未必选帕累托更好的那个。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 5 · 忽视文化时效</summary><div class="dbody"><p>Grand Central 在 1960 年代美国学生中显著；换城市、换世代，答案会变。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 6 · 选项越多越「聪明」</summary><div class="dbody"><p>无焦点时匹配率 ≈ (1/n)；堆选项是在惩罚协调。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>陷阱 7 · 把沉默当同意焦点</summary><div class="dbody"><p>「大家都没反对」≠ 共同预期已收敛。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱 8 · 用私有暗号当焦点</summary><div class="dbody"><p>只有你方懂的梗，对方看不到——不是公共显著性。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>陷阱 9 · 忽视二级显著性</summary><div class="dbody"><p>真正要问：「对方会认为什么对双方都显著？」<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱 10 · 把标准锁定当自然秩序</summary><div class="dbody"><p>QWERTY、某链的「正统」、某 App 默认——往往是路径依赖，不是上帝选择。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <rect x="20" y="40" width="180" height="120" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="110" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">抽象</text>
+  <text x="110" y="100" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">多重 NE</text>
+  <text x="110" y="120" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">显著性</text>
+  <text x="110" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">共同预期</text>
+
+  <rect x="250" y="40" width="180" height="120" rx="10" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="340" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">机制</text>
+  <text x="340" y="100" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">标签竞争</text>
+  <text x="340" y="120" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">先例强化</text>
+  <text x="340" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">不对称摧毁</text>
+
+  <rect x="480" y="40" width="180" height="120" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="570" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">操作</text>
+  <text x="570" y="100" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">造锚点</text>
+  <text x="570" y="120" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">减选项</text>
+  <text x="570" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">先对齐利益</text>
+</svg>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>理论判断</th>
+<th>行动</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">纯协调、利益一致</td>
+<td>找/造一个唯一显著选项</td>
+</tr>
+<tr>
+<td class="k">有微小利益冲突</td>
+<td>先谈利益或引入公平焦点，别只丢标签</td>
+</tr>
+<tr>
+<td class="k">跨文化/新团队</td>
+<td>不要假设「显然」；显式约定</td>
+</tr>
+<tr>
+<td class="k">标准战争</td>
+<td>评估锁定租金与切换成本，不只看技术优劣</td>
+</tr>
+<tr>
+<td class="k">可通信</td>
+<td>一句公共确认往往优于复杂猜心</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>枝 1 · 识别博弈类型</summary><div class="dbody"><p>纯协调 / 猎鹿 / 性别战 / 囚徒困境——先分类再谈焦点。</p></div></details>
+<details><summary>枝 2 · 显著性审计</summary><div class="dbody"><p>列出选项，标「唯一性、对称、先例、文化」四维得分。</p></div></details>
+<details><summary>枝 3 · 二级预期练习</summary><div class="dbody"><p>写：「我认为对方会认为我们都会选 <strong><em>，因为 </em></strong>。」</p></div></details>
+<details><summary>枝 4 · 不对称压力测试</summary><div class="dbody"><p>给焦点选项加 1% 利益倾斜，重新预测协调率。</p></div></details>
+<details><summary>枝 5 · 造锚能力</summary><div class="dbody"><p>在会议、产品、谈判里设计一个不可忽略的默认。</p></div></details>
+<details><summary>枝 6 · 跨域同构</summary><div class="dbody"><p>货币、协议、交通规则、约会地点——同一数学结构。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你进入「默契之城」：市民不能通话，只能靠路牌、钟楼与旧俗对齐。任务是提高全城匹配率，同时提防商人偷偷给某个路口加「额外小费」——那会毁掉旧焦点。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>完成标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 分类</td>
+<td>把本周 3 个冲突标成协调/冲突型</td>
+</tr>
+<tr>
+<td class="k">T2 审计</td>
+<td>对一次约会或会议做显著性四维表</td>
+</tr>
+<tr>
+<td class="k">T3 实验</td>
+<td>与朋友做「选同一数字」小实验，记录命中率</td>
+</tr>
+<tr>
+<td class="k">T4 造锚</td>
+<td>在团队里设立一个显式默认（时间/工具/模板）</td>
+</tr>
+<tr>
+<td class="k">T5 压力测</td>
+<td>找一个「看起来明显」的默认，问：若利益差 1% 还成立吗？</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>下面四个模型把「显著性 → 协调率」「不对称 → 崩溃」「猎鹿风险」「性别战焦点」算清楚。正文数字与滑块默认已对齐。</p>
+<h3>可调模型 1 · 显著性如何抬高匹配率</h3>
+<p>双方独立以概率 (f) 选焦点选项，否则在其余 (n-1) 个选项上均匀随机。期望协调率：</p>
+<p>[
+\mathrm{ECR}=f^{2}+\frac{(1-f)^{2}}{n-1}
+]</p>
+<p>均匀无焦点时 (\mathrm{ECR}=1/n)。默认 (n=4,f=0.90) → ECR=<strong>0.813</strong>（对比均匀 <strong>0.250</strong>）。Schelling 正面/反面：(f=36/42\approx0.857) 时（(n=2)）ECR=<strong>0.755</strong>。<span class="tag t-inf">推论</span><span class="tag t-fact">事实</span></p>
+<div class="tool" id="tool_ecr">
+  <div class="ctrl">
+    <label>选项数 n <output id="ecr_nO">4</output></label>
+    <input type="range" id="ecr_n" min="2" max="12" step="1" value="4"/>
+    <label>焦点选择率 f <output id="ecr_fO">0.90</output></label>
+    <input type="range" id="ecr_f" min="0.05" max="0.99" step="0.01" value="0.90"/>
+  </div>
+  <div class="readout">
+    <div class="ro">期望协调率 ECR<strong id="ecr_ecr">0.813</strong></div>
+    <div class="ro">均匀底线 1/n<strong id="ecr_base">0.250</strong></div>
+    <div class="ro">相对提升<strong id="ecr_lift">+225%</strong></div>
+    <div id="ecr_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="ecr_vh">n=4,f=0.90 → ECR=0.813，远高于均匀 0.250；显著性把协调从「碰运气」变成「默契」</span></div>
+  </div>
+  <canvas id="ecrChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · 支付不对称摧毁焦点</h3>
+<p>用分段经验近似刻画 Crawford 等芝加哥摩天楼结果：对称（δ=0）ECR≈<strong>82%</strong>；微小不对称（δ≈1%，如 \$100 vs \$101）≈<strong>52%</strong>；中度（δ≈10%，\$100 vs \$110）≈<strong>50%</strong>。<span class="tag t-fact">事实</span>滑块 δ 为「对焦点均衡的相对利益倾斜（%）」。</p>
+<div class="tool" id="tool_asym">
+  <div class="ctrl">
+    <label>利益倾斜 δ(%) <output id="asym_dO">0.0</output></label>
+    <input type="range" id="asym_d" min="0" max="15" step="0.1" value="0.0"/>
+    <label>对称时标签效力 s0 <output id="asym_sO">0.82</output></label>
+    <input type="range" id="asym_s" min="0.60" max="0.95" step="0.01" value="0.82"/>
+  </div>
+  <div class="readout">
+    <div class="ro">期望协调率<strong id="asym_ecr">0.820</strong></div>
+    <div class="ro">相对对称跌幅<strong id="asym_drop">0.0pp</strong></div>
+    <div class="ro">判定<strong id="asym_lab">焦点仍强</strong></div>
+    <div id="asym_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="asym_vh">δ=0 → ECR≈0.82（对齐 AER 对称处理）；把 δ 推到 1 看崩溃</span></div>
+  </div>
+  <canvas id="asymChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 猎鹿：支付占优 vs 风险占优</h3>
+<p>猎鹿（Stag Hunt）：都猎鹿得 (R)，都猎兔得 (r)，一人猎鹿一人猎兔则猎鹿方得 0、猎兔方得 (r)。两纯 NE：(鹿,鹿) 支付占优；(兔,兔) 常风险占优。若对方选鹿概率为 (p)，选鹿的期望为 (pR)；选兔稳得 (r)。临界 (p^<em>=r/R)。默认 (R=5,r=2) → (p^</em>=0.40)；若你估计对方只以 0.35 选鹿，理性选兔——<strong>帕累托更好的均衡可能落空</strong>。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="tool_stag">
+  <div class="ctrl">
+    <label>猎鹿奖励 R <output id="stag_RO">5.0</output></label>
+    <input type="range" id="stag_R" min="2" max="10" step="0.1" value="5.0"/>
+    <label>猎兔稳得 r <output id="stag_rO">2.0</output></label>
+    <input type="range" id="stag_r" min="0.5" max="4" step="0.1" value="2.0"/>
+    <label>你估计对方选鹿 p <output id="stag_pO">0.50</output></label>
+    <input type="range" id="stag_p" min="0" max="1" step="0.01" value="0.50"/>
+  </div>
+  <div class="readout">
+    <div class="ro">临界 p*<strong id="stag_pstar">0.400</strong></div>
+    <div class="ro">EU(鹿)<strong id="stag_euS">2.50</strong></div>
+    <div class="ro">你的最优<strong id="stag_best">鹿</strong></div>
+    <div id="stag_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="stag_vh">p=0.50 ≥ p*=0.40 → 选鹿；焦点若把共同预期抬过 p*，帕累托均衡可被选中</span></div>
+  </div>
+  <canvas id="stagChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 性别战：无焦点 vs 有焦点</h3>
+<p>歌剧/足球：同歌剧 (a,1)，同足球 (1,b)，错配 0。无焦点时停在混合：行以 (p^<em>=b/(1+b)) 去歌剧，列以 (q^</em>=1/(1+a)) 去歌剧，匹配率 (pq+(1-p)(1-q))。有公共焦点（如「今晚看球」成为显著约定）时，双方以概率 (f) 收敛到同一纯 NE，匹配率 ≈ (f+(1-f)\cdot)混合匹配率。默认 (a=2,b=2,f=0.80) → 混合匹配率 <strong>0.444</strong>（(4/9)），有焦点后 ≈ <strong>0.889</strong>。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool_bos">
+  <div class="ctrl">
+    <label>行偏好 a <output id="bos_aO">2.0</output></label>
+    <input type="range" id="bos_a" min="1.1" max="5" step="0.1" value="2.0"/>
+    <label>列偏好 b <output id="bos_bO">2.0</output></label>
+    <input type="range" id="bos_b" min="1.1" max="5" step="0.1" value="2.0"/>
+    <label>焦点收敛率 f <output id="bos_fO">0.80</output></label>
+    <input type="range" id="bos_f" min="0" max="1" step="0.01" value="0.80"/>
+  </div>
+  <div class="readout">
+    <div class="ro">混合匹配率<strong id="bos_mix">0.444</strong></div>
+    <div class="ro">有焦点匹配率<strong id="bos_foc">0.889</strong></div>
+    <div class="ro">提升<strong id="bos_lift">+0.444</strong></div>
+    <div id="bos_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="bos_vh">混合下匹配仅 0.444；f=0.80 的公共约定把匹配抬到 0.889——焦点的价值是「避免抛硬币」</span></div>
+  </div>
+  <canvas id="bosChart" height="214"></canvas>
+</div>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">对称纯协调</button><button class="tab" data-pane="tb1-1">加 1% 利益差</button><button class="tab" data-pane="tb1-2">猎鹿过临界</button></div>
+<div class="pane on" id="tb1-0"><p>拉高模型 1 的 f，看 ECR 相对 1/n 的跃升——这是谢林点的主场。</p></div><div class="pane" id="tb1-1"><p>把模型 2 的 δ 推到 1.0，ECR 跌向 ~0.52——标签还在，协调已近随机。</p></div><div class="pane" id="tb1-2"><p>模型 3：把 p 压到 p* 以下，理性弃鹿——没有焦点抬预期，帕累托均衡失踪。</p></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>说出谢林点定义，举一个生活例子</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>区分支付占优 / 风险占优 / 标签焦点</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>用对称性与 δ 预测焦点是否可靠</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>设计最小公共锚点，并做不对称压力测试</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一件需要默契对齐的事（见面点、文件命名、周会工具）。</li>
+<li>列出 ≥3 个可行选项；标出「最显著的一个」及理由（唯一/先例/文化）。</li>
+<li>问：若对方因 1% 私利偏好另一选项，协调还成立吗？</li>
+<li>写下一句<strong>显式约定</strong>（把焦点变成公共知识）。</li>
+</ol>
+<p>成本≈0，产出=一张「焦点诊断卡」。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>日</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>重做「红格/纽约见面」思想实验并记录你的答案</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>用模型 1 算一次你团队选项的 ECR</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>读 AER 2008 摘要：82%→52%</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>给一个默认规则做 δ 压力测试</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>在跨部门沟通里显式指定一个锚点</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>猎鹿：找一个「怕对方不来」而选保守的例子</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘：本周哪次协调靠焦点、哪次靠通信</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<p>周1：每日一个生活协调案例建档；周2：在工作流里设立 2 个显式默认并观察违规率；周3：对一个标准/工具选择做锁定成本估算；周4：写一页「焦点失效事后复盘」（利益差、文化差、假显著）。</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<ol>
+<li><strong>纯协调匹配</strong>：支付只取决于是否相同。<span class="tag t-fact">事实</span></li>
+<li><strong>谢林焦点选择</strong>：显著性收敛预期。<span class="tag t-fact">事实</span></li>
+<li><strong>ECR 公式</strong>：(f^{2}+(1-f)^{2}/(n-1))。<span class="tag t-inf">推论</span></li>
+<li><strong>猎鹿</strong>：支付占优 vs 风险占优。<span class="tag t-fact">事实</span></li>
+<li><strong>性别战</strong>：冲突性协调 + 双重纯 NE。<span class="tag t-fact">事实</span></li>
+<li><strong>标签 vs 支付显著性竞争</strong>（AER 2008）。<span class="tag t-fact">事实</span></li>
+<li><strong>团队推理</strong>：问「对我们好的突显方案」。<span class="tag t-ana">分析</span></li>
+<li><strong>level-k + L0 显著性</strong>。<span class="tag t-ana">分析</span></li>
+<li><strong>先例/公约演化</strong>（Lewis 传统）。<span class="tag t-ana">分析</span></li>
+<li><strong>协议焦点</strong>（如最长链规则）。<span class="tag t-ana">分析</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 这是不是多重均衡？</summary><div class="dbody"><p>若只有一个 NE，焦点理论不是主矛盾。</p></div></details>
+<details><summary>Q2 利益是否近似对称？</summary><div class="dbody"><p>不对称时先处理利益，再谈标签。</p></div></details>
+<details><summary>Q3 什么线索对双方都显著？</summary><div class="dbody"><p>写出来；无法写清则焦点不可靠。</p></div></details>
+<details><summary>Q4 选项能否减少？</summary><div class="dbody"><p>每减一个，均匀底线上升。</p></div></details>
+<details><summary>Q5 有没有便宜的公共通信？</summary><div class="dbody"><p>有则优先用通信制造 CK 焦点。</p></div></details>
+<details><summary>Q6 先例是什么？</summary><div class="dbody"><p>上次成功的对齐方式往往是最强锚。</p></div></details>
+<details><summary>Q7 是否跨文化？</summary><div class="dbody"><p>重新测显著性，勿移植「显然」。</p></div></details>
+<details><summary>Q8 谁在设计默认？</summary><div class="dbody"><p>默认可能是锁定工具，而不只是协调工具。</p></div></details>
+<details><summary>Q9 风险占优是否压过支付占优？</summary><div class="dbody"><p>猎鹿类要单独算 p*。</p></div></details>
+<details><summary>Q10 失败后如何重建焦点？</summary><div class="dbody"><p>公开复盘 + 新的唯一锚点 + 短暂通信。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>《纳什均衡》：多重均衡的数学背景</li>
+<li>《共同知识》：焦点所需的认知层级</li>
+<li>《囚徒困境》与猎鹿：合作结构对照</li>
+<li>相关均衡：用公共信号系统化「造焦点」</li>
+<li>演化博弈与公约形成（Lewis / Young）</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">焦点/谢林点定义与纽约实验</td>
+<td>原著</td>
+<td>Schelling, <em>The Strategy of Conflict</em>, Harvard UP, 1960</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">Heads 选择 36/42</td>
+<td>原著/二手转述</td>
+<td>Schelling 1960；百科与实验文献转述</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">激励下的标签显著性</td>
+<td>实验论文</td>
+<td>Mehta, Starmer, Sugden, <em>Theory and Decision</em> 1994；<em>AER</em> 1994</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">对称 ~82%、微小不对称 ~52%</td>
+<td>实验论文</td>
+<td>Crawford, Gneezy, Rottenstreich, <em>AER</em> 2008</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">焦点与高风险谈判</td>
+<td>学术通讯</td>
+<td>AEA Research Highlights 对 Sugden 等谈判实验的介绍</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">区块链多均衡与分叉</td>
+<td>期刊论文</td>
+<td>Biais et al., <em>The Blockchain Folk Theorem</em>, RFS 2019</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">挖矿策略焦点</td>
+<td>工作论文</td>
+<td>Kroll, Davey, Felten 等对 Bitcoin 挖矿博弈的讨论</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">团队推理传统</td>
+<td>理论文献</td>
+<td>Sugden；Bacharach 可变框架理论</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">Myerson 对 Schelling 的解读</td>
+<td>讲义/论文</td>
+<td>Myerson, <em>Learning from Schelling's Strategy of Conflict</em></td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或原始定义/实验；<span class="tag t-ana">分析</span>权威推断；<span class="tag t-inf">推论</span>本手册推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或转载链长。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为认知与决策框架学习材料，不构成投资、法律、军事、外交或商务决策建议。博弈模型高度简化；现实中的显著性、文化与支付常被误判。据此行动的风险由读者自行承担。涉及合谋、操纵市场默认或利用信息不对称锁定用户时，须遵守所在司法辖区的强制法——模型描述不等于行动许可。</p>
+</section>
+<footer>  <p>《协调博弈与谢林点（Schelling Point）：多重均衡时，靠显著共同焦点自发协调 · 全景认知与实践操作手册》 · 生成于 2026-09-19 · 耗时 7 分 29 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《协调博弈与谢林点》主题脚本
+   四个可调模型：
+     1. ECR：显著性抬高匹配率
+     2. 支付不对称摧毁焦点（AER 2008 经验近似）
+     3. 猎鹿：支付占优 vs 风险占优
+     4. 性别战：无焦点混合 vs 有焦点
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+
+  function ecrOf(f, n) {
+    if (n <= 1) return 1;
+    return f * f + (1 - f) * (1 - f) / (n - 1);
+  }
+
+  /* AER 2008 风格分段：δ=0 → s0；δ→1% → ~0.52；δ≥10% → ~0.50 */
+  function asymEcr(deltaPct, s0) {
+    var d = Math.max(0, deltaPct);
+    var floor = 0.50;
+    var mid = 0.52;
+    if (d <= 0) return s0;
+    if (d <= 1) return s0 + (mid - s0) * (d / 1);
+    if (d <= 10) return mid + (floor - mid) * ((d - 1) / 9);
+    return floor;
+  }
+
+  /* ── 1. ECR ── */
+  (function ecrTool() {
+    var nEl = $('ecr_n'), fEl = $('ecr_f');
+    if (!nEl || !fEl) return;
+    var cv = $('ecrChart');
+
+    function upd() {
+      var n = parseInt(nEl.value, 10);
+      var f = parseFloat(fEl.value);
+      var ecr = ecrOf(f, n);
+      var base = 1 / n;
+      var lift = base > 0 ? (ecr / base - 1) * 100 : 0;
+      var col = ecr >= 0.7 ? C.green : (ecr >= 0.4 ? C.amber : C.red);
+
+      txt($('ecr_nO'), String(n));
+      txt($('ecr_fO'), f.toFixed(2));
+      txt($('ecr_ecr'), ecr.toFixed(3));
+      txt($('ecr_base'), base.toFixed(3));
+      txt($('ecr_lift'), (lift >= 0 ? '+' : '') + lift.toFixed(0) + '%');
+      txt($('ecr_vh'), 'n=' + n + ',f=' + f.toFixed(2) + ' → ECR=' + ecr.toFixed(3) + '，远高于均匀 ' + base.toFixed(3) + '；显著性把协调从「碰运气」变成「默契」');
+      tint($('ecr_vh'), col);
+      tint($('ecr_ecr'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      function sy(v) { return y1 - (v / 1.05) * bh; }
+      function sx(t) { return pl + t * bw; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var v = 0; v <= 1; v += 0.25) {
+        var y = sy(v);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(v.toFixed(2), pl - 6, y + 4);
+      }
+
+      ctx.strokeStyle = C.amber;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(base));
+      ctx.lineTo(w - pr, sy(base));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = C.blue;
+      ctx.beginPath();
+      var i, ff, x, yy;
+      for (i = 0; i <= 100; i++) {
+        ff = i / 100;
+        x = sx(ff);
+        yy = sy(ecrOf(ff, n));
+        if (i === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = C.red;
+      ctx.beginPath();
+      ctx.arc(sx(f), sy(ecr), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink2;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('蓝=ECR(f)  琥珀虚线=1/n  红点=当前', pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillText('焦点选择率 f', pl + bw / 2, y1 + 31);
+      ctx.fillStyle = C.ink3;
+      ['0', '0.5', '1'].forEach(function (lab, idx) {
+        ctx.fillText(lab, sx(idx / 2), y1 + 13);
+      });
+    }
+    bind(['ecr_n', 'ecr_f'], upd);
+    upd();
+  })();
+
+  /* ── 2. Asymmetry ── */
+  (function asymTool() {
+    var dEl = $('asym_d'), sEl = $('asym_s');
+    if (!dEl || !sEl) return;
+    var cv = $('asymChart');
+
+    function upd() {
+      var d = parseFloat(dEl.value);
+      var s0 = parseFloat(sEl.value);
+      var ecr = asymEcr(d, s0);
+      var drop = (s0 - ecr) * 100;
+      var lab, col;
+      if (d < 0.5) { lab = '焦点仍强'; col = C.green; }
+      else if (d < 3) { lab = '焦点崩塌中'; col = C.amber; }
+      else { lab = '近乎随机'; col = C.red; }
+
+      txt($('asym_dO'), d.toFixed(1));
+      txt($('asym_sO'), s0.toFixed(2));
+      txt($('asym_ecr'), ecr.toFixed(3));
+      txt($('asym_drop'), drop.toFixed(1) + 'pp');
+      txt($('asym_lab'), lab);
+      txt($('asym_vh'), 'δ=' + d.toFixed(1) + '% → ECR≈' + ecr.toFixed(3) + '（对称基准 ' + s0.toFixed(2) + '）；' +
+        (d <= 0 ? '对齐 AER 对称 ~82%' : (d <= 1.05 ? '对齐微小不对称 ~52%' : '中度不对称贴近混合 ~50%')));
+      tint($('asym_vh'), col);
+      tint($('asym_lab'), col);
+      tint($('asym_ecr'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var xmax = 15;
+      function sy(v) { return y1 - ((v - 0.4) / (1.0 - 0.4)) * bh; }
+      function sx(t) { return pl + (t / xmax) * bw; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      [0.5, 0.6, 0.7, 0.8, 0.9].forEach(function (v) {
+        var y = sy(v);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(v.toFixed(1), pl - 6, y + 4);
+      });
+
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = C.blue;
+      ctx.beginPath();
+      var i, dd, x, yy;
+      for (i = 0; i <= 150; i++) {
+        dd = i / 10;
+        x = sx(dd);
+        yy = sy(asymEcr(dd, s0));
+        if (i === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = C.red;
+      ctx.beginPath();
+      ctx.arc(sx(d), sy(ecr), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink2;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('ECR vs 利益倾斜 δ（AER 风格分段近似）', pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillText('利益倾斜 δ（%）', pl + bw / 2, y1 + 31);
+      ctx.fillStyle = C.ink3;
+      ['0', '5', '10', '15'].forEach(function (lab, idx) {
+        ctx.fillText(lab, sx(idx * 5), y1 + 13);
+      });
+    }
+    bind(['asym_d', 'asym_s'], upd);
+    upd();
+  })();
+
+  /* ── 3. Stag Hunt ── */
+  (function stagTool() {
+    var REl = $('stag_R'), rEl = $('stag_r'), pEl = $('stag_p');
+    if (!REl || !rEl || !pEl) return;
+    var cv = $('stagChart');
+
+    function upd() {
+      var R = parseFloat(REl.value);
+      var r = parseFloat(rEl.value);
+      var p = parseFloat(pEl.value);
+      var pstar = R > 0 ? r / R : 1;
+      var euS = p * R;
+      var best = euS >= r - 1e-9 ? '鹿' : '兔';
+      var col = best === '鹿' ? C.green : C.amber;
+
+      txt($('stag_RO'), R.toFixed(1));
+      txt($('stag_rO'), r.toFixed(1));
+      txt($('stag_pO'), p.toFixed(2));
+      txt($('stag_pstar'), pstar.toFixed(3));
+      txt($('stag_euS'), euS.toFixed(2));
+      txt($('stag_best'), best);
+      txt($('stag_vh'), 'p=' + p.toFixed(2) + (p >= pstar - 1e-9 ? ' ≥ ' : ' < ') + 'p*=' + pstar.toFixed(2) +
+        ' → 选' + best + '；焦点若把共同预期抬过 p*，帕累托均衡可被选中');
+      tint($('stag_vh'), col);
+      tint($('stag_best'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var ymax = Math.max(R, r) * 1.1;
+      function sy(v) { return y1 - (v / ymax) * bh; }
+      function sx(t) { return pl + t * bw; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var v = 0; v <= ymax; v += ymax / 4) {
+        var y = sy(v);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(v.toFixed(1), pl - 6, y + 4);
+      }
+
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = C.green;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(0));
+      ctx.lineTo(sx(1), sy(R));
+      ctx.stroke();
+
+      ctx.strokeStyle = C.amber;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(r));
+      ctx.lineTo(sx(1), sy(r));
+      ctx.stroke();
+
+      ctx.strokeStyle = C.red;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(sx(Math.min(1, Math.max(0, pstar))), pt);
+      ctx.lineTo(sx(Math.min(1, Math.max(0, pstar))), y1);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = C.blue;
+      ctx.beginPath();
+      ctx.arc(sx(p), sy(euS), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink2;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('绿=EU(鹿)  琥珀=EU(兔)  红虚线=p*  蓝点=当前', pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillText('对方选鹿概率 p', pl + bw / 2, y1 + 31);
+      ctx.fillStyle = C.ink3;
+      ['0', '0.5', '1'].forEach(function (lab, idx) {
+        ctx.fillText(lab, sx(idx / 2), y1 + 13);
+      });
+    }
+    bind(['stag_R', 'stag_r', 'stag_p'], upd);
+    upd();
+  })();
+
+  /* ── 4. Battle of Sexes + focal ── */
+  (function bosTool() {
+    var aEl = $('bos_a'), bEl = $('bos_b'), fEl = $('bos_f');
+    if (!aEl || !bEl || !fEl) return;
+    var cv = $('bosChart');
+
+    function upd() {
+      var a = parseFloat(aEl.value);
+      var b = parseFloat(bEl.value);
+      var f = parseFloat(fEl.value);
+      var p = b / (1 + b);
+      var q = 1 / (1 + a);
+      var mix = p * q + (1 - p) * (1 - q);
+      var foc = f * 1 + (1 - f) * mix;
+      var lift = foc - mix;
+      var col = lift >= 0.2 ? C.green : C.amber;
+
+      txt($('bos_aO'), a.toFixed(1));
+      txt($('bos_bO'), b.toFixed(1));
+      txt($('bos_fO'), f.toFixed(2));
+      txt($('bos_mix'), mix.toFixed(3));
+      txt($('bos_foc'), foc.toFixed(3));
+      txt($('bos_lift'), (lift >= 0 ? '+' : '') + lift.toFixed(3));
+      txt($('bos_vh'), '混合下匹配仅 ' + mix.toFixed(3) + '；f=' + f.toFixed(2) +
+        ' 的公共约定把匹配抬到 ' + foc.toFixed(3) + '——焦点的价值是「避免抛硬币」');
+      tint($('bos_vh'), col);
+      tint($('bos_foc'), col);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      function sy(v) { return y1 - (v / 1.05) * bh; }
+      function sx(t) { return pl + t * bw; }
+
+      ctx.strokeStyle = C.grid;
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      for (var v = 0; v <= 1; v += 0.25) {
+        var y = sy(v);
+        ctx.beginPath();
+        ctx.moveTo(pl, y);
+        ctx.lineTo(w - pr, y);
+        ctx.stroke();
+        ctx.fillText(v.toFixed(2), pl - 6, y + 4);
+      }
+
+      ctx.strokeStyle = C.amber;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(pl, sy(mix));
+      ctx.lineTo(w - pr, sy(mix));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = C.blue;
+      ctx.beginPath();
+      var i, ff, x, yy;
+      for (i = 0; i <= 100; i++) {
+        ff = i / 100;
+        x = sx(ff);
+        yy = sy(ff * 1 + (1 - ff) * mix);
+        if (i === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = C.red;
+      ctx.beginPath();
+      ctx.arc(sx(f), sy(foc), 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = C.ink2;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('蓝=有焦点匹配率  琥珀虚线=混合匹配率', pl, 16);
+      ctx.textAlign = 'center';
+      ctx.fillText('焦点收敛率 f', pl + bw / 2, y1 + 31);
+      ctx.fillStyle = C.ink3;
+      ['0', '0.5', '1'].forEach(function (lab, idx) {
+        ctx.fillText(lab, sx(idx / 2), y1 + 13);
+      });
+    }
+    bind(['bos_a', 'bos_b', 'bos_f'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
