@@ -1087,11 +1087,14 @@
     {
       "slug": "搜寻与匹配理论（Gale-Shapley）：延迟接受算法产生稳定匹配，且对提出方最优",
       "title": "搜寻与匹配理论（Gale-Shapley）：延迟接受算法产生稳定匹配，且对提出方最优",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-20 06:28:22",
+      "finished": "2026-09-20 06:52:56",
+      "duration_sec": 1474,
+      "outputs": [
+        "reports/搜寻与匹配理论（Gale-Shapley）：延迟接受算法产生稳定匹配，且对提出方最优.html",
+        "reports/搜寻与匹配理论（Gale-Shapley）：延迟接受算法产生稳定匹配，且对提出方最优.md"
+      ],
       "error": null
     },
     {
@@ -1942,7 +1945,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-20 06:27",
+  "updated": "2026-09-20 06:52",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

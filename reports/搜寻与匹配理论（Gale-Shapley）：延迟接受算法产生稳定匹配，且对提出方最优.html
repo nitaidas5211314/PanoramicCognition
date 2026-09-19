@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>搜寻与匹配理论（Gale–Shapley） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Gale–Shapley × Market Design</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>搜寻与匹配理论（Gale–Shapley）</h1>
+  <p class="sub">延迟接受<strong>总能</strong>给出稳定匹配，而且这个匹配对<strong>提出方最优</strong>、对接受方最劣——谁先开口，谁站在稳定匹配格的有利一端。</p>
+  <div class="meta">
+    <span class="chip b">30 节骨架 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>延迟接受（deferred acceptance, DA）</strong>对任意严格偏好都停机，并交出一个<strong>稳定匹配</strong>：不存在一对「彼此都更想在一起、却没被配在一起」的人。<span class="tag t-fact">事实</span></p>
+<p>Gale 与 Shapley 1962 年证明的第二句话更锋利：若由一方提出、另一方暂留最优并拒绝其余，则结果是<strong>提出方最优</strong>的稳定匹配——每个提出者拿到的对象，都不差于他在<strong>任何一个</strong>其他稳定匹配里的对象；同时它是<strong>接受方最劣</strong>的稳定匹配。<span class="tag t-fact">事实</span></p>
+<p>谁取得提出权，谁就站在稳定匹配格的优端。这不是谈判话术，是算法的选择。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「怎么海投简历」，而是：两边各有偏好（学校还有配额）时，有没有一套规则，使配对<strong>稳定</strong>，并且能事先说清<strong>稳定解里哪一端对谁有利</strong>。</p>
+<p>队列标题里的「搜寻与匹配」在劳动经济学里常指 Diamond–Mortensen–Pissarides 的失业搜寻。本手册<strong>不</strong>走那条线。边界钉在 Gale–Shapley：双边匹配、阻塞对、延迟接受、提出方最优。失业的保留工资、匹配函数 m(u,v) 只在「同名不同构」里点一次，避免走错门。<span class="tag t-ana">分析</span></p>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>双边（或多对一）偏好下，如何得到稳定匹配，以及稳定解之间谁占优</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「偏好 + 配额 + 稳定」为止；价格、工资竞价、单边室友问题另算</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>提出者、接受者、偏好序、阻塞对、暂定保留、稳定匹配格</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>申请者与项目/学校；清算所设计者；被算法忽略的旁观者（落空者、农村医院）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>谁提出、名单是否完整、偏好是否严格、配额、夫妻等联合约束</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>最终配对、名单长度、提议轮次、哪些岗位空着</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实偏好（提交的名单可能已截断）、场外私下承诺</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>提出权 → 选中格的哪一端 → 两侧序位；接受方截断可把结果从另一端拽过来</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>延迟接受 ⇒ 稳定且提出方最优；提出方 ⇒ 说真话是占优策略</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「匹配率高」≠ 稳定；「学生满意」≠ 对学校策略防操纵</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>住院医配对、择校、器官交换的规则争论</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>暂定接受把拒绝推迟到信息到齐；被拒绝者沿名单下移</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。不稳定会诱使场外重新签约，清算所被弃用</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。一轮暂定保留要等后续更好的提议才翻盘，最终才转正</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>稳定 → 参与者留在场内（正）；接受方觉得吃亏 → 游说改提出方或退出（负）</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>稳定回答「会不会被拆散」；提出方最优回答「在所有不拆散的方案里，利益站在谁那边」。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>存在性不再是信仰</h4><p>任意两边人数相等、偏好严格且完整时，稳定匹配一定存在，因为 DA 一定停机并给出一个。<span class="tag t-fact">事实</span>人数不等或有人不可接受时，稳定匹配仍存在，但有人落空——落空者集合在所有稳定匹配里相同（农村医院定理的一人版）。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>提出权是可设计的杠杆</h4><p>同一套偏好，男方提出与女方提出可以选出格的两端。经典 3×3 里两端的平均序位是 <strong>1.67</strong> 与 <strong>2.33</strong>，差 <strong>0.67</strong> 个序位（按未舍入的 2/3 显示；1.67 与 2.33 相减会得到 0.66，那是舍入）。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>说真话只保护一边</h4><p>提出方在 DA 下如实排序是占优策略；不存在「总稳定、且两边都不敢撒谎」的机制（Roth 1982）。<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「稳定」听成「公平」或「学生帕累托最优」。稳定只禁止阻塞对。择校里学生提出的 DA 可以对学生不帕累托有效；2025 年的一篇预印本进一步争辩：连那些帕累托改进 DA 的机制，也消不掉序位低效与隔离。<span class="tag t-chk">待验证</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层从「两边各有一张名单」爬到「清算所该把提出权交给谁」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="gsMap" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度现场 · NRMP 1998 · 纽约 2003 · 波士顿 2005</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 市场设计 · 把提出权交给需要被保护的一侧</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 激励边界 · 一边可防操纵；两边同时防操纵且总稳定：不可能</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 格 · 稳定匹配在提出方偏好下成格，两端即两侧最优</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 最优性 · 提出方最优 = 接受方最劣</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 算法 · 沿名单下移；对方暂留当前最优、拒绝其余</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 稳定 · 没有阻塞对；不稳定会从场外拆散清算所</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 偏好与配额 · 严格序、可接受集、医院响应偏好</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 原语 · 两边代理人 + 谁提出</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门停在 <strong>L3–L5</strong>：会手跑 3 人 DA，能指出提出方均秩 1.67、接受方 2.33。设计停在 <strong>L7–L9</strong>：提出权是政策，不是中性技术；大市场里两端差距可以小到几乎看不见，小例子里的 0.67 不能外推。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="gsAbsA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="gsAbsB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="80" y="16" width="520" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">偏好 → 延迟接受 → 稳定匹配格的一端</text>
+  <rect x="40" y="86" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="110" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="128" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">稳定 · 格 · 最优</text>
+  <rect x="250" y="86" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="110" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="128" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">暂定保留 · 拒绝下移</text>
+  <rect x="460" y="86" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="110" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="128" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">谁提出 · 截断 · 清算所</text>
+  <line x1="280" y1="60" x2="130" y2="86" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#gsAbsA)"/>
+  <line x1="340" y1="60" x2="340" y2="86" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#gsAbsA)"/>
+  <line x1="400" y1="60" x2="550" y2="86" stroke="#b8730a" stroke-width="1.5" marker-end="url(#gsAbsA)"/>
+  <rect x="40" y="176" width="180" height="64" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="202" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">阻塞对 = 0</text><text x="130" y="222" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">否则场外重签</text>
+  <rect x="250" y="176" width="180" height="64" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="202" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">每对至多提议一次</text><text x="340" y="222" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">停机 ≤ n² 次</text>
+  <rect x="460" y="176" width="180" height="64" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="202" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">序位 1.67 vs 2.33</text><text x="550" y="222" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">经典 3×3 的两端</text>
+  <line x1="130" y1="142" x2="130" y2="176" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#gsAbsA)"/>
+  <line x1="340" y1="142" x2="340" y2="176" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#gsAbsA)"/>
+  <line x1="550" y1="142" x2="550" y2="176" stroke="#b8730a" stroke-width="1.5" marker-end="url(#gsAbsA)"/>
+  <path d="M220 208 H250" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#gsAbsB)"/>
+  <path d="M430 208 H460" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#gsAbsB)"/>
+  <text x="340" y="276" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">红虚线 = 反馈：接受方吃亏 → 截断或游说改提出方 → 格的另一端</text>
+  <text x="340" y="308" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">同构：阻塞对 ≈ 纳什可偏离 · 提出权 ≈ 先动选均衡 · 暂定保留 ≈ 可撤销要约</text>
+  <text x="340" y="336" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">不同构：DMP 搜寻是连续时间的匹配函数，不是这张离散格</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>目标</th>
+<th>信息位置</th>
+<th>典型动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">提出方</td>
+<td>在稳定解里尽量靠前</td>
+<td>知己偏好；不知对方真实序</td>
+<td>沿名单提议；DA 下应说真话</td>
+</tr>
+<tr>
+<td class="k">接受方</td>
+<td>少被「最劣稳定解」锁死</td>
+<td>看到谁来提议</td>
+<td>暂留最优；有时截断名单</td>
+</tr>
+<tr>
+<td class="k">清算所</td>
+<td>场内稳定、可解释、少被博弈</td>
+<td>收到的是提交名单，不是真实偏好</td>
+<td>选定谁提出、如何破平局</td>
+</tr>
+<tr>
+<td class="k">配额机构（医院/学校）</td>
+<td>招满且质量高</td>
+<td>对申请者的优先级</td>
+<td>响应偏好下按序录取至配额</td>
+</tr>
+<tr>
+<td class="k">落空者 / 农村医院</td>
+<td>不想在所有稳定解里都空着</td>
+<td>往往最后才发现空缺是结构性的</td>
+<td>改补贴或配额，而不是改提出方</td>
+</tr>
+<tr>
+<td class="k">夫妻等联合体</td>
+<td>两份工作一起算</td>
+<td>联合偏好可以让稳定解消失</td>
+<td>需 Roth–Peranson 式扩展，不再有存在性保证</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>度量</th>
+<th>为何关键</th>
+<th>杠杆方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">谁提出</td>
+<td>男/女、学生/医院</td>
+<td>直接选定格的一端</td>
+<td>设计时先写进规则，不要事后解释</td>
+</tr>
+<tr>
+<td class="k">平均序位</td>
+<td>1 = 最爱</td>
+<td>小例子里两端差 0.67</td>
+<td>与「什么都不做的另一端」对照，不单报胜率</td>
+</tr>
+<tr>
+<td class="k">稳定匹配个数</td>
+<td>本市场穷举</td>
+<td>只有 1 个时，提出权不改变配对</td>
+<td>ρ≥0.4 的混合市场降为 1</td>
+</tr>
+<tr>
+<td class="k">提议次数</td>
+<td>每对至多 1 次</td>
+<td>上界 n²；n=3 穷举最大 7</td>
+<td>用来证明停机，不用来比较福利</td>
+</tr>
+<tr>
+<td class="k">名单长度 / 截断</td>
+<td>k = 1 或 2</td>
+<td>接受方可借截断跳端</td>
+<td>医院提出的 2×2：k=1 把学生均秩从 2 打到 1</td>
+</tr>
+<tr>
+<td class="k">配额与响应性</td>
+<td>医院对个人的排序可提升到集合</td>
+<td>农村医院定理的前提</td>
+<td>配额 1 时响应性自动成立</td>
+</tr>
+<tr>
+<td class="k">平局</td>
+<td>学校对大批学生无差异</td>
+<td>破平局方式会碰策略防操纵</td>
+<td>择校文献的单独一章，别假装严格偏好</td>
+</tr>
+<tr>
+<td class="k">共同质量 ρ</td>
+<td>0 到 1，步长 0.1</td>
+<td>偏好越齐，格越塌成一点</td>
+<td>本页 ρ=0 有 2 个稳定解，ρ=0.4 起只剩 1 个</td>
+</tr>
+<tr>
+<td class="k">约束（夫妻）</td>
+<td>联合名单</td>
+<td>稳定匹配可以不存在</td>
+<td>先问存在，再谈最优</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="gsCauA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="gsCauB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="30" y="30" width="140" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="100" y="52" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">严格偏好</text><text x="100" y="70" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">可接受集</text>
+  <rect x="220" y="30" width="150" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="295" y="52" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">延迟接受</text><text x="295" y="70" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">暂留 · 拒绝</text>
+  <rect x="420" y="30" width="150" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="495" y="52" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">稳定 + 提出方最优</text><text x="495" y="70" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">接受方最劣</text>
+  <line x1="170" y1="56" x2="220" y2="56" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#gsCauA)"/>
+  <line x1="370" y1="56" x2="420" y2="56" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#gsCauA)"/>
+  <rect x="220" y="140" width="150" height="52" rx="8" fill="#fee2e2" stroke="#d5342c"/><text x="295" y="162" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">接受方截断</text><text x="295" y="180" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">k=2 → k=1</text>
+  <rect x="420" y="140" width="150" height="52" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="495" y="162" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">跳到另一端</text><text x="495" y="180" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">学生 2.00→1.00</text>
+  <path d="M495 82 C495 110 370 110 295 140" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#gsCauB)"/>
+  <line x1="370" y1="166" x2="420" y2="166" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#gsCauB)"/>
+  <text x="340" y="230" text-anchor="middle" fill="#1d4ed8" font-size="12" font-family="sans-serif">实线因果：算法 ⇒ 稳定且提出方最优（Gale–Shapley 1962）</text>
+  <text x="340" y="254" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">红虚线反馈：接受方用截断把市场拽向自己的最优端</text>
+  <text x="340" y="278" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">相关但非因果：「匹配率」高，只说明名额填了，不说明没有阻塞对</text>
+</svg>
+<p>三条要分开记：</p>
+<ol>
+<li><strong>偏好严格 + DA ⇒ 稳定且提出方最优。</strong> 证明要点：算法只会拒绝「在任何稳定匹配里都不可能」的对象，所以留下的就是提出者在稳定集里的最好对象。<span class="tag t-fact">事实</span></li>
+<li><strong>提出方最优 ⇒ 接受方最劣。</strong> 同一匹配，不是另一个算法。女方提出才走到另一端。<span class="tag t-fact">事实</span></li>
+<li><strong>接受方截断 ⇒ 可能离开这一端。</strong> 2×2 医院提出、学生如实申报时配对是医院最优；学生子把名单截到只剩乙，市场跳到学生最优。这是机制反馈，不是偏好变了。<span class="tag t-fact">事实</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="grid g2">
+<div class="card"><h4>提出方最优是格的一端</h4><p>经典市场只有两个稳定匹配：男方提出得到 A–X、B–Y、C–Z；女方提出得到 A–Y、B–X、C–Z。C–Z <strong>两边都不动</strong>。稳定匹配在提出方偏好下成格（常归功于 Conway，经由 Knuth 传播）：两端就是两侧最优。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>农村空缺换不了端</h4><p>医生甲只接受城X，城X不接受甲；乙：城X &gt; 城Y &gt; 乡；丙：城Y &gt; 城X。城X 偏好丙 &gt; 乙，城Y 偏好乙 &gt; 丙，乡接受甲和乙。穷举仅两个稳定匹配：医生提出是「乙–城X、丙–城Y」（3 次提议），医院提出是「乙–城Y、丙–城X」（4 次提议）。甲两次都落空，乡两次都空。乙和丙的序位从 1 变成 2，乡的名册不变。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>说真话 ≈ 显示原理的一侧</h4><p>DA 让提出方的占优策略就是报真序（Dubins–Freedman 1981；Roth 1982）。这和「直接机制里说真话」是同一结构，但<strong>只覆盖提出的那一边</strong>。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>与失业搜寻只共享一个词</h4><p>DMP 的匹配函数描述的是摩擦市场上「相遇率」；Gale–Shapley 描述的是相遇之后<strong>如何不再被拆散</strong>。把保留工资代进 DA，或把阻塞对说成失业率，都是范畴错误。<span class="tag t-ana">分析</span></p></div>
+</div>
+<p>跨域同构：阻塞对 ↔ 纳什均衡里的单方面偏离；提出权 ↔ 先动者在多重均衡里点名；暂定接受 ↔ 可撤销要约；农村医院定理 ↔ 「比较静态救不了结构性短缺」；稳定解计数是 #P 完全（Irving &amp; Leather 1986）↔ 计数复杂性。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<pre><code>收集两边名单与配额
+  → 指定谁提出
+  → 提出者向名单上一个尚未拒绝自己的对象提议
+  → 接受者在「新提议 + 当前暂定对象」里留下最优，拒绝其余（多对一则留到配额）
+  → 被拒绝者继续下移
+  → 无人再被拒绝时，暂定转为最终匹配
+  → 检查：阻塞对是否为空；落空集合是否与另一端相同
+</code></pre>
+<div class="note green"><b>运行时检查清单</b><ol>
+<li>偏好是否严格？有大量平局就不要直接套「策略防操纵」的教科书句子。</li>
+<li>谁提出写进了规则没有？没写，最优性就没有归属。</li>
+<li>停机：每对至多提议一次，次数 ≤ n²。</li>
+<li>手算结束时，逐对检查阻塞；经典 3×3 的两个匹配都应是 0 个阻塞对。</li>
+<li>若有人落空，换提出方再跑一次：落空者应仍落空（农村医院定理）。</li>
+</ol></div>
+<p>经典 3×3 的偏好（序位 1 最好）：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>人</th>
+<th>偏好</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">A</td>
+<td>X &gt; Y &gt; Z</td>
+</tr>
+<tr>
+<td class="k">B</td>
+<td>Y &gt; X &gt; Z</td>
+</tr>
+<tr>
+<td class="k">C</td>
+<td>X &gt; Y &gt; Z</td>
+</tr>
+<tr>
+<td class="k">X</td>
+<td>B &gt; A &gt; C</td>
+</tr>
+<tr>
+<td class="k">Y</td>
+<td>A &gt; B &gt; C</td>
+</tr>
+<tr>
+<td class="k">Z</td>
+<td>A &gt; B &gt; C</td>
+</tr>
+</tbody>
+</table></div>
+<p>男方提出走到 A–X、B–Y、C–Z，提议 <strong>5</strong> 次，男方序位 1、1、3（均 <strong>1.67</strong>），女方序位 2、2、3（均 <strong>2.33</strong>）。女方提出走到 A–Y、B–X、C–Z，数字对调，提议也是 5 次。全部 6 个完美匹配里，稳定的只有这 2 个。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 230" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="gsTime" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="36" y1="108" x2="648" y2="108" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="70" cy="108" r="9" fill="#0f8a4d"/><text x="70" y="46" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">1950s</text><text x="70" y="64" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">NRMP</text><text x="70" y="148" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">先有算法</text>
+  <circle cx="175" cy="108" r="9" fill="#1d4ed8"/><text x="175" y="46" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">1962</text><text x="175" y="64" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">Gale–Shapley</text><text x="175" y="148" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">稳定+最优</text>
+  <circle cx="280" cy="108" r="9" fill="#b8730a"/><text x="280" y="46" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">1982–86</text><text x="280" y="64" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">Roth</text><text x="280" y="148" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">激励·农村</text>
+  <circle cx="400" cy="108" r="9" fill="#1d4ed8"/><text x="400" y="46" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">1998</text><text x="400" y="64" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">申请者提出</text><text x="400" y="148" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">NRMP 改规则</text>
+  <circle cx="510" cy="108" r="9" fill="#d5342c"/><text x="510" y="46" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">2003–06</text><text x="510" y="64" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">择校</text><text x="510" y="148" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">纽约·波士顿</text>
+  <circle cx="610" cy="108" r="9" fill="#15181d"/><text x="610" y="46" text-anchor="middle" fill="#15181d" font-size="11" font-weight="600" font-family="sans-serif">2012</text><text x="610" y="64" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">诺奖</text><text x="610" y="148" text-anchor="middle" fill="#454c56" font-size="10" font-family="sans-serif">Roth·Shapley</text>
+  <text x="340" y="190" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">实践早于定理：清算所先跑起来，1984 年才被认出就是延迟接受</text>
+  <text x="340" y="212" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">Gale 2008 年去世，2012 年奖发给 Roth 与 Shapley</text>
+</svg>
+<p>演化逻辑：1950 年代初美国住院医匹配已经在用后来被证明等价于医院提出型 DA 的程序；1962 年才有存在性与最优性；1982 年补上「不能两边都防操纵」；1984 年 Roth 把 NRMP 认出来；1986 年农村医院定理说明换端救不了招不满的医院；1997 年 5 月 NRMP 理事会改用申请者提出，1998 年匹配起执行；纽约高中 2003 年（2004 年入学）、波士顿 2005–06 学年改掉不防操纵的「波士顿机制」。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>想要什么</th>
+<th>规则如何偏他</th>
+<th>扭曲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">提出方</td>
+<td>稳定集里的最好对象</td>
+<td>DA 把最优端给他，并让他说真话</td>
+<td>小市场里优势明显；大市场可能只影响极少数人</td>
+</tr>
+<tr>
+<td class="k">接受方</td>
+<td>躲开最劣端</td>
+<td>对方提出时，截断有时能跳端</td>
+<td>截断赌错就会落空，期望上常常害大于利</td>
+</tr>
+<tr>
+<td class="k">医院/项目</td>
+<td>旧 NRMP 由自己提出</td>
+<td>1998 年前站在优端</td>
+<td>申请者怀疑系统，信任本身是市场资产</td>
+</tr>
+<tr>
+<td class="k">学生/家庭</td>
+<td>不用「博弈」择校</td>
+<td>学生提出的 DA 让真序成为占优策略</td>
+<td>波士顿机制惩罚把真实第二志愿写在第二位的人</td>
+</tr>
+<tr>
+<td class="k">农村医院</td>
+<td>换算法以招到人</td>
+<td>定理说招不满者的名册在所有稳定解里相同</td>
+<td>把政治压力用在错误的杠杆上</td>
+</tr>
+<tr>
+<td class="k">夫妻</td>
+<td>两地同时可接受</td>
+<td>联合偏好可让稳定匹配不存在</td>
+<td>强行套单人 DA 会在约束上沉默失败</td>
+</tr>
+</tbody>
+</table></div>
+<p>Roth 与 Peranson 用 1987 及 1993–1996 年真实名单比较新旧算法：<strong>不到 1/1000</strong> 的申请者会配到不同项目（<strong>&lt;0.1%</strong>）。选择申请者提出，主要是把原则站到申请者一边，不是因为两端在大市场里差得很远。<span class="tag t-fact">事实</span></p>
+<p>Rees-Jones 调查 2012 年 NRMP（23 所医学院，n=558）：<strong>83.33%</strong> 认为自己如实填报；<strong>5.38%</strong> 归因于策略，<strong>0.36%</strong> 归因于失误，<strong>10.93%</strong> 为其他原因。非如实合计 16.67 个百分点，作者概括为约 17%。随后的激励实验里，1714 名刚参加过匹配的医学生中有 <strong>23%</strong> 在类匹配任务里谎报。<span class="tag t-fact">事实</span>策略防操纵消除的是「撒谎的收益」，不是「撒谎的冲动」。</p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="gsFlA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0f8a4d"/></marker>
+    <marker id="gsFlB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="36" y="28" width="170" height="70" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="121" y="56" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">真实偏好</text><text x="121" y="78" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">脑子里的序</text>
+  <rect x="255" y="28" width="170" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="56" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">提交名单</text><text x="340" y="78" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">清算所看见的</text>
+  <rect x="474" y="28" width="170" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="559" y="56" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">稳定匹配</text><text x="559" y="78" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">格的一端</text>
+  <line x1="206" y1="63" x2="255" y2="63" stroke="#0f8a4d" stroke-width="2" marker-end="url(#gsFlA)"/>
+  <line x1="425" y1="63" x2="474" y2="63" stroke="#0f8a4d" stroke-width="2" marker-end="url(#gsFlA)"/>
+  <path d="M559 98 Q559 150 121 168" fill="none" stroke="#0f8a4d" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#gsFlA)"/>
+  <text x="340" y="188" text-anchor="middle" fill="#0f8a4d" font-size="12" font-family="sans-serif">绿：提出方说真话时，名单 = 真实偏好，最优端回流给提出方</text>
+  <rect x="150" y="214" width="380" height="44" rx="8" fill="#fee2e2" stroke="#d5342c"/><text x="340" y="241" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">红抽水：接受方在最劣端白白让出 0.67 个序位（经典 3×3）</text>
+</svg>
+<p>信息瓶颈不在公式，在<strong>提交名单 ≠ 真实偏好</strong>。波士顿旧机制（尽快满足第一志愿，名额立刻锁死）惩罚把心仪但难进的学校放在第一位的家庭：第二志愿可能已被「把它写成第一」的人占满。学生提出的 DA 把暂定保留留到最后，第一志愿写错不再有策略收益，所以真序成为占优策略。<span class="tag t-fact">事实</span></p>
+<p>抽水的对照基准不是「50% 公平」，而是<strong>格的另一端</strong>。经典 3×3 里提出方均秩 1.67、接受方 2.33，超额就是这 0.67。NRMP 历史名单上两端差异 <strong>&lt;0.1%</strong> 的人——小黑板例题的福利转移，不能当成大市场的效果量级。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>序</th>
+<th>杠杆点</th>
+<th>为何高杠杆</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>先写明谁提出</td>
+<td>一句话选定格的哪一端</td>
+<td>规则文本里出现「applicant-proposing」或相反</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>只向提出方保证说真话</td>
+<td>另一边没有这个定理</td>
+<td>咨询口径不要说「谁都不用博弈」</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>用截断测试接受方</td>
+<td>2×2 里 k=1 把学生均秩从 2.00 打到 1.00</td>
+<td>先跑如实，再删掉接受方的次优项</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>先问稳定解是否存在</td>
+<td>夫妻联合偏好可以让稳定集为空</td>
+<td>有联合约束就别承诺「DA 一定有解」</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>农村空缺不要换端</td>
+<td>招不满者的名册在所有稳定解相同</td>
+<td>改补贴、配额、偏好，而不是改提出方</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>平局单独处理</td>
+<td>大量无差异会碰到策略防操纵</td>
+<td>择校要写清破平局，不要假装严格序</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>不稳定会拆市场</td>
+<td>英国部分地区用不稳定算法后清算所失败</td>
+<td>先查阻塞对，再谈满意度</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>波士顿机制是反面教材</td>
+<td>立即接受惩罚说实话</td>
+<td>家庭指南应改成「按真序填」仅当机制是 DA</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>稳定 ≠ 学生帕累托最优</td>
+<td>DA 可以留下学生之间的改进循环</td>
+<td>效率修补（如 EADA）要单独报价，并交出稳定性</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>大市场两端可能几乎重合</td>
+<td>NRMP 上 &lt;0.1% 的人结果不同</td>
+<td>用历史名单做对照，别拿 3 人例题吓委员会</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「稳定就是公平」</summary><div class="dbody"><p>稳定只说没有阻塞对。经典例里女方在男方最优下均秩 2.33，比自己提出时的 1.67 更差，匹配却是稳定的。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>2. 「两边都会拿到自己的最优」</summary><div class="dbody"><p>最优性是零和的：提出方最优同时是接受方最劣。不存在一个稳定匹配让两边同时达到自己的最优端，除非稳定匹配只有一个。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>3. 「谁先提议谁吃亏，因为暴露了偏好」</summary><div class="dbody"><p>方向反了。在 DA 里先提议的一侧拿走优端，而且说真话是占优策略。吃亏的是只能拒绝、不能发起的那一侧。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 「暂定接受等于已经录取」</summary><div class="dbody"><p>暂定就是算法名字里的 deferred：后来出现更好的提议，先前的对象会被拒。把第一轮保留当成合同，会误读整个过程。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>5. 「换谁提出就能让农村医院招满人」</summary><div class="dbody"><p>Roth 1986：严格偏好、医院偏好响应时，任一稳定匹配里招不满的医院，在所有稳定匹配中拿到同一组人。本页例题里乡医院两次都空，城市医院只是对调乙和丙。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>6. 「申请者在 NRMP 里博弈名单能捞到好处」</summary><div class="dbody"><p>1998 年起是申请者提出。说真话是占优策略。调查仍看到约 17% 的人自述没有如实填（细表 16.67 个百分点，n=558），其中 5.38% 明确说是在策略行为——收益上这是白忙。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>7. 「截断总是聪明的」</summary><div class="dbody"><p>只在你处于接受方、且截掉的那些对象确实不是你在自己最优端里的对象时，截断才可能跳端。截掉真正想要的，结果是落空。Roth 等对历史名单的结论是：策略行为帮到你的机会远小于害到你。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>8. 「小例子的 0.67 序位差会在全国匹配里重演」</summary><div class="dbody"><p>同一篇比较：新旧算法下不到千分之一的申请者结果不同。例题用来理解格，不用来估算政策效果。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>9. 「DA 对学生帕累托最优」</summary><div class="dbody"><p>学校有自己的优先级时，学生提出的 DA 稳定且对学生策略防操纵，但仍可能存在让部分学生更好、无人更差、却破坏稳定的循环。效率与稳定在这里分离。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>10. 「有夫妻也能直接跑 Gale–Shapley」</summary><div class="dbody"><p>只要夫妻的联合偏好不是「各自偏好的响应版本」，就可以构造出没有任何稳定匹配的市场（Klaus &amp; Klijn 2005；Roth 1984 的更早反例）。存在性不是免费的。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>11. 「提议次数越多，匹配越好」</summary><div class="dbody"><p>上界 n² 只证明停机。同质偏好构造里 n=3 提议 6 次，提出方均秩 2.00、接受方 1.00——次数中等，福利却全偏向不互相踩踏的那一侧。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>12. 「搜寻与匹配 = 把失业率代进这个算法」</summary><div class="dbody"><p>DMP 与 Gale–Shapley 解决的是不同方程。本手册的杠杆是提出权与阻塞对，不是匹配函数弹性。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>机制</th>
+<th>现实操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">阻塞对</td>
+<td>两人互偏好于现状</td>
+<td>清算所是否会被场外协议拆掉</td>
+</tr>
+<tr>
+<td class="k">延迟接受</td>
+<td>暂留最优、拒绝其余</td>
+<td>住院医匹配、学生提出的择校</td>
+</tr>
+<tr>
+<td class="k">提出方最优</td>
+<td>格的优端</td>
+<td>规则里「谁提出」那一行</td>
+</tr>
+<tr>
+<td class="k">接受方截断</td>
+<td>缩短可接受集</td>
+<td>旧算法下「别把保底写太长」的民间传说</td>
+</tr>
+<tr>
+<td class="k">农村医院定理</td>
+<td>空缺集合不变</td>
+<td>偏远项目招不满时别先改算法</td>
+</tr>
+<tr>
+<td class="k">波士顿机制</td>
+<td>第一志愿立刻锁死</td>
+<td>家庭被迫把「进得去的」写成第一</td>
+</tr>
+<tr>
+<td class="k">策略防操纵</td>
+<td>真序是占优策略</td>
+<td>只有提出方被定理覆盖</td>
+</tr>
+<tr>
+<td class="k">#P 完全</td>
+<td>数清稳定解很难</td>
+<td>不要承诺「列出全部稳定方案」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li>画两边名单，标出谁提出。没标就先别讨论公平。</li>
+<li>用手跑 DA 到停，记下提议次数和每人序位。</li>
+<li>换提出方再跑。若配对不变，告诉委托人「这个市场没有最优性争议」；若变了，把两端序位并排。</li>
+<li>对接受方做一次截断：删掉当前匹配及更差项之外的「策略性缩短」，看自己是否变好。变好，就说明你站在吃亏的一端。</li>
+<li>列出落空者，换端再看。落空者仍在，就去改偏好或配额。</li>
+<li>若有夫妻、平局、非响应优先级，把「定理不再原样成立」写进备忘录第一行。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>主干 A · 能手跑</summary><div class="dbody"><p>3 人完整偏好，两边各跑一遍 DA，阻塞对检查为 0。验收：男方提出配对 A–X、B–Y、C–Z，提议 5 次。</p></div></details>
+<details><summary>主干 B · 能读格</summary><div class="dbody"><p>指出两个稳定匹配，算出均秩 1.67 与 2.33，解释为何 C–Z 不动。</p></div></details>
+<details><summary>主干 C · 能做激励</summary><div class="dbody"><p>说清提出方为何不该撒谎；用 2×2 演示接受方截断（学生均秩 2.00 → 1.00）。</p></div></details>
+<details><summary>主干 D · 能做比较静态</summary><div class="dbody"><p>换 ρ 或换谁提出，判断「配对变了」还是「只是序位数字变了」。ρ=0.4 时本页市场稳定数变为 1。</p></div></details>
+<details><summary>主干 E · 能翻译制度</summary><div class="dbody"><p>把 NRMP 1998、波士顿机制、农村医院定理映射到「谁提出 / 是否稳定 / 空缺是否结构性」。</p></div></details>
+<details><summary>主干 F · 能拒绝误用</summary><div class="dbody"><p>夫妻、平局、学生帕累托、DMP 搜寻，四扇门都知道不该推。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>把匹配想成一局只允许「暂定约会」的游戏：提出方每回合向名单上的下一个人发出邀请，接受方手里永远只留当前最好的那张邀请，其余撕掉。游戏结束时没有人手里捏着一张「我俩都更想在一起」的未使用邀请——这就是稳定。</p>
+<p>你选边站。选提出方，结局是优端（经典局均秩 1.67），而且你没有动机虚报技能树。选接受方，你看着优端被拿走（均秩 2.33），唯一的非常规操作是缩短自己的可接受列表，有时能把整局拽到另一结局，也会把自己玩到无人邀请。农村医院是那个在两个结局里都空着的副本：换阵营开局也刷不出人。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>产出</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 手跑男方提出</td>
+<td>5 步提议草稿</td>
+<td>配对 A–X · B–Y · C–Z</td>
+</tr>
+<tr>
+<td class="k">T2 手跑女方提出</td>
+<td>另一张草稿</td>
+<td>A–Y · B–X · C–Z，C–Z 仍在</td>
+</tr>
+<tr>
+<td class="k">T3 均秩</td>
+<td>两边各 3 个序位</td>
+<td>1.67 对 2.33，差距按 2/3 记为 0.67</td>
+</tr>
+<tr>
+<td class="k">T4 截断</td>
+<td>k=2 与 k=1 两行</td>
+<td>学生均秩 2.00 → 1.00，提议 2 → 4</td>
+</tr>
+<tr>
+<td class="k">T5 农村</td>
+<td>两个稳定匹配</td>
+<td>乡两次都空，城市对调</td>
+</tr>
+<tr>
+<td class="k">T6 上界</td>
+<td>n=3 的三个数</td>
+<td>上界 9，同质构造 6，穷举最大 7</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>四个模型都参与计算：谁提出、共同质量 ρ、接受方截断、提议上界。序位越小越好。差距用未舍入均值再保留两位，所以 2.33 与 1.67 的差显示为 <strong>0.67</strong> 而不是 0.66。</p>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">模型1 谁提出</button><button class="tab" data-pane="tb1-1">模型2 共同质量 ρ</button><button class="tab" data-pane="tb1-2">模型3 接受方截断</button><button class="tab" data-pane="tb1-3">模型4 提议次数上界</button></div>
+<div class="pane on" id="tb1-0"><p>经典 3×3。默认男方提出：配对 A–X · B–Y · C–Z，提出方均秩 <strong>1.67</strong>，接受方 <strong>2.33</strong>，差距 <strong>0.67</strong>，提议 <strong>5</strong>，稳定匹配 <strong>2</strong> 个。拨到女方：配对变为 A–Y · B–X · C–Z，数字对调，C–Z 仍在。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="tool-gs">
+  <div class="ctrl">
+    <label>谁提出 <output id="gs_sideO">男方</output></label>
+    <input type="range" id="gs_side" min="0" max="1" step="1" value="0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">提出方均秩 <b id="gs_pAvg">1.67</b></div>
+    <div class="ro">接受方均秩 <b id="gs_rAvg">2.33</b></div>
+    <div class="ro">差距（未舍入） <b id="gs_gap">0.67</b></div>
+    <div class="ro">提议次数 <b id="gs_nProp">5</b></div>
+    <div class="ro">稳定匹配数 <b id="gs_nStab">2</b></div>
+    <div class="ro">配对 <b id="gs_match">A–X · B–Y · C–Z</b></div>
+    <div id="gs_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="gsChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-1"><p>私人偏好是上面的经典序，再混入「下标越大越受两边喜欢」的共同质量，权重 ρ（0–1，步长 0.1）。默认 ρ=0：与模型 1 相同，两侧最优<strong>不同</strong>，稳定数 2，差距 0.67。ρ=0.4：稳定数降为 <strong>1</strong>，两边均秩都是 <strong>1.67</strong>，提出权不再改变配对。ρ=1：唯一匹配，两边均秩 <strong>2.00</strong>，提议 6 次。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool-rho">
+  <div class="ctrl">
+    <label>共同质量 ρ <output id="rhoO">0.0</output></label>
+    <input type="range" id="rho" min="0" max="1" step="0.1" value="0"/>
+  </div>
+  <div class="readout">
+    <div class="ro">提出方均秩 <b id="rho_pAvg">1.67</b></div>
+    <div class="ro">接受方均秩 <b id="rho_rAvg">2.33</b></div>
+    <div class="ro">差距 <b id="rho_gap">0.67</b></div>
+    <div class="ro">稳定数 <b id="rho_nStab">2</b></div>
+    <div class="ro">两侧最优 <b id="rho_same">不同</b></div>
+    <div id="rho_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="rhoChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-2"><p>医院甲偏好子 &gt; 丑，医院乙偏好丑 &gt; 子；子偏好乙 &gt; 甲，丑偏好甲 &gt; 乙。医院提出。默认名单长度 k=2（如实）：配对甲–子 · 乙–丑，学生均秩 <strong>2.00</strong>，医院均秩 <strong>1.00</strong>，提议 <strong>2</strong>。k=1（子只留下乙）：配对甲–丑 · 乙–子，学生 <strong>1.00</strong>，医院 <strong>2.00</strong>，提议 <strong>4</strong>。丑什么都没做，也一起变好——截断撬动的是整端，不是一个人的私房话。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="tool-tr">
+  <div class="ctrl">
+    <label>子的名单长度 k <output id="tr_kO">2</output></label>
+    <input type="range" id="tr_k" min="1" max="2" step="1" value="2"/>
+  </div>
+  <div class="readout">
+    <div class="ro">学生均秩 <b id="tr_sAvg">2.00</b></div>
+    <div class="ro">医院均秩 <b id="tr_hAvg">1.00</b></div>
+    <div class="ro">提议次数 <b id="tr_prop">2</b></div>
+    <div class="ro">配对 <b id="tr_match">甲–子 · 乙–丑</b></div>
+    <div id="tr_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="trChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div><div class="pane" id="tb1-3"><p>每对至多提议一次，硬上界 n²。同质构造：所有提出者偏好完全相同（0&gt;1&gt;…），接受者 j 最偏好提出者 j。提议次数为 n(n+1)/2，提出方均秩 (n+1)/2，接受方均秩恒为 1.00——互相踩踏的一侧吃亏。默认 n=3：上界 <strong>9</strong>，构造 <strong>6</strong>，穷举最大 <strong>7</strong>（n=2 穷举 16 个市场最大 3 次；n=3 穷举 46656 个市场最大 7 次），均秩 <strong>2.00 / 1.00</strong>。n&gt;3 不再穷举。<span class="tag t-fact">事实</span></p>
+<div class="tool" id="tool-bd">
+  <div class="ctrl">
+    <label>市场规模 n <output id="bd_nO">3</output></label>
+    <input type="range" id="bd_n" min="2" max="6" step="1" value="3"/>
+  </div>
+  <div class="readout">
+    <div class="ro">上界 n² <b id="bd_bound">9</b></div>
+    <div class="ro">同质构造 <b id="bd_real">6</b></div>
+    <div class="ro">穷举最大 <b id="bd_brute">7</b></div>
+    <div class="ro">提出/接受均秩 <b id="bd_pAvg">2.00</b> / <b id="bd_rAvg">1.00</b></div>
+    <div id="bd_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline">判定加载中…</div>
+  </div>
+  <canvas id="bdChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>验收动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 识骨</td>
+<td>能定义阻塞对，能口述 DA 一步</td>
+<td>用一句话说明暂定 ≠ 录取</td>
+</tr>
+<tr>
+<td class="k">L2 算账</td>
+<td>手跑经典 3×3 的两端</td>
+<td>读数与页面默认 1.67 / 2.33 / 5 次一致</td>
+</tr>
+<tr>
+<td class="k">L3 对照</td>
+<td>会把截断、农村空缺、ρ 塌缩分开</td>
+<td>指出哪次换端改变配对、哪次不改变</td>
+</tr>
+<tr>
+<td class="k">L4 设计</td>
+<td>能写一页「谁提出、为何、定理在哪失效」</td>
+<td>同事可按备忘录复算 2×2 截断</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<p>准备一张纸，不要开页面。</p>
+<ol>
+<li>写下 A/B/C 与 X/Y/Z 的偏好（见「系统运行机制」那张表）。</li>
+<li>男方提出：所有人先向第一志愿提议，女方只暂留更好的，被拒者下移。你应在第 5 次提议后得到 A–X、B–Y、C–Z。</li>
+<li>给每人打序位：男 1、1、3，女 2、2、3。均秩 5/3 与 7/3。</li>
+<li>女方提出，得到 A–Y、B–X、C–Z。确认 C 仍然配 Z。</li>
+<li>打开本页模型 1，默认读数应为提出方 1.67、接受方 2.33、差距 0.67、提议 5。对不上就重跑，不要改页面迁就。</li>
+</ol>
+<p>成本接近 0。验收就是这四个数字。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>动作</th>
+<th>完成标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>手跑经典 3×3 两端</td>
+<td>与 T1–T3 一致</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>穷举 6 个完美匹配，划掉不稳定的</td>
+<td>只剩 2 个</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>纸上做 2×2 截断</td>
+<td>学生均秩 2→1，提议 2→4</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>写农村例的两行匹配</td>
+<td>乡两次为空</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>读诺奖普及页：NRMP 为何改成申请者提出</td>
+<td>能用自己的话讲 &lt;0.1%</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>拨 ρ 从 0 到 1，记下稳定数从 2 变 1 的位置</td>
+<td>应在 0.4</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>用一段话向非专业的人解释「谁提出」</td>
+<td>对方能复述「优端 / 最劣端」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">第 1 周</td>
+<td>一人一对的 DA 与格</td>
+<td>经典例手算无误</td>
+</tr>
+<tr>
+<td class="k">第 2 周</td>
+<td>激励：占优策略与截断</td>
+<td>2×2 能脱稿</td>
+</tr>
+<tr>
+<td class="k">第 3 周</td>
+<td>多对一与农村医院定理</td>
+<td>能陈述前提（严格、响应）</td>
+</tr>
+<tr>
+<td class="k">第 4 周</td>
+<td>制度三则：NRMP、波士顿、夫妻无解</td>
+<td>一页备忘录，每则标明定理在哪失效</td>
+</tr>
+</tbody>
+</table></div>
+<p>每天仍只加一个小例子，不收集新名词。第 4 周的验收是：给一个虚构招生办写 15 行建议，第一行是谁提出，最后一行是「哪些约束让存在性失效」。</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>在本页的落点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>阻塞对</td>
+<td>稳定 = 不存在互偏好于现状的未配对手</td>
+<td>两个经典匹配都要检查</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>延迟接受</td>
+<td>暂留最优，拒绝其余，被拒者下移</td>
+<td>提议 5 次走到男方最优</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>提出方最优</td>
+<td>每个提出者都不差于任何其他稳定解</td>
+<td>均秩 1.67 而非 2.33</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>接受方最劣</td>
+<td>同一匹配的另一面</td>
+<td>女方 2.33；换提出方才翻盘</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>稳定匹配格</td>
+<td>两端即两侧最优，中间可有其他稳定解</td>
+<td>本例只有两端；C–Z 是不动点</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>一侧策略防操纵</td>
+<td>提出方说真话是占优策略</td>
+<td>1998 年后对 NRMP 申请者成立</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>双边不可能</td>
+<td>没有总稳定且两边都防操纵的机制</td>
+<td>Roth 1982</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>截断</td>
+<td>接受方缩短名单，有时跳到自己的优端</td>
+<td>k=1 时学生均秩 1.00</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>农村医院</td>
+<td>招不满者的名册在所有稳定解中相同</td>
+<td>乡两次都空</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>停机上界</td>
+<td>每对至多一次，≤ n²；n=3 穷举最大 7</td>
+<td>模型 4 默认 9 / 6 / 7</td>
+</tr>
+</tbody>
+</table></div>
+<p>随机严格偏好的有限样本（mulberry32 种子 20260920，每个 n 做 2000 个市场，男方提出）供量级感，不是定理：n=3 时提出方均秩 1.455、接受方 1.728、平均提议 4.37、两端不一致的市场占 27.2%；n=6 时为 1.945、2.617、11.67、60.1%。方向与「提出方远好于接受方、且 n 越大冲突越常见」一致，数字以这次种子为准。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>这个市场有几个稳定匹配？</summary><div class="dbody"><p>若只有 1 个，提出权不改变配对，最优性争论可以结束。本页 ρ=0 有 2 个，ρ=0.4 起有 1 个。</p></div></details>
+<details><summary>规则写的是谁提出？</summary><div class="dbody"><p>没写，就还没选择格的哪一端。NRMP 1998 年写的是申请者。</p></div></details>
+<details><summary>我正在给谁承诺「说真话」？</summary><div class="dbody"><p>只应承诺给提出方。对接受方，这句话是错的。</p></div></details>
+<details><summary>接受方截断会不会让他变好？</summary><div class="dbody"><p>先跑如实再跑截断。2×2 默认从学生均秩 2.00 到 1.00；截错则可能落空。</p></div></details>
+<details><summary>落空者换一端还在不在？</summary><div class="dbody"><p>还在，就是结构性空缺。去看补贴和配额。</p></div></details>
+<details><summary>有没有联合约束？</summary><div class="dbody"><p>夫妻、捆绑志愿会让稳定集变空。先举反例，再谈算法。</p></div></details>
+<details><summary>学校侧是偏好还是行政优先级？有没有大量平局？</summary><div class="dbody"><p>有，则「策略防操纵」要按择校文献重述，不能照搬婚姻模型的严格序。</p></div></details>
+<details><summary>委员会用的效果量是 3 人例题还是历史名单？</summary><div class="dbody"><p>例题差距 0.67 个序位；NRMP 历史比较是 &lt;0.1% 的人结果不同。两数都要报，不能只报好看的那个。</p></div></details>
+<details><summary>提议次数被当成福利了吗？</summary><div class="dbody"><p>次数只证明停机。福利看序位和落空，不看轮次。</p></div></details>
+<details><summary>这是 Gale–Shapley 还是 DMP 搜寻？</summary><div class="dbody"><p>若问题是失业率与空缺的流量，换手册。若问题是配对会不会被拆散、谁站在优端，留在这里。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li><strong>多对一与响应偏好</strong>：把配额写进 DA，核对农村医院定理的前提是否一句不落。</li>
+<li><strong>平局与择校</strong>：学生提出的 DA、最高优先循环（TTC）、效率调整的 DA（EADA）各自牺牲什么。</li>
+<li><strong>夫妻与存在性</strong>：用一个 4 医院的小反例说服自己「稳定集可以是空的」。</li>
+<li><strong>大市场渐近</strong>：Pittel 等人关于随机偏好下两侧序位约在 log n 与 n/log n 的结果，用来约束本页 2000 次模拟的解读，而不是替代它。</li>
+<li><strong>实施</strong>：名单界面、建议文案、申诉规则。Rees-Jones 的 23% 提醒：定理成立之后，说明书仍会失败。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<p>标记：<span class="tag t-fact">事实</span>一手论文或本页穷举可复算；<span class="tag t-ana">分析</span>机制比较；<span class="tag t-inf">推论</span>有限样本模拟或由公式直接算出、但不是外部统计；<span class="tag t-chk">待验证</span>预印本或转述链。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">DA 存在稳定匹配且对提出者最优</td>
+<td>论文</td>
+<td>Gale &amp; Shapley, AMM, 1962</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">不能两边都策略防操纵；提出方可以</td>
+<td>论文</td>
+<td>Roth, Math. Oper. Res., 1982；Dubins &amp; Freedman, 1981</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">NRMP 与 DA 的关系；农村医院定理</td>
+<td>论文</td>
+<td>Roth 1984；Roth, Econometrica, 1986</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">1998 年改申请者提出；差异 &lt;0.1%</td>
+<td>论文</td>
+<td>Roth, JAMA, 1997；Roth &amp; Peranson, AER, 1999</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">诺奖表述、1950 年代清算所、英国不稳定算法失败</td>
+<td>机构</td>
+<td>Nobel Prize 2012 新闻稿与普及页</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">纽约 2003、波士顿 2005–06、波士顿机制</td>
+<td>论文</td>
+<td>Roth NBER w13225；Abdulkadiroğlu–Pathak–Roth–Sönmez</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">夫妻可使稳定集为空</td>
+<td>论文</td>
+<td>Roth 1984；Klaus &amp; Klijn 2005</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">计数稳定匹配为 #P 完全</td>
+<td>论文</td>
+<td>Irving &amp; Leather, SIAM J. Comput., 1986</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">谎报自述 83.33/5.38/0.36/10.93%（n=558）；实验 23%（n=1714）</td>
+<td>论文</td>
+<td>Rees-Jones；Rees-Jones &amp; Skowronek 2018</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">1.67/2.33/0.67、截断 2.00→1.00、穷举最大 3 与 7、乡医院两次为空</td>
+<td>本页复算</td>
+<td>见主题脚本与文中步骤</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">种子 20260920 的 2000 次随机市场</td>
+<td>模拟</td>
+<td>本手册 mulberry32</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">帕累托改进去不掉序位低效</td>
+<td>预印本</td>
+<td>arXiv:2506.11660（2025）</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是认知与演算框架，不是招生、招聘、医疗匹配或任何市场的操作建议，也不是投资建议。延迟接受的最优性依赖严格偏好、谁提出、以及没有破坏存在性的联合约束；正文里的 0.67 个序位是 3 人例题，NRMP 历史比较里两端差异小于 0.1% 的申请者，两者不可互换引用。截断示例用来暴露接受方的激励，不构成「缩短志愿表」的建议——截错会落空。农村医院定理说的是稳定解之间的不变性，不评价区域医疗政策。涉及真实名单、平局、夫妻与配额时，以原始规则和原始论文为准，用本页模型复核小例子，不要把滑块读数外推成全国效果。</p>
+</section>
+<footer>  <p>《搜寻与匹配理论（Gale–Shapley） · 全景认知与实践操作手册》 · 生成于 2026-09-20 · 耗时 24 分 34 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《搜寻与匹配理论（Gale-Shapley）》主题脚本
+   四个可调模型：
+     1. 谁提出（经典 3×3，提出方最优）
+     2. 共同质量权重 ρ（冲突何时消失）
+     3. 接受方截断（2×2 医院提出）
+     4. 提议次数上界 vs 同质构造
+   默认读数已用 node 复算（2026-09-20）：
+     模型1 男方提出 → 1.67 / 2.33 / 差距 0.67 / 提议 5 / 稳定 2
+     模型2 ρ=0 与模型1相同；ρ=0.4 时稳定数降为 1、差距 0.00
+     模型3 k=2 → 学生 2.00、医院 1.00、提议 2
+     模型4 n=3 → 上界 9、同质 6、穷举最大 7、均秩 2.00 / 1.00
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+  var BRUTE = { 2: 3, 3: 7 };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t && t.classList && t.classList.contains('tab')) setTimeout(fn, 40);
+    });
+    window.addEventListener('resize', function () { setTimeout(fn, 40); });
+  }
+  function rankOf(pref, x) {
+    var i = pref.indexOf(x);
+    return i < 0 ? Infinity : i;
+  }
+  function da(propPrefs, recvPrefs) {
+    var nP = propPrefs.length, nR = recvPrefs.length;
+    var matchP = [], matchR = [], nextIdx = [], free = [];
+    var i, proposals = 0, guard = 0;
+    for (i = 0; i < nP; i++) { matchP.push(-1); nextIdx.push(0); free.push(i); }
+    for (i = 0; i < nR; i++) matchR.push(-1);
+    while (free.length && guard++ < 100000) {
+      i = free.shift();
+      if (nextIdx[i] >= propPrefs[i].length) continue;
+      var j = propPrefs[i][nextIdx[i]++];
+      proposals++;
+      if (rankOf(recvPrefs[j], i) === Infinity) { free.push(i); continue; }
+      var cur = matchR[j];
+      var better = cur < 0 || rankOf(recvPrefs[j], i) < rankOf(recvPrefs[j], cur);
+      if (better) {
+        if (cur >= 0) { matchP[cur] = -1; free.push(cur); }
+        matchR[j] = i;
+        matchP[i] = j;
+      } else free.push(i);
+    }
+    return { matchP: matchP, matchR: matchR, proposals: proposals };
+  }
+  function avg(xs) {
+    var s = 0, i;
+    for (i = 0; i < xs.length; i++) s += xs[i];
+    return xs.length ? s / xs.length : 0;
+  }
+  function perms(a) {
+    if (a.length <= 1) return [a.slice()];
+    var o = [], i, p, k;
+    for (i = 0; i < a.length; i++) {
+      var rest = a.slice(0, i).concat(a.slice(i + 1));
+      var sub = perms(rest);
+      for (k = 0; k < sub.length; k++) o.push([a[i]].concat(sub[k]));
+    }
+    return o;
+  }
+  function countStable(mp, wp) {
+    var n = mp.length, Ps = perms(mp.map(function (_, i) { return i; }));
+    var cnt = 0, t, m, matchR, ok, i, j;
+    for (t = 0; t < Ps.length; t++) {
+      m = Ps[t];
+      matchR = [];
+      for (i = 0; i < n; i++) matchR.push(-1);
+      for (i = 0; i < n; i++) matchR[m[i]] = i;
+      ok = true;
+      for (i = 0; i < n && ok; i++) {
+        for (j = 0; j < n; j++) {
+          if (rankOf(mp[i], j) < rankOf(mp[i], m[i]) && rankOf(wp[j], i) < rankOf(wp[j], matchR[j])) {
+            ok = false;
+            break;
+          }
+        }
+      }
+      if (ok) cnt++;
+    }
+    return cnt;
+  }
+  function axisY(ctx, pl, y1, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1, i, v, y;
+    for (i = 0; i <= 4; i++) {
+      v = ymin + (span * i) / 4;
+      y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, items, ymin, ymax, axis) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    if (ymin == null) ymin = 0;
+    if (ymax == null) {
+      ymax = 1;
+      items.forEach(function (it) { if (it.v > ymax) ymax = it.v; });
+      ymax = ymax * 1.18;
+    }
+    axisY(ctx, pl, y1, bh, ymin, ymax, w);
+    var barW = bw / (items.length * 1.6);
+    var span = ymax - ymin || 1;
+    items.forEach(function (it, i) {
+      var x = pl + (i + 0.5) * (bw / items.length) - barW / 2;
+      var y = y1 - ((it.v - ymin) / span) * bh;
+      ctx.fillStyle = it.c;
+      ctx.fillRect(x, y, barW, Math.max(2, y1 - y));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+      var lab = it.v.toFixed(it.dp != null ? it.dp : 2);
+      var lw = ctx.measureText(lab).width;
+      var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 2), w - pr - lw / 2 - 2);
+      ctx.fillText(lab, lx, Math.max(pt + 11, y - 6));
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(axis || '序位（越小越好）', pl + bw, y1 + 31);
+  }
+
+  /* ---------- 经典 3×3 ---------- */
+  var MEN = [[0, 1, 2], [1, 0, 2], [0, 1, 2]];
+  var WOMEN = [[1, 0, 2], [0, 1, 2], [0, 1, 2]];
+  var MN = ['A', 'B', 'C'];
+  var WN = ['X', 'Y', 'Z'];
+
+  function updGs() {
+    var side = +($('gs_side') && $('gs_side').value);
+    if (side !== 0 && side !== 1) side = 0;
+    txt($('gs_sideO'), side === 0 ? '男方' : '女方');
+    var res = side === 0 ? da(MEN, WOMEN) : da(WOMEN, MEN);
+    var manMatch, womanOf;
+    if (side === 0) {
+      manMatch = res.matchP;
+    } else {
+      manMatch = res.matchR;
+    }
+    var manRanks = [], womRanks = [], i;
+    var wMatch = [-1, -1, -1];
+    for (i = 0; i < 3; i++) wMatch[manMatch[i]] = i;
+    for (i = 0; i < 3; i++) {
+      manRanks.push(rankOf(MEN[i], manMatch[i]) + 1);
+      womRanks.push(rankOf(WOMEN[i], wMatch[i]) + 1);
+    }
+    var pAvg = side === 0 ? avg(manRanks) : avg(womRanks);
+    var rAvg = side === 0 ? avg(womRanks) : avg(manRanks);
+    var gap = rAvg - pAvg;
+    txt($('gs_pAvg'), pAvg.toFixed(2));
+    txt($('gs_rAvg'), rAvg.toFixed(2));
+    txt($('gs_gap'), gap.toFixed(2));
+    txt($('gs_nProp'), String(res.proposals));
+    txt($('gs_nStab'), String(countStable(MEN, WOMEN)));
+    var pair = [];
+    for (i = 0; i < 3; i++) pair.push(MN[i] + '–' + WN[manMatch[i]]);
+    txt($('gs_match'), pair.join(' · '));
+    var fixed = manMatch[2] === 2;
+    var msg = (side === 0 ? '男方提出 → 男方最优、女方最劣。' : '女方提出 → 女方最优、男方最劣。')
+      + (fixed ? ' C–Z 在两个稳定匹配里都不动。' : ' C 的对象变了——与本市场的格结构不符。');
+    txt($('gs_vh'), msg);
+    tint($('gs_vh'), C.blue);
+    var items = [];
+    for (i = 0; i < 3; i++) items.push({ lab: MN[i], v: manRanks[i], c: C.blue, dp: 0 });
+    for (i = 0; i < 3; i++) items.push({ lab: WN[i], v: womRanks[i], c: C.amber, dp: 0 });
+    bars($('gsChart'), items, 0, 3.6, '个人序位（越小越好）');
+  }
+
+  /* ---------- ρ ---------- */
+  function blendMarket(rho) {
+    var privM = [[3, 2, 1], [2, 3, 1], [3, 2, 1]];
+    var privW = [[2, 3, 1], [3, 2, 1], [3, 2, 1]];
+    var q = [1, 2, 3];
+    function order(privRow) {
+      var idx = [0, 1, 2];
+      idx.sort(function (a, b) {
+        var sa = (1 - rho) * privRow[a] + rho * q[a];
+        var sb = (1 - rho) * privRow[b] + rho * q[b];
+        var d = sb - sa;
+        if (Math.abs(d) > 1e-9) return d;
+        return a - b;
+      });
+      return idx;
+    }
+    return { mp: privM.map(order), wp: privW.map(order) };
+  }
+  function sideStats(mp, wp) {
+    var M = da(mp, wp);
+    var pRanks = [], rRanks = [], i, wOf = [-1, -1, -1];
+    for (i = 0; i < 3; i++) wOf[M.matchP[i]] = i;
+    for (i = 0; i < 3; i++) {
+      pRanks.push(rankOf(mp[i], M.matchP[i]) + 1);
+      rRanks.push(rankOf(wp[i], wOf[i]) + 1);
+    }
+    return { pAvg: avg(pRanks), rAvg: avg(rRanks), proposals: M.proposals, match: M.matchP };
+  }
+  function updRho() {
+    var raw = +($('rho') && $('rho').value);
+    var rho = Math.round(raw * 10) / 10;
+    if (!isFinite(rho)) rho = 0;
+    txt($('rhoO'), rho.toFixed(1));
+    var mkt = blendMarket(rho);
+    var st = sideStats(mkt.mp, mkt.wp);
+    var W = da(mkt.wp, mkt.mp);
+    var same = st.match.join() === W.matchR.join();
+    var nStab = countStable(mkt.mp, mkt.wp);
+    var gap = st.rAvg - st.pAvg;
+    txt($('rho_pAvg'), st.pAvg.toFixed(2));
+    txt($('rho_rAvg'), st.rAvg.toFixed(2));
+    txt($('rho_gap'), gap.toFixed(2));
+    txt($('rho_nStab'), String(nStab));
+    txt($('rho_same'), same ? '重合' : '不同');
+    var msg;
+    if (nStab > 1) msg = '多个稳定匹配：谁提出，谁拿到格的优端。差距 ' + gap.toFixed(2) + ' 个序位。';
+    else if (gap > 0.05) msg = '稳定匹配唯一，提出权不再改配对；但这一匹配里两侧序位仍不对称。';
+    else msg = '两侧最优重合，冲突消失。ρ=0.4 起本市场只剩 1 个稳定匹配。';
+    txt($('rho_vh'), msg);
+    tint($('rho_vh'), nStab > 1 ? C.red : C.green);
+    var ysP = [], ysR = [], k;
+    for (k = 0; k <= 10; k++) {
+      var s = sideStats(blendMarket(k / 10).mp, blendMarket(k / 10).wp);
+      ysP.push(s.pAvg);
+      ysR.push(s.rAvg);
+    }
+    lineRho($('rhoChart'), ysP, ysR, rho);
+  }
+  function lineRho(cv, ysP, ysR, rho) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 16, pt = 22, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    var ymin = 1, ymax = 2.6;
+    axisY(ctx, pl, y1, bh, ymin, ymax, w);
+    function sx(i) { return pl + (i / 10) * bw; }
+    function sy(v) { return y1 - ((v - ymin) / (ymax - ymin)) * bh; }
+    ctx.strokeStyle = C.axis;
+    ctx.beginPath();
+    ctx.moveTo(pl, y1);
+    ctx.lineTo(pl + bw, y1);
+    ctx.stroke();
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    [0, 5, 10].forEach(function (i) {
+      ctx.fillText((i / 10).toFixed(1), sx(i), y1 + 13);
+    });
+    function stroke(ys, color) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ys.forEach(function (v, i) {
+        if (i === 0) ctx.moveTo(sx(i), sy(v));
+        else ctx.lineTo(sx(i), sy(v));
+      });
+      ctx.stroke();
+      ctx.fillStyle = color;
+      ys.forEach(function (v, i) { ctx.beginPath(); ctx.arc(sx(i), sy(v), 2.4, 0, 6.3); ctx.fill(); });
+    }
+    stroke(ysP, C.blue);
+    stroke(ysR, C.amber);
+    var xm = pl + rho * bw;
+    ctx.strokeStyle = C.red;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(xm, pt);
+    ctx.lineTo(xm, y1);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = C.red;
+    ctx.textAlign = 'left';
+    ctx.fillText('ρ=' + rho.toFixed(1), pl + 4, pt + 12);
+    ctx.fillStyle = C.ink2;
+    ctx.textAlign = 'right';
+    ctx.fillText('蓝提出方 · 琥珀接受方', pl + bw, pt + 12);
+    ctx.fillStyle = C.ink3;
+    ctx.fillText('共同质量 ρ', pl + bw, y1 + 31);
+  }
+
+  /* ---------- 截断 ---------- */
+  function updTr() {
+    var k = +($('tr_k') && $('tr_k').value);
+    if (k !== 1 && k !== 2) k = 2;
+    txt($('tr_kO'), String(k));
+    var hP = [[0, 1], [1, 0]];
+    var sTrue = [[1, 0], [0, 1]];
+    var sP = [sTrue[0].slice(0, k), sTrue[1].slice()];
+    var r = da(hP, sP);
+    var sRanks = [0, 1].map(function (s) { return rankOf(sTrue[s], r.matchR[s]) + 1; });
+    var hRanks = [0, 1].map(function (h) { return rankOf(hP[h], r.matchP[h]) + 1; });
+    txt($('tr_sAvg'), avg(sRanks).toFixed(2));
+    txt($('tr_hAvg'), avg(hRanks).toFixed(2));
+    txt($('tr_prop'), String(r.proposals));
+    var hn = ['甲', '乙'], sn = ['子', '丑'];
+    txt($('tr_match'), hn[0] + '–' + sn[r.matchP[0]] + ' · ' + hn[1] + '–' + sn[r.matchP[1]]);
+    var msg = k === 2
+      ? '如实填报：医院最优。两名学生都拿到第 2 志愿，医院都拿到第 1 志愿。'
+      : '子把名单截到只留乙：配对跳到学生最优。学生均秩 2.00→1.00，医院 1.00→2.00，提议 2→4。';
+    txt($('tr_vh'), msg);
+    tint($('tr_vh'), k === 1 ? C.red : C.ink);
+    bars($('trChart'), [
+      { lab: '学生均秩', v: avg(sRanks), c: C.blue, dp: 2 },
+      { lab: '医院均秩', v: avg(hRanks), c: C.amber, dp: 2 }
+    ], 0, 2.8, '序位（越小越好）');
+  }
+
+  /* ---------- 提议上界 ---------- */
+  function identicalCycle(n) {
+    var mp = [], wp = [], seq = [], i, j, k, p;
+    for (i = 0; i < n; i++) seq.push(i);
+    for (i = 0; i < n; i++) mp.push(seq.slice());
+    for (j = 0; j < n; j++) {
+      p = [];
+      for (k = 0; k < n; k++) p.push((j + k) % n);
+      wp.push(p);
+    }
+    return { mp: mp, wp: wp };
+  }
+  function updBd() {
+    var n = +($('bd_n') && $('bd_n').value);
+    if (!(n >= 2 && n <= 6)) n = 3;
+    txt($('bd_nO'), String(n));
+    var mkt = identicalCycle(n);
+    var r = da(mkt.mp, mkt.wp);
+    var pRanks = [], recRanks = [], i, wOf = [];
+    for (i = 0; i < n; i++) wOf.push(-1);
+    for (i = 0; i < n; i++) wOf[r.matchP[i]] = i;
+    for (i = 0; i < n; i++) {
+      pRanks.push(rankOf(mkt.mp[i], r.matchP[i]) + 1);
+      recRanks.push(rankOf(mkt.wp[i], wOf[i]) + 1);
+    }
+    var bound = n * n;
+    var brute = BRUTE[n];
+    txt($('bd_bound'), String(bound));
+    txt($('bd_real'), String(r.proposals));
+    txt($('bd_brute'), brute ? String(brute) : '未穷举');
+    txt($('bd_pAvg'), avg(pRanks).toFixed(2));
+    txt($('bd_rAvg'), avg(recRanks).toFixed(2));
+    var msg = '同质提出方互相踩踏：均秩 (n+1)/2 = ' + avg(pRanks).toFixed(2)
+      + '，接受方均秩 ' + avg(recRanks).toFixed(2)
+      + '。上界 n²=' + bound + '，本构造提议 ' + r.proposals + '。';
+    if (brute) msg += ' n=' + n + ' 穷举最大为 ' + brute + '，夹在构造与上界之间。';
+    else msg += ' n>3 不再穷举（n=4 已是 24⁸ 个市场）。';
+    txt($('bd_vh'), msg);
+    tint($('bd_vh'), C.ink);
+    var items = [
+      { lab: '上界 n²', v: bound, c: C.amber, dp: 0 },
+      { lab: '同质构造', v: r.proposals, c: C.blue, dp: 0 }
+    ];
+    if (brute) items.push({ lab: '穷举最大', v: brute, c: C.red, dp: 0 });
+    bars($('bdChart'), items, 0, bound * 1.25, '提议次数');
+  }
+
+  function boot() { updGs(); updRho(); updTr(); updBd(); }
+  bind(['gs_side'], updGs);
+  bind(['rho'], updRho);
+  bind(['tr_k'], updTr);
+  bind(['bd_n'], updBd);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+</script>
+</body>
+</html>
