@@ -1,0 +1,722 @@
+---
+slug: 声誉模型（Kreps-Wilson）：少量-非理性类型-的存在，使长期参与者值得付出成本维护声誉
+title: 声誉模型（Kreps-Wilson）
+subtitle: 少量<strong>承诺类型</strong>（常被说成「非理性地强硬」）就够用——弱的长期参与者愿意先付战斗成本，因为后来的短期对手会据此不来试探。威慑窗口不随总期数变长。
+brand_sub: Reputation × Chain Store
+kicker: Panoramic Cognition & Practice Engine
+chips: 28 节 · 交互式 | 4 个可调模型 | 数据截至 2026-09 | 决策框架非投资建议
+date: 2026-09-20
+data_asof: 2026 年 9 月
+tags: [博弈论, 声誉, Kreps-Wilson, 链式店悖论, 承诺类型, Fudenberg-Levine]
+theme_js_file: 声誉模型（Kreps-Wilson）：少量-非理性类型-的存在，使长期参与者值得付出成本维护声誉.js
+md_raw: hint
+md_raw_hint: （此处含交互模型与示意图，见 HTML 版）
+footer_note: 本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。
+---
+
+<!-- nav:入口 -->
+# 一句话理解
+
+**少量「总是战斗」的承诺类型，使理性的长期在位者也值得付成本去模仿它。** 完全信息下，有限次链式店博弈的唯一完美均衡是：每期都进入、在位者每期都让。【事实】Kreps & Wilson（1982, *Journal of Economic Theory* 27:253–279）加上一个任意小的先验 \(\delta>0\)：在位者可能是支付不同、短期就偏好战斗的强类型。于是弱类型在早期被挑战时会真的战斗——默许一次，后验立刻归零，后面的垄断租全部蒸发。进入者预期到这一点，早期干脆不进。
+
+按原文支付（退出得 \(a>1\)，默许得 0，战斗得 \(-1\)；进入者在战斗概率等于 \(b\in(0,1)\) 时无差异），\(\delta=0.10\)、\(b=0.50\)、\(a=2.0\)、\(N=20\) 时，解缠窗口 \(k=4\)，均衡路径上有 **17** 期不进入，弱类型期望支付 **34.0**；完全信息基准是 **0.0**，超额就是这 34.0，不是「战斗胜率」。【推论】数值由命题 1 的价值函数算出，见第 16 节工具。
+
+论文把这种强类型口语化成 *plays tough “irrationally”*——引的是 Scherer 对「怕对方不按利润最大化来」的观察，不是临床意义上的非理性。【事实】模型里它是**另一套支付**的承诺类型：战斗在当期就优于默许。
+
+<!-- nav:世界模型 -->
+# 这个领域到底是什么
+
+研究的是：**在有限次、行动被后来者看见的博弈里，关于动机的一点点不确定，如何把「不可信的威胁」变成序贯理性的行动。** 它不研究「名声好不好听」，而研究后验概率怎样进入对手的最佳反应，以及为了不让这个后验塌掉，长期方愿意付多少短期成本。
+
+边界：
+
+- **在界内**：链式店 / 进入威慑的序贯均衡、有限重复囚徒困境里的「四人帮」合作、耐心长期方对一串短期对手的斯塔克尔伯格支付下界、不完美监测下声誉为何不永久。
+- **在界外**：用本模型设计掠夺性定价去挤掉对手（许多法域这是竞争法问题，见附录）；也外于「品牌好感度问卷」这类不可操作的名声分数——除非你能把它压成类型先验、公开行动和贴现。
+
+## 十五个问题，先建立世界模型
+
+| # | 问题 | 回答 |
+|---|---|---|
+| 1 | 研究什么 | 小先验的承诺类型如何支撑有限博弈里的声誉行为 |
+| 2 | 边界在哪 | 到「类型、后验、序贯理性、支付下界」可算为止 |
+| 3 | 核心对象 | 强/弱类型、后验 \(p_n\)、战斗/默许、进入/退出 |
+| 4 | 参与者 | 一个长期在位者 + 一串只玩一期、但看得到历史的进入者 |
+| 5 | 关键变量 | \(\delta,a,b,N,\rho\)；解缠长度 \(k(\delta)\) |
+| 6 | 可直接观察 | 进不进、战不战、让步是否公开 |
+| 7 | 无法直接观察 | 真实类型、对手脑子里的先验、离径信念 |
+| 8 | 谁影响谁 | 类型先验 → 战斗的可信度 → 进入决策 → 在位者是否还值得战斗 |
+| 9 | 因果关系 | \(\delta>0\) 且 \(N>k\) ⇒ 早期不进入 ⇒ 支付接近 \(a\) 乘以期数 |
+| 10 | 只是相关 | 「这家公司很凶」的传闻 ≠ 序贯均衡里的后验 |
+| 11 | 表层现象 | 早期无人挑战、临近结束才试探、一次认怂就崩盘 |
+| 12 | 底层机制 | 贝叶斯更新 + 弱类型用混合把后验钉在门槛上 |
+| 13 | 有反馈吗 | 有。战斗保住后验；默许把后验打到 0 |
+| 14 | 有延迟吗 | 有。成本在被挑战的那一期付，收益是后面若干期的 \(a\) |
+| 15 | 正/负反馈 | 守住则先验不降（正）；一次默许永久归零（负，且不可逆） |
+
+## 最关键的一句话
+
+> 声誉不是「别人觉得你狠」的形容词，而是一个被行动更新的概率：它值得维护，当且仅当毁掉它的损失，大于你这一期不让步的成本。
+
+# 为什么值得研究
+
+:::cards g3
+### 它解开链式店悖论
+Selten（1978）证明：完全信息、有限期，唯一完美均衡是从不战斗。直觉却说早期要做给后面看。差的那一点就是 \(\delta>0\)。【事实】
+
+### 窗口长度与 N 无关
+存在只依赖先验和支付、不依赖总期数的 \(k\)，进入者只在最后约 \(k\) 期才可能进来。\(N\to\infty\) 时平均支付趋于垄断租 \(a\)。【事实】
+
+### 它是均衡选择器
+无限重复博弈的无名氏定理说「什么都可能」。Fudenberg & Levine（1989）说：只要先验里有斯塔克尔伯格承诺类型，耐心的长期方在**任何**纳什里都接近那个支付。【事实】
+:::
+
+:::note amber 最贵的一次误判
+把「我战斗的胜率很高」当成声誉有效。均衡路径上早期根本没人进，胜率样本是空的或只来自期末混战。该跟 **完全信息基准 0** 比的是被吓退的期数 \(\times a\)，不是打斗场次。【推论】
+:::
+
+# 世界地图
+
+从悖论到「声誉不永久」，九层是一条收紧，不是九个并列名词。
+
+:::raw
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rpMap" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 边界 · 噪声监测下声誉暂时（CMS 2004）；坏声誉可毁掉市场</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 选择 · FL89：任何纳什里长期方支付下界趋于斯塔克尔伯格</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 耐心 · ρ&gt;1/a 路径同不贴现；ρ&lt;1/(a+1) 一遇进入就让</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 均衡 · 序贯均衡：策略与后验互恰；δ≠b^n 时路径唯一</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 信念 · 战斗把后验钉在门槛；一次默许 ⇒ p=0 且不再回来</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 类型 · 强类型概率 δ，短期就偏好战；弱类型最大化利润</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 支付 · 在位者：退出 a、默许 0、战斗 −1；进入者无差异于 P(战)=b</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 舞台 · 一个长期方对 N 个短期方，行动被后来者完美看见</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 悖论 · 完全信息逆向归纳：每期进入、每期让步（Selten 1978）</text>
+</svg>
+:::
+
+:::note blue 读图要点
+动手只需要 **L3–L6**：写出 \(a,b\)，给一个你敢辩护的 \(\delta\)，算出 \(k\)，再问贴现是否还在 \(1/a\) 之上。L8–L9 用来防止把下界误读成「永远有效」。【分析】
+:::
+
+# 核心概念地图
+
+同一套对象，三层说法不能混。
+
+:::raw
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rpLay" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="16" y="16" width="200" height="268" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <rect x="240" y="16" width="200" height="268" rx="10" fill="#fff7e6" stroke="#b8730a"/>
+  <rect x="464" y="16" width="200" height="268" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="116" y="44" text-anchor="middle" font-size="15" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="340" y="44" text-anchor="middle" font-size="15" font-weight="700" fill="#b8730a" font-family="sans-serif">机制</text>
+  <text x="564" y="44" text-anchor="middle" font-size="15" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="116" y="88" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">承诺类型 θ</text>
+  <text x="116" y="112" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">后验 p_n</text>
+  <text x="116" y="136" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">序贯均衡</text>
+  <text x="116" y="160" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">k(δ)=inf{n: b^n&lt;δ}</text>
+  <text x="116" y="184" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">斯塔克尔伯格支付</text>
+  <text x="340" y="88" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">强类型必战</text>
+  <text x="340" y="112" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">弱类型模仿到门槛</text>
+  <text x="340" y="136" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">进入者用 P(战)≷b</text>
+  <text x="340" y="160" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">窗口不随 N 长大</text>
+  <text x="340" y="184" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">坏期数有上界 K</text>
+  <text x="564" y="88" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">问：对方怕哪种死心眼</text>
+  <text x="564" y="112" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">一次公开让步=归零</text>
+  <text x="564" y="136" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">先写 b 再谈狠</text>
+  <text x="564" y="160" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">关系要长过 k</text>
+  <text x="564" y="184" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">跟基准 0 比，不跟胜率比</text>
+  <line x1="216" y1="150" x2="236" y2="150" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpLay)"/>
+  <line x1="440" y1="150" x2="460" y2="150" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpLay)"/>
+</svg>
+:::
+
+:::note green 层间接口
+抽象层的 \(k\) 是操作层的「还能硬多久」。不会算 \(k\)，就只会喊「要维护声誉」，不知道这一次让步到底贵不贵。【分析】
+:::
+
+# 核心参与者
+
+| 角色 | 信息 | 目标 | 在系统里的作用 |
+|---|---|---|---|
+| 强类型在位者 | 知道自己的支付 | 当期就偏好战斗；更少进入更好 | 提供可模仿的承诺；自己不战略性地让 |
+| 弱类型在位者 | 知道自己是弱的 | 各期支付之和（或贴现和） | 真正做「付成本维护声誉」决策的人 |
+| 第 n 个进入者 | 只看见历史和后验 \(p_n\) | 本期：进的期望 &gt; 0 才进 | 短期观众；不为自己的声誉玩 |
+| 自然 | 开局抽类型，概率 \(\delta\) | — | 把完全信息博弈变成不完全信息 |
+| 后来的观察者 | 完美监测时看见战/让 | 用贝叶斯改 \(p\) | 使早期行动有远期价格 |
+
+Milgrom & Roberts（1982, 同期 *JET* 27:280–312）用另一套信息不对称得到相近的掠夺—威慑，他们写明与 Kreps–Wilson **互补**：都是「过去的行动能预测未来」，所以早期付成本才有买家。【事实】对手若也是长期、有耐心的玩家，静态斯塔克尔伯格动作不一定还是最优承诺——回报和惩罚可以比「永远战斗」更好，但必须偶尔真的执行才看得见（Fudenberg & Levine 关于长期对手的后续工作）。【事实】
+
+# 核心变量
+
+时间**倒着数**：阶段 \(n\) 表示还剩 \(n\) 期（含本期）。这是原文的下标，不是日历第 n 天。
+
+| 变量 | 含义 | 默认 / 范围 | 动一下会怎样 |
+|---|---|---|---|
+| \(\delta\) 或 \(p_n\) | 在位者为强类型的概率 | 0.10 | 越小，\(k\) 越大，但只要 &gt;0 就有窗口 |
+| \(a\) | 无人进入时在位者支付 | 2.0（须 &gt;1） | 决定一期垄断租能否盖过战斗成本 1 |
+| \(b\) | 进入且被默许时进入者支付 | 0.50 | 越大越难吓阻；门槛是 \(b^n\) |
+| \(N\) | 总期数 | 20 | 只增加威慑期 \(N-k+1\)，不增加 \(k\) |
+| \(\rho\) | 在位者贴现因子 | 讨论用 0.60 | 低于 \(1/(a+1)\) 机制塌缩 |
+| \(k(\delta)\) | \(\inf\{n:b^n<\delta\}\) | 上例为 4 | 解缠从剩余 \(k-1\) 期开始 |
+| \(K\) | FL 引理里「不最佳反应」期数上界 | 上例为 3 | \(\lfloor\log\delta/\log b\rfloor\)，与 \(\delta\to 1\) 的顺序不能反 |
+
+进入者期望：记 \(q=P(\text{战})\)，进入的支付是 \((1-q)b+q(b-1)=b-q\)，退出为 0。所以 **\(q>b\) 则退出，\(q<b\) 则进入**。【事实】原文策略把这件事写成对后验的门槛 \(p_n ? b^n\)，因为早期弱类型也会战，\(q\) 不等于 \(p_n\)。
+
+<!-- nav:机制与激励 -->
+# 因果关系
+
+实线是当期因果，红色虚线是跨期反馈。
+
+:::raw
+<svg viewBox="0 0 680 340" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rpC" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="rpF" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="40" y="30" width="150" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="115" y="57" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">先验 δ&gt;0</text>
+  <rect x="250" y="30" width="170" height="44" rx="8" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="335" y="57" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">弱者也愿战</text>
+  <rect x="480" y="30" width="160" height="44" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="560" y="57" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">早期不进入</text>
+  <rect x="250" y="140" width="170" height="44" rx="8" fill="#f8fafc" stroke="#454c56"/>
+  <text x="335" y="167" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">支付 a×威慑期</text>
+  <rect x="40" y="250" width="170" height="44" rx="8" fill="#fde8e8" stroke="#d5342c"/>
+  <text x="125" y="277" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">一次默许</text>
+  <rect x="280" y="250" width="150" height="44" rx="8" fill="#fde8e8" stroke="#d5342c"/>
+  <text x="355" y="277" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">后验 = 0</text>
+  <rect x="490" y="250" width="150" height="44" rx="8" fill="#fde8e8" stroke="#d5342c"/>
+  <text x="565" y="277" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">此后每期都进</text>
+  <line x1="190" y1="52" x2="246" y2="52" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpC)"/>
+  <line x1="420" y1="52" x2="476" y2="52" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpC)"/>
+  <line x1="560" y1="74" x2="420" y2="150" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpC)"/>
+  <path d="M335,140 C335,100 335,90 335,78" fill="none" stroke="#d5342c" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#rpF)"/>
+  <line x1="210" y1="272" x2="276" y2="272" stroke="#d5342c" stroke-width="2" marker-end="url(#rpF)"/>
+  <line x1="430" y1="272" x2="486" y2="272" stroke="#d5342c" stroke-width="2" marker-end="url(#rpF)"/>
+  <text x="335" y="118" text-anchor="middle" font-size="11" fill="#d5342c" font-family="sans-serif">反馈：租金证明战斗值得</text>
+  <text x="340" y="318" text-anchor="middle" font-size="11" fill="#d5342c" font-family="sans-serif">反馈：归零不可逆，Selten 逻辑重新占领后半场</text>
+</svg>
+:::
+
+:::note purple 因果不是相关
+「看起来很凶的公司很少被进入」可能只是它本来成本就低（真强类型）。声誉机制多出来的部分，是**弱类型**也在早期战斗或使进入者相信它会战。实验里这两者经常缠在一起，见第 14 节。【分析】
+:::
+
+# 隐藏关系
+
+跨域时，先认数学，再决定名字能不能借用。
+
+| 表面不同 | 同一结构 | 不能直接搬的部分 |
+|---|---|---|
+| 连锁店威慑 | 后验乘子：看见战斗且 \(P(\text{战})<b\) 时，强类型后验至少乘 \(1/b\) | 产业里的「凶」不一定是承诺类型 |
+| 信息论比特 | \(b=1/2\) 时 \(-\log_2(0.10)=3.32\)，整数跳跃上界 \(K=3\)，\(k=4\) | 比特是上界直觉，不是熵编码 |
+| Spence 信号 | 都用「对方类型不确定」 | 信号成本在**路径上**付；这里早期路径上往往**没人来**，成本是离径威胁 |
+| 央行「保守银行家」 | 都靠强硬类型压预期 | Rogoff 式是**委托**给已知强硬者；这里是**模仿**一个小概率强硬者 |
+| 一报还一报 | Gang of Four：小概率锁死在 tit-for-tat，理性者也合作到期末 | 承诺策略不同，支付下界的对象就不同 |
+| 坏声誉（Ely–Välimäki） | 同样是类型信念 | 方向相反：怕留下坏信号，好行动也不敢做，市场瓦解 |
+
+\(b=1/2\)、\(\delta=0.10\) 时，\(0.10\times 2^{3}=0.80\le 1\)，\(0.10\times 2^{4}=1.60>1\)，所以「对手把战斗概率放在 0.5 以下、你仍然战斗」这种期至多 3 期——这就是 Fudenberg–Levine 引理里的 \(K=3\)，和链式店的 \(k=4\) 差一个取整口径，不要混成同一个符号。【推论】
+
+# 系统运行机制
+
+## 阶段支付（弱类型 / 进入者）
+
+| 历史 | 进入者 | 弱在位者 |
+|---|---|---|
+| 退出 | 0 | \(a\) |
+| 进入后默许 | \(b\) | 0 |
+| 进入后战斗 | \(b-1\) | \(-1\) |
+
+\(a>1\)，\(0<b<1\)。强类型的当期排序是战斗优于默许，所以强类型**任何**信息集上都战；精确数字不影响弱类型的计算。【事实】若 \(a\le 1\)，大 \(n\) 仍可能威慑，但期末策略不再只依赖当前后验，本手册的递归不覆盖那种情形。【事实】
+
+## 序贯均衡（命题 1，倒计时）
+
+- 强类型：永远战斗。
+- 弱类型：\(n=1\) 必让。\(n>1\) 且 \(p>b^{n-1}\) 则战；\(p<b^{n-1}\) 则以概率 \(\beta=((1-b^{n-1})p)/((1-p)b^{n-1})\) 战斗。
+- 进入者：\(p>b^n\) 退出；\(p<b^n\) 进入；相等时以概率 \(1/a\) 退出。
+- 信念：从未被默许且无人进入，则 \(p\) 保持 \(\delta\)。战斗且处于混合区，后验跳到 \(b^{n-1}\)。**任何一次默许 ⇒ 此后 \(p=0\)。**
+
+贝叶斯核对：混合区 \(P(\text{战})=p/b^{n-1}\)，战之后后验 \(=b^{n-1}\)。进入者用 \(b-P(\text{战})\) 做决策，等价于拿 \(p\) 和 \(b^n\) 比。【事实】
+
+## 默认数字（\(\delta=0.10,b=0.50,a=2.0,N=20\)）
+
+\(b^3=0.125>0.10>0.0625=b^4\)，故 \(k=4\)。剩余期数从 20 降到 4 都不进入：\(20-4+1=17\) 期，每期 2.0，合计 **34.0**。剩余 3 期时 \(0.10<0.125\)，进入者进入；弱类型混合概率 \(\beta=0.3333\)，\(P(\text{战})=0.40\)，进入期望 \(0.50-0.40=0.10>0\)。这 3 期的期望支付**合计**为 0.0（混合无差异），不是「每一期都是 0」。【推论】
+
+剩余 4 期时若硬闯：\(P(\text{战})=0.10/0.125=0.80\)，进入期望 \(0.50-0.80=-0.30\)，所以路径上不闯。威慑靠的是这个反事实，不是已经发生的打斗。【推论】
+
+完全信息基准：每期进入、每期默许，弱类型合计 **0.0**。声誉超额 = 34.0 − 0.0。命题 2：若 \(\delta\) 不等于任何 \(b^n\)（\(n<N\)），在「合理信念」下，路径上的策略就是上面这一套。【事实】
+
+# 时间演化
+
+日历时间向前，信念在没人挑战时不动，挑战只在窗口末端出现。
+
+:::raw
+<svg viewBox="0 0 680 250" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rpT" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="36" y1="78" x2="650" y2="78" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpT)"/>
+  <circle cx="70" cy="78" r="6" fill="#1d4ed8"/>
+  <circle cx="250" cy="78" r="6" fill="#1d4ed8"/>
+  <circle cx="430" cy="78" r="6" fill="#b8730a"/>
+  <circle cx="560" cy="78" r="6" fill="#d5342c"/>
+  <text x="70" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">开局</text>
+  <text x="70" y="108" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">p=δ=0.10</text>
+  <text x="250" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">前 17 期</text>
+  <text x="250" y="108" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">不进入，p 不变</text>
+  <text x="430" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">剩余 3 期</text>
+  <text x="430" y="108" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">进入，弱者混合</text>
+  <text x="560" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">若默许</text>
+  <text x="560" y="108" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">p=0，之后全让</text>
+  <text x="36" y="168" font-size="12" fill="#15181d" font-family="sans-serif">更小的先验只加长末端窗口，不取消早期威慑（N=100，a=2，b=0.5）：</text>
+  <text x="36" y="194" font-size="12" fill="#454c56" font-family="sans-serif">δ=0.01 → k=7，威慑 94 期，支付 188.0</text>
+  <text x="36" y="214" font-size="12" fill="#454c56" font-family="sans-serif">δ=0.001 → k=10，威慑 91 期，支付 182.0</text>
+  <text x="36" y="234" font-size="12" fill="#454c56" font-family="sans-serif">δ=10⁻⁶ → k=20，威慑 81 期，支付 162.0（对照基准仍是 0）</text>
+</svg>
+:::
+
+:::note amber 顺序不能反
+对固定的 \(\delta>0\)，让耐心 \(\to 1\)，下界贴近斯塔克尔伯格支付。先让 \(\delta\to 0\) 再谈耐心，下界会掉下去。原文与 FL 都强调这个极限顺序。【事实】百万分之一的强类型，在 \(N=100\) 时仍留下 81 期威慑——但那是 \(b=1/2\)、不贴现、完美监测的教室数字，不是任何行业的市场份额。【推论】
+:::
+
+# 利益与激励
+
+| 谁 | 短期诱惑 | 声誉项约束它的方式 | 约束失效时 |
+|---|---|---|---|
+| 弱在位者 | 被挑战时让一步，当期少亏 1 | 让一步的续贯价值变成 0 | 剩余期数太短，或 \(\rho\) 太低 |
+| 进入者 | \(b>0\)，默许时有肉 | \(P(\text{战})\ge b\) 时肉的期望为负 | 后验已低于 \(b^n\) |
+| 强类型 | 无：当期战斗已更好 | 不需要声誉激励 | — |
+| 旁观的下一期进入者 | 想搭便车试探 | 看见战斗则后验不降 | 监测有噪声时学不准 |
+
+默认参数下，剩余 10 期时若被挑战：续贯价值 12.0，战斗净收益 \(-1+12.0=11.0\)，严格值得。剩余 5 期净收益 1.0，仍严格值得。剩余 4 期进入混合区，净收益 **0.0**，与直接默许无差异。严格值得的最小剩余期数是 **5**。【推论】
+
+所以「付出成本」在两条时间尺度上同时为真：（1）离径上，早期被闯要真的付那 1 单位，否则威胁不可信；（2）路径上，成本往往没发生，收益是无人闯入的 \(a\)。只看见第二句会误以为声誉免费；只看见第一句会误以为必须天天打架。
+
+# 资源与信息流
+
+租金从「本可被进入者分走的市场」流到在位者，抽水机是那个很小的 \(\delta\)。信息流是公开的战/让；一次让步把管道焊死。
+
+:::raw
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rpM" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="rpL" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="36" y="36" width="160" height="64" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="116" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">市场租 / 期</text>
+  <text x="116" y="84" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">在位者拿 a=2.0</text>
+  <rect x="260" y="36" width="170" height="64" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="345" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">威慑期 ×17</text>
+  <text x="345" y="84" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">合计 34.0</text>
+  <rect x="490" y="36" width="154" height="64" rx="8" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="567" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">抽水机 δ</text>
+  <text x="567" y="84" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">0.10 就够转</text>
+  <rect x="36" y="180" width="180" height="64" rx="8" fill="#fde8e8" stroke="#d5342c"/>
+  <text x="126" y="208" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">泄漏：战斗 −1</text>
+  <text x="126" y="228" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">只在被挑战时发生</text>
+  <rect x="260" y="180" width="180" height="64" rx="8" fill="#fde8e8" stroke="#d5342c"/>
+  <text x="350" y="208" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">泄漏：诱惑 b</text>
+  <text x="350" y="228" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">b 大则 k 变长</text>
+  <rect x="490" y="180" width="154" height="64" rx="8" fill="#15181d"/>
+  <text x="567" y="208" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">信息阀</text>
+  <text x="567" y="228" text-anchor="middle" font-size="12" fill="#fff" font-family="sans-serif">默许 ⇒ 阀死</text>
+  <line x1="196" y1="68" x2="256" y2="68" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpM)"/>
+  <line x1="430" y1="68" x2="486" y2="68" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpM)"/>
+  <line x1="126" y1="180" x2="126" y2="104" stroke="#d5342c" stroke-width="2" marker-end="url(#rpL)"/>
+  <line x1="567" y1="180" x2="567" y2="104" stroke="#d5342c" stroke-width="2" marker-end="url(#rpL)"/>
+</svg>
+:::
+
+对照：完全信息下这条管道流量是 0。声誉模型的全部「超额」都是相对这个基准，不是相对一个想象中的 50% 战斗胜率。进入者的 \(b\) 越大，要维持同一 \(\delta\) 所需的末端窗口越长——诱惑是抽水机的负载，不是在位者的收入。
+
+<!-- nav:杠杆与陷阱 -->
+# 关键杠杆点
+
+排序分 = 重要性 × 杠杆率 × 可操作性 ÷ 学习成本，五项都用 1–5。分高表示**你这周更该动它**，不是学术上更深刻。
+
+| 序 | 杠杆 | I | L | O | C | 分 | 为什么在系统里 |
+|---|---|---|---|---|---|---|---|
+| 1 | 把一次公开让步当成后验归零 | 5 | 5 | 5 | 1 | 125 | 原文离径信念：默许是软弱的充分证据 |
+| 2 | 把关系长度拉到 \(N>k(\delta)\) | 5 | 5 | 4 | 2 | 50.0 | 否则窗口还没开始，支付就是基准 0 |
+| 3 | 让后来者完美看见战还是让 | 5 | 4 | 4 | 2 | 40.0 | 没有监测就没有贝叶斯买家 |
+| 4 | 先验从 0 抬到任意正数 | 5 | 5 | 3 | 2 | 37.5 | \(\delta=0\) 是不连续点；正数多小是第二位的 |
+| 5 | 校准对方实际用的先验 | 4 | 4 | 4 | 2 | 32.0 | 实验里的「自制先验」会让 \(\delta=0\) 的处理组仍像有声誉 |
+| 6 | 保住 \(a>1\) 且 \(\rho>1/a\) | 5 | 4 | 3 | 2 | 30.0 | 一期未来租的现值要盖过战斗成本 1 |
+| 7 | 分清对手是短期观众还是长期对手 | 4 | 4 | 3 | 3 | 16.0 | 长期对手面前，永远战斗不一定是最优承诺 |
+| 8 | 承诺类型必须是你想被当成的那种 | 4 | 5 | 2 | 3 | 13.3 | 小概率「永远软弱」不改变 Selten 路径 |
+| 9 | 压低对方硬闯成功的支付 \(b\) | 4 | 3 | 2 | 2 | 12.0 | \(b\) 上升，\(k\) 上升，同样的 \(\delta\) 更晚才威慑 |
+| 10 | 承认噪声监测下声誉会耗掉 | 4 | 3 | 3 | 4 | 9.0 | 不完美公共监测时，声誉效应是暂时的 |
+
+# 常见认知陷阱
+
+:::details 陷阱 1：完全信息的逆向归纳已经「证明」声誉无用
+那只证明 \(\delta=0\) 的游戏。命题的重点是 \(\delta=0\) 处不连续：任意小的正先验就把早期路径从「全让」翻成「不进入」。【事实】
+:::
+
+:::details 陷阱 2：用战斗胜率评价声誉
+路径上前 17 期没有战斗样本。胜率要么不存在，要么只反映末端混合。基准是完全信息支付 0，超额是 \(a\times\) 威慑期。【推论】
+:::
+
+:::details 陷阱 3：强类型必须占很大比例
+\(\delta=10^{-6}\)、\(b=1/2\)、\(N=100\) 仍有 81 期威慑、支付 162.0，基准仍是 0。小是相对 \(b^n\) 的衰减而言，不是相对「常识里的 30%」。【推论】
+:::
+
+:::details 陷阱 4：维护声誉意味着每期都要付出现金成本
+早期均衡路径上没有进入，现金成本是 0。成本是反事实：若被闯，必须愿意付 \(-1\)。把「没打过架」读成「声誉没在工作」，是把离径威胁当成路径频率。【分析】
+:::
+
+:::details 陷阱 5：让一步只影响这一次
+在合理信念下，一次默许把 \(p\) 钉在 0，此后 Selten 逻辑恢复。局部妥协的价格是剩余全部威慑期的 \(a\)，不是这一期的面子。【事实】
+:::
+
+:::details 陷阱 6：贴现不重要，反正 N 很长
+\(a=2\) 时，\(\rho>0.5000\) 路径才与不贴现情形同类；\(\rho<0.3333\) 弱类型第一次被进入就让。很长的 \(N\) 救不了太没耐心的人。【事实】
+:::
+
+:::details 陷阱 7：先让先验趋于 0，再谈耐心
+FL 的 \(\varepsilon\) 可以随 \((1-\delta)|\log\mu|\) 一起走，但极限顺序是：先验固定为正，再让 \(\delta\to 1\)。反过来下界失效。【事实】
+:::
+
+:::details 陷阱 8：任何「非理性」类型都有用
+小概率承诺于「总是默许」不提供可模仿的威慑。有用的是对手最怕、且你最希望被相信的那个纯策略——链式店里是战斗，质量市场里是始终高质量。【分析】
+:::
+
+:::details 陷阱 9：实验室点预测会原样出现在市场上
+Jung, Kagel & Levin（1994, *RAND Journal of Economics*）在八期链式店实验中拒绝了 Kreps–Wilson 的若干点预测，并且在实验者没有放入强类型时，弱在位者早期仍然大量战斗。【事实】Camerer & Weigelt（1988, *Econometrica*）是另一项序贯均衡声誉实验；具体偏离百分比本手册不转引。【事实】
+:::
+
+:::details 陷阱 10：声誉一旦建立就永久
+Cripps, Mailath & Samuelson（2004）说明：公共监测不完美时，声誉效应是暂时的。完美监测的教室模型和带噪声的平台评分不是同一个定理。【事实】
+:::
+
+:::details 陷阱 11：这是一份掠夺操作手册
+模型解释「为什么早期强硬可以是序贯理性」。它不授权你去低于成本定价挤走对手。竞争法下的掠夺是另一套问题，见附录。【分析】
+:::
+
+<!-- nav:实践转化 -->
+# 从抽象到现实
+
+把一个真实关系压进五格，压不进去就不要用这个模型说话。
+
+| 格子 | 要写的句子 | 写不出来说明什么 |
+|---|---|---|
+| 长期方是谁 | 谁会反复面对后续观众 | 若人人都只玩一次，没有声誉卖方 |
+| 观众是谁 | 谁看见这一次让步 | 若行动不公开，贝叶斯没有输入 |
+| \(a\) | 没人来试探时你多得到什么 | 若 \(a\le 1\)（相对让步成本），简单公式停用 |
+| \(b\) | 对方硬闯且你让步时，对方多开心 | 不知道 \(b\) 就不知道门槛 |
+| \(\delta\) | 对方赋予「你就是不肯弯」的概率 | 用你自己的人设代替对方的先验，是自制故事 |
+
+合法的落点：交付质量、谈判里的底线、信用条款、重复雇佣、平台上的退货政策。不合法的落点：以挤出竞争对手为目的的掠夺性降价。前者是「我愿意为可验证的承诺付短期成本」；后者是把模型当成伤害对手的施工图。
+
+# 从理论到行动
+
+<div class="flow"><span>写清 a 与 b</span><i>→</i><span>给对方的 δ</span><i>→</i><span class="hi">算 k 与 N</span><i>→</i><span class="hi">查 ρ 是否 &gt;1/a</span><i>→</i><span>标出哪一次让步会归零</span><i>→</i><span>跟基准 0 比超额</span></div>
+
+行动清单：
+
+1. 用自己的单位把「让一步省下的成本」归一成 1，反推 \(a\)（不试探时的增益是这个成本的几倍）。
+2. 问：对方硬闯成功的甜头 \(b\) 更接近 0.3 还是 0.8？门槛对这个数很敏感。
+3. 用工具 1 看威慑期是否为正。为 0 就不要谈维护声誉，先延长关系或接受基准 0。
+4. 用工具 2 看「若这周被试探，战斗净收益是否 &gt;0」。
+5. 用工具 4 看自己的耐心落在哪一档。\(\rho<1/(a+1)\) 时，模型建议让，不是硬撑。
+6. 用工具 3 记住：报告结果时并列极小最大 0 和斯塔克尔伯格 \(a\)，禁止只报一个胜率。
+
+## 工具 1：弱类型支付 vs 完全信息基准
+
+\(\delta=0.10\)、\(b=0.50\)、\(a=2.0\)、\(N=20\) 时，\(k=4\)，威慑期 17，支付 34.0，基准 0.0，超额 34.0。中途一次默许的后续也是 0.0。【推论】
+
+:::raw
+<div class="tool" id="toolKw">
+  <div class="ctrl">
+    <label>强类型先验 δ <output id="kw_dO">10%</output></label>
+    <input type="range" id="kw_d" min="1" max="40" step="1" value="10">
+    <label>进入者甜头 b <output id="kw_bO">0.50</output></label>
+    <input type="range" id="kw_b" min="10" max="90" step="1" value="50">
+    <label>垄断租 a <output id="kw_aO">2.0</output></label>
+    <input type="range" id="kw_a" min="1.1" max="5" step="0.1" value="2">
+    <label>总期数 N <output id="kw_NO">20</output></label>
+    <input type="range" id="kw_N" min="4" max="40" step="1" value="20">
+  </div>
+  <div class="readout">
+    <div class="ro">解缠 k <b id="kw_k">4</b></div>
+    <div class="ro">威慑期 <b id="kw_D">17</b></div>
+    <div class="ro">声誉支付 <b id="kw_V">34.0</b></div>
+    <div class="ro">完全信息基准 <b id="kw_base">0.0</b></div>
+    <div class="ro">超额 <b id="kw_ex">34.0</b></div>
+    <div id="kw_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="kwChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+:::
+
+## 工具 2：被挑战时，这一仗值不值
+
+剩余 10 期、同样的 \(\delta,b,a\)：续贯 12.0，净收益 11.0，纯策略战斗。严格值得的最小剩余期数是 5（净 1.0）。剩余 4 期净收益 0。【推论】
+
+:::raw
+<div class="tool" id="toolFight">
+  <div class="ctrl">
+    <label>剩余期数 n <output id="fight_nO">10</output></label>
+    <input type="range" id="fight_n" min="2" max="30" step="1" value="10">
+    <label>当前后验 δ <output id="fight_dO">10%</output></label>
+    <input type="range" id="fight_d" min="1" max="40" step="1" value="10">
+    <label>b <output id="fight_bO">0.50</output></label>
+    <input type="range" id="fight_b" min="10" max="90" step="1" value="50">
+    <label>a <output id="fight_aO">2.0</output></label>
+    <input type="range" id="fight_a" min="1.1" max="5" step="0.1" value="2">
+  </div>
+  <div class="readout">
+    <div class="ro">战斗净收益 <b id="fight_net">11.0</b></div>
+    <div class="ro">战后续贯 <b id="fight_cont">12.0</b></div>
+    <div class="ro">响应方式 <b id="fight_mode">纯策略战斗</b></div>
+    <div class="ro">严格值得的最小 n <b id="fight_thr">5（净 1.0）</b></div>
+    <div id="fight_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="fightChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+:::
+
+## 工具 3：斯塔克尔伯格下界 vs 两个基准
+
+长期方若始终打出承诺动作，对手不最佳反应的期数至多 \(K=\lfloor\log\mu/\log q\rfloor\)。标准化支付下界 \(v=-1+(a+1)\delta^{K}\)，缺口 \((a+1)(1-\delta^{K})\)。默认 \(\mu=0.10\)、\(q=0.50\)、\(\delta=0.95\)、\(a=2\)：\(K=3\)，\(v=1.5721\)，缺口 0.4279，相当于斯塔克尔伯格支付的 78.61%。极小最大基准是 0，上界参照是 \(a=2\)。【推论】
+
+同一 \(K,a\) 下，要把缺口压到 0.10 以下，需要 \(\delta\ge 0.9888\)；压到 0.20 以下需要 \(\delta\ge 0.9773\)。\(\mu=0.01\) 时 \(K=6\)，\(\delta=0.95\) 的下界只有 1.2053（占 \(a\) 的 60.26%），缺口 0.7947。【推论】
+
+:::raw
+<div class="tool" id="toolFl">
+  <div class="ctrl">
+    <label>承诺类型先验 μ <output id="fl_muO">10%</output></label>
+    <input type="range" id="fl_mu" min="1" max="40" step="1" value="10">
+    <label>临界概率 q <output id="fl_qO">0.50</output></label>
+    <input type="range" id="fl_q" min="10" max="90" step="1" value="50">
+    <label>贴现 δ <output id="fl_deltaO">0.95</output></label>
+    <input type="range" id="fl_delta" min="50" max="99" step="1" value="95">
+    <label>斯塔克尔伯格 a <output id="fl_aO">2.0</output></label>
+    <input type="range" id="fl_a" min="1.1" max="5" step="0.1" value="2">
+  </div>
+  <div class="readout">
+    <div class="ro">坏期上界 K <b id="fl_K">3</b></div>
+    <div class="ro">下界 v <b id="fl_v">1.5721</b></div>
+    <div class="ro">距 a 的缺口 <b id="fl_gap">0.4279</b></div>
+    <div class="ro">v / a <b id="fl_share">78.61%</b></div>
+    <div id="fl_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="flChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+:::
+
+## 工具 4：贴现把机制切成三档
+
+Kreps–Wilson 扩展：\(\rho>1/a\) 时均衡路径与不贴现情形相同，只是进入者在无差异点的混合概率要改；\(\rho<1/(a+1)\) 时弱类型一遇进入就默许，进入者只看 \(p ? b\)。\(a=2\) 时两道门槛是 0.5000 与 0.3333，中间带宽度 0.1667。默认 \(\rho=0.60\) 落在「简单均衡」。【事实】门槛来自原文；区间名称是本手册对那两句的简称。
+
+:::raw
+<div class="tool" id="toolRho">
+  <div class="ctrl">
+    <label>垄断租 a <output id="rho_aO">2.0</output></label>
+    <input type="range" id="rho_a" min="1.1" max="5" step="0.1" value="2">
+    <label>贴现 ρ <output id="rho_rO">0.60</output></label>
+    <input type="range" id="rho_r" min="5" max="99" step="1" value="60">
+  </div>
+  <div class="readout">
+    <div class="ro">简单下沿 1/a <b id="rho_hi">0.5000</b></div>
+    <div class="ro">塌缩上沿 1/(a+1) <b id="rho_lo">0.3333</b></div>
+    <div class="ro">中间带宽度 <b id="rho_mid">0.1667</b></div>
+    <div class="ro">当前体制 <b id="rho_reg">简单均衡</b></div>
+    <div id="rho_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="rhoChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+:::
+
+# 技能树
+
+:::details ① 能背出完全信息的悖论
+有限期、完美信息：最后一期必让，于是每一期都让。说不出这一句，就不知道 \(\delta\) 在否定什么。【事实】
+:::
+
+:::details ② 能把支付归一成 a、0、−1
+战斗成本是 1，退出是 \(a>1\)，进入者无差异于 \(P(\text{战})=b\)。单位不归一，门槛没法算。【事实】
+:::
+
+:::details ③ 能倒着数 n，能算 k
+\(k=\inf\{n:b^n<\delta\}\)。默认例子 \(k=4\)，不是「大约几期」的口头禅。【推论】
+:::
+
+:::details ④ 能区分路径成本与离径成本
+路径上早期支付是 \(a\) 且没有战斗；离径上被闯则必须战。两句同时成立。【分析】
+:::
+
+:::details ⑤ 能写贝叶斯一行
+混合区战之后后验 \(=b^{n-1}\)，不是「大概更高」。默认：0.10 跳到 0.25。【事实】
+:::
+
+:::details ⑥ 能放上两个基准再说话
+完全信息 0，斯塔克尔伯格 \(a\)。下界 1.5721 要同时对这两头读。【推论】
+:::
+
+:::details ⑦ 能认出模型停用的边界
+\(a\le 1\)、对手也极有耐心、监测是噪声、行动不公开、你想做的是掠夺而非承诺。任一命中就停。【分析】
+:::
+
+# 游戏化世界
+
+**连锁店沙盘**（纸笔即可，不要拿去定价伤人）：你是弱在位者，观众不知道。袋里 10 颗珠，1 颗红代表强类型，这就是 \(\delta=0.10\)。每回合观众决定进不进；你若让，红珠被当众拿走，此后每回合观众都进、你都得 0。你若战，付 1 分，珠子还在。先把 \(k=4\) 画在时间轴上，看自己会不会在第 5 期以后还让。得分只记相对「每次都让」的超额，禁止用「赢了几次架」当成绩。
+
+# 任务系统
+
+| 任务 | 完成标准 | 和机制的关系 |
+|---|---|---|
+| 写出你的 a、b | 两个数，单位已把让步成本归一为 1 | 没有支付就没有门槛 |
+| 写出对方的 δ，不是你的人设 | 一句话：凭什么不是 0 | 对付不连续点 |
+| 算出 k，比较 N | 纸上有 \(N-k+1\) | 威慑期可能是 0 |
+| 标一次「归零事件」 | 指明哪句话、哪次折扣会当众把 p 打到 0 | 杠杆 1 |
+| 查耐心档 | 用工具 4，写下体制三个字 | 防止长 N 幻觉 |
+| 交基准 | 同一页写上 0 和 a，再写你的支付 | 防止胜率自嗨 |
+
+# 反事实模拟
+
+:::tabs
+@@先验被你收成 0
+\(\delta=0\) 时 \(k\) 无定义或无限，唯一完美均衡回到 Selten：支付 0。工具 1 的滑块最小值是 1%，文本里的 \(10^{-6}\) 仍有 81 期威慑——从 0 到「极小」是跳跃，从极小到 10% 只是窗口变短。【事实】
+
+@@垄断租盖不住一次战斗
+\(a\le 1\) 时，为了吓阻下一期而今天付 1，连不贴现都不划算。原文说大 \(n\) 仍可能出现「以概率 1 战斗」的区段，但策略开始依赖最近几期的历史，本手册四个工具全部停用。先把 \(a\) 重新归一，不要硬拧滑块。【事实】
+
+@@后来者看不见，或只看见噪声
+完美监测是贝叶斯的输入。评分有噪声时，沿用 Cripps–Mailath–Samuelson：理性类型的声誉维持不住，效应临时。此时工具 1 的 34.0 是上境，不是预测。【事实】
+
+@@对面也是长期、很有耐心的对手
+「永远战斗」不再自动是最优承诺。对方在乎未来，奖罚策略的支付可以更高，但那些奖罚必须偶尔真的打出来才被看见，否则和离径的空话一样。换模型，不要只把 \(N\) 加大。【事实】
+:::
+
+<!-- nav:能力路线 -->
+# 四级能力路线
+
+| 级 | 能做什么 | 验收 |
+|---|---|---|
+| 0 会讲悖论 | 说出最后一期必让、归纳向前 | 不提 \(\delta\) 也能讲完 Selten |
+| 1 会算窗口 | 给定 \(\delta,b,N\) 算出 \(k\) 和威慑期 | 默认例子：k=4，17 期，34.0 vs 0.0 |
+| 2 会查边界 | 贴现三档、承诺类型方向、监测是否完美 | 能指出工具该停的一种情形 |
+| 3 会选模型 | 短期观众用 KW/FL；长期对手、噪声监测、坏声誉各换定理 | 同一件事不混用四个结论 |
+
+# 30分钟最小实践
+
+选一段**你自己**会重复出现、且让步会被后来的人看见的关系（供应商交期、团队里的例外请求、你公开写过的退货规则）。不要选「如何把对手挤出市场」。
+
+30 分钟只做这一张纸：
+
+1. 把「让一步你少损失多少」当成 1。估计不发生试探时你多得到的 \(a\)（必须回答是否 &gt;1）。
+2. 估计对方硬闯且你让步时的甜头 \(b\in(0,1)\)。不知道就写 0.5，并注明这是占位。
+3. 写对方（不是你）赋予「你就是一种不肯破例的人」的概率 \(\delta\)。敢写 0 就停笔：模型告诉你不要装。
+4. 用工具 1 的公式心算或打开滑块：\(k\)，\(N\)（你还能见面几次），威慑期，支付，基准 0。
+5. 用一句话写下**本周哪一次请求如果答应，等于当众默许**。这是可核验的产出：纸条上有五个数和这一句。
+
+若威慑期是 0 或工具 4 显示塌缩，本周的行动是让，或者去加长关系、提高监测，而不是硬撑。
+
+# 7天计划
+
+| 天 | 动作 | 产出 |
+|---|---|---|
+| 1 | 只读悖论：最后一期，然后倒数 | 半页逆向归纳 |
+| 2 | 把默认例子手算到 \(b^4=0.0625<0.10\) | 纸上的 k=4 |
+| 3 | 打开工具 1，把 \(\delta\) 从 10% 拧到 1%，记下 k 与支付 | 两个超额数字 |
+| 4 | 工具 2：找到你这组参数下净收益跨过 0 的 n | 一个整数 |
+| 5 | 工具 4：用你第 22 节的 \(a\) 看 \(\rho\) 落点 | 体制三个字 |
+| 6 | 找一个公开让步的真实例子，标它是否把后验打到 0 | 一例，不求统计 |
+| 7 | 用基准 0 和 \(a\) 各写一句，删掉任何「胜率」句子 | 一页干净说明 |
+
+# 30天计划
+
+| 周 | 焦点 | 完成时你能拒绝的胡说 |
+|---|---|---|
+| 1 | 支付与 \(k\) | 「声誉没法量化所以随便讲」 |
+| 2 | 路径 / 离径，默许归零 | 「这次例外不会有下次」 |
+| 3 | FL 下界与极限顺序 | 「先验很小所以定理无用」或「胜率 80%」 |
+| 4 | 停用条件：噪声、长期对手、坏声誉、竞争法 | 把链式店公式套到评分网站或掠夺定价上 |
+
+# 10 个核心模型
+
+| # | 模型 | 系统里的角色 |
+|---|---|---|
+| 1 | Selten 1978 链式店悖论 | \(\delta=0\) 的基准，支付 0 |
+| 2 | Kreps–Wilson 1982 单边不确定 | 本手册工具 1–2、4 的母模型 |
+| 3 | 命题 2 的路径唯一性 | \(\delta\neq b^n\) 时不要再找「另一条均衡故事」 |
+| 4 | Milgrom–Roberts 1982 掠夺声誉 | 互补的信息不对称版本，不是第二套事实 |
+| 5 | Gang of Four 1982 有限重复囚徒困境 | 承诺类型换成 tit-for-tat，合作维持到期末附近 |
+| 6 | Fudenberg–Levine 1989 | 工具 3：任何纳什的支付下界 |
+| 7 | 对长期对手维持声誉 | 最优承诺可以不是静态斯塔克尔伯格动作 |
+| 8 | Ely–Välimäki 2003 坏声誉 | 类型信念的反方向：市场因恐惧而关闭 |
+| 9 | Cripps–Mailath–Samuelson 2004 | 不完美监测 ⇒ 声誉临时 |
+| 10 | 贴现两门槛 \(1/a\) 与 \(1/(a+1)\) | 工具 4：耐心不够时公式主动退休 |
+
+# 关键问题清单
+
+:::details 对方的 δ 是我的人设还是他的信念？
+人设是你的营销；信念是他的先验。实验表明被试会带「自制先验」。写不出来源就标【假设】。
+:::
+
+:::details 这一次让步是否公开、是否可逆？
+不公开则不进入更新。公开且被解读为「原来是弱的」，在本模型里不可逆。
+:::
+
+:::details a 是否真的大于 1？
+不大于就不要用「打一次换下一期」的口头禅。重新选单位或承认不划算。
+:::
+
+:::details 观众是只来一次，还是下次还要跟你重复博弈？
+只来一次：KW/FL。也极有耐心：换「长期对手」那篇，不要加大 N 了事。
+:::
+
+:::details 我是在承诺高质量，还是在计划掠夺？
+前者可以用本手册的纸条。后者涉及竞争法，模型不是法律意见，也不是操作指南。
+:::
+
+:::details 监测噪声有多大？
+大到后来者分不清战和让，完美监测定理停止。去读暂时声誉，而不是把 34.0 当成永久年金。
+:::
+
+:::details 我报告结果时基准在哪里？
+至少两个：完全信息或极小最大的 0，以及承诺成功时的 \(a\)。没有基准的胜率删掉。
+:::
+
+:::details 极限顺序我有没有说反？
+先验固定，再让耐心趋于 1。先消灭先验，下界不作数。
+:::
+
+# 下一阶段探索
+
+1. 把单边不确定换成双边：在位者也不确定进入者是不是「硬闯型」。原文第 4 节是消耗战式的后验沿曲线滑动，混合是连续时间的，不再是「算一个 k」能结束的。
+2. 读 Mailath & Samuelson《Repeated Games and Reputations》（2006），把本手册的四个工具放回「好声誉 / 坏声誉 / 暂时声誉」的地图，避免只记得链式店。
+3. 若你的场景是平台评分或noisy audit，下一份笔记只允许引用不完美监测，禁止再引用命题 1 的 17 期。
+4. 若你的场景是双方都长期存在的谈判，转去长期对手声誉，并问：最优承诺是不是「永远强硬」。往往不是。
+
+# 数据来源与标记约定 {.appendix}
+
+| 内容 | 来源类型 | 具体来源 | 标记 |
+|---|---|---|---|
+| 链式店悖论：有限完全信息下唯一完美均衡为每期进入且默许 | 论文 | Selten, *Theory and Decision* 9:127–159, 1978 | 【事实】 |
+| 小先验强类型下的序贯均衡、\(k(p)\)、默许归零、\(a>1\) 与贴现两门槛 | 论文 | Kreps & Wilson, *JET* 27:253–279, 1982 | 【事实】 |
+| 掠夺可以通过声誉威慑后来者，与 KW 互补 | 论文 | Milgrom & Roberts, *JET* 27:280–312, 1982 | 【事实】 |
+| 有限重复囚徒困境：小概率 tit-for-tat 类型 | 论文 | Kreps, Milgrom, Roberts & Wilson, *JET* 1982 | 【事实】 |
+| 耐心长期方对短期对手：均衡支付下界趋于斯塔克尔伯格；坏期数 \(\le\log\mu/\log q\) | 论文 / 讲义复述 | Fudenberg & Levine, *Econometrica* 57:759–778, 1989；Wolitzky, MIT 14.126 Lecture 9, 2024 | 【事实】 |
+| 对手同样长期时，静态斯塔克尔伯格不一定是最优承诺 | 论文 | Fudenberg & Levine, 维持对长期对手声誉的后续工作 | 【事实】 |
+| 八期实验拒绝 KW 若干点预测；无诱导强类型时仍有早期战斗 | 实验摘要 | Jung, Kagel & Levin, *RAND JE* 25:72–93, 1994 | 【事实】 |
+| 序贯均衡声誉模型的早期实验 | 论文 | Camerer & Weigelt, *Econometrica* 56:1–36, 1988；百分比不转引 | 【事实】 |
+| 不完美公共监测下声誉暂时 | 论文 | Cripps, Mailath & Samuelson, *RES* 2004 | 【事实】 |
+| 坏声誉可导致专家市场瓦解 | 论文 | Ely & Välimäki, *QJE* 2003 | 【事实】 |
+| 默认例子 k=4、威慑 17 期、支付 34.0、净收益 11.0、FL 下界 1.5721、门槛 0.5000/0.3333 | 由上述公式用 node 复算 | 与本页脚本同一递归；非行业数据 | 【推论】 |
+| 实验偏离的具体百分比、任何公司的「实际 δ」 | — | 未核到一手数字，正文不写 | 【待验证】 |
+
+标记约定：【事实】一手论文或定理陈述；【分析】把定理接到适用边界；【推论】由公式算出的数字或由此得到的判断；【假设】你自己填的 \(\delta\) 或 \(b\)；【待验证】只出现在单一转述、本手册未采用的数字。
+
+# 免责声明 {.appendix}
+
+本手册是博弈论教学框架，不是经营建议、投资建议或法律意见。文中的 \(a=2\)、支付 34.0、下界 1.5721 都是 Kreps–Wilson / Fudenberg–Levine 归一化支付下的算术，不是收入、股价或胜率。涨跌颜色习惯不适用于这些支付。
+
+声誉模型曾被用来讨论掠夺性定价。在许多法域，以挤出竞争者为目的的低于成本定价可能违法。本手册不提供任何此类做法的步骤、话术或定价方案。实践节只允许用于你自己可验证的承诺：交期、质量、公开规则、谈判底线。
+
+实验已经拒绝该模型的一部分点预测。把滑块读数当成对真实对手的预测，是误用。对方脑子里的先验、监测噪声、以及对手是否同样有耐心，任一不符，数字就只剩教室里的对照基准：完全信息时你得到 0，承诺被完美相信时你得到 \(a\)。

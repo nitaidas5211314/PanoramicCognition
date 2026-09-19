@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>声誉模型（Kreps-Wilson） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Reputation × Chain Store</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践转化</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">能力路线</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>声誉模型（Kreps-Wilson）</h1>
+  <p class="sub">少量<strong>承诺类型</strong>（常被说成「非理性地强硬」）就够用——弱的长期参与者愿意先付战斗成本，因为后来的短期对手会据此不来试探。威慑窗口不随总期数变长。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>少量「总是战斗」的承诺类型，使理性的长期在位者也值得付成本去模仿它。</strong> 完全信息下，有限次链式店博弈的唯一完美均衡是：每期都进入、在位者每期都让。<span class="tag t-fact">事实</span>Kreps &amp; Wilson（1982, <em>Journal of Economic Theory</em> 27:253–279）加上一个任意小的先验 (\delta&gt;0)：在位者可能是支付不同、短期就偏好战斗的强类型。于是弱类型在早期被挑战时会真的战斗——默许一次，后验立刻归零，后面的垄断租全部蒸发。进入者预期到这一点，早期干脆不进。</p>
+<p>按原文支付（退出得 (a&gt;1)，默许得 0，战斗得 (-1)；进入者在战斗概率等于 (b\in(0,1)) 时无差异），(\delta=0.10)、(b=0.50)、(a=2.0)、(N=20) 时，解缠窗口 (k=4)，均衡路径上有 <strong>17</strong> 期不进入，弱类型期望支付 <strong>34.0</strong>；完全信息基准是 <strong>0.0</strong>，超额就是这 34.0，不是「战斗胜率」。<span class="tag t-inf">推论</span>数值由命题 1 的价值函数算出，见第 16 节工具。</p>
+<p>论文把这种强类型口语化成 <em>plays tough “irrationally”</em>——引的是 Scherer 对「怕对方不按利润最大化来」的观察，不是临床意义上的非理性。<span class="tag t-fact">事实</span>模型里它是<strong>另一套支付</strong>的承诺类型：战斗在当期就优于默许。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的是：<strong>在有限次、行动被后来者看见的博弈里，关于动机的一点点不确定，如何把「不可信的威胁」变成序贯理性的行动。</strong> 它不研究「名声好不好听」，而研究后验概率怎样进入对手的最佳反应，以及为了不让这个后验塌掉，长期方愿意付多少短期成本。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：链式店 / 进入威慑的序贯均衡、有限重复囚徒困境里的「四人帮」合作、耐心长期方对一串短期对手的斯塔克尔伯格支付下界、不完美监测下声誉为何不永久。</li>
+<li><strong>在界外</strong>：用本模型设计掠夺性定价去挤掉对手（许多法域这是竞争法问题，见附录）；也外于「品牌好感度问卷」这类不可操作的名声分数——除非你能把它压成类型先验、公开行动和贴现。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>小先验的承诺类型如何支撑有限博弈里的声誉行为</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「类型、后验、序贯理性、支付下界」可算为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>强/弱类型、后验 (p_n)、战斗/默许、进入/退出</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>一个长期在位者 + 一串只玩一期、但看得到历史的进入者</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(\delta,a,b,N,\rho)；解缠长度 (k(\delta))</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>进不进、战不战、让步是否公开</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实类型、对手脑子里的先验、离径信念</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>类型先验 → 战斗的可信度 → 进入决策 → 在位者是否还值得战斗</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>(\delta&gt;0) 且 (N&gt;k) ⇒ 早期不进入 ⇒ 支付接近 (a) 乘以期数</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「这家公司很凶」的传闻 ≠ 序贯均衡里的后验</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>早期无人挑战、临近结束才试探、一次认怂就崩盘</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>贝叶斯更新 + 弱类型用混合把后验钉在门槛上</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。战斗保住后验；默许把后验打到 0</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。成本在被挑战的那一期付，收益是后面若干期的 (a)</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>守住则先验不降（正）；一次默许永久归零（负，且不可逆）</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>声誉不是「别人觉得你狠」的形容词，而是一个被行动更新的概率：它值得维护，当且仅当毁掉它的损失，大于你这一期不让步的成本。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它解开链式店悖论</h4><p>Selten（1978）证明：完全信息、有限期，唯一完美均衡是从不战斗。直觉却说早期要做给后面看。差的那一点就是 (\delta&gt;0)。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>窗口长度与 N 无关</h4><p>存在只依赖先验和支付、不依赖总期数的 (k)，进入者只在最后约 (k) 期才可能进来。(N\to\infty) 时平均支付趋于垄断租 (a)。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它是均衡选择器</h4><p>无限重复博弈的无名氏定理说「什么都可能」。Fudenberg &amp; Levine（1989）说：只要先验里有斯塔克尔伯格承诺类型，耐心的长期方在<strong>任何</strong>纳什里都接近那个支付。<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「我战斗的胜率很高」当成声誉有效。均衡路径上早期根本没人进，胜率样本是空的或只来自期末混战。该跟 <strong>完全信息基准 0</strong> 比的是被吓退的期数 (\times a)，不是打斗场次。<span class="tag t-inf">推论</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>从悖论到「声誉不永久」，九层是一条收紧，不是九个并列名词。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rpMap" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 边界 · 噪声监测下声誉暂时（CMS 2004）；坏声誉可毁掉市场</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 选择 · FL89：任何纳什里长期方支付下界趋于斯塔克尔伯格</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 耐心 · ρ&gt;1/a 路径同不贴现；ρ&lt;1/(a+1) 一遇进入就让</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 均衡 · 序贯均衡：策略与后验互恰；δ≠b^n 时路径唯一</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 信念 · 战斗把后验钉在门槛；一次默许 ⇒ p=0 且不再回来</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 类型 · 强类型概率 δ，短期就偏好战；弱类型最大化利润</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 支付 · 在位者：退出 a、默许 0、战斗 −1；进入者无差异于 P(战)=b</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 舞台 · 一个长期方对 N 个短期方，行动被后来者完美看见</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 悖论 · 完全信息逆向归纳：每期进入、每期让步（Selten 1978）</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>动手只需要 <strong>L3–L6</strong>：写出 (a,b)，给一个你敢辩护的 (\delta)，算出 (k)，再问贴现是否还在 (1/a) 之上。L8–L9 用来防止把下界误读成「永远有效」。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>同一套对象，三层说法不能混。</p>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rpLay" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="16" y="16" width="200" height="268" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <rect x="240" y="16" width="200" height="268" rx="10" fill="#fff7e6" stroke="#b8730a"/>
+  <rect x="464" y="16" width="200" height="268" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="116" y="44" text-anchor="middle" font-size="15" font-weight="700" fill="#1d4ed8" font-family="sans-serif">抽象</text>
+  <text x="340" y="44" text-anchor="middle" font-size="15" font-weight="700" fill="#b8730a" font-family="sans-serif">机制</text>
+  <text x="564" y="44" text-anchor="middle" font-size="15" font-weight="700" fill="#0f8a4d" font-family="sans-serif">操作</text>
+  <text x="116" y="88" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">承诺类型 θ</text>
+  <text x="116" y="112" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">后验 p_n</text>
+  <text x="116" y="136" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">序贯均衡</text>
+  <text x="116" y="160" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">k(δ)=inf{n: b^n&lt;δ}</text>
+  <text x="116" y="184" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">斯塔克尔伯格支付</text>
+  <text x="340" y="88" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">强类型必战</text>
+  <text x="340" y="112" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">弱类型模仿到门槛</text>
+  <text x="340" y="136" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">进入者用 P(战)≷b</text>
+  <text x="340" y="160" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">窗口不随 N 长大</text>
+  <text x="340" y="184" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">坏期数有上界 K</text>
+  <text x="564" y="88" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">问：对方怕哪种死心眼</text>
+  <text x="564" y="112" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">一次公开让步=归零</text>
+  <text x="564" y="136" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">先写 b 再谈狠</text>
+  <text x="564" y="160" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">关系要长过 k</text>
+  <text x="564" y="184" text-anchor="middle" font-size="12" fill="#15181d" font-family="sans-serif">跟基准 0 比，不跟胜率比</text>
+  <line x1="216" y1="150" x2="236" y2="150" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpLay)"/>
+  <line x1="440" y1="150" x2="460" y2="150" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpLay)"/>
+</svg>
+<div class="note green"><b>层间接口</b><p>抽象层的 (k) 是操作层的「还能硬多久」。不会算 (k)，就只会喊「要维护声誉」，不知道这一次让步到底贵不贵。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>信息</th>
+<th>目标</th>
+<th>在系统里的作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">强类型在位者</td>
+<td>知道自己的支付</td>
+<td>当期就偏好战斗；更少进入更好</td>
+<td>提供可模仿的承诺；自己不战略性地让</td>
+</tr>
+<tr>
+<td class="k">弱类型在位者</td>
+<td>知道自己是弱的</td>
+<td>各期支付之和（或贴现和）</td>
+<td>真正做「付成本维护声誉」决策的人</td>
+</tr>
+<tr>
+<td class="k">第 n 个进入者</td>
+<td>只看见历史和后验 (p_n)</td>
+<td>本期：进的期望 &gt; 0 才进</td>
+<td>短期观众；不为自己的声誉玩</td>
+</tr>
+<tr>
+<td class="k">自然</td>
+<td>开局抽类型，概率 (\delta)</td>
+<td>—</td>
+<td>把完全信息博弈变成不完全信息</td>
+</tr>
+<tr>
+<td class="k">后来的观察者</td>
+<td>完美监测时看见战/让</td>
+<td>用贝叶斯改 (p)</td>
+<td>使早期行动有远期价格</td>
+</tr>
+</tbody>
+</table></div>
+<p>Milgrom &amp; Roberts（1982, 同期 <em>JET</em> 27:280–312）用另一套信息不对称得到相近的掠夺—威慑，他们写明与 Kreps–Wilson <strong>互补</strong>：都是「过去的行动能预测未来」，所以早期付成本才有买家。<span class="tag t-fact">事实</span>对手若也是长期、有耐心的玩家，静态斯塔克尔伯格动作不一定还是最优承诺——回报和惩罚可以比「永远战斗」更好，但必须偶尔真的执行才看得见（Fudenberg &amp; Levine 关于长期对手的后续工作）。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<p>时间<strong>倒着数</strong>：阶段 (n) 表示还剩 (n) 期（含本期）。这是原文的下标，不是日历第 n 天。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+<th>默认 / 范围</th>
+<th>动一下会怎样</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">(\delta) 或 (p_n)</td>
+<td>在位者为强类型的概率</td>
+<td>0.10</td>
+<td>越小，(k) 越大，但只要 &gt;0 就有窗口</td>
+</tr>
+<tr>
+<td class="k">(a)</td>
+<td>无人进入时在位者支付</td>
+<td>2.0（须 &gt;1）</td>
+<td>决定一期垄断租能否盖过战斗成本 1</td>
+</tr>
+<tr>
+<td class="k">(b)</td>
+<td>进入且被默许时进入者支付</td>
+<td>0.50</td>
+<td>越大越难吓阻；门槛是 (b^n)</td>
+</tr>
+<tr>
+<td class="k">(N)</td>
+<td>总期数</td>
+<td>20</td>
+<td>只增加威慑期 (N-k+1)，不增加 (k)</td>
+</tr>
+<tr>
+<td class="k">(\rho)</td>
+<td>在位者贴现因子</td>
+<td>讨论用 0.60</td>
+<td>低于 (1/(a+1)) 机制塌缩</td>
+</tr>
+<tr>
+<td class="k">(k(\delta))</td>
+<td>(\inf{n:b^n&lt;\delta})</td>
+<td>上例为 4</td>
+<td>解缠从剩余 (k-1) 期开始</td>
+</tr>
+<tr>
+<td class="k">(K)</td>
+<td>FL 引理里「不最佳反应」期数上界</td>
+<td>上例为 3</td>
+<td>(\lfloor\log\delta/\log b\rfloor)，与 (\delta\to 1) 的顺序不能反</td>
+</tr>
+</tbody>
+</table></div>
+<p>进入者期望：记 (q=P(\text{战}))，进入的支付是 ((1-q)b+q(b-1)=b-q)，退出为 0。所以 <strong>(q&gt;b) 则退出，(q&lt;b) 则进入</strong>。<span class="tag t-fact">事实</span>原文策略把这件事写成对后验的门槛 (p_n ? b^n)，因为早期弱类型也会战，(q) 不等于 (p_n)。</p>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<p>实线是当期因果，红色虚线是跨期反馈。</p>
+<svg viewBox="0 0 680 340" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rpC" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="rpF" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="40" y="30" width="150" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="115" y="57" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">先验 δ&gt;0</text>
+  <rect x="250" y="30" width="170" height="44" rx="8" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="335" y="57" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">弱者也愿战</text>
+  <rect x="480" y="30" width="160" height="44" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="560" y="57" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">早期不进入</text>
+  <rect x="250" y="140" width="170" height="44" rx="8" fill="#f8fafc" stroke="#454c56"/>
+  <text x="335" y="167" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">支付 a×威慑期</text>
+  <rect x="40" y="250" width="170" height="44" rx="8" fill="#fde8e8" stroke="#d5342c"/>
+  <text x="125" y="277" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">一次默许</text>
+  <rect x="280" y="250" width="150" height="44" rx="8" fill="#fde8e8" stroke="#d5342c"/>
+  <text x="355" y="277" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">后验 = 0</text>
+  <rect x="490" y="250" width="150" height="44" rx="8" fill="#fde8e8" stroke="#d5342c"/>
+  <text x="565" y="277" text-anchor="middle" font-size="13" fill="#15181d" font-family="sans-serif">此后每期都进</text>
+  <line x1="190" y1="52" x2="246" y2="52" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpC)"/>
+  <line x1="420" y1="52" x2="476" y2="52" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpC)"/>
+  <line x1="560" y1="74" x2="420" y2="150" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpC)"/>
+  <path d="M335,140 C335,100 335,90 335,78" fill="none" stroke="#d5342c" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#rpF)"/>
+  <line x1="210" y1="272" x2="276" y2="272" stroke="#d5342c" stroke-width="2" marker-end="url(#rpF)"/>
+  <line x1="430" y1="272" x2="486" y2="272" stroke="#d5342c" stroke-width="2" marker-end="url(#rpF)"/>
+  <text x="335" y="118" text-anchor="middle" font-size="11" fill="#d5342c" font-family="sans-serif">反馈：租金证明战斗值得</text>
+  <text x="340" y="318" text-anchor="middle" font-size="11" fill="#d5342c" font-family="sans-serif">反馈：归零不可逆，Selten 逻辑重新占领后半场</text>
+</svg>
+<div class="note purple"><b>因果不是相关</b><p>「看起来很凶的公司很少被进入」可能只是它本来成本就低（真强类型）。声誉机制多出来的部分，是<strong>弱类型</strong>也在早期战斗或使进入者相信它会战。实验里这两者经常缠在一起，见第 14 节。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<p>跨域时，先认数学，再决定名字能不能借用。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>表面不同</th>
+<th>同一结构</th>
+<th>不能直接搬的部分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">连锁店威慑</td>
+<td>后验乘子：看见战斗且 (P(\text{战})&lt;b) 时，强类型后验至少乘 (1/b)</td>
+<td>产业里的「凶」不一定是承诺类型</td>
+</tr>
+<tr>
+<td class="k">信息论比特</td>
+<td>(b=1/2) 时 (-\log_2(0.10)=3.32)，整数跳跃上界 (K=3)，(k=4)</td>
+<td>比特是上界直觉，不是熵编码</td>
+</tr>
+<tr>
+<td class="k">Spence 信号</td>
+<td>都用「对方类型不确定」</td>
+<td>信号成本在<strong>路径上</strong>付；这里早期路径上往往<strong>没人来</strong>，成本是离径威胁</td>
+</tr>
+<tr>
+<td class="k">央行「保守银行家」</td>
+<td>都靠强硬类型压预期</td>
+<td>Rogoff 式是<strong>委托</strong>给已知强硬者；这里是<strong>模仿</strong>一个小概率强硬者</td>
+</tr>
+<tr>
+<td class="k">一报还一报</td>
+<td>Gang of Four：小概率锁死在 tit-for-tat，理性者也合作到期末</td>
+<td>承诺策略不同，支付下界的对象就不同</td>
+</tr>
+<tr>
+<td class="k">坏声誉（Ely–Välimäki）</td>
+<td>同样是类型信念</td>
+<td>方向相反：怕留下坏信号，好行动也不敢做，市场瓦解</td>
+</tr>
+</tbody>
+</table></div>
+<p>(b=1/2)、(\delta=0.10) 时，(0.10\times 2^{3}=0.80\le 1)，(0.10\times 2^{4}=1.60&gt;1)，所以「对手把战斗概率放在 0.5 以下、你仍然战斗」这种期至多 3 期——这就是 Fudenberg–Levine 引理里的 (K=3)，和链式店的 (k=4) 差一个取整口径，不要混成同一个符号。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<h3>阶段支付（弱类型 / 进入者）</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>历史</th>
+<th>进入者</th>
+<th>弱在位者</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">退出</td>
+<td>0</td>
+<td>(a)</td>
+</tr>
+<tr>
+<td class="k">进入后默许</td>
+<td>(b)</td>
+<td>0</td>
+</tr>
+<tr>
+<td class="k">进入后战斗</td>
+<td>(b-1)</td>
+<td>(-1)</td>
+</tr>
+</tbody>
+</table></div>
+<p>(a&gt;1)，(0&lt;b&lt;1)。强类型的当期排序是战斗优于默许，所以强类型<strong>任何</strong>信息集上都战；精确数字不影响弱类型的计算。<span class="tag t-fact">事实</span>若 (a\le 1)，大 (n) 仍可能威慑，但期末策略不再只依赖当前后验，本手册的递归不覆盖那种情形。<span class="tag t-fact">事实</span></p>
+<h3>序贯均衡（命题 1，倒计时）</h3>
+<ul>
+<li>强类型：永远战斗。</li>
+<li>弱类型：(n=1) 必让。(n&gt;1) 且 (p&gt;b^{n-1}) 则战；(p&lt;b^{n-1}) 则以概率 (\beta=((1-b^{n-1})p)/((1-p)b^{n-1})) 战斗。</li>
+<li>进入者：(p&gt;b^n) 退出；(p&lt;b^n) 进入；相等时以概率 (1/a) 退出。</li>
+<li>信念：从未被默许且无人进入，则 (p) 保持 (\delta)。战斗且处于混合区，后验跳到 (b^{n-1})。<strong>任何一次默许 ⇒ 此后 (p=0)。</strong></li>
+</ul>
+<p>贝叶斯核对：混合区 (P(\text{战})=p/b^{n-1})，战之后后验 (=b^{n-1})。进入者用 (b-P(\text{战})) 做决策，等价于拿 (p) 和 (b^n) 比。<span class="tag t-fact">事实</span></p>
+<h3>默认数字（(\delta=0.10,b=0.50,a=2.0,N=20)）</h3>
+<p>(b^3=0.125&gt;0.10&gt;0.0625=b^4)，故 (k=4)。剩余期数从 20 降到 4 都不进入：(20-4+1=17) 期，每期 2.0，合计 <strong>34.0</strong>。剩余 3 期时 (0.10&lt;0.125)，进入者进入；弱类型混合概率 (\beta=0.3333)，(P(\text{战})=0.40)，进入期望 (0.50-0.40=0.10&gt;0)。这 3 期的期望支付<strong>合计</strong>为 0.0（混合无差异），不是「每一期都是 0」。<span class="tag t-inf">推论</span></p>
+<p>剩余 4 期时若硬闯：(P(\text{战})=0.10/0.125=0.80)，进入期望 (0.50-0.80=-0.30)，所以路径上不闯。威慑靠的是这个反事实，不是已经发生的打斗。<span class="tag t-inf">推论</span></p>
+<p>完全信息基准：每期进入、每期默许，弱类型合计 <strong>0.0</strong>。声誉超额 = 34.0 − 0.0。命题 2：若 (\delta) 不等于任何 (b^n)（(n&lt;N)），在「合理信念」下，路径上的策略就是上面这一套。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<p>日历时间向前，信念在没人挑战时不动，挑战只在窗口末端出现。</p>
+<svg viewBox="0 0 680 250" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rpT" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="36" y1="78" x2="650" y2="78" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpT)"/>
+  <circle cx="70" cy="78" r="6" fill="#1d4ed8"/>
+  <circle cx="250" cy="78" r="6" fill="#1d4ed8"/>
+  <circle cx="430" cy="78" r="6" fill="#b8730a"/>
+  <circle cx="560" cy="78" r="6" fill="#d5342c"/>
+  <text x="70" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">开局</text>
+  <text x="70" y="108" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">p=δ=0.10</text>
+  <text x="250" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">前 17 期</text>
+  <text x="250" y="108" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">不进入，p 不变</text>
+  <text x="430" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">剩余 3 期</text>
+  <text x="430" y="108" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">进入，弱者混合</text>
+  <text x="560" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">若默许</text>
+  <text x="560" y="108" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">p=0，之后全让</text>
+  <text x="36" y="168" font-size="12" fill="#15181d" font-family="sans-serif">更小的先验只加长末端窗口，不取消早期威慑（N=100，a=2，b=0.5）：</text>
+  <text x="36" y="194" font-size="12" fill="#454c56" font-family="sans-serif">δ=0.01 → k=7，威慑 94 期，支付 188.0</text>
+  <text x="36" y="214" font-size="12" fill="#454c56" font-family="sans-serif">δ=0.001 → k=10，威慑 91 期，支付 182.0</text>
+  <text x="36" y="234" font-size="12" fill="#454c56" font-family="sans-serif">δ=10⁻⁶ → k=20，威慑 81 期，支付 162.0（对照基准仍是 0）</text>
+</svg>
+<div class="note amber"><b>顺序不能反</b><p>对固定的 (\delta&gt;0)，让耐心 (\to 1)，下界贴近斯塔克尔伯格支付。先让 (\delta\to 0) 再谈耐心，下界会掉下去。原文与 FL 都强调这个极限顺序。<span class="tag t-fact">事实</span>百万分之一的强类型，在 (N=100) 时仍留下 81 期威慑——但那是 (b=1/2)、不贴现、完美监测的教室数字，不是任何行业的市场份额。<span class="tag t-inf">推论</span></p></div>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>谁</th>
+<th>短期诱惑</th>
+<th>声誉项约束它的方式</th>
+<th>约束失效时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">弱在位者</td>
+<td>被挑战时让一步，当期少亏 1</td>
+<td>让一步的续贯价值变成 0</td>
+<td>剩余期数太短，或 (\rho) 太低</td>
+</tr>
+<tr>
+<td class="k">进入者</td>
+<td>(b&gt;0)，默许时有肉</td>
+<td>(P(\text{战})\ge b) 时肉的期望为负</td>
+<td>后验已低于 (b^n)</td>
+</tr>
+<tr>
+<td class="k">强类型</td>
+<td>无：当期战斗已更好</td>
+<td>不需要声誉激励</td>
+<td>—</td>
+</tr>
+<tr>
+<td class="k">旁观的下一期进入者</td>
+<td>想搭便车试探</td>
+<td>看见战斗则后验不降</td>
+<td>监测有噪声时学不准</td>
+</tr>
+</tbody>
+</table></div>
+<p>默认参数下，剩余 10 期时若被挑战：续贯价值 12.0，战斗净收益 (-1+12.0=11.0)，严格值得。剩余 5 期净收益 1.0，仍严格值得。剩余 4 期进入混合区，净收益 <strong>0.0</strong>，与直接默许无差异。严格值得的最小剩余期数是 <strong>5</strong>。<span class="tag t-inf">推论</span></p>
+<p>所以「付出成本」在两条时间尺度上同时为真：（1）离径上，早期被闯要真的付那 1 单位，否则威胁不可信；（2）路径上，成本往往没发生，收益是无人闯入的 (a)。只看见第二句会误以为声誉免费；只看见第一句会误以为必须天天打架。</p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<p>租金从「本可被进入者分走的市场」流到在位者，抽水机是那个很小的 (\delta)。信息流是公开的战/让；一次让步把管道焊死。</p>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="rpM" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="rpL" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="36" y="36" width="160" height="64" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="116" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">市场租 / 期</text>
+  <text x="116" y="84" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">在位者拿 a=2.0</text>
+  <rect x="260" y="36" width="170" height="64" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="345" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">威慑期 ×17</text>
+  <text x="345" y="84" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">合计 34.0</text>
+  <rect x="490" y="36" width="154" height="64" rx="8" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="567" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">抽水机 δ</text>
+  <text x="567" y="84" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">0.10 就够转</text>
+  <rect x="36" y="180" width="180" height="64" rx="8" fill="#fde8e8" stroke="#d5342c"/>
+  <text x="126" y="208" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">泄漏：战斗 −1</text>
+  <text x="126" y="228" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">只在被挑战时发生</text>
+  <rect x="260" y="180" width="180" height="64" rx="8" fill="#fde8e8" stroke="#d5342c"/>
+  <text x="350" y="208" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">泄漏：诱惑 b</text>
+  <text x="350" y="228" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">b 大则 k 变长</text>
+  <rect x="490" y="180" width="154" height="64" rx="8" fill="#15181d"/>
+  <text x="567" y="208" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">信息阀</text>
+  <text x="567" y="228" text-anchor="middle" font-size="12" fill="#fff" font-family="sans-serif">默许 ⇒ 阀死</text>
+  <line x1="196" y1="68" x2="256" y2="68" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpM)"/>
+  <line x1="430" y1="68" x2="486" y2="68" stroke="#1d4ed8" stroke-width="2" marker-end="url(#rpM)"/>
+  <line x1="126" y1="180" x2="126" y2="104" stroke="#d5342c" stroke-width="2" marker-end="url(#rpL)"/>
+  <line x1="567" y1="180" x2="567" y2="104" stroke="#d5342c" stroke-width="2" marker-end="url(#rpL)"/>
+</svg>
+<p>对照：完全信息下这条管道流量是 0。声誉模型的全部「超额」都是相对这个基准，不是相对一个想象中的 50% 战斗胜率。进入者的 (b) 越大，要维持同一 (\delta) 所需的末端窗口越长——诱惑是抽水机的负载，不是在位者的收入。</p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>排序分 = 重要性 × 杠杆率 × 可操作性 ÷ 学习成本，五项都用 1–5。分高表示<strong>你这周更该动它</strong>，不是学术上更深刻。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>序</th>
+<th>杠杆</th>
+<th>I</th>
+<th>L</th>
+<th>O</th>
+<th>C</th>
+<th>分</th>
+<th>为什么在系统里</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>把一次公开让步当成后验归零</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>1</td>
+<td>125</td>
+<td>原文离径信念：默许是软弱的充分证据</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>把关系长度拉到 (N&gt;k(\delta))</td>
+<td>5</td>
+<td>5</td>
+<td>4</td>
+<td>2</td>
+<td>50.0</td>
+<td>否则窗口还没开始，支付就是基准 0</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>让后来者完美看见战还是让</td>
+<td>5</td>
+<td>4</td>
+<td>4</td>
+<td>2</td>
+<td>40.0</td>
+<td>没有监测就没有贝叶斯买家</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>先验从 0 抬到任意正数</td>
+<td>5</td>
+<td>5</td>
+<td>3</td>
+<td>2</td>
+<td>37.5</td>
+<td>(\delta=0) 是不连续点；正数多小是第二位的</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>校准对方实际用的先验</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>2</td>
+<td>32.0</td>
+<td>实验里的「自制先验」会让 (\delta=0) 的处理组仍像有声誉</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>保住 (a&gt;1) 且 (\rho&gt;1/a)</td>
+<td>5</td>
+<td>4</td>
+<td>3</td>
+<td>2</td>
+<td>30.0</td>
+<td>一期未来租的现值要盖过战斗成本 1</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>分清对手是短期观众还是长期对手</td>
+<td>4</td>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+<td>16.0</td>
+<td>长期对手面前，永远战斗不一定是最优承诺</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>承诺类型必须是你想被当成的那种</td>
+<td>4</td>
+<td>5</td>
+<td>2</td>
+<td>3</td>
+<td>13.3</td>
+<td>小概率「永远软弱」不改变 Selten 路径</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>压低对方硬闯成功的支付 (b)</td>
+<td>4</td>
+<td>3</td>
+<td>2</td>
+<td>2</td>
+<td>12.0</td>
+<td>(b) 上升，(k) 上升，同样的 (\delta) 更晚才威慑</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>承认噪声监测下声誉会耗掉</td>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+<td>4</td>
+<td>9.0</td>
+<td>不完美公共监测时，声誉效应是暂时的</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>陷阱 1：完全信息的逆向归纳已经「证明」声誉无用</summary><div class="dbody"><p>那只证明 (\delta=0) 的游戏。命题的重点是 (\delta=0) 处不连续：任意小的正先验就把早期路径从「全让」翻成「不进入」。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 2：用战斗胜率评价声誉</summary><div class="dbody"><p>路径上前 17 期没有战斗样本。胜率要么不存在，要么只反映末端混合。基准是完全信息支付 0，超额是 (a\times) 威慑期。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>陷阱 3：强类型必须占很大比例</summary><div class="dbody"><p>(\delta=10^{-6})、(b=1/2)、(N=100) 仍有 81 期威慑、支付 162.0，基准仍是 0。小是相对 (b^n) 的衰减而言，不是相对「常识里的 30%」。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>陷阱 4：维护声誉意味着每期都要付出现金成本</summary><div class="dbody"><p>早期均衡路径上没有进入，现金成本是 0。成本是反事实：若被闯，必须愿意付 (-1)。把「没打过架」读成「声誉没在工作」，是把离径威胁当成路径频率。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱 5：让一步只影响这一次</summary><div class="dbody"><p>在合理信念下，一次默许把 (p) 钉在 0，此后 Selten 逻辑恢复。局部妥协的价格是剩余全部威慑期的 (a)，不是这一期的面子。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 6：贴现不重要，反正 N 很长</summary><div class="dbody"><p>(a=2) 时，(\rho&gt;0.5000) 路径才与不贴现情形同类；(\rho&lt;0.3333) 弱类型第一次被进入就让。很长的 (N) 救不了太没耐心的人。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 7：先让先验趋于 0，再谈耐心</summary><div class="dbody"><p>FL 的 (\varepsilon) 可以随 ((1-\delta)|\log\mu|) 一起走，但极限顺序是：先验固定为正，再让 (\delta\to 1)。反过来下界失效。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 8：任何「非理性」类型都有用</summary><div class="dbody"><p>小概率承诺于「总是默许」不提供可模仿的威慑。有用的是对手最怕、且你最希望被相信的那个纯策略——链式店里是战斗，质量市场里是始终高质量。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>陷阱 9：实验室点预测会原样出现在市场上</summary><div class="dbody"><p>Jung, Kagel &amp; Levin（1994, <em>RAND Journal of Economics</em>）在八期链式店实验中拒绝了 Kreps–Wilson 的若干点预测，并且在实验者没有放入强类型时，弱在位者早期仍然大量战斗。<span class="tag t-fact">事实</span>Camerer &amp; Weigelt（1988, <em>Econometrica</em>）是另一项序贯均衡声誉实验；具体偏离百分比本手册不转引。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 10：声誉一旦建立就永久</summary><div class="dbody"><p>Cripps, Mailath &amp; Samuelson（2004）说明：公共监测不完美时，声誉效应是暂时的。完美监测的教室模型和带噪声的平台评分不是同一个定理。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>陷阱 11：这是一份掠夺操作手册</summary><div class="dbody"><p>模型解释「为什么早期强硬可以是序贯理性」。它不授权你去低于成本定价挤走对手。竞争法下的掠夺是另一套问题，见附录。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<p>把一个真实关系压进五格，压不进去就不要用这个模型说话。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>格子</th>
+<th>要写的句子</th>
+<th>写不出来说明什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">长期方是谁</td>
+<td>谁会反复面对后续观众</td>
+<td>若人人都只玩一次，没有声誉卖方</td>
+</tr>
+<tr>
+<td class="k">观众是谁</td>
+<td>谁看见这一次让步</td>
+<td>若行动不公开，贝叶斯没有输入</td>
+</tr>
+<tr>
+<td class="k">(a)</td>
+<td>没人来试探时你多得到什么</td>
+<td>若 (a\le 1)（相对让步成本），简单公式停用</td>
+</tr>
+<tr>
+<td class="k">(b)</td>
+<td>对方硬闯且你让步时，对方多开心</td>
+<td>不知道 (b) 就不知道门槛</td>
+</tr>
+<tr>
+<td class="k">(\delta)</td>
+<td>对方赋予「你就是不肯弯」的概率</td>
+<td>用你自己的人设代替对方的先验，是自制故事</td>
+</tr>
+</tbody>
+</table></div>
+<p>合法的落点：交付质量、谈判里的底线、信用条款、重复雇佣、平台上的退货政策。不合法的落点：以挤出竞争对手为目的的掠夺性降价。前者是「我愿意为可验证的承诺付短期成本」；后者是把模型当成伤害对手的施工图。</p>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="flow"><span>写清 a 与 b</span><i>→</i><span>给对方的 δ</span><i>→</i><span class="hi">算 k 与 N</span><i>→</i><span class="hi">查 ρ 是否 &gt;1/a</span><i>→</i><span>标出哪一次让步会归零</span><i>→</i><span>跟基准 0 比超额</span></div>
+
+<p>行动清单：</p>
+<ol>
+<li>用自己的单位把「让一步省下的成本」归一成 1，反推 (a)（不试探时的增益是这个成本的几倍）。</li>
+<li>问：对方硬闯成功的甜头 (b) 更接近 0.3 还是 0.8？门槛对这个数很敏感。</li>
+<li>用工具 1 看威慑期是否为正。为 0 就不要谈维护声誉，先延长关系或接受基准 0。</li>
+<li>用工具 2 看「若这周被试探，战斗净收益是否 &gt;0」。</li>
+<li>用工具 4 看自己的耐心落在哪一档。(\rho&lt;1/(a+1)) 时，模型建议让，不是硬撑。</li>
+<li>用工具 3 记住：报告结果时并列极小最大 0 和斯塔克尔伯格 (a)，禁止只报一个胜率。</li>
+</ol>
+<h3>工具 1：弱类型支付 vs 完全信息基准</h3>
+<p>(\delta=0.10)、(b=0.50)、(a=2.0)、(N=20) 时，(k=4)，威慑期 17，支付 34.0，基准 0.0，超额 34.0。中途一次默许的后续也是 0.0。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="toolKw">
+  <div class="ctrl">
+    <label>强类型先验 δ <output id="kw_dO">10%</output></label>
+    <input type="range" id="kw_d" min="1" max="40" step="1" value="10">
+    <label>进入者甜头 b <output id="kw_bO">0.50</output></label>
+    <input type="range" id="kw_b" min="10" max="90" step="1" value="50">
+    <label>垄断租 a <output id="kw_aO">2.0</output></label>
+    <input type="range" id="kw_a" min="1.1" max="5" step="0.1" value="2">
+    <label>总期数 N <output id="kw_NO">20</output></label>
+    <input type="range" id="kw_N" min="4" max="40" step="1" value="20">
+  </div>
+  <div class="readout">
+    <div class="ro">解缠 k <b id="kw_k">4</b></div>
+    <div class="ro">威慑期 <b id="kw_D">17</b></div>
+    <div class="ro">声誉支付 <b id="kw_V">34.0</b></div>
+    <div class="ro">完全信息基准 <b id="kw_base">0.0</b></div>
+    <div class="ro">超额 <b id="kw_ex">34.0</b></div>
+    <div id="kw_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="kwChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<h3>工具 2：被挑战时，这一仗值不值</h3>
+<p>剩余 10 期、同样的 (\delta,b,a)：续贯 12.0，净收益 11.0，纯策略战斗。严格值得的最小剩余期数是 5（净 1.0）。剩余 4 期净收益 0。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="toolFight">
+  <div class="ctrl">
+    <label>剩余期数 n <output id="fight_nO">10</output></label>
+    <input type="range" id="fight_n" min="2" max="30" step="1" value="10">
+    <label>当前后验 δ <output id="fight_dO">10%</output></label>
+    <input type="range" id="fight_d" min="1" max="40" step="1" value="10">
+    <label>b <output id="fight_bO">0.50</output></label>
+    <input type="range" id="fight_b" min="10" max="90" step="1" value="50">
+    <label>a <output id="fight_aO">2.0</output></label>
+    <input type="range" id="fight_a" min="1.1" max="5" step="0.1" value="2">
+  </div>
+  <div class="readout">
+    <div class="ro">战斗净收益 <b id="fight_net">11.0</b></div>
+    <div class="ro">战后续贯 <b id="fight_cont">12.0</b></div>
+    <div class="ro">响应方式 <b id="fight_mode">纯策略战斗</b></div>
+    <div class="ro">严格值得的最小 n <b id="fight_thr">5（净 1.0）</b></div>
+    <div id="fight_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="fightChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<h3>工具 3：斯塔克尔伯格下界 vs 两个基准</h3>
+<p>长期方若始终打出承诺动作，对手不最佳反应的期数至多 (K=\lfloor\log\mu/\log q\rfloor)。标准化支付下界 (v=-1+(a+1)\delta^{K})，缺口 ((a+1)(1-\delta^{K}))。默认 (\mu=0.10)、(q=0.50)、(\delta=0.95)、(a=2)：(K=3)，(v=1.5721)，缺口 0.4279，相当于斯塔克尔伯格支付的 78.61%。极小最大基准是 0，上界参照是 (a=2)。<span class="tag t-inf">推论</span></p>
+<p>同一 (K,a) 下，要把缺口压到 0.10 以下，需要 (\delta\ge 0.9888)；压到 0.20 以下需要 (\delta\ge 0.9773)。(\mu=0.01) 时 (K=6)，(\delta=0.95) 的下界只有 1.2053（占 (a) 的 60.26%），缺口 0.7947。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="toolFl">
+  <div class="ctrl">
+    <label>承诺类型先验 μ <output id="fl_muO">10%</output></label>
+    <input type="range" id="fl_mu" min="1" max="40" step="1" value="10">
+    <label>临界概率 q <output id="fl_qO">0.50</output></label>
+    <input type="range" id="fl_q" min="10" max="90" step="1" value="50">
+    <label>贴现 δ <output id="fl_deltaO">0.95</output></label>
+    <input type="range" id="fl_delta" min="50" max="99" step="1" value="95">
+    <label>斯塔克尔伯格 a <output id="fl_aO">2.0</output></label>
+    <input type="range" id="fl_a" min="1.1" max="5" step="0.1" value="2">
+  </div>
+  <div class="readout">
+    <div class="ro">坏期上界 K <b id="fl_K">3</b></div>
+    <div class="ro">下界 v <b id="fl_v">1.5721</b></div>
+    <div class="ro">距 a 的缺口 <b id="fl_gap">0.4279</b></div>
+    <div class="ro">v / a <b id="fl_share">78.61%</b></div>
+    <div id="fl_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="flChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<h3>工具 4：贴现把机制切成三档</h3>
+<p>Kreps–Wilson 扩展：(\rho&gt;1/a) 时均衡路径与不贴现情形相同，只是进入者在无差异点的混合概率要改；(\rho&lt;1/(a+1)) 时弱类型一遇进入就默许，进入者只看 (p ? b)。(a=2) 时两道门槛是 0.5000 与 0.3333，中间带宽度 0.1667。默认 (\rho=0.60) 落在「简单均衡」。<span class="tag t-fact">事实</span>门槛来自原文；区间名称是本手册对那两句的简称。</p>
+<div class="tool" id="toolRho">
+  <div class="ctrl">
+    <label>垄断租 a <output id="rho_aO">2.0</output></label>
+    <input type="range" id="rho_a" min="1.1" max="5" step="0.1" value="2">
+    <label>贴现 ρ <output id="rho_rO">0.60</output></label>
+    <input type="range" id="rho_r" min="5" max="99" step="1" value="60">
+  </div>
+  <div class="readout">
+    <div class="ro">简单下沿 1/a <b id="rho_hi">0.5000</b></div>
+    <div class="ro">塌缩上沿 1/(a+1) <b id="rho_lo">0.3333</b></div>
+    <div class="ro">中间带宽度 <b id="rho_mid">0.1667</b></div>
+    <div class="ro">当前体制 <b id="rho_reg">简单均衡</b></div>
+    <div id="rho_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:#454c56"></div>
+  </div>
+  <canvas id="rhoChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>① 能背出完全信息的悖论</summary><div class="dbody"><p>有限期、完美信息：最后一期必让，于是每一期都让。说不出这一句，就不知道 (\delta) 在否定什么。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>② 能把支付归一成 a、0、−1</summary><div class="dbody"><p>战斗成本是 1，退出是 (a&gt;1)，进入者无差异于 (P(\text{战})=b)。单位不归一，门槛没法算。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>③ 能倒着数 n，能算 k</summary><div class="dbody"><p>(k=\inf{n:b^n&lt;\delta})。默认例子 (k=4)，不是「大约几期」的口头禅。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>④ 能区分路径成本与离径成本</summary><div class="dbody"><p>路径上早期支付是 (a) 且没有战斗；离径上被闯则必须战。两句同时成立。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>⑤ 能写贝叶斯一行</summary><div class="dbody"><p>混合区战之后后验 (=b^{n-1})，不是「大概更高」。默认：0.10 跳到 0.25。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>⑥ 能放上两个基准再说话</summary><div class="dbody"><p>完全信息 0，斯塔克尔伯格 (a)。下界 1.5721 要同时对这两头读。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>⑦ 能认出模型停用的边界</summary><div class="dbody"><p>(a\le 1)、对手也极有耐心、监测是噪声、行动不公开、你想做的是掠夺而非承诺。任一命中就停。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p><strong>连锁店沙盘</strong>（纸笔即可，不要拿去定价伤人）：你是弱在位者，观众不知道。袋里 10 颗珠，1 颗红代表强类型，这就是 (\delta=0.10)。每回合观众决定进不进；你若让，红珠被当众拿走，此后每回合观众都进、你都得 0。你若战，付 1 分，珠子还在。先把 (k=4) 画在时间轴上，看自己会不会在第 5 期以后还让。得分只记相对「每次都让」的超额，禁止用「赢了几次架」当成绩。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>完成标准</th>
+<th>和机制的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">写出你的 a、b</td>
+<td>两个数，单位已把让步成本归一为 1</td>
+<td>没有支付就没有门槛</td>
+</tr>
+<tr>
+<td class="k">写出对方的 δ，不是你的人设</td>
+<td>一句话：凭什么不是 0</td>
+<td>对付不连续点</td>
+</tr>
+<tr>
+<td class="k">算出 k，比较 N</td>
+<td>纸上有 (N-k+1)</td>
+<td>威慑期可能是 0</td>
+</tr>
+<tr>
+<td class="k">标一次「归零事件」</td>
+<td>指明哪句话、哪次折扣会当众把 p 打到 0</td>
+<td>杠杆 1</td>
+</tr>
+<tr>
+<td class="k">查耐心档</td>
+<td>用工具 4，写下体制三个字</td>
+<td>防止长 N 幻觉</td>
+</tr>
+<tr>
+<td class="k">交基准</td>
+<td>同一页写上 0 和 a，再写你的支付</td>
+<td>防止胜率自嗨</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">先验被你收成 0</button><button class="tab" data-pane="tb1-1">垄断租盖不住一次战斗</button><button class="tab" data-pane="tb1-2">后来者看不见，或只看见噪声</button><button class="tab" data-pane="tb1-3">对面也是长期、很有耐心的对手</button></div>
+<div class="pane on" id="tb1-0"><p>(\delta=0) 时 (k) 无定义或无限，唯一完美均衡回到 Selten：支付 0。工具 1 的滑块最小值是 1%，文本里的 (10^{-6}) 仍有 81 期威慑——从 0 到「极小」是跳跃，从极小到 10% 只是窗口变短。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-1"><p>(a\le 1) 时，为了吓阻下一期而今天付 1，连不贴现都不划算。原文说大 (n) 仍可能出现「以概率 1 战斗」的区段，但策略开始依赖最近几期的历史，本手册四个工具全部停用。先把 (a) 重新归一，不要硬拧滑块。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-2"><p>完美监测是贝叶斯的输入。评分有噪声时，沿用 Cripps–Mailath–Samuelson：理性类型的声誉维持不住，效应临时。此时工具 1 的 34.0 是上境，不是预测。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-3"><p>「永远战斗」不再自动是最优承诺。对方在乎未来，奖罚策略的支付可以更高，但那些奖罚必须偶尔真的打出来才被看见，否则和离径的空话一样。换模型，不要只把 (N) 加大。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级</th>
+<th>能做什么</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">0 会讲悖论</td>
+<td>说出最后一期必让、归纳向前</td>
+<td>不提 (\delta) 也能讲完 Selten</td>
+</tr>
+<tr>
+<td class="k">1 会算窗口</td>
+<td>给定 (\delta,b,N) 算出 (k) 和威慑期</td>
+<td>默认例子：k=4，17 期，34.0 vs 0.0</td>
+</tr>
+<tr>
+<td class="k">2 会查边界</td>
+<td>贴现三档、承诺类型方向、监测是否完美</td>
+<td>能指出工具该停的一种情形</td>
+</tr>
+<tr>
+<td class="k">3 会选模型</td>
+<td>短期观众用 KW/FL；长期对手、噪声监测、坏声誉各换定理</td>
+<td>同一件事不混用四个结论</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<p>选一段<strong>你自己</strong>会重复出现、且让步会被后来的人看见的关系（供应商交期、团队里的例外请求、你公开写过的退货规则）。不要选「如何把对手挤出市场」。</p>
+<p>30 分钟只做这一张纸：</p>
+<ol>
+<li>把「让一步你少损失多少」当成 1。估计不发生试探时你多得到的 (a)（必须回答是否 &gt;1）。</li>
+<li>估计对方硬闯且你让步时的甜头 (b\in(0,1))。不知道就写 0.5，并注明这是占位。</li>
+<li>写对方（不是你）赋予「你就是一种不肯破例的人」的概率 (\delta)。敢写 0 就停笔：模型告诉你不要装。</li>
+<li>用工具 1 的公式心算或打开滑块：(k)，(N)（你还能见面几次），威慑期，支付，基准 0。</li>
+<li>用一句话写下<strong>本周哪一次请求如果答应，等于当众默许</strong>。这是可核验的产出：纸条上有五个数和这一句。</li>
+</ol>
+<p>若威慑期是 0 或工具 4 显示塌缩，本周的行动是让，或者去加长关系、提高监测，而不是硬撑。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>动作</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>只读悖论：最后一期，然后倒数</td>
+<td>半页逆向归纳</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>把默认例子手算到 (b^4=0.0625&lt;0.10)</td>
+<td>纸上的 k=4</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>打开工具 1，把 (\delta) 从 10% 拧到 1%，记下 k 与支付</td>
+<td>两个超额数字</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>工具 2：找到你这组参数下净收益跨过 0 的 n</td>
+<td>一个整数</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>工具 4：用你第 22 节的 (a) 看 (\rho) 落点</td>
+<td>体制三个字</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>找一个公开让步的真实例子，标它是否把后验打到 0</td>
+<td>一例，不求统计</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>用基准 0 和 (a) 各写一句，删掉任何「胜率」句子</td>
+<td>一页干净说明</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>焦点</th>
+<th>完成时你能拒绝的胡说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>支付与 (k)</td>
+<td>「声誉没法量化所以随便讲」</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>路径 / 离径，默许归零</td>
+<td>「这次例外不会有下次」</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>FL 下界与极限顺序</td>
+<td>「先验很小所以定理无用」或「胜率 80%」</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>停用条件：噪声、长期对手、坏声誉、竞争法</td>
+<td>把链式店公式套到评分网站或掠夺定价上</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>系统里的角色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>Selten 1978 链式店悖论</td>
+<td>(\delta=0) 的基准，支付 0</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>Kreps–Wilson 1982 单边不确定</td>
+<td>本手册工具 1–2、4 的母模型</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>命题 2 的路径唯一性</td>
+<td>(\delta\neq b^n) 时不要再找「另一条均衡故事」</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>Milgrom–Roberts 1982 掠夺声誉</td>
+<td>互补的信息不对称版本，不是第二套事实</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>Gang of Four 1982 有限重复囚徒困境</td>
+<td>承诺类型换成 tit-for-tat，合作维持到期末附近</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>Fudenberg–Levine 1989</td>
+<td>工具 3：任何纳什的支付下界</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>对长期对手维持声誉</td>
+<td>最优承诺可以不是静态斯塔克尔伯格动作</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>Ely–Välimäki 2003 坏声誉</td>
+<td>类型信念的反方向：市场因恐惧而关闭</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>Cripps–Mailath–Samuelson 2004</td>
+<td>不完美监测 ⇒ 声誉临时</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>贴现两门槛 (1/a) 与 (1/(a+1))</td>
+<td>工具 4：耐心不够时公式主动退休</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>对方的 δ 是我的人设还是他的信念？</summary><div class="dbody"><p>人设是你的营销；信念是他的先验。实验表明被试会带「自制先验」。写不出来源就标<span class="tag t-hyp">假设</span>。</p></div></details>
+<details><summary>这一次让步是否公开、是否可逆？</summary><div class="dbody"><p>不公开则不进入更新。公开且被解读为「原来是弱的」，在本模型里不可逆。</p></div></details>
+<details><summary>a 是否真的大于 1？</summary><div class="dbody"><p>不大于就不要用「打一次换下一期」的口头禅。重新选单位或承认不划算。</p></div></details>
+<details><summary>观众是只来一次，还是下次还要跟你重复博弈？</summary><div class="dbody"><p>只来一次：KW/FL。也极有耐心：换「长期对手」那篇，不要加大 N 了事。</p></div></details>
+<details><summary>我是在承诺高质量，还是在计划掠夺？</summary><div class="dbody"><p>前者可以用本手册的纸条。后者涉及竞争法，模型不是法律意见，也不是操作指南。</p></div></details>
+<details><summary>监测噪声有多大？</summary><div class="dbody"><p>大到后来者分不清战和让，完美监测定理停止。去读暂时声誉，而不是把 34.0 当成永久年金。</p></div></details>
+<details><summary>我报告结果时基准在哪里？</summary><div class="dbody"><p>至少两个：完全信息或极小最大的 0，以及承诺成功时的 (a)。没有基准的胜率删掉。</p></div></details>
+<details><summary>极限顺序我有没有说反？</summary><div class="dbody"><p>先验固定，再让耐心趋于 1。先消灭先验，下界不作数。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ol>
+<li>把单边不确定换成双边：在位者也不确定进入者是不是「硬闯型」。原文第 4 节是消耗战式的后验沿曲线滑动，混合是连续时间的，不再是「算一个 k」能结束的。</li>
+<li>读 Mailath &amp; Samuelson《Repeated Games and Reputations》（2006），把本手册的四个工具放回「好声誉 / 坏声誉 / 暂时声誉」的地图，避免只记得链式店。</li>
+<li>若你的场景是平台评分或noisy audit，下一份笔记只允许引用不完美监测，禁止再引用命题 1 的 17 期。</li>
+<li>若你的场景是双方都长期存在的谈判，转去长期对手声誉，并问：最优承诺是不是「永远强硬」。往往不是。</li>
+</ol>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">链式店悖论：有限完全信息下唯一完美均衡为每期进入且默许</td>
+<td>论文</td>
+<td>Selten, <em>Theory and Decision</em> 9:127–159, 1978</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">小先验强类型下的序贯均衡、(k(p))、默许归零、(a&gt;1) 与贴现两门槛</td>
+<td>论文</td>
+<td>Kreps &amp; Wilson, <em>JET</em> 27:253–279, 1982</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">掠夺可以通过声誉威慑后来者，与 KW 互补</td>
+<td>论文</td>
+<td>Milgrom &amp; Roberts, <em>JET</em> 27:280–312, 1982</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">有限重复囚徒困境：小概率 tit-for-tat 类型</td>
+<td>论文</td>
+<td>Kreps, Milgrom, Roberts &amp; Wilson, <em>JET</em> 1982</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">耐心长期方对短期对手：均衡支付下界趋于斯塔克尔伯格；坏期数 (\le\log\mu/\log q)</td>
+<td>论文 / 讲义复述</td>
+<td>Fudenberg &amp; Levine, <em>Econometrica</em> 57:759–778, 1989；Wolitzky, MIT 14.126 Lecture 9, 2024</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">对手同样长期时，静态斯塔克尔伯格不一定是最优承诺</td>
+<td>论文</td>
+<td>Fudenberg &amp; Levine, 维持对长期对手声誉的后续工作</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">八期实验拒绝 KW 若干点预测；无诱导强类型时仍有早期战斗</td>
+<td>实验摘要</td>
+<td>Jung, Kagel &amp; Levin, <em>RAND JE</em> 25:72–93, 1994</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">序贯均衡声誉模型的早期实验</td>
+<td>论文</td>
+<td>Camerer &amp; Weigelt, <em>Econometrica</em> 56:1–36, 1988；百分比不转引</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">不完美公共监测下声誉暂时</td>
+<td>论文</td>
+<td>Cripps, Mailath &amp; Samuelson, <em>RES</em> 2004</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">坏声誉可导致专家市场瓦解</td>
+<td>论文</td>
+<td>Ely &amp; Välimäki, <em>QJE</em> 2003</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">默认例子 k=4、威慑 17 期、支付 34.0、净收益 11.0、FL 下界 1.5721、门槛 0.5000/0.3333</td>
+<td>由上述公式用 node 复算</td>
+<td>与本页脚本同一递归；非行业数据</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">实验偏离的具体百分比、任何公司的「实际 δ」</td>
+<td>—</td>
+<td>未核到一手数字，正文不写</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>一手论文或定理陈述；<span class="tag t-ana">分析</span>把定理接到适用边界；<span class="tag t-inf">推论</span>由公式算出的数字或由此得到的判断；<span class="tag t-hyp">假设</span>你自己填的 (\delta) 或 (b)；<span class="tag t-chk">待验证</span>只出现在单一转述、本手册未采用的数字。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是博弈论教学框架，不是经营建议、投资建议或法律意见。文中的 (a=2)、支付 34.0、下界 1.5721 都是 Kreps–Wilson / Fudenberg–Levine 归一化支付下的算术，不是收入、股价或胜率。涨跌颜色习惯不适用于这些支付。</p>
+<p>声誉模型曾被用来讨论掠夺性定价。在许多法域，以挤出竞争者为目的的低于成本定价可能违法。本手册不提供任何此类做法的步骤、话术或定价方案。实践节只允许用于你自己可验证的承诺：交期、质量、公开规则、谈判底线。</p>
+<p>实验已经拒绝该模型的一部分点预测。把滑块读数当成对真实对手的预测，是误用。对方脑子里的先验、监测噪声、以及对手是否同样有耐心，任一不符，数字就只剩教室里的对照基准：完全信息时你得到 0，承诺被完美相信时你得到 (a)。</p>
+</section>
+<footer>  <p>《声誉模型（Kreps-Wilson） · 全景认知与实践操作手册》 · 生成于 2026-09-20 · 耗时 24 分 16 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《声誉模型（Kreps-Wilson）》主题脚本
+   四个可调模型（滑块都进入计算）：
+     1. 弱在位者序贯均衡支付 vs 完全信息基准 0
+     2. 被挑战时战斗的净收益，以及严格值得战斗的最小剩余期数
+     3. Fudenberg–Levine 标准化支付下界 vs 极小最大 0 与斯塔克尔伯格 a
+     4. 贴现因子相对 1/a 与 1/(a+1) 的体制
+   支付归一与 Kreps & Wilson (1982, JET) 图 1 一致：
+   退出得 a，默许得 0，战斗得 −1；进入者无差异当 P(战)=b。
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function near(x, y) {
+    return Math.abs(x - y) <= 1e-8 * Math.max(1, Math.abs(y));
+  }
+  function kOf(p, b) {
+    if (!(p > 0) || !(b > 0) || !(b < 1)) return Infinity;
+    var n = 1, bn = b;
+    while (bn >= p - 1e-12 && n < 8000) { n++; bn *= b; }
+    return n;
+  }
+  function V(n, p, a, b, memo) {
+    var key = n + '|' + p.toExponential(10);
+    if (memo[key] !== undefined) return memo[key];
+    var val;
+    if (n <= 0 || p <= 1e-15) val = 0;
+    else if (n === 1) {
+      if (p > b + 1e-10) val = a;
+      else if (p < b - 1e-10) val = 0;
+      else val = 1;
+    } else {
+      var bn = Math.pow(b, n);
+      var bnm1 = Math.pow(b, n - 1);
+      if (p > bn + 1e-10) val = a + V(n - 1, p, a, b, memo);
+      else if (p < bn - 1e-10) {
+        if (p > bnm1 + 1e-10) val = -1 + V(n - 1, p, a, b, memo);
+        else val = 0;
+      } else val = (1 / a) * (a + V(n - 1, p, a, b, memo));
+    }
+    memo[key] = val;
+    return val;
+  }
+  function fightNet(n, p, a, b) {
+    if (n <= 1) return { net: -1, cont: 0, mode: '最后一期必让', pp: 0 };
+    var bnm1 = Math.pow(b, n - 1);
+    var pp, mode;
+    if (p <= 1e-15) { pp = 0; mode = '已知软弱'; }
+    else if (p + 1e-12 >= bnm1) { pp = p; mode = '纯策略战斗'; }
+    else { pp = bnm1; mode = '无差异混合'; }
+    var cont = V(n - 1, pp, a, b, {});
+    return { net: -1 + cont, cont: cont, mode: mode, pp: pp };
+  }
+
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, vals, ymin, ymax, xlab) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 22, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    var span = (ymax - ymin) || 1;
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    if (ymin < 0 && ymax > 0) {
+      var y0 = y1 - ((0 - ymin) / span) * bh;
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath();
+      ctx.moveTo(pl, y0);
+      ctx.lineTo(w - 16, y0);
+      ctx.stroke();
+    }
+    var barW = bw / (vals.length * 1.55);
+    vals.forEach(function (o, i) {
+      var x = pl + (i + 0.5) * (bw / vals.length) - barW / 2;
+      var yBase = y1 - ((0 - ymin) / span) * bh;
+      var yv = y1 - ((o.v - ymin) / span) * bh;
+      var top = Math.min(yBase, yv), ht = Math.abs(yBase - yv);
+      ctx.fillStyle = o.c;
+      ctx.fillRect(x, top, barW, Math.max(ht, 1));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      var lab = o.v.toFixed(o.d != null ? o.d : 2);
+      var tw = ctx.measureText(lab).width;
+      var lx = Math.max(pl + tw / 2, Math.min(x + barW / 2, w - 8 - tw / 2));
+      var ly = o.v >= 0 ? Math.max(yv - 6, pt + 11) : Math.min(yv + 13, y1 - 2);
+      ctx.fillText(lab, lx, ly);
+      ctx.fillStyle = C.ink2;
+      ctx.font = '10px sans-serif';
+      var lines = (o.lab || '').split('\n');
+      lines.forEach(function (ln, j) {
+        ctx.fillText(ln, x + barW / 2, y1 + 13 + j * 11);
+      });
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(xlab, pl + bw, y1 + 31);
+  }
+
+  /* ── 1. 均衡支付 vs 基准 0 ── */
+  (function kw() {
+    if (!$('kw_d')) return;
+    function upd() {
+      var d = parseFloat($('kw_d').value) / 100;
+      var b = parseFloat($('kw_b').value) / 100;
+      var a = parseFloat($('kw_a').value);
+      var N = parseInt($('kw_N').value, 10);
+      txt($('kw_dO'), (d * 100).toFixed(0) + '%');
+      txt($('kw_bO'), b.toFixed(2));
+      txt($('kw_aO'), a.toFixed(1));
+      txt($('kw_NO'), String(N));
+      var k = kOf(d, b);
+      var pay = V(N, d, a, b, {});
+      var D = (N >= k) ? (N - k + 1) : 0;
+      var base = 0;
+      txt($('kw_k'), String(k));
+      txt($('kw_D'), String(D));
+      txt($('kw_V'), pay.toFixed(1));
+      txt($('kw_base'), base.toFixed(1));
+      txt($('kw_ex'), (pay - base).toFixed(1));
+      var msg = 'δ=' + d.toFixed(2) + '、b=' + b.toFixed(2) + '、a=' + a.toFixed(1) +
+        '、N=' + N + ' → k=' + k + '，威慑期 ' + D +
+        '，支付 ' + pay.toFixed(1) + '，完全信息基准 0.0，超额 ' + (pay - base).toFixed(1);
+      txt($('kw_vh'), msg);
+      tint($('kw_vh'), pay > base + 1e-9 ? C.blue : C.amber);
+      var ymax = Math.max(a, pay, 1) * 1.18;
+      bars($('kwChart'), [
+        { v: base, c: C.ink3, lab: '基准 0', d: 1 },
+        { v: pay, c: C.blue, lab: '声誉支付', d: 1 },
+        { v: 0, c: C.red, lab: '默许归零', d: 1 }
+      ], 0, ymax, '期望支付合计');
+    }
+    bind(['kw_d', 'kw_b', 'kw_a', 'kw_N'], upd);
+    upd();
+  })();
+
+  /* ── 2. 一次战斗是否值得 ── */
+  (function fight() {
+    if (!$('fight_n')) return;
+    function upd() {
+      var n = parseInt($('fight_n').value, 10);
+      var d = parseFloat($('fight_d').value) / 100;
+      var b = parseFloat($('fight_b').value) / 100;
+      var a = parseFloat($('fight_a').value);
+      txt($('fight_nO'), String(n));
+      txt($('fight_dO'), (d * 100).toFixed(0) + '%');
+      txt($('fight_bO'), b.toFixed(2));
+      txt($('fight_aO'), a.toFixed(1));
+      var r = fightNet(n, d, a, b);
+      txt($('fight_net'), r.net.toFixed(1));
+      txt($('fight_cont'), r.cont.toFixed(1));
+      txt($('fight_mode'), r.mode);
+      var thr = null, thrNet = null;
+      for (var t = 2; t <= 60; t++) {
+        var nt = fightNet(t, d, a, b).net;
+        if (nt > 1e-8) { thr = t; thrNet = nt; break; }
+      }
+      txt($('fight_thr'), thr == null ? '60 期内无' : (thr + '（净 ' + thrNet.toFixed(1) + '）'));
+      var msg = '剩余 ' + n + ' 期被挑战：战斗净收益 ' + r.net.toFixed(1) +
+        ' = −1 + 续贯 ' + r.cont.toFixed(1) + '；' + r.mode +
+        (r.net > 1e-8 ? '，严格值得付这 1 单位成本' : '，不严格优于直接默许');
+      txt($('fight_vh'), msg);
+      tint($('fight_vh'), r.net > 1e-8 ? C.blue : (r.net < -1e-8 ? C.red : C.amber));
+      var xs = [], i;
+      var nMax = Math.max(12, Math.min(24, n + 2));
+      for (i = 2; i <= nMax; i++) xs.push(i);
+      var nets = xs.map(function (t) { return fightNet(t, d, a, b).net; });
+      var ymin = 0, ymax = 1;
+      nets.forEach(function (v) { if (v < ymin) ymin = v; if (v > ymax) ymax = v; });
+      var pad = (ymax - ymin) * 0.12 || 1;
+      ymin -= pad; ymax += pad;
+      var g = fit($('fightChart'), 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 52, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+      var span = ymax - ymin || 1;
+      function sx(i) { return pl + (xs.length <= 1 ? bw / 2 : (i / (xs.length - 1)) * bw); }
+      function sy(v) { return y1 - ((v - ymin) / span) * bh; }
+      var yZero = sy(0);
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath(); ctx.moveTo(pl, yZero); ctx.lineTo(pl + bw, yZero); ctx.stroke();
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      nets.forEach(function (v, i) {
+        if (i === 0) ctx.moveTo(sx(i), sy(v));
+        else ctx.lineTo(sx(i), sy(v));
+      });
+      ctx.stroke();
+      ctx.lineWidth = 1;
+      var hi = xs.indexOf(n);
+      if (hi >= 0) {
+        ctx.fillStyle = C.red;
+        ctx.beginPath();
+        ctx.arc(sx(hi), sy(nets[hi]), 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = C.ink3;
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'center';
+      xs.forEach(function (t, i) {
+        if (t === 2 || t === n || t === xs[xs.length - 1] || t % 4 === 0) {
+          ctx.fillText(String(t), sx(i), y1 + 13);
+        }
+      });
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('剩余期数 n（含本期）', pl + bw, y1 + 31);
+    }
+    bind(['fight_n', 'fight_d', 'fight_b', 'fight_a'], upd);
+    upd();
+  })();
+
+  /* ── 3. FL 下界 ── */
+  (function fl() {
+    if (!$('fl_mu')) return;
+    function upd() {
+      var mu = parseFloat($('fl_mu').value) / 100;
+      var q = parseFloat($('fl_q').value) / 100;
+      var delta = parseFloat($('fl_delta').value) / 100;
+      var a = parseFloat($('fl_a').value);
+      txt($('fl_muO'), (mu * 100).toFixed(0) + '%');
+      txt($('fl_qO'), q.toFixed(2));
+      txt($('fl_deltaO'), delta.toFixed(2));
+      txt($('fl_aO'), a.toFixed(1));
+      var ratio = Math.log(mu) / Math.log(q);
+      var K = Math.max(0, Math.floor(ratio + 1e-9));
+      var dK = Math.pow(delta, K);
+      var v = -1 + (a + 1) * dK;
+      var gap = (a + 1) * (1 - dK);
+      var share = a !== 0 ? v / a : 0;
+      txt($('fl_K'), String(K));
+      txt($('fl_v'), v.toFixed(4));
+      txt($('fl_gap'), gap.toFixed(4));
+      txt($('fl_share'), (share * 100).toFixed(2) + '%');
+      var msg = 'μ=' + mu.toFixed(2) + '、q=' + q.toFixed(2) + ' → 至多 K=' + K +
+        ' 期对手不最佳反应；δ=' + delta.toFixed(2) + ' 时下界 ' + v.toFixed(4) +
+        '，斯塔克尔伯格 ' + a.toFixed(1) + '，缺口 ' + gap.toFixed(4) +
+        '；极小最大基准是 0，不是战斗胜率';
+      txt($('fl_vh'), msg);
+      tint($('fl_vh'), C.blue);
+      var ymin = Math.min(0, v, -0.2);
+      var ymax = Math.max(a, v, 0) * 1.2 + 0.2;
+      bars($('flChart'), [
+        { v: 0, c: C.ink3, lab: '极小最大', d: 2 },
+        { v: v, c: C.blue, lab: '声誉下界', d: 2 },
+        { v: a, c: C.amber, lab: 'Stackelberg', d: 2 }
+      ], ymin, ymax, '标准化每期支付');
+    }
+    bind(['fl_mu', 'fl_q', 'fl_delta', 'fl_a'], upd);
+    upd();
+  })();
+
+  /* ── 4. 贴现体制 ── */
+  (function rho() {
+    if (!$('rho_a')) return;
+    function upd() {
+      var a = parseFloat($('rho_a').value);
+      var rho = parseFloat($('rho_r').value) / 100;
+      txt($('rho_aO'), a.toFixed(1));
+      txt($('rho_rO'), rho.toFixed(2));
+      var hi = 1 / a;
+      var lo = 1 / (a + 1);
+      var mid = hi - lo;
+      var reg, col;
+      if (rho > hi + 1e-12) { reg = '简单均衡'; col = C.blue; }
+      else if (rho < lo - 1e-12) { reg = '声誉塌缩'; col = C.red; }
+      else { reg = '大 n 仍威慑'; col = C.amber; }
+      txt($('rho_hi'), hi.toFixed(4));
+      txt($('rho_lo'), lo.toFixed(4));
+      txt($('rho_mid'), mid.toFixed(4));
+      txt($('rho_reg'), reg);
+      tint($('rho_reg'), col);
+      var msg = 'a=' + a.toFixed(1) + '：ρ>' + hi.toFixed(4) + ' 时路径与不贴现情形相同（进入者混合概率要改）；ρ<' +
+        lo.toFixed(4) + ' 时弱类型一遇进入就默许。当前 ρ=' + rho.toFixed(2) + ' → ' + reg;
+      txt($('rho_vh'), msg);
+      tint($('rho_vh'), col);
+      bars($('rhoChart'), [
+        { v: lo, c: C.red, lab: '塌缩上沿', d: 4 },
+        { v: hi, c: C.amber, lab: '简单下沿', d: 4 },
+        { v: rho, c: C.blue, lab: '当前 ρ', d: 4 }
+      ], 0, 1.05, '贴现因子');
+    }
+    bind(['rho_a', 'rho_r'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>

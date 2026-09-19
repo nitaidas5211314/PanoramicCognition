@@ -1074,11 +1074,14 @@
     {
       "slug": "声誉模型（Kreps-Wilson）：少量-非理性类型-的存在，使长期参与者值得付出成本维护声誉",
       "title": "声誉模型（Kreps-Wilson）：少量\"非理性类型\"的存在，使长期参与者值得付出成本维护声誉",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-20 06:03:18",
+      "finished": "2026-09-20 06:27:34",
+      "duration_sec": 1456,
+      "outputs": [
+        "reports/声誉模型（Kreps-Wilson）：少量-非理性类型-的存在，使长期参与者值得付出成本维护声誉.html",
+        "reports/声誉模型（Kreps-Wilson）：少量-非理性类型-的存在，使长期参与者值得付出成本维护声誉.md"
+      ],
       "error": null
     },
     {
@@ -1939,7 +1942,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-20 06:02",
+  "updated": "2026-09-20 06:27",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
