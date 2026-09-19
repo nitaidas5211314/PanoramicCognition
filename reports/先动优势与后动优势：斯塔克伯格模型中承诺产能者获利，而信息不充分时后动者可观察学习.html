@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>先动优势与后动优势 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Stackelberg × Information</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">现实映射</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <div class="navgroup">模拟与实践</div>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与问题</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>先动优势与后动优势</h1>
+  <p class="sub">产量上<strong>先承诺的人把对手反应曲线向内推</strong>；需求没摊开、后动者能观察时，学习的价值可以盖过承诺。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">3 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>先动优势不是「早进市场就赢」。</strong> 在完全信息、行动互为战略替代（对方多产你就少产）时，先把产量或产能<strong>承诺死</strong>的一方，迫使对方沿向下的反应曲线退让，个人利润高于同时行动的古诺均衡。<span class="tag t-fact">事实</span></p>
+<p>同一套线性需求里，对称成本下先动利润是自家古诺利润的 <strong>9/8（+12.5%）</strong>，后动只有古诺的 <strong>9/16</strong>。行业总利润反而降到古诺的 <strong>27/32</strong>，因为总产量更靠近竞争——先动者切走更大一块、把蛋糕做小了。<span class="tag t-fact">事实</span></p>
+<p>这条优势有两把明确的刀能把它翻过来。第一，行动若是战略互补（差异化产品的价格：对方涨价你也想涨），Gal-Or（1985）证明<strong>后动者利润更高</strong>。<span class="tag t-fact">事实</span>第二，需求不确定、后动者能看到实现值或从先动者的行动里反推私有信息时，观察的价值可以盖过承诺：Gal-Or（1987）在相当宽的参数上得到后动优势；本手册的两状态教学模型在默认参数下期望利润是 <strong>18 对 12</strong>。<span class="tag t-fact">事实</span><span class="tag t-inf">推论</span></p>
+<p>经验上更狠的一刀是幸存者偏差：Golder 与 Tellis（1993）用历史方法看约 500 个品牌、50 个品类，市场先驱失败率 <strong>47%</strong>，平均份额 <strong>10%</strong>，而 PIMS 幸存者样本里先驱份额加权约 <strong>29%</strong>。早期市场领导者平均比先驱<strong>晚 13 年</strong>进入，份额 <strong>28%</strong>。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「谁先宣布」，而是：<strong>行动顺序、承诺是否不可逆、信息在谁行动之前揭开</strong>，如何改写子博弈精炼均衡里的利润分配。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：斯塔克伯格数量领导、古诺对照、战略替代/互补、Dixit–Spence 产能承诺、私有信息下的先动劣势、技术采用的等待价值、进入时点的经验证据。</li>
+<li><strong>在界外</strong>：某个具体行业明年谁赢、某支股票该不该因为「先发」而买。那些问题只有压成「替代还是互补、承诺可不可逆、等待揭示什么」才进得了这个模型。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>先承诺 vs 先观察，哪一种顺序在什么支付与信息结构下更赚钱</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「反应曲线斜率 + 承诺可逆性 + 状态能否被观察」可写成博弈为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>先动者、后动者、反应函数、沉没产能、需求状态、进入固定成本</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>在位者、潜在进入者、同时行动的古诺对手、定价跟随者、监管与标准组织</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>需求截距、边际成本、交叉偏导符号、需求方差、固定成本 F、信号噪声</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>公开产能、价格公告、进入时点、专利日、失败品牌是否还在样本里</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>对手的反应曲线斜率、私有需求信号、承诺是否真的不可逆</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>先动产量 → 后动最优反应 → 价格与利润；后动观察 → 后动产量更贴状态</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>战略替代 + 可观察承诺 ⇒ 先动利润高于同时行动；高方差 + 可观察状态 ⇒ 后动期望利润可反超</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「早上市的品牌份额高」常是幸存者相关，不是承诺机制<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>先发制人、抢滩、观望、产能过剩传闻、先驱神话</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>把对手推到反应曲线上更不利的点；或用观察避免在错误状态上沉没投资</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。先动利润引来模仿与免费搭车；人人等待则市场无人培育</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。产能建设、专利到期、消费者学习、技术代际都有时滞</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>抢先投资可正反馈成标准；信息溢出可负反馈成集体观望</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>先问三件套：对方多做一分，你想多做还是少做？你的行动能不能撤回？再等一会，会不会揭开一个会改变最优行动的状态？</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它把「灵活」从美德里拉出来</h4><p>Schelling 的承诺逻辑在产量上有一个干净的闭式：对称线性需求里，先动者产量等于垄断产量，跟随者只拿剩余需求的一半。灵活到能改产量，承诺就消失，优势回到古诺。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它解释两种相反的商业谚语</h4><p>「抢先锁定」和「让子弹飞一会儿」可以同时为真。差别不在勇气，在交叉偏导的符号和信息什么时候到达。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它直接打幸存者偏差</h4><p>把 PIMS 的 29% 先驱份额当成规律，会系统性高估先动。历史样本把失败先驱算进去之后，均值掉到 10%。<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>在价格竞争里模仿产量领导：对方涨价你也该涨（战略互补），先宣布低价或先锁死产能，等于把更有利的反应交给对手。Gal-Or（1985）的符号在这里是后动优势，不是先动优势。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看「谁先动」如何从支付符号落到份额统计。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fmMap" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度 · 并购审查、产能披露、标准组织、进入规制</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L8 资源位势 · 专利、转换成本、学习曲线、在位者惯性（Lieberman–Montgomery）</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 经验层 · 先驱失败率 47%、份额 10% vs PIMS 幸存者 29%</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 市场博弈 · 古诺 / 序贯价格 / Dixit 进入威慑 / Hoppe 技术采用</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 解概念 · 子博弈精炼；Hamilton–Slutsky 内生时点</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 承诺技术 · 产量、沉没产能、合同、公开时点；口头宣布不算</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 信息结构 · 完全信息 / 私有信号 / 后动者看见实现的需求或技术成败</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 支付符号 · 交叉偏导小于 0 先动占优；大于 0 后动占优（Gal-Or 1985）</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 问题原语 · 先把选择集锁死，还是先等状态揭开？</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门停在 <strong>L1–L2</strong>：先会判替代还是互补。进阶停在 <strong>L3</strong>：完全信息下的先动优势，在私有信息里可以被信号泄露反转。L7 是用来约束 L8 的——资源故事必须过得了「失败先驱是否还在样本里」这一关。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从「谁先走一步」到三层操作：抽象是反应曲线，机制是承诺或观察，操作是产能、定价时点或再等一次实验。</p>
+<svg viewBox="0 0 680 390" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fmCm" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="fmCr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="160" y="16" width="360" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">顺序 × 承诺 × 信息 → 利润排序</text>
+  <rect x="30" y="88" width="190" height="64" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="125" y="114" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">抽象层</text><text x="125" y="134" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">反应曲线向上还是向下</text>
+  <rect x="245" y="88" width="190" height="64" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">机制层</text><text x="340" y="134" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">锁死选择集，或看见状态</text>
+  <rect x="460" y="88" width="190" height="64" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="555" y="114" text-anchor="middle" fill="#15181d" font-size="13" font-weight="700" font-family="sans-serif">操作层</text><text x="555" y="134" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">产能、跟价、再做一次试验</text>
+  <line x1="300" y1="60" x2="125" y2="88" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#fmCm)"/>
+  <line x1="340" y1="60" x2="340" y2="88" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#fmCm)"/>
+  <line x1="380" y1="60" x2="555" y2="88" stroke="#b8730a" stroke-width="1.5" marker-end="url(#fmCm)"/>
+  <rect x="40" y="180" width="600" height="78" rx="8" fill="#f8fafc" stroke="#e2e6ec"/>
+  <text x="60" y="208" fill="#15181d" font-size="13" font-family="sans-serif">替代（产量）：先承诺 → 对方少产 → 先动利润 = 古诺的 9/8</text>
+  <text x="60" y="230" fill="#15181d" font-size="13" font-family="sans-serif">互补（价格）：先宣布 → 对方更会跟 → 后动利润高于先动</text>
+  <text x="60" y="252" fill="#7c848f" font-size="12" font-family="sans-serif">不确定且可观察：先锁定在期望值上，后动按实现值反应</text>
+  <rect x="40" y="276" width="280" height="88" rx="8" fill="#fef2f2" stroke="#d5342c"/>
+  <text x="180" y="308" text-anchor="middle" fill="#d5342c" font-size="13" font-weight="700" font-family="sans-serif">口头「我们先上」</text>
+  <text x="180" y="330" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">产量仍可改 → 退回古诺</text>
+  <text x="180" y="348" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">cheap talk，不是斯塔克伯格</text>
+  <rect x="360" y="276" width="280" height="88" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="500" y="308" text-anchor="middle" fill="#0f8a4d" font-size="13" font-weight="700" font-family="sans-serif">沉没产能 / 看见需求</text>
+  <text x="500" y="330" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">选择集或信息集真的变了</text>
+  <text x="500" y="348" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">均衡才会离开同时行动</text>
+  <line x1="320" y1="320" x2="360" y2="320" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#fmCr)"/>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>在系统里做什么</th>
+<th>典型失败模式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">先动者 / 在位者</td>
+<td>选择可观察、难撤回的产量或产能</td>
+<td>把可撤回的宣言当成承诺；在互补博弈里抢先</td>
+</tr>
+<tr>
+<td class="k">后动者 / 进入者</td>
+<td>沿反应曲线最佳反应，或等状态揭开再投</td>
+<td>看不见承诺却以为对方会让；该等的时候跟风抢跑</td>
+</tr>
+<tr>
+<td class="k">同时行动对手</td>
+<td>古诺或伯川德基准：谁也不把选择集先锁死</td>
+<td>用「我们是领导者」的叙事掩盖实际上的同时定价</td>
+</tr>
+<tr>
+<td class="k">信息结构</td>
+<td>决定后动者看到的是行动、状态，还是噪声</td>
+<td>把无限噪声当成可推断信号，或反过来</td>
+</tr>
+<tr>
+<td class="k">样本建构者</td>
+<td>决定失败先驱还在不在统计里</td>
+<td>只用存活企业估「先发优势」</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<p>基准市场：价格 <code>P = a − b(q1+q2)</code>，边际成本 <code>c</code>，下面默认 <code>a=10</code>、<code>b=1</code>、<code>c=2</code>，所以净需求截距 <code>A = a−c = 8</code>。这些比率在对称成本的内点均衡里<strong>不随 a、b、c 改变</strong>，滑块改的是水平，不是 9/8 这个比率本身。<span class="tag t-fact">事实</span></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号</th>
+<th>为何重要</th>
+<th>默认基准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">先动 / 后动产量</td>
+<td>qL、qF</td>
+<td>先动把对方推下反应曲线</td>
+<td>4 与 2</td>
+</tr>
+<tr>
+<td class="k">古诺产量</td>
+<td>qC</td>
+<td>「什么都不承诺」的对照</td>
+<td>每家 8/3≈2.67</td>
+</tr>
+<tr>
+<td class="k">利润</td>
+<td>πL、πF、πC</td>
+<td>先动优势必须相对古诺，不是相对零</td>
+<td>8、4、64/9≈7.11</td>
+</tr>
+<tr>
+<td class="k">交叉偏导</td>
+<td>∂²π2/∂s1∂s2</td>
+<td>负：先动占优；正：后动占优</td>
+<td>产量为负，价格为正</td>
+</tr>
+<tr>
+<td class="k">需求两态</td>
+<td>θH、θL、p</td>
+<td>方差大过 μ²/4 时，观察值超过承诺</td>
+<td>默认 16、4、0.5 → 后动 18&gt;12</td>
+</tr>
+<tr>
+<td class="k">进入固定成本</td>
+<td>F</td>
+<td>相对跟随者可变利润 4，决定威慑还是容纳</td>
+<td>F*=0.343 为分界</td>
+</tr>
+<tr>
+<td class="k">差异化</td>
+<td>γ</td>
+<td>价格博弈里后动−先动的差额随 γ 上升</td>
+<td>γ=0.5 时差额 1.14</td>
+</tr>
+</tbody>
+</table></div>
+<p>成本不对称会改变「谁的利润更高」，但只要仍是内点，先动者相对<strong>自己的</strong>古诺利润仍是 9/8。<code>cL=3</code>、<code>cF=2</code> 时 πL=4.50、πF=6.25、自家古诺=4.00：后动赚得更多，先动仍比自己同时行动高 12.5%。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<p>实线是机制，红色虚线是把优势吃回去的反馈。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fmCs" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="fmFb" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="24" y="28" width="150" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="99" y="50" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">承诺产量 / 产能</text><text x="99" y="68" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">不可逆、可观察</text>
+  <rect x="230" y="28" width="150" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="305" y="50" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">跟随者少产</text><text x="305" y="68" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">向下的反应曲线</text>
+  <rect x="436" y="28" width="210" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="541" y="50" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">先动利润 8 &gt; 古诺 7.11</text><text x="541" y="68" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">后动只剩 4</text>
+  <line x1="174" y1="54" x2="226" y2="54" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#fmCs)"/>
+  <line x1="380" y1="54" x2="432" y2="54" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#fmCs)"/>
+  <rect x="24" y="150" width="170" height="52" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="109" y="172" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">需求状态揭开</text><text x="109" y="190" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">或从产量反推信号</text>
+  <rect x="250" y="150" width="170" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="335" y="172" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">后动按实现值反应</text><text x="335" y="190" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">高需求多产、低需求停</text>
+  <rect x="470" y="150" width="176" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="558" y="172" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">期望利润可反超</text><text x="558" y="190" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">默认 18 对 12</text>
+  <line x1="194" y1="176" x2="246" y2="176" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#fmCs)"/>
+  <line x1="420" y1="176" x2="466" y2="176" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#fmCs)"/>
+  <path d="M560 80 C 560 120, 200 120, 120 150" fill="none" stroke="#d5342c" stroke-width="1.4" stroke-dasharray="5 3" marker-end="url(#fmFb)"/>
+  <text x="300" y="118" text-anchor="middle" fill="#d5342c" font-size="11" font-family="sans-serif">反馈：利润引来模仿，市场培育被免费搭车</text>
+  <path d="M120 202 C 80 250, 80 280, 200 300" fill="none" stroke="#d5342c" stroke-width="1.4" stroke-dasharray="5 3" marker-end="url(#fmFb)"/>
+  <text x="250" y="292" fill="#d5342c" font-size="11" font-family="sans-serif">反馈：人人等待 → 没有先投入的人，品类起不来</text>
+  <rect x="24" y="318" width="632" height="28" rx="6" fill="#f8fafc" stroke="#e2e6ec"/><text x="40" y="337" fill="#454c56" font-size="11" font-family="sans-serif">实线蓝 = 因果方向；红虚线 = 把优势吃回去的反馈。两套因果可以同时存在于一个行业的不同决策上。</text>
+</svg>
+<p>因果和相关要拆开：</p>
+<ul>
+<li><strong>因果</strong>：给定向下的反应曲线，先观察的产量承诺改变后动者的最优解，这是逆向归纳，不是相关。<span class="tag t-fact">事实</span></li>
+<li><strong>相关</strong>：存活下来的早期品牌份额更高。Golder–Tellis 说明一旦把消失的先驱放回样本，相关大幅变弱。<span class="tag t-fact">事实</span></li>
+<li><strong>被误当成因果的</strong>：先驱失败率低。PIMS 里几乎看不到失败者；历史样本是 47%。<span class="tag t-fact">事实</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<p>同一结构在不同领域换名字。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>表面</th>
+<th>隐藏的同一结构</th>
+<th>换名之后看见什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">斯塔克伯格产量领导</td>
+<td>Schelling 烧桥</td>
+<td>优势来自删掉「以后还可以减产」这个选项</td>
+</tr>
+<tr>
+<td class="k">Dixit 沉没产能</td>
+<td>可信承诺装置</td>
+<td>产能把事后边际成本压低，威胁才子博弈精炼</td>
+</tr>
+<tr>
+<td class="k">后动者看见 θ</td>
+<td>实物期权的等待价值</td>
+<td>信息的价值 = 避免在坏状态支付沉没成本</td>
+</tr>
+<tr>
+<td class="k">Gal-Or 1987 信号扭曲</td>
+<td>信息诅咒</td>
+<td>知道得更多，行动却泄露，知情者反而收缩产量</td>
+</tr>
+<tr>
+<td class="k">战略互补下都想后动</td>
+<td>国际象棋 zugzwang</td>
+<td>被迫先走是负担，不是荣誉</td>
+</tr>
+<tr>
+<td class="k">PIMS 29% 份额</td>
+<td>幸存者偏差</td>
+<td>分母里缺了已经死掉的先驱</td>
+</tr>
+<tr>
+<td class="k">Hoppe 技术溢出</td>
+<td>专利竞赛里的「让别人先试错」</td>
+<td>成功概率不是单调的：太高就抢跑，太低就等</td>
+</tr>
+</tbody>
+</table></div>
+<p>Sun（2010）指出一个边界：若支付依赖于相对排名（垂直差异化、Hotelling 式的位置），战略互补也可以翻回先动优势。Gal-Or 的符号定理用的是排名无关的支付。<span class="tag t-ana">分析</span></p>
+<p>教学化简（不是 Hoppe 的均衡闭式）：技术以概率 <code>p</code> 成功，采用要付沉没成本 <code>F</code>，成功后双寡头收入 <code>R</code>。后动者只在看见成功后才付 <code>F</code>。则 <code>EπF − EπL = F(1−p)</code>。<code>R=20</code>、<code>F=8</code>、<code>p=0.4</code> 时，先动期望利润 <code>0.4×20−8 = 0</code>，后动 <code>0.4×(20−8) = 4.8</code>。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<div class="flow "><p>判符号 → 问承诺可不可逆 → 问状态会不会在你行动前揭开 → 与古诺/同时定价对照 → 再看固定成本是否已把进入挡住</p></div>
+<p>运行要点，全部用 <code>a=10</code>、<code>b=1</code>、<code>c=2</code> 复算：</p>
+<ol>
+<li><strong>同时行动（古诺）</strong>：每家产量 <code>(a−c)/(3b) = 8/3 ≈ 2.67</code>，价格 <code>(a+2c)/3 ≈ 4.67</code>，每家利润 <code>(a−c)²/(9b) = 64/9 ≈ 7.11</code>。这是「谁也不承诺」的基准。</li>
+<li><strong>先动承诺产量</strong>：<code>qL = (a−c)/(2b) = 4</code>（等于垄断产量），<code>qF = (a−c)/(4b) = 2</code>。价格 <code>(a+3c)/4 = 4</code>。<code>πL = (a−c)²/(8b) = 8</code>，<code>πF = (a−c)²/(16b) = 4</code>。</li>
+<li><strong>比率恒等式</strong>：<code>πL/πC = 9/8 = 1.125</code>，<code>πF/πC = 9/16 = 0.5625</code>。行业利润 <code>12</code> 对古诺的 <code>128/9 ≈ 14.22</code>，比值 <strong>27/32 = 0.84375</strong>。消费者剩余 <code>18</code> 对 <code>128/9 ≈ 14.22</code>，是古诺的 <strong>81/64 = 1.265625</strong> 倍。总福利 <code>30</code> 对 <code>256/9 ≈ 28.44</code>，竞争福利 <code>32</code>，垄断福利 <code>24</code>。先动让总产量从 <code>16/3≈5.33</code> 升到 <code>6</code>，更靠近竞争产量 <code>8</code>。</li>
+<li><strong>价格顺序相反</strong>：需求 <code>qi = α − pi + γ pj</code>，<code>α=10</code>、<code>c=2</code>、<code>γ=0.5</code> 时，后动利润 <strong>37.30</strong>，先动 <strong>36.16</strong>，同时定价 <strong>36.00</strong>。先动仍略高于同时，但当后动更好。<code>γ=0.8</code> 时差额从 1.14 扩到 <strong>10.20</strong>。</li>
+<li><strong>进入固定成本</strong>：跟随者在斯塔克伯格下的可变利润是 4。<code>F≥4</code> 时垄断产量已经挡住进入（封锁），垄断利润 16。<code>F=1</code> 时要把产量抬到 6 才能把跟随者利润压到 1，威慑利润 <strong>12 &gt; 8</strong>（容纳）。<code>F=0.25</code> 时威慑产量 7、利润 <strong>7 &lt; 8</strong>，应当容纳。分界 <code>F* = (a−c)²(3−2√2)/(32b) ≈ 0.343</code>。</li>
+</ol>
+<div class="note green"><b>子博弈精炼在这里干什么</b><p>Spence（1977）让在位者预装用不上的闲置产能，并假设进入者相信「事后产量=事前产能」。Dixit（1980）指出这不是精炼均衡：战略替代、线性需求下，在位者不会安装「没人进入也闲着」的产能。Bulow、Geanakoplos 与 Klemperer（1985）说明，若行动变成战略互补，进入后在位者可能产得更多，闲置产能威慑可以回来。<span class="tag t-fact">事实</span></p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 250" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fmTm" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="36" y1="48" x2="650" y2="48" stroke="#1d4ed8" stroke-width="2" marker-end="url(#fmTm)"/>
+  <circle cx="70" cy="48" r="5" fill="#15181d"/><text x="70" y="72" text-anchor="middle" fill="#15181d" font-size="10" font-family="sans-serif">1934</text><text x="70" y="86" text-anchor="middle" fill="#7c848f" font-size="10" font-family="sans-serif">Stackelberg</text>
+  <circle cx="150" cy="48" r="5" fill="#1d4ed8"/><text x="150" y="72" text-anchor="middle" fill="#15181d" font-size="10" font-family="sans-serif">1960</text><text x="150" y="86" text-anchor="middle" fill="#7c848f" font-size="10" font-family="sans-serif">Schelling</text>
+  <circle cx="230" cy="48" r="5" fill="#b8730a"/><text x="230" y="72" text-anchor="middle" fill="#15181d" font-size="10" font-family="sans-serif">1977–80</text><text x="230" y="86" text-anchor="middle" fill="#7c848f" font-size="10" font-family="sans-serif">Spence / Dixit</text>
+  <circle cx="330" cy="48" r="5" fill="#d5342c"/><text x="330" y="72" text-anchor="middle" fill="#15181d" font-size="10" font-family="sans-serif">1985 / 87</text><text x="330" y="86" text-anchor="middle" fill="#7c848f" font-size="10" font-family="sans-serif">Gal-Or 两篇</text>
+  <circle cx="430" cy="48" r="5" fill="#0f8a4d"/><text x="430" y="72" text-anchor="middle" fill="#15181d" font-size="10" font-family="sans-serif">1988</text><text x="430" y="86" text-anchor="middle" fill="#7c848f" font-size="10" font-family="sans-serif">Lieberman</text>
+  <circle cx="510" cy="48" r="5" fill="#1d4ed8"/><text x="510" y="72" text-anchor="middle" fill="#15181d" font-size="10" font-family="sans-serif">1990–93</text><text x="510" y="86" text-anchor="middle" fill="#7c848f" font-size="10" font-family="sans-serif">时点 / 先驱</text>
+  <circle cx="600" cy="48" r="5" fill="#b8730a"/><text x="600" y="72" text-anchor="middle" fill="#15181d" font-size="10" font-family="sans-serif">2000–07</text><text x="600" y="86" text-anchor="middle" fill="#7c848f" font-size="10" font-family="sans-serif">Hoppe / 半真</text>
+  <rect x="24" y="120" width="632" height="110" rx="8" fill="#f8fafc" stroke="#e2e6ec"/>
+  <text x="40" y="146" fill="#15181d" font-size="12" font-family="sans-serif">1934 数量领导 → 1960 承诺即力量 → 1980 产能必须经得起事后最优 → 1985 符号定理</text>
+  <text x="40" y="168" fill="#15181d" font-size="12" font-family="sans-serif">1987 私有信息把先动优势打穿 → 1988 管理学三条优势、四条劣势 → 1990 时点内生</text>
+  <text x="40" y="190" fill="#15181d" font-size="12" font-family="sans-serif">1993 历史样本拆掉先驱神话 → 2000 技术不确定下的后动优势 → 2003 份额优势可伴随利润劣势</text>
+  <text x="40" y="212" fill="#7c848f" font-size="12" font-family="sans-serif">2007 Suarez–Lanzolla：先动优势是半真命题，取决于技术与市场的变化速度。</text>
+</svg>
+<p>一条决策自己的时间结构也一样：承诺在前、反应在后、模仿和免费搭车更后、技术代际可以把整个反应曲线换掉。Golder–Tellis 里，早期领导者进入时点平均晚 13 年（二战前品类 19 年，二战后 5 年），当前领导者平均晚 <strong>20 年</strong>。用「晚几个月」理解后动，量级就错了。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>谁</th>
+<th>想要什么</th>
+<th>系统怎么奖励或惩罚</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">先动者</td>
+<td>把对方推下反应曲线，同时别在坏状态锁死</td>
+<td>替代博弈奖励承诺；高方差惩罚过早承诺</td>
+</tr>
+<tr>
+<td class="k">后动者</td>
+<td>白捡市场培育，并按实现需求生产</td>
+<td>信息溢出奖励等待；固定成本很低时奖励抢跑威慑对手</td>
+</tr>
+<tr>
+<td class="k">消费者</td>
+<td>总产量靠近竞争</td>
+<td>斯塔克伯格总产量 6 &gt; 古诺 5.33，剩余 18 &gt; 14.22</td>
+</tr>
+<tr>
+<td class="k">行业整体</td>
+<td>总利润</td>
+<td>序贯产量把行业利润打到古诺的 84.375%，个人理性≠行业理性</td>
+</tr>
+<tr>
+<td class="k">叙述者 / 咨询话术</td>
+<td>「先发优势」好卖</td>
+<td>幸存者样本让故事更好讲，失败先驱不在幻灯片里</td>
+</tr>
+</tbody>
+</table></div>
+<p>激励错位的核心：对个人，<code>πL=8</code> 比古诺 <code>7.11</code> 好；对行业，<code>12 &lt; 14.22</code>。先动优势是<strong>转移加扩大竞争</strong>，不是把饼做大。成本不对称时更要分开看——<code>cL=3</code>、<code>cF=2</code> 时先动者利润 4.50 低于后动 6.25，但仍高于自己的古诺 4.00。把「高于对手」和「高于同时行动」说成一句话，激励就判反了。<span class="tag t-inf">推论</span></p>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<p>钱和信息走的不是同一条路。承诺把租金从跟随者拨给先动者；观察把「少付一次沉没成本」拨给后动者；市场培育的投资则常被跟随者免费抽走。</p>
+<svg viewBox="0 0 680 340" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fmMs" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="fmMr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+    <marker id="fmMg" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0f8a4d"/></marker>
+  </defs>
+  <rect x="250" y="16" width="180" height="44" rx="8" fill="#15181d"/><text x="340" y="43" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">消费者支付 P×Q</text>
+  <rect x="36" y="110" width="170" height="64" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="121" y="136" text-anchor="middle" fill="#d5342c" font-size="13" font-weight="700" font-family="sans-serif">先动利润 8</text><text x="121" y="156" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">比古诺多 0.89</text>
+  <rect x="255" y="110" width="170" height="64" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="136" text-anchor="middle" fill="#1d4ed8" font-size="13" font-weight="700" font-family="sans-serif">后动利润 4</text><text x="340" y="156" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">被反应曲线抽走</text>
+  <rect x="474" y="110" width="170" height="64" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="559" y="136" text-anchor="middle" fill="#0f8a4d" font-size="13" font-weight="700" font-family="sans-serif">消费者剩余 18</text><text x="559" y="156" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">古诺只有 14.22</text>
+  <line x1="300" y1="60" x2="140" y2="110" stroke="#d5342c" stroke-width="1.5" marker-end="url(#fmMr)"/>
+  <line x1="340" y1="60" x2="340" y2="110" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#fmMs)"/>
+  <line x1="380" y1="60" x2="540" y2="110" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#fmMg)"/>
+  <rect x="36" y="210" width="280" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="176" y="232" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">市场培育、标准、教育用户</text><text x="176" y="250" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">先动者付，后动者免费搭车</text>
+  <rect x="364" y="210" width="280" height="52" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="504" y="232" text-anchor="middle" fill="#15181d" font-size="12" font-weight="700" font-family="sans-serif">高方差时的信息租金</text><text x="504" y="250" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">默认模型：后动多拿 6</text>
+  <line x1="176" y1="174" x2="250" y2="210" stroke="#d5342c" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#fmMr)"/>
+  <line x1="500" y1="174" x2="500" y2="210" stroke="#0f8a4d" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#fmMg)"/>
+  <text x="36" y="300" fill="#454c56" font-size="12" font-family="sans-serif">抽水不是道德判断：承诺把跟随者的 3.11（7.11−4）拨走一部分给先动者和消费者；</text>
+  <text x="36" y="320" fill="#454c56" font-size="12" font-family="sans-serif">观察则在坏状态避免沉没。两条管子可以装在同一家公司的不同决策上。</text>
+</svg>
+<p>Lieberman 与 Montgomery（1988）把先动者能守住的资源写成三条：技术领导（学习曲线、专利）、占住稀缺资产、买方转换成本。后动者的四条对冲是：免费搭车、不确定性被先驱解开、技术跳跃换掉旧能力、在位者惯性。2013 年他们把这套接到资源基础观：没有隔离机制的「先」只是时间戳。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>排序用 <code>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</code>，五项都是 1–5 的判断分，不是回归系数。<span class="tag t-ana">分析</span></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>排序</th>
+<th>杠杆</th>
+<th>重要性</th>
+<th>杠杆率</th>
+<th>可操作</th>
+<th>学习成本</th>
+<th>分数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>先判替代还是互补</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>2</td>
+<td>62.5</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>承诺是否可见且难撤回</td>
+<td>5</td>
+<td>5</td>
+<td>4</td>
+<td>2</td>
+<td>50</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>等待能否看见会改写行动的状态</td>
+<td>5</td>
+<td>4</td>
+<td>4</td>
+<td>2</td>
+<td>40</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>不用幸存者样本评估「先发」</td>
+<td>5</td>
+<td>3</td>
+<td>5</td>
+<td>2</td>
+<td>37.5</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>进入固定成本相对跟随者利润</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>2</td>
+<td>32</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>成本不对称是否盖过承诺</td>
+<td>4</td>
+<td>4</td>
+<td>3</td>
+<td>2</td>
+<td>24</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>免费搭车与在位惯性</td>
+<td>3</td>
+<td>3</td>
+<td>4</td>
+<td>2</td>
+<td>18</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>双方都想后动时会掉回同时行动</td>
+<td>4</td>
+<td>3</td>
+<td>4</td>
+<td>3</td>
+<td>16</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>需求方差（教学模型里 σ² 对 μ²/4）</td>
+<td>5</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+<td>15</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>技术变化与市场变化的速度</td>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+<td>12</td>
+</tr>
+</tbody>
+</table></div>
+<p>分数是手算：<code>5×5×5/2=62.5</code>，<code>5×5×4/2=50</code>，<code>5×4×4/2=40</code>，<code>5×3×5/2=37.5</code>，<code>4×4×4/2=32</code>，<code>4×4×3/2=24</code>，<code>3×3×4/2=18</code>，<code>4×3×4/3=16</code>，<code>5×3×3/3=15</code>，<code>4×3×3/3=12</code>。第 1 杠杆一天就能用；第 10 杠杆要看行业时钟，学习成本更高，所以排后面——不是它不重要。<span class="tag t-ana">分析</span></p>
+<p>Suarez 与 Lanzolla（2007）把第 10 点写成一张 2×2：技术与市场都慢，先动更可能沉淀成隔离机制；任一边变得很快，先动优势就是半真命题。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>把「先上市」当成斯塔克伯格承诺</summary><div class="dbody"><p>先上市只是日历。优势要求对方<strong>看见</strong>你的产量或产能，并且你<strong>撤不回</strong>。公告会可以改口，产能合同和沉没设备不行。日历领先而选择集没变，均衡仍是古诺。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>用 PIMS 的 29% 证明先动优势</summary><div class="dbody"><p>PIMS 与 ASSESSOR 主要记录幸存者，受访人还可能把后来的领导者认成先驱。Golder–Tellis 把约 500 个品牌、50 个品类的历史放进来：失败率 47%，平均份额 10%（二战后品类 7%）。早期领导者失败率 8%、份额 28%，且平均晚 13 年。50 个品类里，能把长期领导无歧义归于市场先驱的，他们只指出 Crisco 一例。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>在价格战里抢着宣布</summary><div class="dbody"><p>差异化价格的反应曲线向上。默认 <code>γ=0.5</code>：后动 37.30、先动 36.16、同时 36.00。你抢到的「领导」只比同时行动多 0.16，却把 1.14 的差额让给了跟随者。<code>γ</code> 升到 0.8，这个差额变成 10.20。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>闲置产能一定能吓阻进入</summary><div class="dbody"><p>那是 Spence（1977）的非精炼威胁。Dixit（1980）在战略替代下表明：没人进入时也会闲置的产能，不是完美均衡。只有「一旦进入就会用上」的产能才算数。互补时闲置可以回来，但那是另一张支付，不是万能恐吓。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>知道得更多的一方一定赚更多</summary><div class="dbody"><p>Gal-Or（1987）：先动者的产量会泄露其对需求的私有信号。为了假装需求低，先动者收缩产量；只要信号不是无限噪声，后动者仍能推断。论文给出相当宽的参数，后动者更好。信息在战略替代里可以是负担。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>把「高于对手」和「高于古诺」当成同一句</summary><div class="dbody"><p><code>cL=3</code>、<code>cF=2</code>、<code>a=10</code>：先动利润 4.50 低于后动 6.25，但仍比自家古诺 4.00 高 12.5%。成本劣势和承诺优势是两笔账。只报「我们不是利润第一」会把该做的承诺也停掉；只报「我们领先对手」会忽略你其实该把成本打下来。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>沉没成本已经付了，所以必须坚守先动位置</summary><div class="dbody"><p>已经付掉的培育费用不改变今天的反应曲线。该不该继续扩产，只看前方的边际。把沉没成本当成必须先动的理由，是另一本手册里的升级承诺，不是斯塔克伯格。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>双方都想当后动，所以一定会有人当后动</summary><div class="dbody"><p>战略互补时双方都偏好跟随。Hamilton 与 Slutsky（1990）讨论内生时点：都想后动时，均衡常常掉回同时行动，而不是自动出现一个漂亮的领导者。等对方先跳，可能谁也不跳。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>份额优势等于利润优势</summary><div class="dbody"><p>Boulding 与 Christen（2003）在业务单元层面复现了先驱的需求/份额优势，同时发现更大的成本劣势，平均而言长期利润更差。初始利润优势大约维持 12 到 14 年，之后反转；消费者学习有限、地位强、有专利时可以不反转。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>把封锁进入说成「我打败了跟随者」</summary><div class="dbody"><p><code>F≥4</code> 时，垄断产量本身就让跟随者可变利润不够覆盖固定成本，你拿的是垄断利润 16，不是斯塔克伯格的 8。这是进入壁垒，不是领导艺术。<code>F</code> 在 0.343 以下时硬扩产威慑，利润还不如容纳对方进来。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>对称模型的 2:1 利润比可以套到任何行业</summary><div class="dbody"><p>8 对 4 依赖对称边际成本和线性需求、内点均衡。成本差一改，后动就可以赚得更多。教学闭式是尺子，不是行业预测。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>后视镜把早期领导者认成先驱</summary><div class="dbody"><p>Golder–Tellis 强调：先驱死掉之后，活下来的早期领导者会被自己人和数据库标成 pioneer。晚 13 年进来的人不是先动者。定义不先钉死，后面的回归都在回答另一个问题。<span class="tag t-fact">事实</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>现实里长什么样</th>
+<th>你能检查的痕迹</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">向下的反应曲线</td>
+<td>产能、货架、频次：对方多铺你就少铺</td>
+<td>过去对方扩产时，你是收缩还是跟进</td>
+</tr>
+<tr>
+<td class="k">向上的反应曲线</td>
+<td>价格、广告调性、质量档次：对方升你也升</td>
+<td>对方涨价后你的最优是跟还是砍</td>
+</tr>
+<tr>
+<td class="k">不可逆承诺</td>
+<td>专用设备、长期供货合同、公开的资本开支</td>
+<td>三个月内能否无罚则地撤掉</td>
+</tr>
+<tr>
+<td class="k">可观察的状态</td>
+<td>试点转化率、技术是否真能产、监管是否落地</td>
+<td>再等一轮实验，最优行动会不会变</td>
+</tr>
+<tr>
+<td class="k">免费搭车</td>
+<td>品类教育、接口标准、失败案例被对手写进说明书</td>
+<td>你的市场费用有多少比例变成公共品</td>
+</tr>
+<tr>
+<td class="k">幸存者样本</td>
+<td>只采访还活着的「第一名」</td>
+<td>同品类消失的牌子是否进了分母</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<p>一条可以反复用的判别，不依赖行业黑话：</p>
+<ol>
+<li>写下一个对手的具体行动（不是「竞争加剧」）。</li>
+<li>若该行动加大一档，你的最优是加还是减？加 = 互补 = 倾向后动；减 = 替代 = 先动才有承诺价值。</li>
+<li>把你打算先做的那一步写成「对方看得见 / 看不见」和「30 天内可撤回 / 不可撤回」。看不见或可撤回 → 还不是承诺。</li>
+<li>列出等待 2–4 周会揭开的一个状态。若揭开后最优行动会切换，且切换能省下的钱大于等待的时间成本，后动的学习价值为正。</li>
+<li>最后才和「什么都不承诺」的基准比：你要的是高于同时行动，不是高于对手的虚荣指标。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>L1 会读反应曲线的方向</summary><div class="dbody"><p>拿一次真实的对手行动，说出自己该加还是该减，并举一个反例防止自己永远说「减」。过关：能在产量型和价格型各举一个自己行业的例子。</p></div></details>
+<details><summary>L2 会把承诺和宣言分开</summary><div class="dbody"><p>列三项候选承诺，逐项标可见性与可逆性。过关：至少删掉一项「听起来狠但能改口」的。</p></div></details>
+<details><summary>L3 会算古诺对照</summary><div class="dbody"><p>用本页模型或手算 <code>9/8</code>。过关：能说明先动者个人利润上升时，行业总利润为什么下降。</p></div></details>
+<details><summary>L4 会估等待的信息价值</summary><div class="dbody"><p>写清状态、概率、沉没成本。过关：能像 <code>F(1−p)</code> 那样写出「等一次能省下的期望成本」，哪怕数字是区间。</p></div></details>
+<details><summary>L5 会审计样本</summary><div class="dbody"><p>任何「先发企业份额」的引用，先问失败企业在不在分母里。过关：能把 Golder–Tellis 的 47% 与 10% 和 PIMS 的 29% 放在同一段话里而不打架。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你是一条双寡头产线上的调度员。每一季只允许下一个指令：<strong>砸下不可逆产能</strong>，或<strong>派侦察再看需求</strong>。分数不是绝对利润，是相对古诺的超额。</p>
+<p>三个房间：</p>
+<ul>
+<li><strong>替代车间</strong>（产量）：砸产能得分，侦察只浪费一季。</li>
+<li><strong>互补车间</strong>（价格）：砸产能扣分，跟在对手价目表后面得分。</li>
+<li><strong>浓雾车间</strong>（θ 随机）：雾越浓，侦察越值钱；雾散之前砸下去的产能会在坏状态里亏着转。</li>
+</ul>
+<p>失败结局固定两种：在互补车间里表演领导；在浓雾里把产量锁在期望值上，然后看着后动者在高需求那一态把量补满。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>输入</th>
+<th>完成标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 符号卡</td>
+<td>一个你在做的决策</td>
+<td>写出替代或互补，并给一条证据</td>
+</tr>
+<tr>
+<td class="k">T2 承诺审计</td>
+<td>你准备公开的动作</td>
+<td>可见性、可逆性各一句；缺一条就降级为宣言</td>
+</tr>
+<tr>
+<td class="k">T3 古诺对照</td>
+<td>a、c 或相对成本</td>
+<td>说出相对同时行动是高了还是只是比对手好看</td>
+</tr>
+<tr>
+<td class="k">T4 等待账单</td>
+<td>一次可做的小实验</td>
+<td>实验成本 vs 它能避免的沉没成本</td>
+</tr>
+<tr>
+<td class="k">T5 样本刺</td>
+<td>一篇「先发优势」材料</td>
+<td>指出失败企业是否进了分母</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<p>三间车间对应三个真在算数的模型。滑块改的是闭式里的参数，不是装饰。</p>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">产量车间：先承诺</button><button class="tab" data-pane="tb1-1">价格车间：先宣布</button><button class="tab" data-pane="tb1-2">浓雾车间：先观察</button></div>
+<div class="pane on" id="tb1-0"><p>对称成本下先动利润恒为古诺的 9/8。把先动者成本从 2 调到 3，个人仍比自家古诺高 12.5%，但绝对利润 4.50 会低于后动的 6.25。反事实：若承诺可以悄悄撤回，两边回到古诺，先动者从 8 掉到 7.11，丢掉的就是那 12.5%。</p></div><div class="pane" id="tb1-1"><p>γ=0.5 时后动比先动多 1.14，先动只比同时定价多 0.16。反事实：若你以为「领导」等于利润最大，你会去抢一个比跟随差、只比不动好一点点的位置。γ 越大这笔账越难看。</p></div><div class="pane" id="tb1-2"><p>θH=16、θL=4、p=0.5 时后动期望利润 18、先动 12。把雾收薄到 θH=12、θL=6，读数翻成约 10.13 对 7.31，承诺重新值钱。反事实：完全信息（方差为 0）时后动只有先动的一半，和产量车间的 4 对 8 是同一把刀。</p></div>
+<div class="tool" id="tool-stack">
+  <h3>模型 1 · 产量承诺：相对古诺的 12.5%，以及成本何时翻盘</h3>
+  <div class="ctrl">
+    <label>需求截距 a <output id="sk_aO">10.0</output></label>
+    <input type="range" id="sk_a" min="8" max="16" step="0.5" value="10"/>
+    <label>先动边际成本 cL <output id="sk_cLO">2.0</output></label>
+    <input type="range" id="sk_cL" min="0" max="6" step="0.1" value="2"/>
+    <label>后动边际成本 cF <output id="sk_cFO">2.0</output></label>
+    <input type="range" id="sk_cF" min="0" max="6" step="0.1" value="2"/>
+  </div>
+  <div class="readout">
+    <div class="ro">先动产量 <b id="sk_qL">4.00</b></div>
+    <div class="ro">后动产量 <b id="sk_qF">2.00</b></div>
+    <div class="ro">先动利润 <b id="sk_piL">8.00</b></div>
+    <div class="ro">后动利润 <b id="sk_piF">4.00</b></div>
+    <div class="ro">先动的古诺利润 <b id="sk_piC">7.11</b></div>
+    <div class="ro">相对古诺 <b id="sk_ex">12.5%</b></div>
+    <div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="sk_vh" style="font-size:13px;color:#0f8a4d">先动 8.00 &gt; 后动 4.00；相对自家古诺 7.11 仍高 12.5%（内点恒为 9/8）</span></div>
+  </div>
+  <canvas id="skChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<div class="tool" id="tool-info">
+  <h3>模型 2 · 两状态需求：先锁定在期望上，后动看见 θ</h3>
+  <div class="ctrl">
+    <label>高需求 θH <output id="in_hO">16.0</output></label>
+    <input type="range" id="in_h" min="6" max="24" step="0.5" value="16"/>
+    <label>低需求 θL <output id="in_lO">4.0</output></label>
+    <input type="range" id="in_l" min="1" max="14" step="0.5" value="4"/>
+    <label>高需求概率 p <output id="in_pO">0.50</output></label>
+    <input type="range" id="in_p" min="0.2" max="0.8" step="0.05" value="0.5"/>
+  </div>
+  <div class="readout">
+    <div class="ro">先动承诺 qL <b id="in_qL">4.00</b></div>
+    <div class="ro">E[先动利润] <b id="in_eL">12.00</b></div>
+    <div class="ro">E[后动利润] <b id="in_eF">18.00</b></div>
+    <div class="ro">后动−先动 <b id="in_gap">+6.00</b></div>
+    <div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="in_vh" style="font-size:13px;color:#1d4ed8">后动优势：E[πF]=18.00 &gt; E[πL]=12.00，差额 6.00。低需求角点（跟随者停产）</span></div>
+  </div>
+  <canvas id="inChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<div class="tool" id="tool-price">
+  <h3>模型 3 · 差异化价格：战略互补，后动者跟价</h3>
+  <div class="ctrl">
+    <label>需求规模 α <output id="pr_aO">10.0</output></label>
+    <input type="range" id="pr_a" min="8" max="16" step="0.5" value="10"/>
+    <label>边际成本 c <output id="pr_cO">2.0</output></label>
+    <input type="range" id="pr_c" min="0" max="5" step="0.1" value="2"/>
+    <label>差异化 γ <output id="pr_gO">0.50</output></label>
+    <input type="range" id="pr_g" min="0.1" max="0.85" step="0.05" value="0.5"/>
+  </div>
+  <div class="readout">
+    <div class="ro">先动利润 <b id="pr_piL">36.16</b></div>
+    <div class="ro">后动利润 <b id="pr_piF">37.30</b></div>
+    <div class="ro">同时定价 <b id="pr_piS">36.00</b></div>
+    <div class="ro">后动−先动 <b id="pr_gap">+1.14</b></div>
+    <div style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="pr_vh" style="font-size:13px;color:#1d4ed8">战略互补：后动 37.30 ，先动 36.16 ，同时 36.00。后动−先动 = 1.14；先动−同时 = 0.16。γ 越大，跟价的优势越大。</span></div>
+  </div>
+  <canvas id="prChart" height="214" style="width:100%;margin-top:8px"></canvas>
+</div>
+<p>模型 2 的闭式（边际成本 0，<code>P=θ−Q</code>，后动者看见实现的 θ）：内点 <code>qL=μ/2≤θL</code> 时，<code>EπL=μ²/8</code>，<code>EπF=σ²/4+μ²/16</code>，后动占优当 <code>σ²&gt;μ²/4</code>。<code>p=0.5</code> 时内点区域恰好到不了严格后动优势，平等出现在 <code>θH=3θL</code>（例如 12 与 4，两边都是 8）；严格后动优势出现在低需求角点。角点产量 <code>qL=[p·θH/2+(1−p)θL]/(2−p)</code>，已用步长 0.002 的网格搜索复核，与闭式一致。这是教学模型，不是 Gal-Or（1987）的原式——那篇是双方都有私有信号、先动者扭曲产量以发送低需求信号。<span class="tag t-inf">推论</span><span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>标志性产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1 看见</td>
+<td>不把先上市叫成先动优势</td>
+<td>一句话区分日历与承诺</td>
+</tr>
+<tr>
+<td class="k">2 判别</td>
+<td>替代/互补、可逆/不可逆、等不等得来信息</td>
+<td>一张四行决策卡</td>
+</tr>
+<tr>
+<td class="k">3 定量</td>
+<td>会算 9/8、会读 F 与 4 的关系、会看方差是否盖过承诺</td>
+<td>一组和古诺对照过的数字</td>
+</tr>
+<tr>
+<td class="k">4 审计</td>
+<td>能指出一篇先发研究的样本是否含失败者</td>
+<td>一段把 47% 与 29% 放在一起的批注</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<p>选一个你这两周真要拍板的事（上线、报价、招人、公开立场、申请）。在纸上只写四行，成本为 0：</p>
+<ol>
+<li>对手把该行动加大一档，你的最优是加还是减？</li>
+<li>你的这一步，对方看不看得见？30 天内能不能无代价撤回？</li>
+<li>再等两周，会揭开哪个状态？揭开后最优行动会不会变？</li>
+<li>若你先做，对方能免费学到什么？</li>
+</ol>
+<p>判决规则：替代 + 可见 + 难撤回 + 等待几乎不改行动 → 写「先动」。互补，或等待能避开一笔明显沉没 → 写「后动」。两句都成立就写「拆开」：哪一半该承诺，哪一半该等。</p>
+<p>可验证：四行都不是形容词；判决句里至少引用了第 1 行和第 2 行。做完把纸留着，七天后看当时的符号判对没有。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>动作</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>做完上面的四行卡</td>
+<td>一张决策卡</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>用模型 1 默认值复述 8、4、7.11，再把 cL 调到 3</td>
+<td>能口头解释 4.50 与 6.25</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>找一个你行业里「对方涨价你也涨」的例子</td>
+<td>标成互补，禁止套用产量故事</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>给候选承诺写可见性/可逆性</td>
+<td>删掉至少一条宣言</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>读 Golder–Tellis 的三个数：47%、10%、13 年</td>
+<td>在一则「先发」报道下写两句样本批评</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>用模型 2 把 θH 从 16 收到 12、θL 抬到 6</td>
+<td>记录读数从 18/12 翻到约 7.31/10.13</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>重写决策卡。符号若变了，写明哪条新信息改的</td>
+<td>第二版卡片</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>焦点</th>
+<th>完成时你能拿出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">第 1 周</td>
+<td>四行卡 + 三个模型的默认读数</td>
+<td>一张卡、一组对过的数字</td>
+</tr>
+<tr>
+<td class="k">第 2 周</td>
+<td>在自己的业务里各找一个替代决策和一个互补决策</td>
+<td>两页对照，不许用同一个故事</td>
+</tr>
+<tr>
+<td class="k">第 3 周</td>
+<td>审计一次「先发优势」论据：定义、失败者、利润还是份额</td>
+<td>一页批注，含 29% 对 10%</td>
+</tr>
+<tr>
+<td class="k">第 4 周</td>
+<td>把一个真实承诺做成可见且难撤回，或明确决定等待并写下要等的状态</td>
+<td>要么一份不可逆动作，要么一份实验设计</td>
+</tr>
+</tbody>
+</table></div>
+<p>不要在第 4 周同时「又砸产能又全面观望」。两个房间的得分规则相反。</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+<th>你要记住的数或符号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>对称斯塔克伯格</td>
+<td>先动产量 = 垄断产量，跟随者拿一半剩余</td>
+<td>qL=4，qF=2，πL=8，πF=4</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>古诺对照</td>
+<td>先动优势是相对同时行动的超额</td>
+<td>9/8，不是相对 0</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>福利分解</td>
+<td>个人赚了，行业利润少了，消费者多了</td>
+<td>行业 27/32；CS ×81/64；W=30 对 28.44</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>Gal-Or 1985</td>
+<td>交叉偏导的符号决定谁占优</td>
+<td>负 → 先动；正 → 后动</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>序贯价格</td>
+<td>互补时后动跟价赚得更多</td>
+<td>默认 37.30 / 36.16 / 36.00</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>两状态观察</td>
+<td>先锁定 μ，后动看 θ</td>
+<td>默认 12 对 18；刀口 12 与 4 时两边 8</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>Dixit 门槛</td>
+<td>F 与跟随者利润 4 比</td>
+<td>F*≈0.343 容纳/威慑；F≥4 封锁</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>Gal-Or 1987</td>
+<td>私有信号经产量泄露</td>
+<td>先动者收缩；宽参数后动更好</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>内生时点</td>
+<td>都想先动或都想后动，均衡不同</td>
+<td>互补时常掉回同时行动</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>幸存者校正</td>
+<td>历史样本对 PIMS</td>
+<td>47% 失败，份额 10% 对 29%</td>
+</tr>
+</tbody>
+</table></div>
+<p>模型 6 内点公式：<code>EπL = μ²/8</code>，<code>EπF = σ²/4 + μ²/16</code>。<code>θH=12</code>、<code>θL=6</code>、<code>p=0.5</code> 时 <code>μ=9</code>、<code>σ²=9</code>，<code>EπL=81/8=10.125</code>（页面 10.13），<code>EπF=9/4+81/16=7.3125</code>（页面 7.31）。<span class="tag t-fact">事实</span></p>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>我们是替代还是互补？</summary><div class="dbody"><p>对方多做一档，你的最优反应是少做还是多做？答不出来就不要谈先动。产量、货架、产能多半向下；价格、质量档次、广告调性多半向上。</p></div></details>
+<details><summary>这个动作是承诺还是宣言？</summary><div class="dbody"><p>对方能否在做决定前看见？你能否在 30 天内无罚则撤回？两条里有一条是否定的，就按古诺而不是斯塔克伯格估价。</p></div></details>
+<details><summary>相对的是古诺还是对手？</summary><div class="dbody"><p>先动者可以输给成本更低的后动者，同时仍然打败「自己若同时行动」的版本。两句都要报。</p></div></details>
+<details><summary>等待揭开的是不是会改写行动的状态？</summary><div class="dbody"><p>若实验之后你还是会做同一件事，等待的信息价值接近 0，只剩时间成本。若会切换，用 <code>F(1−p)</code> 这类账单估一估。</p></div></details>
+<details><summary>固定成本是否已经把对手挡在门外？</summary><div class="dbody"><p>跟随者可变利润只有 4 的时候，F≥4 是封锁，不是你的领导力。F 很小还去超量建产能，是在用 7 换本来可以拿到的 8。</p></div></details>
+<details><summary>这篇「先发优势」证据的分母里有没有死人？</summary><div class="dbody"><p>没有失败者的份额，先和 29% 放在一起怀疑，再和 10%、47% 对一下定义是否同一类「先驱」。</p></div></details>
+<details><summary>份额高的那几年，利润呢？</summary><div class="dbody"><p>Boulding–Christen：需求优势可以被成本劣势吃掉，初始利润优势大约 12–14 年后反转。只报份额的材料，追问成本。</p></div></details>
+<details><summary>双方是不是都想后动？</summary><div class="dbody"><p>若是，不要假设「总会有一个领导者出现」。更可能的均衡是谁也不承诺，回到同时行动。</p></div></details>
+<details><summary>你的私有信息会不会被自己的行动卖掉？</summary><div class="dbody"><p>产量、报价、资本开支都是信号。想隐藏坏消息却又必须先行动，Gal-Or（1987）的收缩就会出现。要么接受泄露，要么考虑直接披露以换回不扭曲的产量。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>技术时钟和市场时钟有多快？</summary><div class="dbody"><p>慢技术、慢市场，隔离机制才有时间变硬。任一侧很快，Suarez–Lanzolla 的半真命题就生效：先动是选项，不是战略本身。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>把教学模型换成 Gal-Or（1987）的线性信号：双方都有私有观察，先动者最优扭曲的闭式。</li>
+<li>Hamilton–Slutsky 可观察延迟博弈：自己画「都想当先动」与「都想当后动」的 2×2，标出同时行动何时才是均衡。</li>
+<li>和相邻手册接上：可信承诺（产能为何算烧桥）、子博弈精炼（为何闲置产能威胁不可信）、信号传递（何时想暴露、何时想隐藏）。</li>
+<li>选一个你熟悉的品类，按 Golder–Tellis 的定义重写「谁是市场先驱、谁是早期领导者」，只做定义，不做预测。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">数量领导与 8/4/7.11 闭式</td>
+<td>经典模型复算</td>
+<td>von Stackelberg 1934；本文用 a=10、b=1、c=2 复算</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">交叉偏导符号定理</td>
+<td>经典论文</td>
+<td>Gal-Or 1985 <em>International Economic Review</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">私有信息下的先动劣势</td>
+<td>经典论文</td>
+<td>Gal-Or 1987 <em>Review of Economic Studies</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">产能承诺与闲置产能</td>
+<td>经典论文</td>
+<td>Spence 1977；Dixit 1980 <em>Economic Journal</em>；Bulow–Geanakoplos–Klemperer 1985</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">内生行动时点</td>
+<td>经典论文</td>
+<td>Hamilton &amp; Slutsky 1990 <em>Games and Economic Behavior</em></td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">排名相关支付可翻转符号</td>
+<td>评论笔记</td>
+<td>Sun 2010 comment on Gal-Or</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">管理学三条优势、四条劣势</td>
+<td>综述</td>
+<td>Lieberman &amp; Montgomery 1988 <em>SMJ</em>；2013 回顾接 RBV</td>
+<td><span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">先驱失败率 47%、份额 10%、晚 13 年</td>
+<td>历史样本</td>
+<td>Golder &amp; Tellis 1993 <em>Journal of Marketing Research</em>；PIMS 加权份额约 29%</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">存活先驱份额约 18.9%</td>
+<td>由 10%/(1−0.47) 推算</td>
+<td>本文，假设失败者份额为 0</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">长期利润劣势、优势约 12–14 年</td>
+<td>计量论文</td>
+<td>Boulding &amp; Christen 2003 <em>Marketing Science</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">技术不确定下的后动优势</td>
+<td>理论论文</td>
+<td>Hoppe 2000 <em>International Journal of Industrial Organization</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">F(1−p) 与两状态模型、F*≈0.343</td>
+<td>教学化简</td>
+<td>本文闭式；角点产量用步长 0.002 网格复核</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">先动优势是半真命题</td>
+<td>管理评论</td>
+<td>Suarez &amp; Lanzolla 2007 <em>Harvard Business Review</em></td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">序贯价格 37.30/36.16/36.00</td>
+<td>本文复算</td>
+<td>需求 qi=α−pi+γpj，α=10、c=2、γ=0.5；一阶条件与 0.002 网格一致</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>经典定理、论文直接报告或可由模型一步推出；<span class="tag t-ana">分析</span>文献共识但表述经过压缩；<span class="tag t-inf">推论</span>教学化简或跨域类比；<span class="tag t-hyp">假设</span>未检验的机制；<span class="tag t-chk">待验证</span>单一来源或转述链过长。本手册没有使用需要标<span class="tag t-chk">待验证</span>的二手市场份额预测。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是产业组织与博弈论的认知训练材料，<strong>不是</strong>投资建议、定价咨询、并购意见或进入某市场的预测。斯塔克伯格闭式依赖线性需求与常数边际成本；两状态模型故意比 Gal-Or（1987）简单，用来展示「观察实现值」这一机制，不能拿去拟合某个行业的需求分布。Golder–Tellis 的 47% 与 10% 是特定历史品类的研究结果，不是你所在行业的失败率。承诺、等待、扩产的决定由你自己负责。</p>
+</section>
+<footer>  <p>《先动优势与后动优势 · 全景认知与实践操作手册》 · 生成于 2026-09-20 · 耗时 22 分 3 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《先动优势与后动优势》主题脚本
+   三个可调模型（滑块都进入闭式，不用假读数）：
+     1. 线性需求斯塔克伯格 vs 古诺（可成本不对称）
+     2. 两状态需求：先动承诺、后动观察实现值
+     3. 差异化价格：战略互补下的后动优势
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function f2(x) { return Number(x).toFixed(2); }
+  function f1(x) { return Number(x).toFixed(1); }
+
+  function yGrid(ctx, pl, pr, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - pr, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(1), pl - 6, y + 3);
+    }
+  }
+
+  /* ── 1. Stackelberg vs Cournot ── */
+  function stackEq(a, cL, cF) {
+    var b = 1;
+    var qL = (a - 2 * cL + cF) / (2 * b);
+    var qF = (a + 2 * cL - 3 * cF) / (4 * b);
+    var regime = 'interior';
+    if (!(qF > 1e-9) || !(qL > 1e-9)) {
+      regime = 'block';
+      qF = 0;
+      qL = Math.max(0, (a - cL) / (2 * b));
+    }
+    var P = a - b * (qL + qF);
+    var piL = (P - cL) * qL;
+    var piF = (P - cF) * qF;
+    var q1 = Math.max(0, (a - 2 * cL + cF) / (3 * b));
+    var q2 = Math.max(0, (a - 2 * cF + cL) / (3 * b));
+    var Pc = a - b * (q1 + q2);
+    var pi1 = (Pc - cL) * q1;
+    var piM = (function () {
+      var qM = Math.max(0, (a - cL) / (2 * b));
+      return (a - b * qM - cL) * qM;
+    })();
+    return { regime: regime, qL: qL, qF: qF, P: P, piL: piL, piF: piF, pi1: pi1, piM: piM, q1: q1 };
+  }
+
+  (function stackTool() {
+    if (!$('sk_a')) return;
+    var cv = $('skChart');
+    function upd() {
+      var a = parseFloat($('sk_a').value);
+      var cL = parseFloat($('sk_cL').value);
+      var cF = parseFloat($('sk_cF').value);
+      txt($('sk_aO'), f1(a));
+      txt($('sk_cLO'), f1(cL));
+      txt($('sk_cFO'), f1(cF));
+      var r = stackEq(a, cL, cF);
+      txt($('sk_qL'), f2(r.qL));
+      txt($('sk_qF'), f2(r.qF));
+      txt($('sk_piL'), f2(r.piL));
+      txt($('sk_piF'), f2(r.piF));
+      txt($('sk_piC'), f2(r.pi1));
+      var ex = r.regime === 'interior' && r.pi1 > 1e-9 ? (r.piL / r.pi1 - 1) * 100 : NaN;
+      txt($('sk_ex'), isFinite(ex) ? ex.toFixed(1) + '%' : '—');
+      var msg, col;
+      if (r.regime !== 'interior') {
+        msg = '跟随者最优产量 ≤ 0：进入被封锁，先动者拿垄断利润 ' + f2(r.piL) + '（不是「打败了对手」，是对手不进来）';
+        col = C.amber;
+      } else if (r.piL > r.piF + 1e-6) {
+        msg = '先动 ' + f2(r.piL) + ' > 后动 ' + f2(r.piF) + '；相对自家古诺 ' + f2(r.pi1) + ' 仍高 ' + ex.toFixed(1) + '%（内点恒为 9/8）';
+        col = C.green;
+      } else if (r.piF > r.piL + 1e-6) {
+        msg = '成本劣势盖过承诺：后动 ' + f2(r.piF) + ' > 先动 ' + f2(r.piL) + '；但相对自家古诺仍高 ' + ex.toFixed(1) + '%';
+        col = C.red;
+      } else {
+        msg = '两边利润持平 ' + f2(r.piL) + '；相对古诺 ' + ex.toFixed(1) + '%';
+        col = C.blue;
+      }
+      txt($('sk_vh'), msg);
+      tint($('sk_vh'), col);
+      tint($('sk_piL'), r.piL >= r.piF ? C.green : C.red);
+      tint($('sk_piF'), r.piF > r.piL ? C.green : C.ink);
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 18, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var items = [
+        { lab: '垄断', v: r.piM, c: C.ink2 },
+        { lab: '古诺', v: r.pi1, c: C.amber },
+        { lab: '先动', v: r.piL, c: C.red },
+        { lab: '后动', v: r.piF, c: C.blue }
+      ];
+      var ymin = 0;
+      var ymax = Math.max(0.1, r.piM, r.pi1, r.piL, r.piF) * 1.18;
+      yGrid(ctx, pl, pr, y1, pt, bh, ymin, ymax, w);
+      var span = ymax - ymin || 1;
+      function sy(v) { return y1 - ((v - ymin) / span) * bh; }
+      var slot = bw / items.length;
+      var barW = Math.min(46, slot * 0.55);
+      items.forEach(function (it, i) {
+        var x = pl + slot * i + (slot - barW) / 2;
+        var y = sy(it.v);
+        ctx.fillStyle = it.c;
+        ctx.fillRect(x, y, barW, Math.max(1, y1 - y));
+        ctx.fillStyle = C.ink2;
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+        var lab = f1(it.v);
+        ctx.font = '11px sans-serif';
+        var ty = y - 4;
+        if (ty < pt + 10) ty = y + 12;
+        ctx.fillStyle = C.ink;
+        ctx.fillText(lab, x + barW / 2, ty);
+      });
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('利润（b=1）', pl + bw / 2, y1 + 31);
+    }
+    bind(['sk_a', 'sk_cL', 'sk_cF'], upd);
+    upd();
+  })();
+
+  /* ── 2. Two-state demand, follower observes ── */
+  function infoEq(thH, thL, p) {
+    var hi = Math.max(thH, thL);
+    var lo = Math.min(thH, thL);
+    if (hi - lo < 0.05) hi = lo + 0.5;
+    var mu = p * hi + (1 - p) * lo;
+    var qInt = mu / 2;
+    var qL, regime;
+    if (qInt <= lo + 1e-9) {
+      qL = qInt;
+      regime = 'interior';
+    } else {
+      var qC = (p * hi / 2 + (1 - p) * lo) / (2 - p);
+      if (qC >= lo - 1e-9) {
+        qL = Math.min(qC, hi);
+        regime = 'corner';
+      } else {
+        qL = lo;
+        regime = 'boundary';
+      }
+    }
+    function qF(th) { return Math.max(0, (th - qL) / 2); }
+    function piL(th) { return qL * (th - qL - qF(th)); }
+    function piF(th) { var q = qF(th); return q * (th - qL - q); }
+    return {
+      hi: hi, lo: lo, mu: mu, qL: qL, regime: regime,
+      eL: p * piL(hi) + (1 - p) * piL(lo),
+      eF: p * piF(hi) + (1 - p) * piF(lo),
+      qFH: qF(hi), qFL: qF(lo),
+      pLow: lo - qL - qF(lo)
+    };
+  }
+
+  (function infoTool() {
+    if (!$('in_h')) return;
+    var cv = $('inChart');
+    function upd() {
+      var thH = parseFloat($('in_h').value);
+      var thL = parseFloat($('in_l').value);
+      var p = parseFloat($('in_p').value);
+      txt($('in_hO'), f1(thH));
+      txt($('in_lO'), f1(thL));
+      txt($('in_pO'), p.toFixed(2));
+      var r = infoEq(thH, thL, p);
+      var gap = r.eF - r.eL;
+      txt($('in_qL'), f2(r.qL));
+      txt($('in_eL'), f2(r.eL));
+      txt($('in_eF'), f2(r.eF));
+      txt($('in_gap'), (gap >= 0 ? '+' : '') + f2(gap));
+      var msg, col;
+      var tail = r.regime === 'interior' ? '内点 qL=μ/2' : '低需求角点（跟随者停产）';
+      if (r.pLow < -0.05) tail += '；坏状态下价格为负，这是线性需求的角点，不是数据错误';
+      if (gap > 0.02) {
+        msg = '后动优势：E[πF]=' + f2(r.eF) + ' > E[πL]=' + f2(r.eL) + '，差额 ' + f2(gap) + '。' + tail;
+        col = C.blue;
+      } else if (gap < -0.02) {
+        msg = '先动优势：E[πL]=' + f2(r.eL) + ' > E[πF]=' + f2(r.eF) + '，承诺仍值钱。' + tail;
+        col = C.green;
+      } else {
+        msg = '刀口：两边期望利润都是 ' + f2(r.eL) + '。' + tail;
+        col = C.amber;
+      }
+      if (thH < thL) msg = '已按高需求>低需求重排。' + msg;
+      txt($('in_vh'), msg);
+      tint($('in_vh'), col);
+      tint($('in_eL'), r.eL >= r.eF ? C.green : C.ink);
+      tint($('in_eF'), r.eF > r.eL ? C.blue : C.ink);
+      tint($('in_gap'), gap > 0.02 ? C.blue : (gap < -0.02 ? C.green : C.amber));
+
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 48, pr = 16, pt = 22, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var x0 = r.lo + 0.4;
+      var x1 = Math.max(r.hi + 2, r.lo + 8, 18);
+      var pts = [];
+      var steps = 80;
+      var ymin = 0, ymax = 1;
+      for (var i = 0; i <= steps; i++) {
+        var x = x0 + (x1 - x0) * i / steps;
+        var e = infoEq(x, r.lo, p);
+        pts.push({ x: x, eL: e.eL, eF: e.eF });
+        ymax = Math.max(ymax, e.eL, e.eF);
+      }
+      ymax *= 1.12;
+      var spanY = ymax - ymin || 1;
+      var spanX = x1 - x0 || 1;
+      function sx(x) { return pl + ((x - x0) / spanX) * bw; }
+      function sy(v) { return y1 - ((v - ymin) / spanY) * bh; }
+      yGrid(ctx, pl, pr, y1, pt, bh, ymin, ymax, w);
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath(); ctx.moveTo(pl, y1); ctx.lineTo(pl + bw, y1); ctx.stroke();
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      for (var k = 0; k <= 4; k++) {
+        var xv = x0 + spanX * k / 4;
+        ctx.fillText(xv.toFixed(0), sx(xv), y1 + 13);
+      }
+      function stroke(key, color) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (var j = 0; j < pts.length; j++) {
+          var X = sx(pts[j].x), Y = sy(pts[j][key]);
+          if (j === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
+        }
+        ctx.stroke();
+      }
+      stroke('eL', C.red);
+      stroke('eF', C.blue);
+      var cross = null;
+      for (var t = 1; t < pts.length; t++) {
+        var d0 = pts[t - 1].eF - pts[t - 1].eL;
+        var d1 = pts[t].eF - pts[t].eL;
+        if (d0 <= 0 && d1 > 0) { cross = pts[t].x; break; }
+      }
+      ctx.setLineDash([4, 3]);
+      if (cross !== null) {
+        ctx.strokeStyle = C.amber;
+        ctx.beginPath();
+        ctx.moveTo(sx(cross), pt); ctx.lineTo(sx(cross), y1); ctx.stroke();
+      }
+      ctx.strokeStyle = C.ink;
+      ctx.beginPath();
+      ctx.moveTo(sx(r.hi), pt); ctx.lineTo(sx(r.hi), y1); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = C.ink;
+      var lx = Math.min(sx(r.hi) + 4, pl + bw - 36);
+      ctx.fillText('当前', lx, pt + 11);
+      if (cross !== null && Math.abs(sx(cross) - sx(r.hi)) > 36) {
+        ctx.fillStyle = C.amber;
+        ctx.textAlign = 'center';
+        ctx.fillText('持平', sx(cross), pt + 11);
+      }
+      ctx.textAlign = 'right';
+      ctx.fillStyle = C.red;
+      ctx.fillText('先动 Eπ', pl + bw, pt + 11);
+      ctx.fillStyle = C.blue;
+      ctx.fillText('后动 Eπ', pl + bw, pt + 24);
+      ctx.fillStyle = C.ink3;
+      ctx.textAlign = 'center';
+      ctx.fillText('高需求 θH（θL 与 p 固定）', pl + bw / 2, y1 + 31);
+    }
+    bind(['in_h', 'in_l', 'in_p'], upd);
+    upd();
+  })();
+
+  /* ── 3. Differentiated Bertrand, sequential prices ── */
+  function priceEq(alpha, c, g) {
+    var delta = 1 - g * g / 2;
+    var pL = (alpha + (g / 2) * (alpha + c) + delta * c) / (2 * delta);
+    var pF = (alpha + c + g * pL) / 2;
+    var qL = alpha - pL + g * pF;
+    var qF = alpha - pF + g * pL;
+    var pS = (alpha + c) / (2 - g);
+    var qS = alpha - pS * (1 - g);
+    return {
+      pL: pL, pF: pF, qL: qL, qF: qF,
+      piL: (pL - c) * qL, piF: (pF - c) * qF, piS: (pS - c) * qS, pS: pS
+    };
+  }
+
+  (function priceTool() {
+    if (!$('pr_a')) return;
+    var cv = $('prChart');
+    function upd() {
+      var alpha = parseFloat($('pr_a').value);
+      var c = parseFloat($('pr_c').value);
+      var g = parseFloat($('pr_g').value);
+      if (c > alpha - 0.6) c = alpha - 0.6;
+      txt($('pr_aO'), f1(alpha));
+      txt($('pr_cO'), f1(c));
+      txt($('pr_gO'), g.toFixed(2));
+      var r = priceEq(alpha, c, g);
+      var gap = r.piF - r.piL;
+      txt($('pr_piL'), f2(r.piL));
+      txt($('pr_piF'), f2(r.piF));
+      txt($('pr_piS'), f2(r.piS));
+      txt($('pr_gap'), (gap >= 0 ? '+' : '') + f2(gap));
+      var msg = '战略互补：后动 ' + f2(r.piF) + ' ，先动 ' + f2(r.piL) + ' ，同时 ' + f2(r.piS) +
+        '。后动−先动 = ' + f2(gap) + '；先动−同时 = ' + f2(r.piL - r.piS) +
+        '。γ 越大，跟价的优势越大。';
+      txt($('pr_vh'), msg);
+      tint($('pr_vh'), gap > 0.05 ? C.blue : C.amber);
+      tint($('pr_piF'), C.blue);
+      tint($('pr_gap'), gap > 0 ? C.blue : C.red);
+
+      var gph = fit(cv, 214);
+      if (!gph) return;
+      clear(gph);
+      var ctx = gph.ctx, w = gph.w, h = gph.h;
+      var pl = 48, pr = 16, pt = 22, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var x0 = 0.1, x1 = 0.85;
+      var pts = [];
+      var ymin = 0, ymax = 0.05;
+      for (var i = 0; i <= 60; i++) {
+        var x = x0 + (x1 - x0) * i / 60;
+        var e = priceEq(alpha, c, x);
+        var dFL = e.piF - e.piL;
+        var dLS = e.piL - e.piS;
+        pts.push({ x: x, dFL: dFL, dLS: dLS });
+        ymax = Math.max(ymax, dFL, dLS);
+        ymin = Math.min(ymin, dFL, dLS);
+      }
+      var pad = (ymax - ymin) * 0.15 || 0.2;
+      ymax += pad; ymin -= pad * 0.3;
+      var spanY = ymax - ymin || 1;
+      var spanX = x1 - x0;
+      function sx(x) { return pl + ((x - x0) / spanX) * bw; }
+      function sy(v) { return y1 - ((v - ymin) / spanY) * bh; }
+      yGrid(ctx, pl, pr, y1, pt, bh, ymin, ymax, w);
+      ctx.strokeStyle = C.axis;
+      ctx.beginPath(); ctx.moveTo(pl, y1); ctx.lineTo(pl + bw, y1); ctx.stroke();
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      for (var k = 0; k <= 4; k++) {
+        var xv = x0 + spanX * k / 4;
+        ctx.fillText(xv.toFixed(2), sx(xv), y1 + 13);
+      }
+      function stroke(key, color) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (var j = 0; j < pts.length; j++) {
+          var X = sx(pts[j].x), Y = sy(pts[j][key]);
+          if (j === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
+        }
+        ctx.stroke();
+      }
+      stroke('dFL', C.blue);
+      stroke('dLS', C.amber);
+      ctx.setLineDash([4, 3]);
+      ctx.strokeStyle = C.ink;
+      ctx.beginPath();
+      ctx.moveTo(sx(g), pt); ctx.lineTo(sx(g), y1); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = C.ink;
+      ctx.fillText('当前', Math.min(sx(g) + 4, pl + bw - 28), pt + 11);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = C.blue;
+      ctx.fillText('后动−先动', pl + bw, pt + 11);
+      ctx.fillStyle = C.amber;
+      ctx.fillText('先动−同时', pl + bw, pt + 24);
+      ctx.fillStyle = C.ink3;
+      ctx.textAlign = 'center';
+      ctx.fillText('差异化 γ', pl + bw / 2, y1 + 31);
+    }
+    bind(['pr_a', 'pr_c', 'pr_g'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
