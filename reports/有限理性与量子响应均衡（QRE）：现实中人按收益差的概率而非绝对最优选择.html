@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>有限理性与量子响应均衡（QRE）：现实中人按收益差的概率而非绝对最优选择 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>QRE × Bounded Rationality</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">实践路径</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与清单</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <div class="navgroup">附录</div>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>有限理性与量子响应均衡（QRE）：现实中人按收益差的概率而非绝对最优选择</h1>
+  <p class="sub">人不是永远选「绝对最优」，而是<strong>收益越高选得越勤</strong>——把噪声最优回应做成固定点，就是 QRE。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>量子响应均衡（Quantal Response Equilibrium, QRE）</strong>：把「精确最优回应」换成「按期望收益差概率化选择」——收益更高的策略被选得更勤，但更差的策略仍有正概率；均衡要求人人如此选，且信念与对方的随机选择一致。<span class="tag t-fact">事实</span>（McKelvey &amp; Palfrey, <em>Games and Economic Behavior</em> 1995）</p>
+<p>最常用的 <strong>Logit QRE</strong>：(P(i)=\dfrac{e^{\lambda\,EU_i}}{\sum_j e^{\lambda\,EU_j}})。(\lambda\to 0) 时接近均匀乱选；(\lambda\to\infty) 时逼近纳什。<span class="tag t-fact">事实</span></p>
+<blockquote>
+<p>核心锋利处：<strong>纳什说「只做最好」；QRE 说「更好更常做」——后者才能系统解释实验室里「明明知道劣势策略仍被点到」的数据。</strong></p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的是：<strong>有限精度决策如何与策略信念互相锁定，形成可估计、可比较静态的均衡</strong>——不是「人非理性所以随便乱选」的借口。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：logit/probit 量子响应、正则 QRE、扩展型 AQRE、λ 同伦与均衡选择、实验结构估计、与 Softmax/温度的同构。</li>
+<li><strong>在界外</strong>：替某只股票下单、具体谈判话术——除非压成「估计 λ 与支付差 → 预测选择分布」的建模问题。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>噪声最优回应如何构成一致信念的均衡</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「响应函数 + 固定点 + 可检验约束」可形式化为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>(EU_i)、(\lambda)（或 (\mu=1/\lambda)）、响应函数、固定点</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>受试、估计者、机制设计者、与 level-k/颤抖手对照的理论家</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>(\lambda)、支付差 (\Delta\pi)、策略数、学习经验</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>选择频率、跨处理比较静态、拒绝/接受率</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>真实噪声分布、个体 (\lambda) 异质性、效用尺度</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>支付差→选择概率；信念→期望支付；固定点锁死两者</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>(\lambda\uparrow) → 更尖锐地偏好高 EU 策略；极限逼近纳什</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「教育高」≠ 自动高 (\lambda)<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>劣策略仍被选、旅人困境索赔偏高、匹配硬币偏离纳什混合</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>感知/计算噪声 + 均衡一致性（或等价：扰动支付的贝叶斯博弈）</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。重复局中经验常推高有效 (\lambda)<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。第一轮靠先验 (\lambda)；学习要若干期</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>经验↑→(\lambda)↑→更近纳什（负向纠偏噪声）；过拟合任意噪声分布则「什么都能解释」（正反馈到空理论）</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>QRE 的锋利处：<strong>把「误差」做成均衡的一部分，而不是事后补丁——但若不限制误差结构，它会失去可证伪性（Haile–Hortaçsu–Kosenok）。</strong></p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它解释「知道最优却不总选」</h4><p>纳什要求 (P(\text{劣})=0)；实验室里劣势与近劣策略常有显著正频率。Logit QRE 用 (\lambda) 一个参数同时拟合多格选择。<span class="tag t-fact">事实</span>（McKelvey &amp; Palfrey 1995 及大量后续实验）</p></div>
+<div class="card"><h4>它把 Softmax 变成博弈固定点</h4><p>机器学习里 Softmax/温度 (T) 与 logit 响应同型（(\lambda\sim 1/T)）。QRE =「人人 Softmax，且信念自洽」。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它有清晰的失败边界</h4><p>无约束扰动分布时，QRE 可合理化<strong>任意</strong>正常型行为分布——必须加正则公理或跨处理约束才有实证内容。<span class="tag t-fact">事实</span>（Haile, Hortaçsu &amp; Kosenok, <em>AER</em> 2008）</p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>用「随便调一个 (\lambda)」把任何偏离都说成 QRE——那是事后叙事，不是预测。正则性（单调、响应、内部性）与跨博弈比较静态才是刀刃。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层看 QRE 如何从统计选择长成行为博弈操作系统。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="qArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度与反馈 · 学习抬高 λ、机制设计用噪声做稳健性</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 实证边界 · Haile 批判 + 正则 QRE 公理</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 现场决策 · 估支付差与 λ，预测选择分布而非点预测</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 扩展型 AQRE · 信息集上的量子回应（1998）</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 λ-同伦 · 从均匀到纳什，常给出均衡选择路径</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 Logit QRE 固定点 · P = σ(λ·EU(P))</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 诊断游戏 · PD、旅人困境、匹配硬币、最后通牒</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 统计选择 · Luce/McFadden 量子选择、Softmax</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 问题意识 · 「绝对最优」在噪声世界里过硬</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L3→L5</strong>：会算 logit、会找固定点、会读 λ 极限。进阶卡在 <strong>L7–L8</strong>：会估、会证伪、知道何时 QRE 只是故事。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象定义到可操作判别。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="140" y="16" width="400" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">噪声最优回应 + 信念自洽 = QRE</text>
+
+  <rect x="30" y="100" width="190" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="125" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">支付差 Δπ</text><text x="125" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">EUᵢ − EUⱼ</text>
+  <rect x="245" y="100" width="190" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">Logit / Softmax</text><text x="340" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">P ∝ e^{λ·EU}</text>
+  <rect x="460" y="100" width="190" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="555" y="122" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">固定点</text><text x="555" y="140" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">信念 = 真实混合</text>
+
+  <line x1="280" y1="60" x2="125" y2="100" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="555" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="80" y="200" width="220" height="52" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="190" y="222" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">λ → ∞：逼近纳什</text><text x="190" y="240" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">噪声消失</text>
+  <rect x="380" y="200" width="220" height="52" rx="8" fill="#f3e8ff" stroke="#7c3aed"/><text x="490" y="222" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">无约束 → 不可证伪</text><text x="490" y="240" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">需正则 / 跨处理</text>
+
+  <line x1="340" y1="152" x2="190" y2="200" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <line x1="340" y1="152" x2="490" y2="200" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+
+  <text x="340" y="300" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">抽象：有限理性 → 机制：量子回应固定点 → 操作：估 λ、读分布</text>
+  <text x="340" y="330" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">实线=定义展开；红/紫虚线=极限与边界反馈</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>在 QRE 系统中的位置</th>
+<th>典型动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">受试 / 决策者</td>
+<td>按相对 EU 概率化选择</td>
+<td>不是永远最佳回应</td>
+</tr>
+<tr>
+<td class="k">对手（信念对象）</td>
+<td>其混合进入你的 EU</td>
+<td>你以为他 Softmax，他也是</td>
+</tr>
+<tr>
+<td class="k">实验者</td>
+<td>设定支付、重复、信息</td>
+<td>改变有效 λ 与可比静态</td>
+</tr>
+<tr>
+<td class="k">结构估计者</td>
+<td>极大似然估 λ（或异质 λ）</td>
+<td>拟合选择频率</td>
+</tr>
+<tr>
+<td class="k">机制设计者</td>
+<td>把噪声当稳健性输入</td>
+<td>规则在有限 λ 下仍有效</td>
+</tr>
+<tr>
+<td class="k">批评者（HHK 等）</td>
+<td>逼问可证伪性</td>
+<td>要求正则与跨处理约束</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+<th>杠杆感</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">(\lambda)（或 (\mu=1/\lambda)）</td>
+<td>理性/精度参数</td>
+<td>(\lambda\uparrow) → 更尖锐</td>
+</tr>
+<tr>
+<td class="k">(\Delta\pi = EU_i-EU_j)</td>
+<td>期望支付差</td>
+<td>差越大，logit 越偏向 i</td>
+</tr>
+<tr>
+<td class="k">策略数 (K)</td>
+<td>Softmax 分母项数</td>
+<td>(K) 大时「均匀底噪」更重</td>
+</tr>
+<tr>
+<td class="k">支付尺度</td>
+<td>效用单位</td>
+<td>λ 与支付尺度纠缠，不可混比<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">经验 / 重复</td>
+<td>学习强度</td>
+<td>后期 λ 常上升<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">误差分布族</td>
+<td>logit / probit / 非参</td>
+<td>决定可检验内容</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="140" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="90" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">支付矩阵</text>
+  <rect x="200" y="30" width="140" height="44" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="270" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">信念混合 σ₋ᵢ</text>
+  <rect x="380" y="30" width="140" height="44" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="450" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">EU → Softmax</text>
+  <rect x="520" y="30" width="140" height="44" rx="8" fill="#15181d"/><text x="590" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#fff" font-family="sans-serif">自身混合 σᵢ</text>
+
+  <line x1="160" y1="52" x2="198" y2="52" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="340" y1="52" x2="378" y2="52" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="520" y1="52" x2="555" y2="52" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+
+  <rect x="100" y="130" width="160" height="44" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="180" y="157" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">重复 / 反馈</text>
+  <rect x="320" y="130" width="160" height="44" rx="8" fill="#f3e8ff" stroke="#7c3aed"/><text x="400" y="157" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">有效 λ 上升</text>
+  <rect x="500" y="130" width="160" height="44" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="580" y="157" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">更近纳什</text>
+
+  <line x1="260" y1="152" x2="318" y2="152" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+  <line x1="480" y1="152" x2="498" y2="152" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cA)"/>
+
+  <path d="M590,74 C620,100 620,110 580,130" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cB)"/>
+  <path d="M590,52 C640,52 640,200 200,200 C160,200 140,80 200,52" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="340" y="230" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">实线：因果链；红虚线：σᵢ 回写信念（固定点）与经验抬升 λ</text>
+  <text x="340" y="260" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">均衡 = 映射 σ ↦ Softmax(λ·EU(σ)) 的不动点</text>
+</svg>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<ul>
+<li><strong>QRE ≠ 颤抖手</strong>：颤抖手是「打算纳什、偶尔失手」的精炼；QRE 是「本来就按相对收益概率选」的替代均衡概念，可与纳什差很远。<span class="tag t-ana">分析</span></li>
+<li><strong>QRE ≠ level-k</strong>：level-k 是有限层递推、通常不要求固定点；QRE 是噪声下的一致信念。二者可混合，但不是同一故事。<span class="tag t-ana">分析</span></li>
+<li><strong>结构 QRE ↔ 扰动支付贝叶斯博弈</strong>：McKelvey–Palfrey 展示等价视角——噪声可看成私有支付扰动。<span class="tag t-fact">事实</span></li>
+<li><strong>λ 与支付尺度纠缠</strong>：同一行为在支付×10 时，拟合 λ 约 ÷10。跨实验直接比 λ 数字常常无效。<span class="tag t-inf">推论</span></li>
+<li><strong>跨域同构</strong>：Logit QRE ↔ Softmax 策略 ↔ 热力学玻尔兹曼分布 ↔ logit 离散选择 ↔ 强化学习中的 Boltzmann 探索。<span class="tag t-ana">分析</span></li>
+<li><strong>「什么都能拟合」陷阱</strong>：Haile et al. (2008) 证明：扰动分布足够灵活时，任何正常型选择分布都可被某 QRE 合理化。<span class="tag t-fact">事实</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<ol>
+<li><strong>给定他人混合</strong> → 算各纯策略期望支付 (EU_i)。  </li>
+<li><strong>量子回应</strong>：(P_i \propto e^{\lambda EU_i})（logit）或其它正则响应。  </li>
+<li><strong>一致性</strong>：自己的 (P) 必须等于他人信念中的自己——全体构成固定点。  </li>
+<li><strong>（可选）λ-同伦</strong>：从 (\lambda=0)（均匀）连续抬到大 λ，路径常收敛到某一纳什，充当选择装置。  </li>
+<li><strong>（可选）学习</strong>：重复观察后，有效 λ 往往上升，选择更尖锐。<span class="tag t-fact">事实</span></li>
+</ol>
+<div class="note green"><b>最小公式（二元）</b><p>两策略时：(P(\text{选好的})=\dfrac{1}{1+e^{-\lambda\Delta\pi}})，其中 (\Delta\pi=EU_{\text{好}}-EU_{\text{差}})。<br />
+例：(\Delta\pi=2,\lambda=1) → (P=1/(1+e^{-2})\approx\mathbf{0.8808})；(\Delta\pi=1,\lambda=1) → (\approx\mathbf{0.7311})。<span class="tag t-inf">推论</span></p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="110" x2="640" y2="110" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="80" cy="110" r="10" fill="#0f8a4d"/><text x="80" y="50" text-anchor="middle" font-size="11" font-weight="600" fill="#15181d" font-family="sans-serif">统计选择</text><text x="80" y="68" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">Luce/McFadden</text>
+  <circle cx="220" cy="110" r="10" fill="#b8730a"/><text x="220" y="50" text-anchor="middle" font-size="11" font-weight="600" fill="#15181d" font-family="sans-serif">1995 QRE</text><text x="220" y="68" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">正规型固定点</text>
+  <circle cx="360" cy="110" r="10" fill="#1d4ed8"/><text x="360" y="50" text-anchor="middle" font-size="11" font-weight="600" fill="#15181d" font-family="sans-serif">1998 AQRE</text><text x="360" y="68" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">扩展型</text>
+  <circle cx="500" cy="110" r="10" fill="#7c3aed"/><text x="500" y="50" text-anchor="middle" font-size="11" font-weight="600" fill="#15181d" font-family="sans-serif">2005 正则</text><text x="500" y="68" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">Goeree–Holt–Palfrey</text>
+  <circle cx="620" cy="110" r="10" fill="#d5342c"/><text x="620" y="50" text-anchor="middle" font-size="11" font-weight="600" fill="#15181d" font-family="sans-serif">2008 批判</text><text x="620" y="68" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">Haile et al.</text>
+  <text x="340" y="170" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">实验室应用贯穿全程：旅人困境、拍卖、谈判、社会两难……</text>
+  <text x="340" y="195" text-anchor="middle" fill="#7c848f" font-size="12" font-family="sans-serif">经验增加 → 估计 λ 常上升（均衡选择故事的经验脚注）</text>
+</svg>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>激励</th>
+<th>对系统的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">受试</td>
+<td>赚实验币 / 少思考成本</td>
+<td>产生可观测噪声选择</td>
+</tr>
+<tr>
+<td class="k">论文作者</td>
+<td>拟合优度与故事完整性</td>
+<td>可能过度调 λ / 误差族</td>
+</tr>
+<tr>
+<td class="k">审稿 / 批评者</td>
+<td>可证伪性</td>
+<td>推动正则 QRE 与跨处理设计</td>
+</tr>
+<tr>
+<td class="k">平台 / 机制方</td>
+<td>规则在「人会出错」时仍稳</td>
+<td>用 QRE 做压力测试而非假设全理性</td>
+</tr>
+<tr>
+<td class="k">交易 / 谈判对手</td>
+<td>利用你的噪声或被你的噪声伤到</td>
+<td>策略上要预测分布，不只预测众数</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="fB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0f8a4d"/></marker>
+  </defs>
+  <rect x="30" y="30" width="150" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="105" y="55" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">支付 / 规则</text><text x="105" y="73" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">实验者注入</text>
+  <rect x="265" y="30" width="150" height="60" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="55" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">信念 σ</text><text x="340" y="73" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">信息流核心</text>
+  <rect x="500" y="30" width="150" height="60" rx="8" fill="#fef2f2" stroke="#d5342c"/><text x="575" y="55" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">选择频率</text><text x="575" y="73" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">可观测输出</text>
+
+  <line x1="180" y1="60" x2="263" y2="60" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#fA)"/>
+  <line x1="415" y1="60" x2="498" y2="60" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#fA)"/>
+
+  <rect x="150" y="160" width="160" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="230" y="190" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">反馈 / 经验</text>
+  <rect x="370" y="160" width="160" height="50" rx="8" fill="#f3e8ff" stroke="#7c3aed"/><text x="450" y="190" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">λ 更新</text>
+
+  <path d="M575,90 C575,130 450,130 450,160" fill="none" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#fB)"/>
+  <path d="M370,185 C300,185 230,185 230,90" fill="none" stroke="#0f8a4d" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#fB)"/>
+  <text x="340" y="250" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">「抽水」发生在：把选择频率只当噪声丢掉，而不回流更新信念与 λ</text>
+</svg>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按 <strong>重要性 × 杠杆率 × 可操作性 ÷ 学习成本</strong> 排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>杠杆</th>
+<th>为什么锋利</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td><strong>先算 (\Delta\pi)，再谈概率</strong></td>
+<td>没支付差，λ 只是装饰</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td><strong>把预测改成分布</strong></td>
+<td>QRE 输出的是频率，不是单点「他会选 X」</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td><strong>盯比较静态，不盯单点拟合</strong></td>
+<td>惩罚变大 → 索赔下降（旅人困境）才是真刀<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td><strong>λ 与支付尺度一起报</strong></td>
+<td>否则跨场景数字不可比</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td><strong>用正则公理过滤故事</strong></td>
+<td>单调/响应：更好策略不能更少被选</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td><strong>重复局分开估 λ</strong></td>
+<td>经验会抬 λ，混在一起会糊</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td><strong>与 level-k / 纳什并列表</strong></td>
+<td>同数据多模型，防唯一叙事</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td><strong>机制压力测试用中等 λ</strong></td>
+<td>全理性设计在噪声下常碎</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td><strong>二元先手算 logit</strong></td>
+<td>(1/(1+e^{-\lambda\Delta})) 是直觉锚</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td><strong>拒绝「任意误差族」</strong></td>
+<td>否则落入 HHK 不可证伪区</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「QRE = 人非理性乱选」</summary><div class="dbody"><p>乱选是 (\lambda=0)。有限 λ 仍然系统偏好更高 EU——是<strong>有结构的噪声</strong>，不是均匀噪声。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. 「拟合好 = 理论对」</summary><div class="dbody"><p>单博弈单 λ 几乎总能拟合得不错；要看跨处理符号与正则约束。<span class="tag t-fact">事实</span>（Haile et al. 2008）</p></div></details>
+<details><summary>3. 「λ 越大人越聪明」</summary><div class="dbody"><p>λ 是精度/敏感度，与 IQ 不是一回事；且依赖支付尺度。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>4. 「QRE 精炼纳什」</summary><div class="dbody"><p>它是替代/推广，不是精炼：有限 λ 的 QRE 可以远离任何纳什。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>5. 「和 Softmax 一样所以能直接迁移 ML 温度」</summary><div class="dbody"><p>博弈里多了<strong>固定点</strong>：你的 Softmax 改变对方 EU。温度调参 ≠ 求均衡。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>6. 「劣势策略概率应为 0」</summary><div class="dbody"><p>纳什如此；QRE 与数据通常否。用纳什零概率去骂受试，会错失结构。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>7. 「旅人困境证明纳什错了」</summary><div class="dbody"><p>纳什在极限仍可能相关；实验显示<strong>有限噪声下</strong>索赔对惩罚参数敏感——QRE/噪声学习解释的是比较静态。<span class="tag t-fact">事实</span>（Capra et al., <em>AER</em> 1999）</p></div></details>
+<details><summary>8. 「个体都是同一 λ」</summary><div class="dbody"><p>异质性很大；非参研究显示僵化 logit+同质假设会大幅提高拒绝率。<span class="tag t-chk">待验证</span>（匹配硬币非参检验文献）</p></div></details>
+<details><summary>9. 「扩展型直接套正规型 QRE」</summary><div class="dbody"><p>动态要 AQRE：每个信息集上的量子回应，信念与策略一致。<span class="tag t-fact">事实</span>（McKelvey &amp; Palfrey 1998）</p></div></details>
+<details><summary>10. 「会算公式就会用」</summary><div class="dbody"><p>现场难点是估 (\Delta\pi) 的尺度与对方 λ——公式只是第二步。<span class="tag t-inf">推论</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <rect x="20" y="40" width="200" height="120" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="120" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">抽象</text>
+  <text x="120" y="100" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">固定点 · Softmax</text>
+  <text x="120" y="120" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">λ · 正则公理</text>
+
+  <rect x="240" y="40" width="200" height="120" rx="10" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="340" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">机制</text>
+  <text x="340" y="100" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">Δπ → 选择概率</text>
+  <text x="340" y="120" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">信念回写 · 学习</text>
+
+  <rect x="460" y="40" width="200" height="120" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="560" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">操作</text>
+  <text x="560" y="100" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">估差 · 读分布</text>
+  <text x="560" y="120" text-anchor="middle" font-size="12" fill="#454c56" font-family="sans-serif">比静态 · 压力测</text>
+</svg>
+<p>现实例子（同构）：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>抽象结构</th>
+<th>QRE 读法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">会议投票</td>
+<td>多选项、相对收益模糊</td>
+<td>别假设全员投最优；估「差一点」的被选率</td>
+</tr>
+<tr>
+<td class="k">定价 / 拍卖</td>
+<td>略高报仍有胜率</td>
+<td>过低噪声假设会低估超报<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">合规抽检</td>
+<td>检查博弈</td>
+<td>违规率对惩罚差敏感，但不会陡降到 0</td>
+</tr>
+<tr>
+<td class="k">产品默认项</td>
+<td>Softmax 过选项</td>
+<td>提高「最优项」相对效用差，比只靠教育更稳</td>
+</tr>
+<tr>
+<td class="k">对抗性 ML</td>
+<td>Boltzmann 探索</td>
+<td>温度 ↔ λ；对手也在适应你的随机化</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<ol>
+<li><strong>写清策略与支付</strong>（哪怕主观打分）。  </li>
+<li><strong>估对方混合或对称假设</strong> → 算 (\Delta\pi)。  </li>
+<li><strong>选一个保守 λ 区间</strong>（低/中/高三档）→ 得到选择分布带。  </li>
+<li><strong>决策对分布做鲁棒</strong>，不对单点「他一定选 X」下注。  </li>
+<li><strong>有反馈就更新 λ</strong>，不要把第一轮噪声当成永恒。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>枝 A · 计算</summary><div class="dbody"><p>二元 logit → 对称 2×2 固定点迭代 → 非对称矩阵 → 扩展型信息集（阅读级）</p></div></details>
+<details><summary>枝 B · 实证</summary><div class="dbody"><p>读选择频率 → 极大似然直觉 → 跨处理符号检验 → 正则公理自检</p></div></details>
+<details><summary>枝 C · 对照</summary><div class="dbody"><p>纳什极限 → 颤抖手精炼 → level-k / CH → 何时换模型</p></div></details>
+<details><summary>枝 D · 应用</summary><div class="dbody"><p>机制压力测试 · 谈判保留分布 · 产品选项架构 · 风控「不会为零的违规率」</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你进入的世界叫 <strong>「噪声竞技场」</strong>：</p>
+<ul>
+<li><strong>主线任务</strong>：在有限 λ 下预测对手分布，而不是猜「纳什点」。  </li>
+<li><strong>隐藏 BOSS</strong>：HHK 龙——你的模型若能解释一切，就什么也没解释。  </li>
+<li><strong>装备</strong>：(\Delta\pi) 计算器、λ 三档带、正则检查清单。  </li>
+<li><strong>经验值</strong>：每次复盘「预测分布 vs 真实频率」的校准误差。</li>
+</ul>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>完成标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 手算二元 logit</td>
+<td>给定 (\lambda,\Delta\pi)，P 与本手册例题一致</td>
+</tr>
+<tr>
+<td class="k">T2 解对称 PD-QRE</td>
+<td>给定 λ，迭代到合作率稳定</td>
+</tr>
+<tr>
+<td class="k">T3 读一篇实验图</td>
+<td>指出哪条比较静态支持/拒绝固定误差分布</td>
+</tr>
+<tr>
+<td class="k">T4 现场估一次</td>
+<td>真实决策写出三档 λ 下的分布带</td>
+</tr>
+<tr>
+<td class="k">T5 写拒绝理由</td>
+<td>列出 3 条「此刻不该用 QRE」的条件</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若 λ=0</button><button class="tab" data-pane="tb1-1">若 λ→∞</button><button class="tab" data-pane="tb1-2">若只调 λ 不改支付</button><button class="tab" data-pane="tb1-3">若误差分布任意灵活</button></div>
+<div class="pane on" id="tb1-0"><p>人人均匀乱选；策略优势消失，只剩运气。协调博弈塌成噪声。</p></div><div class="pane" id="tb1-1"><p>回到纳什（或 λ-同伦选出的那个纳什）。旅人困境索赔沉底；PD 合作≈0。</p></div><div class="pane" id="tb1-2"><p>可能「拟合」单次数据，但跨处理（惩罚↑）预测会翻车——Capra 等强调的正是惩罚参数的比较静态。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-3"><p>落入 HHK：任何行为都有某个 QRE——理论失去牙齿。必须加正则或跨博弈约束。<span class="tag t-fact">事实</span></p></div>
+<h3>可调模型 1 · 二元 Logit：收益差如何变成概率</h3>
+<p>(P=\dfrac{1}{1+e^{-\lambda\Delta\pi}})。默认 (\lambda=1,\Delta\pi=2) → (P\approx\mathbf{88.08\%})。</p>
+<div class="tool" id="tool_logit">
+  <div class="ctrl">
+    <label>精度 λ <output id="lg_lamO">1.00</output></label>
+    <input type="range" id="lg_lam" min="0" max="5" step="0.05" value="1"/>
+    <label>支付差 Δπ <output id="lg_dO">2.00</output></label>
+    <input type="range" id="lg_d" min="-5" max="5" step="0.1" value="2"/>
+  </div>
+  <div class="readout">
+    <div class="ro">P(选高EU)<strong id="lg_p">88.08%</strong></div>
+    <div class="ro">P(选低EU)<strong id="lg_q">11.92%</strong></div>
+    <div class="ro">λ·Δπ<strong id="lg_ld">2.00</strong></div>
+    <div class="ro">等效温度 T=1/λ<strong id="lg_t">1.00</strong></div>
+    <div id="lg_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="lg_vh">λ=1、Δπ=2：选「更好」的概率≈88.08%。λ→0 趋向 50%；差为负则偏好翻转。</span></div>
+  </div>
+  <canvas id="lgChart" height="214"></canvas>
+</div>
+<h3>可调模型 2 · 囚徒困境的 Logit QRE</h3>
+<p>支付：合作/合作 3,3；合作/背叛 0,5；背叛/背叛 1,1。对称 QRE 合作率 (p) 满足 (p=\sigma_\lambda(3p,\,1+4p)) 的第一分量。<br />
+默认 (\lambda=0.40) → 合作率 (\approx\mathbf{36.66\%})（纳什为 0）。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool_pd">
+  <div class="ctrl">
+    <label>精度 λ <output id="pd_lamO">0.40</output></label>
+    <input type="range" id="pd_lam" min="0" max="4" step="0.05" value="0.40"/>
+  </div>
+  <div class="readout">
+    <div class="ro">QRE 合作率<strong id="pd_p">36.66%</strong></div>
+    <div class="ro">背叛率<strong id="pd_d">63.34%</strong></div>
+    <div class="ro">EU(合作)<strong id="pd_euc">1.100</strong></div>
+    <div class="ro">EU(背叛)<strong id="pd_eud">2.467</strong></div>
+    <div id="pd_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="pd_vh">λ=0.40：合作≈36.66%。λ↑合作率下降并趋向纳什 0；λ=0 时为 50%。</span></div>
+  </div>
+  <canvas id="pdChart" height="214"></canvas>
+</div>
+<h3>可调模型 3 · 猎鹿博弈：λ-同伦如何选均衡</h3>
+<pre><code>      鹿(S)   兔(H)
+鹿    5,5     0,4
+兔    4,0     2,2
+</code></pre>
+<p>两个纯纳什：(S,S) 支付占优，(H,H) 风险占优。从均匀出发抬 λ，对称 logit QRE 趋向 <strong>打兔</strong>（风险占优）。默认 (\lambda=1) → (P(S)\approx\mathbf{19.58\%})。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool_stag">
+  <div class="ctrl">
+    <label>精度 λ <output id="st_lamO">1.00</output></label>
+    <input type="range" id="st_lam" min="0" max="5" step="0.05" value="1"/>
+  </div>
+  <div class="readout">
+    <div class="ro">P(猎鹿)<strong id="st_ps">19.58%</strong></div>
+    <div class="ro">P(打兔)<strong id="st_ph">80.42%</strong></div>
+    <div class="ro">EU(鹿)<strong id="st_eus">0.979</strong></div>
+    <div class="ro">EU(兔)<strong id="st_euh">2.392</strong></div>
+    <div id="st_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="st_vh">λ=1：猎鹿≈19.58%。λ↑进一步沉向打兔；λ=0 回到 50-50。支付占优均衡未必被同伦选中。</span></div>
+  </div>
+  <canvas id="stChart" height="214"></canvas>
+</div>
+<h3>可调模型 4 · 「看起来优」但噪声下仍翻车</h3>
+<p>设定你以为的最优行动相对优势 (\Delta\pi)，以及你对对方精度 λ 的猜测。看对方选「次优」的概率——这是你做稳健设计时该预算的<strong>失误率地板</strong>。<br />
+默认 (\Delta\pi=1.5,\lambda=0.8) → 对方仍有 (\approx\mathbf{23.15\%}) 概率选次优。</p>
+<div class="tool" id="tool_floor">
+  <div class="ctrl">
+    <label>对方 λ <output id="fl_lamO">0.80</output></label>
+    <input type="range" id="fl_lam" min="0" max="4" step="0.05" value="0.80"/>
+    <label>你的优势 Δπ <output id="fl_dO">1.50</output></label>
+    <input type="range" id="fl_d" min="0.1" max="6" step="0.1" value="1.5"/>
+  </div>
+  <div class="readout">
+    <div class="ro">对方选优 P<strong id="fl_p">76.85%</strong></div>
+    <div class="ro">失误地板<strong id="fl_miss">23.15%</strong></div>
+    <div class="ro">λ·Δπ<strong id="fl_ld">1.20</strong></div>
+    <div class="ro">要把失误压到&lt;5%需 λΔ<strong id="fl_need">≈2.94</strong></div>
+    <div id="fl_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline"><span id="fl_vh">默认下失误地板≈23.15%。要把 P(次优)&lt;5%，需 λ·Δπ≳2.94（logit）。加大支付差或提高对方精度，两条路。</span></div>
+  </div>
+  <canvas id="flChart" height="214"></canvas>
+</div>
+<div class="tabs" data-group="tb2"><button class="tab on" data-pane="tb2-0">一次性互动</button><button class="tab" data-pane="tb2-1">重复有反馈</button><button class="tab" data-pane="tb2-2">机制设计</button></div>
+<div class="pane on" id="tb2-0"><p>用模型 1+4：先估 Δπ 与保守 λ，按分布做决策，不赌「他一定最优」。</p></div><div class="pane" id="tb2-1"><p>预期有效 λ 上升；早期按低 λ 预算，后期再收紧。</p></div><div class="pane" id="tb2-2"><p>用模型 3 的教训：支付占优不等于会被选中；用中等 λ 压力测试规则。</p></div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>手算二元 logit，说出 λ→0/∞ 极限</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>迭代对称 2×2 QRE，对比纳什</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>读实验比较静态；做正则自检</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>现场分布预测 + 多模型对照 + 知道何时弃用</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一个真实二选一（回邮件语气 A/B、报价高低、是否催促）。  </li>
+<li>给自己打一个主观 (\Delta\pi)（−5…5），给对方一个保守 (\lambda)（如 0.5–1）。  </li>
+<li>用模型 1 算出对方选「你以为的优」的概率。  </li>
+<li>只改一件事：要么加大真实支付差，要么按失误地板做备胎。</li>
+</ol>
+<p>成本≈0，产出=一张「分布带 + 失误地板」便签。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>日</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>默写 logit 公式与二元特例</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>手算 PD：λ=0.4 / 1 / 2 的合作率（对照模型 2）</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>读 McKelvey–Palfrey 1995 摘要：存在性与 λ 极限</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>读 Haile et al. 2008 核心论断：无约束不可证伪</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>用模型 3 扫 λ，记录何时 P(S)&lt;10%</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>现场一次 30 分钟实践</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>写 5 条个人「适用/不适用 QRE」清单</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<p>周1：公式与固定点直觉；周2：经典实验比较静态（旅人困境/PD）；周3：与 level-k、颤抖手对照；周4：机制/谈判中的分布预测与复盘校准。</p>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<ol>
+<li><strong>Logit QRE</strong>：(P_i\propto e^{\lambda EU_i})，固定点均衡。<span class="tag t-fact">事实</span></li>
+<li><strong>λ 极限</strong>：0→均匀；∞→纳什（泛型下常唯一选择）。<span class="tag t-fact">事实</span></li>
+<li><strong>结构 QRE / 扰动支付</strong>：噪声 ≡ 私有支付冲击。<span class="tag t-fact">事实</span></li>
+<li><strong>正则 QRE</strong>：连续、内部、响应、单调四公理。<span class="tag t-fact">事实</span>（Goeree, Holt &amp; Palfrey 2005）</li>
+<li><strong>扩展型 AQRE</strong>：信息集量子回应。<span class="tag t-fact">事实</span>（1998）</li>
+<li><strong>旅人困境噪声均衡</strong>：索赔随惩罚参数下降。<span class="tag t-fact">事实</span>（Capra et al. 1999）</li>
+<li><strong>HHK 不可证伪结果</strong>：灵活扰动 → 任意行为可合理化。<span class="tag t-fact">事实</span></li>
+<li><strong>Softmax / 温度同构</strong>：(\lambda \sim 1/T)。<span class="tag t-ana">分析</span></li>
+<li><strong>与 level-k 对照</strong>：递推 vs 固定点。<span class="tag t-ana">分析</span></li>
+<li><strong>失误地板</strong>：(P(\text{次优})=1/(1+e^{\lambda\Delta\pi}))。<span class="tag t-inf">推论</span></li>
+</ol>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 我有没有写出策略与支付？</summary><div class="dbody"><p>没有 Δπ，QRE 无法落地。</p></div></details>
+<details><summary>Q2 我在预测点还是分布？</summary><div class="dbody"><p>QRE 要的是频率带。</p></div></details>
+<details><summary>Q3 λ 与支付尺度对齐了吗？</summary><div class="dbody"><p>跨场景直接比 λ 数字通常无效。</p></div></details>
+<details><summary>Q4 有没有跨处理比较静态可检验？</summary><div class="dbody"><p>只有单点拟合 → 警惕事后故事。</p></div></details>
+<details><summary>Q5 响应是否满足「更好更常选」？</summary><div class="dbody"><p>违反单调/响应 → 不是正则 QRE。</p></div></details>
+<details><summary>Q6 一次性还是重复？</summary><div class="dbody"><p>重复预期 λ 上升。</p></div></details>
+<details><summary>Q7 该用 QRE 还是 level-k / 纳什？</summary><div class="dbody"><p>第一轮深度故事偏 level-k；噪声固定点偏 QRE；极限偏纳什。</p></div></details>
+<details><summary>Q8 扩展型信息集清楚吗？</summary><div class="dbody"><p>动态博弈别硬套正规型。</p></div></details>
+<details><summary>Q9 我是否掉进「什么都能拟合」？</summary><div class="dbody"><p>误差族是否被约束？</p></div></details>
+<details><summary>Q10 下一步最小复盘是什么？</summary><div class="dbody"><p>30 分钟实践里的失误地板便签。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>与《层级推理》手册交叉：QRE×level-k 混合估计</li>
+<li>与《颤抖手完美均衡》对照：精炼 vs 噪声均衡</li>
+<li>与《猎鹿博弈》对照：风险占优 vs λ-同伦选择</li>
+<li>现场估 λ 的简易实验（课堂 2×2 矩阵连做 10 局）</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">QRE 定义与存在性、logit 极限</td>
+<td>经典理论</td>
+<td>McKelvey &amp; Palfrey, <em>GEB</em> 1995</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">扩展型 AQRE</td>
+<td>经典理论</td>
+<td>McKelvey &amp; Palfrey, <em>Experimental Economics</em> 1998</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">正则 QRE 四公理</td>
+<td>理论回应</td>
+<td>Goeree, Holt &amp; Palfrey, <em>Experimental Economics</em> 2005</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">无约束 QRE 不可证伪</td>
+<td>方法批判</td>
+<td>Haile, Hortaçsu &amp; Kosenok, <em>AER</em> 2008</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">旅人困境索赔 vs 惩罚</td>
+<td>实验室</td>
+<td>Capra, Goeree, Gomez &amp; Holt, <em>AER</em> 1999</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">QRE 导论与图示</td>
+<td>综述/教材向</td>
+<td>Goeree / Holt / Palfrey 等 QRE Primer（Caltech）</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">Softmax 同构讨论</td>
+<td>科普/二手</td>
+<td>智源社区等转述</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">本手册 PD/猎鹿数值</td>
+<td>教学推演</td>
+<td>对称 logit 固定点迭代（见可调模型）</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+<tr>
+<td class="k">匹配硬币非参检验拒绝率</td>
+<td>近期实证</td>
+<td>非参识别与检验 QRE 工作论文/实验</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或原始定义；<span class="tag t-ana">分析</span>权威推断；<span class="tag t-inf">推论</span>本手册推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或转载链长。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是认知与决策框架，不是投资建议、谈判承诺或竞赛必胜公式。实验数字来自公开论文与转述，应用现场前请核对原文、支付尺度与你的对手分布。可调模型为教学简化（对称 logit、单一 λ），不能替代正式结构估计。你需对据此采取的行动自行负责。</p>
+</section>
+<footer>  <p>《有限理性与量子响应均衡（QRE）：现实中人按收益差的概率而非绝对最优选择 · 全景认知与实践操作手册》 · 生成于 2026-09-20 · 耗时 5 分 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《有限理性与量子响应均衡（QRE）》主题脚本
+   四个可调模型：
+     1. 二元 Logit
+     2. 囚徒困境 QRE 固定点
+     3. 猎鹿 λ-同伦
+     4. 失误地板
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    purple: '#7c3aed', grid: '#eef1f5', axis: '#e2e6ec',
+    ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+  }
+  function soft(lam, eu) {
+    var m = -Infinity, i;
+    for (i = 0; i < eu.length; i++) if (eu[i] > m) m = eu[i];
+    var ex = [], s = 0, v;
+    for (i = 0; i < eu.length; i++) {
+      v = Math.exp(Math.min(700, lam * (eu[i] - m)));
+      ex.push(v); s += v;
+    }
+    return ex.map(function (x) { return x / s; });
+  }
+  function logitP(lam, d) {
+    return 1 / (1 + Math.exp(-lam * d));
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, vals, ymin, ymax, axisTitle) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (vals.length * 1.5);
+    vals.forEach(function (o, i) {
+      var x = pl + (i + 0.5) * (bw / vals.length) - barW / 2;
+      var y0 = y1 - ((0 - ymin) / (ymax - ymin)) * bh;
+      var yv = y1 - ((o.v - ymin) / (ymax - ymin)) * bh;
+      var top = Math.min(y0, yv), ht = Math.abs(y0 - yv);
+      ctx.fillStyle = o.c;
+      ctx.fillRect(x, top, barW, Math.max(ht, 1));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      var lab = o.labV != null ? o.labV : o.v.toFixed(3);
+      var ly = o.v >= 0 ? Math.max(yv - 6, pt + 10) : Math.min(yv + 14, y1 - 4);
+      ctx.fillText(lab, x + barW / 2, ly);
+      ctx.fillStyle = C.ink2;
+      ctx.font = '10px sans-serif';
+      var lines = (o.lab || '').split('\n');
+      lines.forEach(function (ln, j) {
+        ctx.fillText(ln, x + barW / 2, y1 + 13 + j * 12);
+      });
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(axisTitle || '数值', pl + bw, y1 + 31);
+  }
+  function lineChart(cv, xs, ys, ymin, ymax, xLabel) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    ctx.strokeStyle = C.blue;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    xs.forEach(function (x, i) {
+      var px = pl + (x - xs[0]) / (xs[xs.length - 1] - xs[0] || 1) * bw;
+      var py = y1 - ((ys[i] - ymin) / (ymax - ymin || 1)) * bh;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+    // current point = last in series if marked via ys length match — caller draws marker separately via vals end
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(xLabel || 'λ', pl + bw, y1 + 31);
+    ctx.textAlign = 'left';
+    ctx.fillText(xs[0].toFixed(1), pl, y1 + 13);
+    ctx.textAlign = 'right';
+    ctx.fillText(xs[xs.length - 1].toFixed(1), pl + bw, y1 + 13);
+  }
+
+  /* ── 1. 二元 Logit ── */
+  (function lg() {
+    if (!$('lg_lam')) return;
+    var cv = $('lgChart');
+    function upd() {
+      var lam = parseFloat($('lg_lam').value);
+      var d = parseFloat($('lg_d').value);
+      var p = logitP(lam, d);
+      var q = 1 - p;
+      txt($('lg_lamO'), lam.toFixed(2));
+      txt($('lg_dO'), d.toFixed(1));
+      txt($('lg_p'), (p * 100).toFixed(2) + '%');
+      txt($('lg_q'), (q * 100).toFixed(2) + '%');
+      txt($('lg_ld'), (lam * d).toFixed(2));
+      txt($('lg_t'), lam > 1e-9 ? (1 / lam).toFixed(2) : '∞');
+      var msg, col;
+      if (Math.abs(lam) < 1e-9) {
+        msg = 'λ≈0：接近均匀 50-50，支付差几乎不起作用。';
+        col = C.amber;
+      } else if (p >= 0.9) {
+        msg = 'λ=' + lam.toFixed(2) + '、Δπ=' + d.toFixed(1) + '：选「更好」≈' + (p * 100).toFixed(2) + '%——已相当尖锐。';
+        col = C.green;
+      } else if (p <= 0.1) {
+        msg = '支付差为负或精度把概率压向「更差」一侧：P(高EU)≈' + (p * 100).toFixed(2) + '%。';
+        col = C.red;
+      } else {
+        msg = 'λ=' + lam.toFixed(2) + '、Δπ=' + d.toFixed(1) + '：选「更好」的概率≈' + (p * 100).toFixed(2) + '%。λ→0 趋向 50%；差为负则偏好翻转。';
+        col = C.blue;
+      }
+      txt($('lg_vh'), msg);
+      tint($('lg_vh'), col);
+      bars(cv, [
+        { v: p, c: C.green, lab: 'P(高EU)', labV: (p * 100).toFixed(1) + '%' },
+        { v: q, c: C.red, lab: 'P(低EU)', labV: (q * 100).toFixed(1) + '%' }
+      ], 0, 1, '概率');
+    }
+    bind(['lg_lam', 'lg_d'], upd);
+    upd();
+  })();
+
+  /* ── 2. 囚徒困境 QRE ── */
+  (function pd() {
+    if (!$('pd_lam')) return;
+    var cv = $('pdChart');
+    function solve(lam) {
+      var p = 0.5, i, p2;
+      for (i = 0; i < 2500; i++) {
+        p2 = soft(lam, [3 * p, 1 + 4 * p])[0];
+        if (Math.abs(p2 - p) < 1e-14) return p2;
+        p = 0.5 * p + 0.5 * p2;
+      }
+      return p;
+    }
+    function upd() {
+      var lam = parseFloat($('pd_lam').value);
+      var p = solve(lam);
+      var euc = 3 * p, eud = 1 + 4 * p;
+      txt($('pd_lamO'), lam.toFixed(2));
+      txt($('pd_p'), (p * 100).toFixed(2) + '%');
+      txt($('pd_d'), ((1 - p) * 100).toFixed(2) + '%');
+      txt($('pd_euc'), euc.toFixed(3));
+      txt($('pd_eud'), eud.toFixed(3));
+      var msg, col;
+      if (lam < 0.05) {
+        msg = 'λ≈0：合作率接近 50%。';
+        col = C.amber;
+      } else if (p < 0.05) {
+        msg = 'λ=' + lam.toFixed(2) + '：合作≈' + (p * 100).toFixed(2) + '%——已接近纳什（双方背叛）。';
+        col = C.red;
+      } else {
+        msg = 'λ=' + lam.toFixed(2) + '：合作≈' + (p * 100).toFixed(2) + '%。λ↑合作率下降并趋向纳什 0；λ=0 时为 50%。';
+        col = C.blue;
+      }
+      txt($('pd_vh'), msg);
+      tint($('pd_vh'), col);
+      // curve of coop vs λ
+      var xs = [], ys = [], L;
+      for (L = 0; L <= 4.0001; L += 0.1) {
+        xs.push(L);
+        ys.push(solve(L));
+      }
+      var g = fit(cv, 214);
+      if (!g) return;
+      clear(g);
+      var ctx = g.ctx, w = g.w, h = g.h;
+      var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+      var bw = w - pl - pr, bh = y1 - pt;
+      var ymin = 0, ymax = 0.55;
+      axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+      ctx.strokeStyle = C.blue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      xs.forEach(function (x, i) {
+        var px = pl + (x / 4) * bw;
+        var py = y1 - ((ys[i] - ymin) / (ymax - ymin)) * bh;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      });
+      ctx.stroke();
+      var px0 = pl + (lam / 4) * bw;
+      var py0 = y1 - ((p - ymin) / (ymax - ymin)) * bh;
+      ctx.fillStyle = C.red;
+      ctx.beginPath();
+      ctx.arc(px0, py0, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = C.ink3;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('λ →', pl + bw, y1 + 31);
+      ctx.textAlign = 'left';
+      ctx.fillText('0', pl, y1 + 13);
+      ctx.textAlign = 'right';
+      ctx.fillText('4', pl + bw, y1 + 13);
+      ctx.fillStyle = C.ink2;
+      ctx.textAlign = 'left';
+      ctx.fillText('合作率', pl + 8, pt + 12);
+    }
+    bind(['pd_lam'], upd);
+    upd();
+  })();
+
+  /* ── 3. 猎鹿 λ-同伦 ── */
+  (function stag() {
+    if (!$('st_lam')) return;
+    var cv = $('stChart');
+    function solve(lam) {
+      var p = 0.5, i, p2;
+      for (i = 0; i < 3000; i++) {
+        p2 = soft(lam, [5 * p, 4 * p + 2 * (1 - p)])[0];
+        if (Math.abs(p2 - p) < 1e-14) return p2;
+        p = 0.7 * p + 0.3 * p2;
+      }
+      return p;
+    }
+    function upd() {
+      var lam = parseFloat($('st_lam').value);
+      var ps = solve(lam);
+      var ph = 1 - ps;
+      var eus = 5 * ps;
+      var euh = 2 + 2 * ps;
+      txt($('st_lamO'), lam.toFixed(2));
+      txt($('st_ps'), (ps * 100).toFixed(2) + '%');
+      txt($('st_ph'), (ph * 100).toFixed(2) + '%');
+      txt($('st_eus'), eus.toFixed(3));
+      txt($('st_euh'), euh.toFixed(3));
+      var msg, col;
+      if (lam < 0.05) {
+        msg = 'λ≈0：回到均匀 50-50。';
+        col = C.amber;
+      } else if (ps < 0.05) {
+        msg = 'λ=' + lam.toFixed(2) + '：猎鹿≈' + (ps * 100).toFixed(2) + '%——同伦沉向风险占优的打兔。';
+        col = C.red;
+      } else {
+        msg = 'λ=' + lam.toFixed(2) + '：猎鹿≈' + (ps * 100).toFixed(2) + '%。λ↑进一步沉向打兔；支付占优均衡未必被同伦选中。';
+        col = C.blue;
+      }
+      txt($('st_vh'), msg);
+      tint($('st_vh'), col);
+      bars(cv, [
+        { v: ps, c: C.green, lab: 'P(猎鹿)', labV: (ps * 100).toFixed(1) + '%' },
+        { v: ph, c: C.amber, lab: 'P(打兔)', labV: (ph * 100).toFixed(1) + '%' }
+      ], 0, 1, '概率');
+    }
+    bind(['st_lam'], upd);
+    upd();
+  })();
+
+  /* ── 4. 失误地板 ── */
+  (function floor() {
+    if (!$('fl_lam')) return;
+    var cv = $('flChart');
+    function upd() {
+      var lam = parseFloat($('fl_lam').value);
+      var d = parseFloat($('fl_d').value);
+      var p = logitP(lam, d);
+      var miss = 1 - p;
+      var need = Math.log(19); // P(次优)=0.05 → e^{λΔ}=19
+      txt($('fl_lamO'), lam.toFixed(2));
+      txt($('fl_dO'), d.toFixed(1));
+      txt($('fl_p'), (p * 100).toFixed(2) + '%');
+      txt($('fl_miss'), (miss * 100).toFixed(2) + '%');
+      txt($('fl_ld'), (lam * d).toFixed(2));
+      txt($('fl_need'), '≈' + need.toFixed(2));
+      var msg, col;
+      if (miss < 0.05) {
+        msg = '失误地板≈' + (miss * 100).toFixed(2) + '%——已低于 5% 门槛（需 λ·Δπ≳' + need.toFixed(2) + '）。';
+        col = C.green;
+      } else if (miss > 0.35) {
+        msg = '失误地板≈' + (miss * 100).toFixed(2) + '% 很高：要么加大支付差，要么别假设对方很「理性」。';
+        col = C.red;
+      } else {
+        msg = '默认逻辑：失误地板≈' + (miss * 100).toFixed(2) + '%。要把 P(次优)<5%，需 λ·Δπ≳' + need.toFixed(2) + '（logit）。加大支付差或提高对方精度，两条路。';
+        col = C.blue;
+      }
+      txt($('fl_vh'), msg);
+      tint($('fl_vh'), col);
+      bars(cv, [
+        { v: p, c: C.green, lab: '选优', labV: (p * 100).toFixed(1) + '%' },
+        { v: miss, c: C.red, lab: '失误地板', labV: (miss * 100).toFixed(1) + '%' },
+        { v: 0.05, c: C.purple, lab: '5%线', labV: '5%' }
+      ], 0, 1, '概率');
+    }
+    bind(['fl_lam', 'fl_d'], upd);
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>

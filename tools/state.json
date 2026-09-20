@@ -1113,11 +1113,14 @@
     {
       "slug": "有限理性与量子响应均衡（QRE）：现实中人按收益差的概率而非绝对最优选择",
       "title": "有限理性与量子响应均衡（QRE）：现实中人按收益差的概率而非绝对最优选择",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-20 08:11:30",
+      "finished": "2026-09-20 08:16:30",
+      "duration_sec": 300,
+      "outputs": [
+        "reports/有限理性与量子响应均衡（QRE）：现实中人按收益差的概率而非绝对最优选择.html",
+        "reports/有限理性与量子响应均衡（QRE）：现实中人按收益差的概率而非绝对最优选择.md"
+      ],
       "error": null
     },
     {
@@ -1948,7 +1951,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-20 08:11",
+  "updated": "2026-09-20 08:16",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
