@@ -1100,11 +1100,14 @@
     {
       "slug": "共同代理与多任务委托：可测任务被过度激励，不可测任务被忽视（教育、KPI 扭曲的根源）",
       "title": "共同代理与多任务委托：可测任务被过度激励，不可测任务被忽视（教育、KPI 扭曲的根源）",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-20 08:00:27",
+      "finished": "2026-09-20 08:11:12",
+      "duration_sec": 645,
+      "outputs": [
+        "reports/共同代理与多任务委托：可测任务被过度激励，不可测任务被忽视（教育、KPI 扭曲的根源）.html",
+        "reports/共同代理与多任务委托：可测任务被过度激励，不可测任务被忽视（教育、KPI 扭曲的根源）.md"
+      ],
       "error": null
     },
     {
@@ -1945,7 +1948,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-20 06:52",
+  "updated": "2026-09-20 08:11",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",

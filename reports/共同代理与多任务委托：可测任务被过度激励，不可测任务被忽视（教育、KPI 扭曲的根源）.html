@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>共同代理与多任务委托：可测任务被过度激励 · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Multitask Agency × KPI Distortion</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <div class="navgroup">机制与激励</div>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">现实与行动</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">能力与计划</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与下一步</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>共同代理与多任务委托：可测任务被过度激励</h1>
+  <p class="sub">当代理人同时做多件事，只给<strong>可测任务</strong>强激励，就会系统性挤出<strong>不可测但更重要</strong>的任务——教育应试、KPI 崇拜、医患博弈同构。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">组织设计框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>多任务委托代理（Multitask Principal–Agent）</strong>：代理人同时承担多项任务，而不同任务的<strong>可测性</strong>不对称。给可测任务加码，会把稀缺注意力从难测任务上抽走——哪怕后者对委托人更有价值。<span class="tag t-fact">事实</span></p>
+<p>Holmström–Milgrom（1991）的核心结论不是「别用激励」，而是：</p>
+<blockquote>
+<p><strong>对任一活动的最优激励强度，随与之竞争注意力的其他活动「越难测」而下降。</strong> 当难测任务足够重要时，<strong>固定工资（弱激励）可以是最优</strong>——反对「用考试分数发奖金」的人，与合同理论站在同一侧。<span class="tag t-fact">事实</span></p>
+</blockquote>
+<p>表层现象叫 KPI 扭曲、应试教育、刷单、唯论文；底层机制是同一把刀：<strong>激励在重新分配注意力，而不只是抬总努力</strong>。</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「怎么定 KPI 才公平」，而是：<strong>在多维努力与不对称测量下，激励如何扭曲努力配置，以及如何用合同、岗位设计、所有权把扭曲压回去</strong>。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：努力替代/互补、测量噪声、激励强度平衡、岗位拆分、资产所有权、公共部门弱激励。</li>
+<li><strong>在界外</strong>：某次绩效面谈话术、某张 KPI 表的排版——除非压成「哪项可测、哪项被挤、β 该升还是降」。</li>
+</ul>
+<p>与相邻主题分工：单任务道德风险讲「努力不足」；本手册讲「努力错位」。Baker（1992）补一句：即使风险中性，<strong>错误的绩效指标</strong>也会制造扭曲。<span class="tag t-fact">事实</span></p>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>多任务下激励如何配置注意力</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「测量—激励—配置—价值」闭环可形式化</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>任务集、可测信号、激励向量 β、岗位边界</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>委托人；多任务代理人；多委托人（公共部门）</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>β_i、σ_i²、替代强度 γ、任务价值 B_i</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>考试分、论文数、销售额、点击率、处理时长</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>深层教学、护理质量、创新探索、诚信、协作</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>β → 努力配置 → 可测分↑ / 真价值? → 委托人收益</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>可测性不对称 ⇒ 激励不对称 ⇒ 配置扭曲</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「高绩效文化」≠ 多任务已平衡<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>应试、唯 KPI、刷指标、重科研轻教学</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>注意力预算 + 局部激励梯度</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。指标被博弈后更失真（Goodhart / Campbell）<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。难测任务往往是长期资产（声誉、能力、文化）</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>指标崇拜可正反馈崩溃；岗位拆分/弱激励可负反馈矫正</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>先问「哪些重要任务测不准」，再决定能不能对可测项加码——否则你在用奖金买一份更漂亮、更空心的报表。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它解释「激励越强，结果越糟」</h4><p>单任务直觉：β↑ → 努力↑ → 价值↑。多任务里：β_可测↑ → 可测↑、难测↓ → <strong>总价值可能下降</strong>。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它是教育与组织的共用操作系统</h4><p>应试、高校「重科研轻教学」、医院按项目收费、客服按通话量、平台按点击——同一结构。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它连接 2016 诺奖与日常 KPI</h4><p>Holmström 合同理论的多任务分支，直接回答「为什么公司里激励条款比教科书少」。<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>把「难测任务做得差」当成「人懒、文化差」，于是继续加可测 KPI——等于在油门上再踩一脚，把剩余注意力也轧扁。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层从「注意力预算」爬到「制度与指标治理」。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="mtArw" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度层 · 考核立法 / 审计 / 指标治理 / 反博弈</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 实证识别 · 高利害考试 / 工厂多任务实验 / 公共部门案例</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 动态扩展 · 关系合同 / 职业关注 / 多委托人 Dixit</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 跨域同构 · 教育 · 医疗 · 研发 · 客服 · ESG 指标</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 均衡结局 · 可测过度 · 难测枯竭 · 指标失真</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 应用原型 · 教师 / 医生 / 销售 / 公务员 / 平台运营</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 解概念 · 弱激励最优 · 激励平衡 · 岗位拆分 · 所有权</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 机制原语 · 注意力替代 γ · 信号噪声 σ · 价值权重 B</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 问题原语 · 多任务 + 可测性不对称 + 稀缺注意力</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L2–L3</strong>：会算「加 β 会挤谁」；进阶卡在 <strong>L5–L7</strong>：识别指标已失真，并在岗位设计/弱激励/主观评价间选型。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>从抽象价值到可操作旋钮。</p>
+<svg viewBox="0 0 680 380" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="60" y="16" width="560" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">真价值 V=Σ Bᵢ tᵢ  ←  激励 β 只钉住可测信号 x</text>
+
+  <rect x="40" y="90" width="180" height="56" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象层</text><text x="130" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">多维努力配置</text>
+  <rect x="250" y="90" width="180" height="56" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制层</text><text x="340" y="132" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">β · σ · γ · 岗位</text>
+  <rect x="460" y="90" width="180" height="56" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="114" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作层</text><text x="550" y="132" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">KPI·拆岗·弱激励</text>
+
+  <line x1="280" y1="60" x2="130" y2="90" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="90" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="90" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="180" width="180" height="70" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="130" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">可测 t_m / 难测 t_u</text><text x="130" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">注意力互相挤占</text>
+  <rect x="250" y="180" width="180" height="70" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">线性合同 + 风险</text><text x="340" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">β* 随难测性下降</text>
+  <rect x="460" y="180" width="180" height="70" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="208" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">诊断三问</text><text x="550" y="228" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">测得准？挤谁？值多少？</text>
+
+  <line x1="130" y1="146" x2="130" y2="180" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="146" x2="340" y2="180" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="550" y1="146" x2="550" y2="180" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <path d="M220 215 H250" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <path d="M430 215 H460" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <text x="340" y="280" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">红虚线 = 反馈：指标被博弈 → 信号更噪 → 更应弱化 β</text>
+  <text x="340" y="310" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">跨域同构：Goodhart「测度变目标即失效」≈ 多任务挤出</text>
+  <text x="340" y="340" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">Campbell 定律 ≈ 高利害社会指标的腐败压力【事实】</text>
+</svg>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>目标</th>
+<th>信息位置</th>
+<th>典型工具</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">委托人（校长/CEO/监管）</td>
+<td>max 多维真价值</td>
+<td>只看见部分信号</td>
+<td>合同、KPI、拆岗、所有权</td>
+</tr>
+<tr>
+<td class="k">代理人（教师/员工）</td>
+<td>max 报酬 − 努力成本</td>
+<td>知道自己如何分配时间</td>
+<td>应试、刷数、表面合规</td>
+</tr>
+<tr>
+<td class="k">多委托人（Dixit）</td>
+<td>各自维度互相冲突</td>
+<td>公共部门尤甚</td>
+<td>互相否决 → 弱激励<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">审计 / 公众</td>
+<td>防止指标腐败</td>
+<td>事后抽检</td>
+<td>多指标、过程审计</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号</th>
+<th>系统作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">可测努力 / 难测努力</td>
+<td>(t_m, t_u)</td>
+<td>配置结果；真价值 (V=B_m t_m+B_u t_u)</td>
+</tr>
+<tr>
+<td class="k">激励强度</td>
+<td>(\beta_m, \beta_u)</td>
+<td>局部梯度；难测常 (\beta_u\approx 0)</td>
+</tr>
+<tr>
+<td class="k">替代强度</td>
+<td>(\gamma\in[0,1))</td>
+<td>越大，加 (\beta_m) 越狠挤 (t_u)</td>
+</tr>
+<tr>
+<td class="k">测量噪声</td>
+<td>(\sigma_m^2,\sigma_u^2)</td>
+<td>(\sigma_u\to\infty) 时难测不可缔约</td>
+</tr>
+<tr>
+<td class="k">任务价值</td>
+<td>(B_m,B_u)</td>
+<td>委托人真正在乎的权重</td>
+</tr>
+<tr>
+<td class="k">内在动机</td>
+<td>(\iota)</td>
+<td>职业伦理底仓；可被强外激励挤出<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">风险厌恶 × 噪声</td>
+<td>(r\sigma^2)</td>
+<td>抬高激励的保险成本</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 320" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cfA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cfB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="130" height="50" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="85" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">可测性不对称</text>
+  <rect x="180" y="30" width="130" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="245" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">只给 β_m 加码</text>
+  <rect x="340" y="30" width="130" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="405" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">注意力重配</text>
+  <rect x="500" y="30" width="150" height="50" rx="8" fill="#fde8e6" stroke="#d5342c"/><text x="575" y="60" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">t_m↑ t_u↓</text>
+
+  <line x1="150" y1="55" x2="180" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <line x1="310" y1="55" x2="340" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <line x1="470" y1="55" x2="500" y2="55" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+
+  <rect x="100" y="140" width="150" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="175" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">报表 / 分数变好看</text>
+  <rect x="320" y="140" width="150" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="395" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">真价值可能下降</text>
+  <rect x="500" y="140" width="150" height="50" rx="8" fill="#fde8e6" stroke="#d5342c"/><text x="575" y="170" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">再加码 / 指标腐败</text>
+
+  <line x1="575" y1="80" x2="575" y2="140" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <line x1="250" y1="165" x2="320" y2="165" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cfA)"/>
+  <path d="M575 190 V250 H245 V80" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" fill="none" marker-end="url(#cfB)"/>
+  <text x="340" y="280" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">实线因果；红虚线 = Goodhart 正反馈（越考核越失真）</text>
+  <text x="340" y="305" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">Holmström–Milgrom：难测任务重要 ⇒ 可测项也应弱激励【事实】</text>
+</svg>
+<p>因果链（压缩版）：</p>
+<ol>
+<li>任务竞争同一注意力预算（(\gamma&gt;0)）；</li>
+<li>只有 (x_m) 进入合同 ⇒ (\beta_m) 成为局部最陡梯度；</li>
+<li>(t_m) 上升、(t_u) 被挤；</li>
+<li>报表改善掩盖真价值损失；委托人误读为「激励有效」再加码。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="grid g2">
+<div class="card"><h4>关系 1：弱激励是功能，不是偷懒</h4><p>固定工资在多任务世界里保护难测维度——反对「绩效主义原教旨」的理论依据。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>关系 2：岗位设计 = 激励工具</h4><p>把易测与难测拆到不同人/岗，才能对易测岗给强激励而不伤害难测。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>关系 3：所有权替代测量</h4><p>资产增值难测时，让代理人持有资产回报，可内生化维护激励（HM 1991 第二支柱）。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>关系 4：多委托人互相否决</h4><p>Dixit（2002）：公共部门多任务 + 多利益相关方 ⇒ 高能激励几乎必然制造功能障碍。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>关系 5：内在动机是「隐形 β_u」</h4><p>职业伦理等价于难测任务的软激励；外激励过强可能挤出（crowding-out）。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>关系 6：指标失真有时滞</h4><p>短期分数上涨与长期能力折旧不同步——政治周期偏好前者。<span class="tag t-inf">推论</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>最小工作模型（二次成本 + 交叉替代）：</p>
+<p>(C(t_m,t_u)=\frac{t_m^2+t_u^2}{2}+\gamma t_m t_u,\ 0\le\gamma&lt;1)</p>
+<p>代理人面对 (w=\alpha+\beta_m x_m+\beta_u x_u)（难测时常 (\beta_u=0) 或仅剩内在 (\iota)），一阶条件给出：</p>
+<p>(t_m=\frac{\beta_m-\gamma\beta_u}{1-\gamma^2},\quad t_u=\frac{\beta_u-\gamma\beta_m}{1-\gamma^2})</p>
+<p>（边界处截断为非负。）要点：</p>
+<ul>
+<li>(\partial t_u/\partial\beta_m=-\gamma/(1-\gamma^2)&lt;0)：加可测激励<strong>直接减少</strong>难测努力；</li>
+<li>(\gamma=0.5) 时，(\partial t_u/\partial\beta_m=-0.667)，(\partial t_m/\partial\beta_m=1.333)——挤出弹性很大。<span class="tag t-fact">事实</span></li>
+</ul>
+<p>委托人目标（示意）：</p>
+<p>(\max_{\beta}\; B_m t_m+B_u t_u-\frac12 r\sigma_m^2\beta_m^2)</p>
+<p>当 (B_u) 高、(\gamma) 高、(\sigma_u) 大时，最优 (\beta_m) 可以是 <strong>0</strong>。教育型参数（(B_m=0.45,B_u=0.55,\gamma=0.5,\iota=0.25,r\sigma^2=1)）下，数值最优 (\beta_m^*=0)，净价值 (0.1375)；若强行 (\beta_m=0.9)，难测努力被挤到 0，报表好看但激励的保险成本与配置扭曲同时恶化。<span class="tag t-inf">推论</span></p>
+<div class="tool" id="tool_alloc">
+  <h3>可调模型 1 · 注意力挤出（多任务配置）</h3>
+  <div class="ctrl">
+    <label>可测激励 β_m <output id="al_bmO">0.90</output></label>
+    <input type="range" id="al_bm" min="0" max="1.5" step="0.05" value="0.90">
+    <label>难测激励 β_u（含内在动机） <output id="al_buO">0.20</output></label>
+    <input type="range" id="al_bu" min="0" max="1" step="0.05" value="0.20">
+    <label>替代强度 γ <output id="al_gO">0.50</output></label>
+    <input type="range" id="al_g" min="0" max="0.85" step="0.05" value="0.50">
+  </div>
+  <div class="readout">
+    <div class="ro">可测努力 t_m <b id="al_tm">—</b></div>
+    <div class="ro">难测努力 t_u <b id="al_tu">—</b></div>
+    <div class="ro">挤出比 |Δt_u/Δβ_m| <b id="al_el">—</b></div>
+    <div id="al_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap"></div>
+  </div>
+  <canvas id="alChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 260" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="200" x2="640" y2="200" stroke="#e2e6ec" stroke-width="2"/>
+  <circle cx="80" cy="200" r="8" fill="#0f8a4d"/><text x="80" y="230" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">T0 引入KPI</text>
+  <circle cx="200" cy="160" r="8" fill="#1d4ed8"/><text x="200" y="145" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">分数↑</text><text x="200" y="230" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">T1 报表蜜月</text>
+  <circle cx="340" cy="120" r="8" fill="#b8730a"/><text x="340" y="105" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">教学变窄</text><text x="340" y="230" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">T2 挤出显形</text>
+  <circle cx="480" cy="90" r="8" fill="#d5342c"/><text x="480" y="75" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">指标被博弈</text><text x="480" y="230" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">T3 Goodhart</text>
+  <circle cx="600" cy="140" r="8" fill="#7c848f"/><text x="600" y="125" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">改革/回摆</text><text x="600" y="230" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">T4 弱化或拆岗</text>
+  <path d="M88 195 L192 165" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tmA)"/>
+  <path d="M208 155 L332 125" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tmA)"/>
+  <path d="M348 115 L472 95" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tmA)"/>
+  <path d="M488 95 L592 135" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tmA)"/>
+  <text x="340" y="40" text-anchor="middle" fill="#15181d" font-size="13" font-weight="600" font-family="sans-serif">典型时间线：蜜月 → 挤出 → 指标腐败 → 被迫回调</text>
+</svg>
+<p>Nichols &amp; Berliner 等对高利害考试的综述表明：课程窄化、teaching to the test、甚至舞弊，是高利害量化指标的系统性后果，而不是个别「师德问题」。<span class="tag t-chk">待验证</span>（具体比例随国家与学段变化，不宜当作全球常数。）</p>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>主体</th>
+<th>显性激励</th>
+<th>隐性激励</th>
+<th>扭曲方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">学校管理者</td>
+<td>排名、拨款、问责</td>
+<td>政治任期</td>
+<td>推可测分数</td>
+</tr>
+<tr>
+<td class="k">教师</td>
+<td>奖金、评职称</td>
+<td>职业声誉、内在动机</td>
+<td>向考试科目倾斜</td>
+</tr>
+<tr>
+<td class="k">学生/家长</td>
+<td>升学</td>
+<td>长期能力</td>
+<td>短期分 vs 长期成长冲突</td>
+</tr>
+<tr>
+<td class="k">企业中层</td>
+<td>KPI 奖金</td>
+<td>晋升锦标赛</td>
+<td>刷可控指标</td>
+</tr>
+<tr>
+<td class="k">监管者</td>
+<td>「可问责」政绩</td>
+<td>避免丑闻</td>
+<td>偏好可审计数字</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note red"><b>激励冲突的核心</b><p>管理者的「可展示政绩」与组织的「难测真价值」往往负相关——多任务模型预测的不是偶尔失灵，而是<strong>结构性地偏好可测</strong>。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="flA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="flB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="30" y="40" width="140" height="70" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="100" y="70" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">注意力 / 时间</text><text x="100" y="92" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">稀缺总预算</text>
+  <rect x="270" y="20" width="140" height="50" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="50" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">可测任务池</text>
+  <rect x="270" y="90" width="140" height="50" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="120" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">难测任务池</text>
+  <rect x="500" y="20" width="150" height="50" rx="8" fill="#fde8e6" stroke="#d5342c"/><text x="575" y="50" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">KPI / 分数</text>
+  <rect x="500" y="90" width="150" height="50" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="575" y="120" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">真价值 / 长期资产</text>
+
+  <line x1="170" y1="60" x2="270" y2="45" stroke="#1d4ed8" stroke-width="2" marker-end="url(#flA)"/>
+  <line x1="170" y1="90" x2="270" y2="115" stroke="#b8730a" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#flA)"/>
+  <line x1="410" y1="45" x2="500" y2="45" stroke="#d5342c" stroke-width="2" marker-end="url(#flB)"/>
+  <line x1="410" y1="115" x2="500" y2="115" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#flA)"/>
+
+  <rect x="150" y="190" width="380" height="70" rx="8" fill="#15181d"/><text x="340" y="220" text-anchor="middle" fill="#fff" font-size="13" font-weight="600" font-family="sans-serif">奖金 / 排名 / 拨款  ←抽水←  只认可测池的产出</text><text x="340" y="242" text-anchor="middle" fill="#9aa3ad" font-size="11" font-family="sans-serif">信息流：难测池的信号进不了合同 → 资源被可测池虹吸</text>
+</svg>
+<p>资源流一句话：<strong>钱跟着指标走；注意力跟着钱走；难测任务既没信号也没钱。</strong></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>秩</th>
+<th>杠杆</th>
+<th>为什么高杠杆</th>
+<th>操作入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>先列难测清单再定 β</td>
+<td>防止对空心指标加码</td>
+<td>写「不可牺牲清单」</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>降低可测项激励强度</td>
+<td>HM 核心药方</td>
+<td>固定工资 + 主观评价</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>岗位拆分（易测/难测分离）</td>
+<td>恢复强激励的合法域</td>
+<td>专岗 vs 综合岗</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>多指标 + 低权重</td>
+<td>提高博弈成本</td>
+<td>仪表盘而非北极星</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>过程审计 / 抽检</td>
+<td>部分恢复难测可验证性</td>
+<td>课堂观察、病例抽查</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>资产/剩余索取权</td>
+<td>内生化长期维护</td>
+<td>合伙、长期激励</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>保护内在动机</td>
+<td>守住隐形 β_u</td>
+<td>少用侮辱性计件</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>缩短反馈但拉长考核窗</td>
+<td>抗政治周期</td>
+<td>多年度评估</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>相对绩效慎用于多任务</td>
+<td>噪音大时加剧博弈</td>
+<td>标尺竞争适用边界</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>指标日落条款</td>
+<td>对抗 Goodhart 老化</td>
+<td>每 12–24 月轮换</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool" id="tool_opt">
+  <h3>可调模型 2 · 最优可测激励 β_m*</h3>
+  <div class="ctrl">
+    <label>可测价值 B_m <output id="op_BmO">0.45</output></label>
+    <input type="range" id="op_Bm" min="0.1" max="1" step="0.05" value="0.45">
+    <label>难测价值 B_u <output id="op_BuO">0.55</output></label>
+    <input type="range" id="op_Bu" min="0.1" max="1" step="0.05" value="0.55">
+    <label>替代 γ <output id="op_gO">0.50</output></label>
+    <input type="range" id="op_g" min="0" max="0.85" step="0.05" value="0.50">
+    <label>难测底仓 ι <output id="op_iO">0.25</output></label>
+    <input type="range" id="op_i" min="0" max="0.8" step="0.05" value="0.25">
+    <label>风险成本 rσ² <output id="op_rsO">1.00</output></label>
+    <input type="range" id="op_rs" min="0.2" max="3" step="0.1" value="1.0">
+  </div>
+  <div class="readout">
+    <div class="ro">最优 β_m* <b id="op_bstar">—</b></div>
+    <div class="ro">最大净价值 <b id="op_vmax">—</b></div>
+    <div class="ro">若 β=0.9 的净价值 <b id="op_v90">—</b></div>
+    <div id="op_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap"></div>
+  </div>
+  <canvas id="opChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「有指标总比没指标好」</summary><div class="dbody"><p>错。错误指标 + 高利害 = 比没指标更糟（配置扭曲 + 信号腐蚀）。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. 「分数涨了就是教育变好了」</summary><div class="dbody"><p>分数是 (x_m)，不是 (V)。蜜月期最容易自欺。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>3. 「不愿意绩效工资 = 抵制改革」</summary><div class="dbody"><p>可能是理性保护难测任务——与 HM 1991 同向。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 「再加一个 KPI 就能补上漏洞」</summary><div class="dbody"><p>新 KPI 仍占注意力；KPI 森林会制造新的可测偏置。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>5. 「销售提成很成功，所以教师也该提成」</summary><div class="dbody"><p>销售的难测维相对弱；教学的难测维是主菜。结构不同，药不能照搬。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>6. 「把难测也量化就完了」</summary><div class="dbody"><p>强行量化会把难测变成可测的赝品（rubric 游戏）。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>7. 「内在动机靠洗脑」</summary><div class="dbody"><p>内在动机会被侮辱性外激励挤出；制度要先「不伤害」。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>8. 「只要权重设对就行」</summary><div class="dbody"><p>权重写在纸上，梯度写在钱上——代理人跟的是钱的梯度。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>9. 「公共部门就该学习企业 KPI」</summary><div class="dbody"><p>Dixit：多委托人下高能激励尤其危险。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>10. 「发现问题就加大处罚」</summary><div class="dbody"><p>处罚加在可测违规上，可能进一步把行为赶进更难审计的灰色区。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>11. 「北极星指标能对齐组织」</summary><div class="dbody"><p>单指标在多任务世界几乎必然制造目标替代（Campbell / Goodhart）。<span class="tag t-fact">事实</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 280" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="abA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <rect x="20" y="30" width="200" height="220" rx="10" fill="#e8f8ef" stroke="#0f8a4d"/>
+  <text x="120" y="60" text-anchor="middle" fill="#0f8a4d" font-size="13" font-weight="700" font-family="sans-serif">抽象</text>
+  <text x="120" y="100" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">β 改变努力配置</text>
+  <text x="120" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">γ 决定挤出强度</text>
+  <text x="120" y="160" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">B_u 高 ⇒ β_m 宜弱</text>
+  <text x="120" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">拆岗恢复强激励域</text>
+
+  <rect x="240" y="30" width="200" height="220" rx="10" fill="#eaf0ff" stroke="#1d4ed8"/>
+  <text x="340" y="60" text-anchor="middle" fill="#1d4ed8" font-size="13" font-weight="700" font-family="sans-serif">机制</text>
+  <text x="340" y="100" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">合同只写可验证项</text>
+  <text x="340" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">主观评价补难测</text>
+  <text x="340" y="160" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">关系合同 / 声誉</text>
+  <text x="340" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">所有权内生化长期</text>
+
+  <rect x="460" y="30" width="200" height="220" rx="10" fill="#fff7e6" stroke="#b8730a"/>
+  <text x="560" y="60" text-anchor="middle" fill="#b8730a" font-size="13" font-weight="700" font-family="sans-serif">操作</text>
+  <text x="560" y="100" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">列不可牺牲清单</text>
+  <text x="560" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">砍单一高利害指标</text>
+  <text x="560" y="160" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">易测岗 / 难测岗拆开</text>
+  <text x="560" y="190" text-anchor="middle" fill="#15181d" font-size="12" font-family="sans-serif">指标设日落期</text>
+
+  <line x1="220" y1="140" x2="240" y2="140" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#abA)"/>
+  <line x1="440" y1="140" x2="460" y2="140" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#abA)"/>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>领域</th>
+<th>可测</th>
+<th>常被挤的难测</th>
+<th>典型扭曲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">K-12 教育</td>
+<td>统考分</td>
+<td>创造力、品格、实验课</td>
+<td>teaching to the test<span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">高校</td>
+<td>论文/项目</td>
+<td>教学投入、 mentorship</td>
+<td>重科研轻教学<span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">医疗</td>
+<td>项目量、药占比</td>
+<td>沟通、过度医疗抑制</td>
+<td>诱导需求<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">客服</td>
+<td>通话量、AHT</td>
+<td>一次解决率、温度</td>
+<td>催挂电话</td>
+</tr>
+<tr>
+<td class="k">研发</td>
+<td>提交数、故事点</td>
+<td>探索、技术债偿还</td>
+<td>局部最优刷点</td>
+</tr>
+<tr>
+<td class="k">ESG</td>
+<td>披露分项</td>
+<td>真实减排/治理</td>
+<td>评级游戏<span class="tag t-ana">分析</span></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="flow "><p><span>列出任务</span><i>→</i><span>标可测性</span><i>→</i><span class="hi">标真价值 B</span><i>→</i><span>画挤出风险</span><i>→</i><span>选：弱激励 / 拆岗 / 多指标</span></p></div>
+<p>行动清单（个人/管理者通用）：</p>
+<ol>
+<li>写一张两列表：可测 vs 难测，并给 (B) 粗分；</li>
+<li>对 (B_u) 高且 (\gamma) 高的组合，<strong>禁止</strong>单一高利害奖金；</li>
+<li>能拆岗就拆；不能拆就降 β、加主观与抽检；</li>
+<li>给每个指标写「失效征兆」与日落日。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>Ⅰ 识别层</summary><div class="dbody"><p>会指出任何绩效方案里的「可测/难测」分裂；能讲清 HM 一句话结论。</p></div></details>
+<details><summary>Ⅱ 建模层</summary><div class="dbody"><p>会用 (t_m,t_u,\gamma,\beta) 估计挤出方向；会比较「加码 vs 弱化」的净值。</p></div></details>
+<details><summary>Ⅲ 设计层</summary><div class="dbody"><p>能提出拆岗方案、多指标权重、主观评价治理（防裙带）。</p></div></details>
+<details><summary>Ⅳ 治理层</summary><div class="dbody"><p>能设计指标审计、日落、反博弈机制；能在多委托人下谈判弱激励共识。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>你扮演「制度设计师」。地图上有两座矿：<strong>金矿（可测）</strong>与<strong>黑土（难测）</strong>。你只能给金矿发镐——镐越利，黑土越荒。通关条件不是金矿产量最高，而是 <strong>金+土的加权总分</strong> 最高。隐藏 BOSS 叫 Goodhart：当你把金矿产量设为唯一通关条件，金矿数字会飙，地图真实肥力下降。</p>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>难度</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">解剖自己团队的 5 个 KPI</td>
+<td>★☆☆</td>
+<td>可测/难测表</td>
+</tr>
+<tr>
+<td class="k">找一个「分数涨、体验跌」案例</td>
+<td>★★☆</td>
+<td>挤出叙事</td>
+</tr>
+<tr>
+<td class="k">设计一版「弱激励 + 抽检」替代案</td>
+<td>★★★</td>
+<td>一页纸方案</td>
+</tr>
+<tr>
+<td class="k">推动一个指标日落</td>
+<td>★★★★</td>
+<td>制度改动</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若只强化可测激励</button><button class="tab" data-pane="tb1-1">若改为固定工资 + 抽检</button><button class="tab" data-pane="tb1-2">若拆成两个专岗</button><button class="tab" data-pane="tb1-3">若再加 10 个 KPI</button></div>
+<div class="pane on" id="tb1-0"><p>报表蜜月 → 难测枯竭 → 指标博弈 → 信任崩溃。教育型参数下 (\beta_m=0.9) 常把 (t_u) 挤到 0。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-1"><p>短期可测分可能下降，难测维回升；适合 (B_u) 高的岗位。HM 明示此为可能最优。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-2"><p>易测岗可给强 β；难测岗用职业规范/主观评价。强激励重新变得「合法」。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-3"><p>注意力碎片化；出现「KPI 森林」——每个都弱，但整体仍偏可测、且协调成本爆炸。<span class="tag t-ana">分析</span></p></div>
+<div class="tool" id="tool_gh">
+  <h3>可调模型 3 · Goodhart 仪表盘（测度 vs 真价值）</h3>
+  <div class="ctrl">
+    <label>可测激励 β_m <output id="gh_bO">0.80</output></label>
+    <input type="range" id="gh_b" min="0" max="1.5" step="0.05" value="0.80">
+    <label>难测底仓 ι <output id="gh_iO">0.25</output></label>
+    <input type="range" id="gh_i" min="0" max="0.8" step="0.05" value="0.25">
+    <label>真价值中可测权重 B_m <output id="gh_BmO">0.40</output></label>
+    <input type="range" id="gh_Bm" min="0.1" max="0.9" step="0.05" value="0.40">
+    <label>替代 γ <output id="gh_gO">0.50</output></label>
+    <input type="range" id="gh_g" min="0" max="0.85" step="0.05" value="0.50">
+  </div>
+  <div class="readout">
+    <div class="ro">测度分数（≈t_m） <b id="gh_meas">—</b></div>
+    <div class="ro">真价值 V <b id="gh_true">—</b></div>
+    <div class="ro">虚胖缺口 测度−V <b id="gh_gap">—</b></div>
+    <div id="gh_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap"></div>
+  </div>
+  <canvas id="ghChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>名称</th>
+<th>你能做到</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1</td>
+<td>侦察兵</td>
+<td>指出任何方案的可测偏置</td>
+</tr>
+<tr>
+<td class="k">L2</td>
+<td>分析师</td>
+<td>用挤出弹性讲清「为什么越奖越歪」</td>
+</tr>
+<tr>
+<td class="k">L3</td>
+<td>设计师</td>
+<td>交付弱激励/拆岗/多指标可执行方案</td>
+</tr>
+<tr>
+<td class="k">L4</td>
+<td>治理者</td>
+<td>建立指标生命周期与反博弈制度</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<ol>
+<li>选一个你正在用的绩效规则（工作/学习/家庭家务也行）；</li>
+<li>列出 ≥4 项任务，标「可测 / 难测」与粗 (B)；</li>
+<li>圈出 (B) 高且难测的 1–2 项——问：当前激励是否在挤它们？</li>
+<li>写下一句改动：<strong>降某个 β / 拆某岗 / 加一次抽检</strong>；</li>
+<li>把改动告诉一个利益相关者，收集 1 条反对意见（这是压力测试）。</li>
+</ol>
+<p>成本≈0；产出=一张可验证的「挤出风险表」。</p>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>主题</th>
+<th>交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>读 HM 1991 引言与命题直觉</td>
+<td>5 条笔记</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>解剖本团队 KPI</td>
+<td>可测/难测表</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>跑本页三个滑块</td>
+<td>截图+参数记录</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>找一个 Goodhart 案例</td>
+<td>200 字</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>草拟弱激励替代</td>
+<td>一页纸</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>讨论拆岗可行性</td>
+<td>利弊表</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>复盘：哪条杠杆最可行</td>
+<td>决策</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>焦点</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>诊断</td>
+<td>完成全量 KPI 审计</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>设计</td>
+<td>2 套替代机制（弱激励 / 拆岗）</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>试点</td>
+<td>选 1 个低风险单元试点 2 周</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>固化</td>
+<td>写指标日落与抽检SOP</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>Holmström–Milgrom 多任务</td>
+<td>难测重要 ⇒ 可测也应弱激励</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>注意力替代 (\gamma)</td>
+<td>加 (\beta_m) 直接减 (t_u)</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>Baker 绩效测度扭曲</td>
+<td>错指标在风险中性下仍扭曲</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>Goodhart 定律</td>
+<td>测度变目标即失效</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>Campbell 定律</td>
+<td>高利害社会指标易腐败</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>岗位设计分离</td>
+<td>易测/难测拆开以恢复强激励</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>资产所有权</td>
+<td>难测增值靠剩余索取权</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>Dixit 公共部门</td>
+<td>多委托人 ⇒ 宜弱激励</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>内在动机挤出</td>
+<td>过强外激励伤害 (\iota)</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>关系合同</td>
+<td>主观评价 + 声誉补契约空洞</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tool" id="tool_job">
+  <h3>可调模型 4 · 岗位设计：捆绑 vs 拆分</h3>
+  <div class="ctrl">
+    <label>捆绑时 β_m <output id="jb_bO">0.70</output></label>
+    <input type="range" id="jb_b" min="0" max="1.2" step="0.05" value="0.70">
+    <label>拆分后易测岗 β_m <output id="jb_bsO">0.70</output></label>
+    <input type="range" id="jb_bs" min="0" max="1.2" step="0.05" value="0.70">
+    <label>B_m / B_u <output id="jb_BmO">0.45</output> / <output id="jb_BuO">0.55</output></label>
+    <input type="range" id="jb_Bm" min="0.1" max="0.9" step="0.05" value="0.45">
+    <label>捆绑替代 γ <output id="jb_gO">0.55</output></label>
+    <input type="range" id="jb_g" min="0" max="0.85" step="0.05" value="0.55">
+    <label>难测岗内在 ι <output id="jb_iO">0.35</output></label>
+    <input type="range" id="jb_i" min="0.05" max="0.8" step="0.05" value="0.35">
+  </div>
+  <div class="readout">
+    <div class="ro">捆绑净价值 <b id="jb_vb">—</b></div>
+    <div class="ro">拆分净价值 <b id="jb_vs">—</b></div>
+    <div class="ro">拆分增益 <b id="jb_gain">—</b></div>
+    <div id="jb_v" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap"></div>
+  </div>
+  <canvas id="jbChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>我的岗位有几项难测任务？B_u 是否被系统性低估？</summary><div class="dbody"></div></details>
+<details><summary>当前唯一高利害指标是什么？失效征兆出现了吗？</summary><div class="dbody"></div></details>
+<details><summary>若把 β_m 砍半，最怕丢的是什么？那是真价值还是报表？</summary><div class="dbody"></div></details>
+<details><summary>能否把易测工作外包/专岗化，让核心岗回到弱激励？</summary><div class="dbody"></div></details>
+<details><summary>主观评价的治理（多评委、抽样、申诉）准备好了吗？</summary><div class="dbody"></div></details>
+<details><summary>公共部门场景是否误用了企业式高能 KPI？</summary><div class="dbody"></div></details>
+<details><summary>内在动机还在吗？最近的计件/排名是否在挤出它？</summary><div class="dbody"></div></details>
+<details><summary>指标的日落日写在哪？谁有权杀死一个 KPI？</summary><div class="dbody"></div></details>
+<details><summary>多委托人是否在互相否决，导致「只能搞形式指标」？</summary><div class="dbody"></div></details>
+<details><summary>长期资产（文化、安全、信任）有没有代理人？</summary><div class="dbody"></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>精读 Holmström–Milgrom（1991）全文与 Holmström–Milgrom（1987）线性合同基础；</li>
+<li>Baker（1992）<em>Incentive Contracts and Performance Measurement</em>；</li>
+<li>Dixit（2002）公共部门激励综述；</li>
+<li>与「关系合同 / 声誉模型」手册交叉：主观评价如何自我执行；</li>
+<li>实证：Hong et al. 中国工厂多任务田野实验等——测「加码可测是否伤害难测」。<span class="tag t-chk">待验证</span></li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">多任务激励与弱激励最优</td>
+<td>经典论文</td>
+<td>Holmström &amp; Milgrom, JLEO 1991</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">绩效测度不等于目标</td>
+<td>经典论文</td>
+<td>Baker, JPE 1992</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">测度变目标即失效</td>
+<td>方法论/转述</td>
+<td>Goodhart 1975；Strathern 转述</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">高利害社会指标腐败</td>
+<td>方法论</td>
+<td>Campbell 定律；教育应用综述</td>
+<td><span class="tag t-fact">事实</span>/<span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">公共部门宜弱激励</td>
+<td>综述</td>
+<td>Dixit, JHR 2002</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">高校重科研轻教学</td>
+<td>政策评论/中文转述</td>
+<td>高教评价机制讨论</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">本页数值算例</td>
+<td>自建示意模型</td>
+<td>二次成本+交叉 γ；非实证估计</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或经典原文；<span class="tag t-ana">分析</span>权威推断；<span class="tag t-inf">推论</span>模型推导；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或外推过强。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册为<strong>组织激励与机制设计学习框架</strong>，用于理解多任务下的激励扭曲，不构成任何人力资源管理、薪酬方案、教育政策或投资建议。文中数值为教学示意，不能直接当作某机构的最优合同参数。真实制度设计需结合劳动法规、治理结构与现场约束另行论证。</p>
+</section>
+<footer>  <p>《共同代理与多任务委托：可测任务被过度激励 · 全景认知与实践操作手册》 · 生成于 2026-09-20 · 耗时 10 分 45 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《共同代理与多任务委托》主题脚本
+   四个可调模型：
+     1. 注意力挤出（配置）
+     2. 最优 β_m*
+     3. Goodhart 仪表盘
+     4. 岗位设计：捆绑 vs 拆分
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t && t.classList && t.classList.contains('tab')) setTimeout(fn, 40);
+    });
+    window.addEventListener('resize', function () { setTimeout(fn, 40); });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, items, ymin, ymax) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    if (ymin == null || ymax == null) {
+      var vs = items.map(function (x) { return x.v; });
+      ymin = Math.min.apply(null, vs.concat([0])) - 0.02;
+      ymax = Math.max.apply(null, vs.concat([0])) + 0.02;
+      if (ymax <= ymin) { ymax = ymin + 1; }
+    }
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (items.length * 1.45);
+    var span = ymax - ymin || 1;
+    items.forEach(function (it, i) {
+      var x = pl + (i + 0.5) * (bw / items.length) - barW / 2;
+      var y = y1 - ((it.v - ymin) / span) * bh;
+      var zeroY = y1 - ((0 - ymin) / span) * bh;
+      var top = Math.min(y, zeroY), bot = Math.max(y, zeroY);
+      ctx.fillStyle = it.c;
+      ctx.fillRect(x, top, barW, Math.max(2, bot - top));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+      var lab = (typeof it.v === 'number' ? it.v.toFixed(3) : String(it.v));
+      var lw = ctx.measureText(lab).width;
+      var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 2), w - pr - lw / 2 - 2);
+      ctx.fillText(lab, lx, top - 6);
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(items._axis || '数值', pl + bw, y1 + 31);
+  }
+  function lineChart(cv, series, xmin, xmax, ymin, ymax, xLabel) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    ctx.strokeStyle = C.axis;
+    ctx.beginPath();
+    ctx.moveTo(pl, y1);
+    ctx.lineTo(pl + bw, y1);
+    ctx.stroke();
+    var xspan = xmax - xmin || 1, yspan = ymax - ymin || 1;
+    function X(x) { return pl + ((x - xmin) / xspan) * bw; }
+    function Y(v) { return y1 - ((v - ymin) / yspan) * bh; }
+    series.forEach(function (s) {
+      ctx.strokeStyle = s.c;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      s.pts.forEach(function (p, i) {
+        var x = X(p[0]), y = Y(p[1]);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      if (s.mark != null) {
+        var mx = X(s.mark), my = Y(s.markY);
+        ctx.fillStyle = s.c;
+        ctx.beginPath();
+        ctx.arc(mx, my, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = C.ink;
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(s.markLab || '', Math.min(mx + 6, pl + bw - 40), my - 6);
+      }
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(xLabel || '', pl + bw, y1 + 31);
+  }
+
+  function alloc(b1, b2, g) {
+    g = Math.min(0.9, Math.max(0, g));
+    var d = 1 - g * g;
+    var t1 = (b1 - g * b2) / d;
+    var t2 = (b2 - g * b1) / d;
+    if (t1 < 0) { t1 = 0; t2 = Math.max(0, b2); }
+    if (t2 < 0) { t2 = 0; t1 = Math.max(0, b1); }
+    return { t1: t1, t2: t2 };
+  }
+
+  /* ── 1. Attention crowding ── */
+  (function al() {
+    if (!$('al_bm')) return;
+    function run() {
+      var bm = +$('al_bm').value, bu = +$('al_bu').value, g = +$('al_g').value;
+      txt($('al_bmO'), bm.toFixed(2));
+      txt($('al_buO'), bu.toFixed(2));
+      txt($('al_gO'), g.toFixed(2));
+      var a = alloc(bm, bu, g);
+      var el = g / (1 - g * g);
+      txt($('al_tm'), a.t1.toFixed(3));
+      txt($('al_tu'), a.t2.toFixed(3));
+      txt($('al_el'), el.toFixed(3));
+      var verdict, col;
+      if (a.t2 < 0.05 && bm > bu) {
+        verdict = '判定：难测努力被挤近零——典型 KPI 扭曲区';
+        col = C.red;
+      } else if (Math.abs(a.t1 - a.t2) < 0.08) {
+        verdict = '判定：配置较均衡；若真价值偏难测，可再降 β_m';
+        col = C.green;
+      } else if (a.t1 > a.t2) {
+        verdict = '判定：注意力偏向可测；挤出弹性 ≈ ' + el.toFixed(2);
+        col = C.amber;
+      } else {
+        verdict = '判定：难测占优（内在动机/主观激励仍在）';
+        col = C.blue;
+      }
+      txt($('al_v'), verdict);
+      tint($('al_v'), col);
+      var items = [
+        { lab: 't_m 可测', v: a.t1, c: C.blue },
+        { lab: 't_u 难测', v: a.t2, c: C.amber }
+      ];
+      items._axis = '努力水平';
+      bars($('alChart'), items, 0, Math.max(1.2, a.t1, a.t2) * 1.15);
+    }
+    bind(['al_bm', 'al_bu', 'al_g'], run);
+    run();
+  })();
+
+  /* ── 2. Optimal beta ── */
+  (function op() {
+    if (!$('op_Bm')) return;
+    function netV(bm, Bu, Bm, g, iota, rs) {
+      var a = alloc(bm, iota, g);
+      return Bm * a.t1 + Bu * a.t2 - 0.5 * rs * bm * bm;
+    }
+    function run() {
+      var Bm = +$('op_Bm').value, Bu = +$('op_Bu').value;
+      var g = +$('op_g').value, iota = +$('op_i').value, rs = +$('op_rs').value;
+      txt($('op_BmO'), Bm.toFixed(2));
+      txt($('op_BuO'), Bu.toFixed(2));
+      txt($('op_gO'), g.toFixed(2));
+      txt($('op_iO'), iota.toFixed(2));
+      txt($('op_rsO'), rs.toFixed(2));
+      var best = 0, bestV = -1e9, pts = [];
+      for (var b = 0; b <= 1.5 + 1e-9; b += 0.01) {
+        var v = netV(b, Bu, Bm, g, iota, rs);
+        pts.push([b, v]);
+        if (v > bestV) { bestV = v; best = b; }
+      }
+      var v90 = netV(0.9, Bu, Bm, g, iota, rs);
+      txt($('op_bstar'), best.toFixed(2));
+      txt($('op_vmax'), bestV.toFixed(3));
+      txt($('op_v90'), v90.toFixed(3));
+      var verdict, col;
+      if (best < 0.05) {
+        verdict = '判定：最优接近固定工资（β≈0）——难测价值与替代足够强';
+        col = C.green;
+      } else if (best < 0.35) {
+        verdict = '判定：宜弱激励；强 KPI（0.9）相对最优损失 ' + (bestV - v90).toFixed(3);
+        col = C.amber;
+      } else {
+        verdict = '判定：可测维主导，中强激励合理；仍须监控挤出';
+        col = C.blue;
+      }
+      txt($('op_v'), verdict);
+      tint($('op_v'), col);
+      var ymin = Math.min.apply(null, pts.map(function (p) { return p[1]; }));
+      var ymax = Math.max.apply(null, pts.map(function (p) { return p[1]; }));
+      var pad = (ymax - ymin) * 0.12 || 0.05;
+      lineChart($('opChart'), [{
+        c: C.blue, pts: pts, mark: best, markY: bestV, markLab: 'β*'
+      }], 0, 1.5, ymin - pad, ymax + pad, 'β_m →');
+    }
+    bind(['op_Bm', 'op_Bu', 'op_g', 'op_i', 'op_rs'], run);
+    run();
+  })();
+
+  /* ── 3. Goodhart dashboard ── */
+  (function gh() {
+    if (!$('gh_b')) return;
+    function run() {
+      var b = +$('gh_b').value, iota = +$('gh_i').value;
+      var Bm = +$('gh_Bm').value, g = +$('gh_g').value;
+      var Bu = 1 - Bm;
+      txt($('gh_bO'), b.toFixed(2));
+      txt($('gh_iO'), iota.toFixed(2));
+      txt($('gh_BmO'), Bm.toFixed(2));
+      txt($('gh_gO'), g.toFixed(2));
+      var a = alloc(b, iota, g);
+      var meas = a.t1;
+      var tru = Bm * a.t1 + Bu * a.t2;
+      var gap = meas - tru;
+      txt($('gh_meas'), meas.toFixed(3));
+      txt($('gh_true'), tru.toFixed(3));
+      txt($('gh_gap'), gap.toFixed(3));
+      var verdict, col;
+      if (gap > 0.15 && a.t2 < 0.08) {
+        verdict = '判定：测度虚胖且难测枯竭——Goodhart 高危';
+        col = C.red;
+      } else if (gap > 0.05) {
+        verdict = '判定：报表好于真价值；加码会扩大虚胖缺口';
+        col = C.amber;
+      } else if (gap < -0.05) {
+        verdict = '判定：测度低估真价值（难测贡献未被合同看见）';
+        col = C.blue;
+      } else {
+        verdict = '判定：测度与真价值大致同向';
+        col = C.green;
+      }
+      txt($('gh_v'), verdict);
+      tint($('gh_v'), col);
+      var items = [
+        { lab: '测度', v: meas, c: C.red },
+        { lab: '真价值', v: tru, c: C.green },
+        { lab: 't_u', v: a.t2, c: C.amber }
+      ];
+      items._axis = '水平';
+      bars($('ghChart'), items, Math.min(0, meas, tru, a.t2) - 0.05, Math.max(meas, tru, a.t2, 0.5) * 1.15);
+    }
+    bind(['gh_b', 'gh_i', 'gh_Bm', 'gh_g'], run);
+    run();
+  })();
+
+  /* ── 4. Job design ── */
+  (function jb() {
+    if (!$('jb_b')) return;
+    function run() {
+      var b = +$('jb_b').value, bs = +$('jb_bs').value;
+      var Bm = +$('jb_Bm').value, Bu = 1 - Bm;
+      var g = +$('jb_g').value, iota = +$('jb_i').value;
+      txt($('jb_bO'), b.toFixed(2));
+      txt($('jb_bsO'), bs.toFixed(2));
+      txt($('jb_BmO'), Bm.toFixed(2));
+      txt($('jb_BuO'), Bu.toFixed(2));
+      txt($('jb_gO'), g.toFixed(2));
+      txt($('jb_iO'), iota.toFixed(2));
+      // bundled: one agent, beta on measurable only, iota soft on hard
+      var ab = alloc(b, iota * 0.5, g); // bundled: intrinsic diluted by conflict
+      var vb = Bm * ab.t1 + Bu * ab.t2 - 0.5 * b * b;
+      // separated: measurable agent gets bs, hard-measure agent keeps iota fully, no cross γ
+      var tm = Math.max(0, bs); // single-task: t=β under unit cost
+      var tu = Math.max(0, iota);
+      var vs = Bm * tm + Bu * tu - 0.5 * bs * bs;
+      var gain = vs - vb;
+      txt($('jb_vb'), vb.toFixed(3));
+      txt($('jb_vs'), vs.toFixed(3));
+      txt($('jb_gain'), (gain >= 0 ? '+' : '') + gain.toFixed(3));
+      var verdict, col;
+      if (gain > 0.05) {
+        verdict = '判定：拆分显著更优——用专岗恢复强激励合法性';
+        col = C.green;
+      } else if (gain > 0) {
+        verdict = '判定：拆分略优；还要计入协调成本（模型未内生）';
+        col = C.amber;
+      } else {
+        verdict = '判定：捆绑不差；若协调成本高可维持综合岗 + 弱激励';
+        col = C.blue;
+      }
+      txt($('jb_v'), verdict);
+      tint($('jb_v'), col);
+      var items = [
+        { lab: '捆绑 V', v: vb, c: C.amber },
+        { lab: '拆分 V', v: vs, c: C.green },
+        { lab: '捆绑 t_u', v: ab.t2, c: C.red },
+        { lab: '拆分 t_u', v: tu, c: C.blue }
+      ];
+      items._axis = '价值 / 努力';
+      bars($('jbChart'), items, null, null);
+    }
+    bind(['jb_b', 'jb_bs', 'jb_Bm', 'jb_g', 'jb_i'], run);
+    run();
+  })();
+})();
+</script>
+</body>
+</html>
