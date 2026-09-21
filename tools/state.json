@@ -1126,12 +1126,12 @@
     {
       "slug": "焦点效应与路径依赖的策略锁定：先出现的均衡会因协调成本而被长期锁死（QWERTY 效应）",
       "title": "焦点效应与路径依赖的策略锁定：先出现的均衡会因协调成本而被长期锁死（QWERTY 效应）",
-      "status": "pending",
-      "started": null,
-      "finished": null,
+      "status": "failed",
+      "started": "2026-09-21 22:20:48",
+      "finished": "2026-09-21 22:21:49",
       "duration_sec": null,
       "outputs": [],
-      "error": null
+      "error": "Agent 未正常收尾（超时或异常退出），见 logs/runs/2026-09-21_222024.jsonl"
     },
     {
       "slug": "免费搭便车（Free Riding）：集体收益不可排他时，个体最优是不出力，团队规模越大越严重",
@@ -1951,7 +1951,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-20 08:16",
+  "updated": "2026-09-21 22:21",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
