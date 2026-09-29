@@ -1162,11 +1162,14 @@
     {
       "slug": "共识与拜占庭将军问题：不可信节点下的协调博弈，区块链机制设计的理论母题",
       "title": "共识与拜占庭将军问题：不可信节点下的协调博弈，区块链机制设计的理论母题",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-30 04:57:57",
+      "finished": "2026-09-30 05:04:14",
+      "duration_sec": 377,
+      "outputs": [
+        "reports/共识与拜占庭将军问题：不可信节点下的协调博弈，区块链机制设计的理论母题.html",
+        "reports/共识与拜占庭将军问题：不可信节点下的协调博弈，区块链机制设计的理论母题.md"
+      ],
       "error": null
     },
     {
@@ -1957,7 +1960,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-30 04:57",
+  "updated": "2026-09-30 05:04",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
