@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>零和错觉（Zero-Sum Bias） · 全景认知与实践操作手册</title>
+<style>
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --panel2:#fbfcfd;
+  --ink:#15181d;
+  --ink2:#454c56;
+  --ink3:#7c848f;
+  --line:#e2e6ec;
+  --line2:#eef1f5;
+  --accent:#1d4ed8;
+  --accent-soft:#eaf0ff;
+  --red:#d5342c;      /* 涨 / 风险 */
+  --green:#0f8a4d;    /* 跌 / 安全 */
+  --amber:#b8730a;
+  --purple:#6b30d9;
+  --teal:#0b7a74;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
+  --radius:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1d4ed8,#6b30d9);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.wrap{display:flex;align-items:flex-start;max-width:1360px;margin:0 auto}
+aside{
+  position:sticky;top:0;flex:0 0 268px;height:100vh;overflow-y:auto;
+  padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+  background:var(--panel);
+}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:#d7dce3;border-radius:3px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin:0 0 2px}
+.brand small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px;letter-spacing:0;margin-top:3px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+nav a{
+  display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:12.8px;padding:5px 9px;border-radius:8px;transition:.15s;line-height:1.45;
+}
+nav a:hover{background:var(--line2);color:var(--ink)}
+nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav a i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3);min-width:16px}
+nav a.on i{color:var(--accent)}
+.navgroup{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:16px 0 5px 9px;font-weight:700}
+
+main{flex:1;min-width:0;padding:0 40px 120px;max-width:1000px}
+
+/* ---------- header ---------- */
+.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em;font-weight:800}
+.sub{color:var(--ink2);font-size:15.5px;max-width:720px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.chip.b{background:var(--accent-soft);border-color:#d5e2ff;color:var(--accent);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h2{font-size:23px;margin:0 0 6px;font-weight:800;letter-spacing:-.005em;display:flex;gap:12px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:7px;font-weight:700;flex:0 0 auto;transform:translateY(-2px)}
+h3{font-size:16.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:14px;margin:20px 0 6px;font-weight:700;color:var(--ink)}
+p{margin:9px 0;color:var(--ink2)}
+p strong,li strong{color:var(--ink);font-weight:650}
+.lede{font-size:15.5px;color:var(--ink);background:var(--panel);border-left:3px solid var(--accent);padding:13px 17px;border-radius:0 10px 10px 0;box-shadow:var(--shadow)}
+ul,ol{margin:9px 0;padding-left:22px;color:var(--ink2)}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--line2);padding:1.5px 5px;border-radius:5px;color:#1f2937}
+hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+
+/* ---------- cards & grids ---------- */
+.grid{display:grid;gap:14px;margin:18px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px;font-size:14px}
+.card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.card.accent{border-color:#d5e2ff;background:linear-gradient(180deg,#f7faff,#fff)}
+.card.warn{border-color:#f3e0c0;background:linear-gradient(180deg,#fffaf1,#fff)}
+.card.danger{border-color:#f4d9d7;background:linear-gradient(180deg,#fff7f6,#fff)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th{text-align:left;padding:10px 13px;background:var(--panel2);font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:9px 13px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfd}
+td.k{color:var(--ink);font-weight:600}
+.num{font-family:var(--mono);font-size:12px;white-space:nowrap}
+
+/* ---------- tags ---------- */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:1px;margin-right:4px}
+.t-fact{background:#e8f5ee;color:#0b6b3d;border:1px solid #cfe9db}
+.t-inf{background:#eaf0ff;color:#1d4ed8;border:1px solid #d5e2ff}
+.t-hyp{background:#fdf3e3;color:#946006;border:1px solid #f0e0c2}
+.t-chk{background:#f7ece9;color:#b03a2e;border:1px solid #eed7d2}
+.t-ana{background:#f1ecfd;color:#6b30d9;border:1px solid #e3dafb}
+
+/* ---------- callouts ---------- */
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.note.blue{border-left-color:var(--accent);background:#f8faff}
+.note.red{border-left-color:var(--red);background:#fffafa}
+.note.amber{border-left-color:var(--amber);background:#fffcf5}
+.note.green{border-left-color:var(--green);background:#f8fdfa}
+.note.purple{border-left-color:var(--purple);background:#fbf9ff}
+
+/* ---------- details ---------- */
+details{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin:9px 0;box-shadow:var(--shadow);overflow:hidden}
+details[open]{background:var(--panel)}
+summary{cursor:pointer;padding:12px 16px;font-weight:650;font-size:13.8px;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:700;font-size:15px;width:12px;flex:0 0 12px}
+details[open] summary::before{content:"\2212"}
+summary:hover{background:var(--panel2)}
+.dbody{padding:2px 18px 16px 38px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line2)}
+.dbody p:first-child{margin-top:11px}
+
+/* ---------- tools ---------- */
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.tool-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tool-hd h4{margin:0;font-size:14.5px}
+.tool-sub{font-size:12.5px;color:var(--ink3);margin:0 0 16px}
+.ctrl{display:grid;grid-template-columns:150px 1fr 92px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+@media(max-width:700px){.ctrl{grid-template-columns:1fr;gap:4px}}
+.ctrl label{color:var(--ink2);font-weight:600;font-size:12.5px}
+.ctrl output{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:700px){.readout{grid-template-columns:1fr}}
+.ro{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.ro .lbl{font-size:11px;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.ro .val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3;margin-top:2px}
+.ro .hint{font-size:11.5px;color:var(--ink3);line-height:1.5;margin-top:3px}
+canvas{width:100%;display:block;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.tab{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink2);font-weight:600;transition:.15s;font-family:var(--sans)}
+.tab:hover{border-color:#c9d5ea;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none;padding-top:14px}
+.pane.on{display:block;animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:16px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.flow span.hi{border-color:#d5e2ff;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--ink3);font-size:13px}
+
+svg{display:block;max-width:100%;height:auto;margin:6px 0}
+.svgwrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+.svgcap{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* ---------- misc ---------- */
+.bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar i.r{background:var(--red)}
+.bar i.g{background:var(--green)}
+.bar i.a{background:var(--amber)}
+.totop{position:fixed;right:26px;bottom:26px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--ink2);font-size:17px;z-index:50}
+.totop.on{display:flex}
+.totop:hover{color:var(--accent);border-color:#c9d5ea}
+footer{padding:36px 0 0;font-size:12.5px;color:var(--ink3)}
+@media(max-width:1000px){
+  aside{display:none}
+  main{padding:0 20px 90px}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+<aside>
+  <div class="brand">全景认知与实践操作手册<small>Zero-Sum Bias × Fixed-Pie × Negotiation</small></div>
+  <nav id="nav">
+    <div class="navgroup">入口</div>
+    <a href="#s0"><i>00</i>一句话理解</a>
+    <div class="navgroup">世界模型</div>
+    <a href="#s1"><i>01</i>这个领域到底是什么</a>
+    <a href="#s2"><i>02</i>为什么值得研究</a>
+    <a href="#s3"><i>03</i>世界地图</a>
+    <a href="#s4"><i>04</i>核心概念地图</a>
+    <a href="#s5"><i>05</i>核心参与者</a>
+    <a href="#s6"><i>06</i>核心变量</a>
+    <a href="#s7"><i>07</i>因果关系</a>
+    <a href="#s8"><i>08</i>隐藏关系</a>
+    <a href="#s9"><i>09</i>系统运行机制</a>
+    <a href="#s10"><i>10</i>时间演化</a>
+    <a href="#s11"><i>11</i>利益与激励</a>
+    <a href="#s12"><i>12</i>资源与信息流</a>
+    <div class="navgroup">杠杆与陷阱</div>
+    <a href="#s13"><i>13</i>关键杠杆点</a>
+    <a href="#s14"><i>14</i>常见认知陷阱</a>
+    <div class="navgroup">落地</div>
+    <a href="#s15"><i>15</i>从抽象到现实</a>
+    <a href="#s16"><i>16</i>从理论到行动</a>
+    <a href="#s17"><i>17</i>技能树</a>
+    <a href="#s18"><i>18</i>游戏化世界</a>
+    <a href="#s19"><i>19</i>任务系统</a>
+    <a href="#s20"><i>20</i>反事实模拟</a>
+    <div class="navgroup">能力与计划</div>
+    <a href="#s21"><i>21</i>四级能力路线</a>
+    <a href="#s22"><i>22</i>30分钟最小实践</a>
+    <a href="#s23"><i>23</i>7天计划</a>
+    <a href="#s24"><i>24</i>30天计划</a>
+    <div class="navgroup">模型与问题</div>
+    <a href="#s25"><i>25</i>10 个核心模型</a>
+    <a href="#s26"><i>26</i>关键问题清单</a>
+    <a href="#s27"><i>27</i>下一阶段探索</a>
+    <a href="#s28"><i>A</i>数据来源与标记约定</a>
+    <a href="#s29"><i>B</i>免责声明</a>
+  </nav>
+</aside>
+<main>
+<div class="hero">
+  <div class="kicker">Panoramic Cognition &amp; Practice Engine</div>
+  <h1>零和错觉（Zero-Sum Bias）</h1>
+  <p class="sub">人类默认把<strong>非零和</strong>情境误判为<strong>零和</strong>——这是谈判桌上「固定馅饼迷思」与关系破裂的常见心理起点，不是博弈论本身。</p>
+  <div class="meta">
+    <span class="chip b">28 节 · 交互式</span>
+    <span class="chip">4 个可调模型</span>
+    <span class="chip">数据截至 2026-09</span>
+    <span class="chip">决策框架非投资建议</span>
+  </div>
+</div>
+<!-- ══════════════ 00 ══════════════ -->
+<section id="s0">
+<h2><span class="num">00</span>一句话理解</h2>
+<p><strong>零和错觉（Zero-Sum Bias）</strong>：把实际为非零和（资源不必然此消彼长）的情境，直觉地当成零和——一方所得必是另一方所失。<span class="tag t-fact">事实</span></p>
+<p>它在谈判里常以<strong>固定馅饼迷思（mythical fixed-pie）</strong>出现：假定对方利益与己方完全对立，于是藏信息、拒议题交换、把妥协当唯一出路，结果把本可做大的联合剩余坐视蒸发。<span class="tag t-fact">事实</span>（Bazerman, Magliozzi &amp; Neale, 1985；Bazerman &amp; Neale, <em>Negotiating Rationally</em>）</p>
+<p>更深一层还有<strong>非对称零和信念</strong>：更容易相信「别人的成功损害我」，却不相信「我的成功损害别人」——威胁感一上来，错觉就锁死。<span class="tag t-fact">事实</span>（Roberts &amp; Davidai, 2022）</p>
+</section>
+
+<!-- ══════════════ 01 ══════════════ -->
+<section id="s1">
+<h2><span class="num">01</span>这个领域到底是什么</h2>
+<p>研究的不是「零和博弈数学」（那是 von Neumann 的地盘），而是<strong>主观信念如何偏离客观支付结构</strong>：什么时候人会把可变和当成常数和，这种误判如何摧毁整合机会，以及如何用信息、提醒、降威胁把它松开。</p>
+<p>边界：</p>
+<ul>
+<li><strong>在界内</strong>：Meegan 式资源错觉、固定馅饼迷思、非对称零和信念、威胁/稀缺/欠思虑三条诱发通道、整合式 vs 分配式谈判中的行为后果、去偏杠杆。</li>
+<li><strong>在界外</strong>：二人零和的极小极大解、具体行业定价模型、某次外交密谈脚本——除非压成「信念 vs 结构」的错配代价。</li>
+</ul>
+<h3>十五个问题，先建立世界模型</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问题</th>
+<th>回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>研究什么</td>
+<td>非零和被误判为零和的机制、诱因与代价</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>边界在哪</td>
+<td>到「信念—信息—联合剩余」可操作为止</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>核心对象</td>
+<td>零和信念、固定馅饼假设、议题偏好互补度、联合剩余</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>参与者</td>
+<td>谈判双方、第三方调解、组织内竞争者、群体间对手</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>关键变量</td>
+<td>威胁感、感知稀缺、审议深度、信息分享质量、偏好差异</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>可直接观察</td>
+<td>报价序列、让步模式、是否问「为什么」、合同是否含多议题交换</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>无法直接观察</td>
+<td>对方真实权重、对方是否也持零和信念、隐藏兼容利益</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>谁影响谁</td>
+<td>威胁↑ → 零和信念↑ → 信息藏匿↑ → 整合空间↓</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>因果关系</td>
+<td>偏好互补 + 信息交换 ⇒ 可 logrolling；信念锁死 ⇒ 只能切固定饼</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>只是相关</td>
+<td>「竞争激烈」≠ 零和；名额有限是局部零和，关系与知识常非零和</td>
+</tr>
+<tr>
+<td class="k">11</td>
+<td>表层现象</td>
+<td>僵局、各让一半、互不信任、把对方让步当阴谋</td>
+</tr>
+<tr>
+<td class="k">12</td>
+<td>底层机制</td>
+<td>进化启发式（有限好）+ 动机性推理（威胁）+ 认知负载（欠思虑）</td>
+</tr>
+<tr>
+<td class="k">13</td>
+<td>有反馈吗</td>
+<td>有。藏信息 → 证实「果然在抢」→ 信念加固（正反馈）</td>
+</tr>
+<tr>
+<td class="k">14</td>
+<td>有延迟吗</td>
+<td>有。信任与偏好发现滞后于首轮对抗；事后才发现「其实可双赢」</td>
+</tr>
+<tr>
+<td class="k">15</td>
+<td>正/负反馈</td>
+<td>提醒非零和结构、降威胁、提高信息质量可开负反馈回路</td>
+</tr>
+</tbody>
+</table></div>
+<h3>最关键的一句话</h3>
+<blockquote>
+<p>零和是<strong>支付结构</strong>的属性；零和错觉是<strong>大脑默认设置</strong>——结构可变时，默认设置就是谈判破裂的常见起点。</p>
+</blockquote>
+</section>
+
+<!-- ══════════════ 02 ══════════════ -->
+<section id="s2">
+<h2><span class="num">02</span>为什么值得研究</h2>
+<div class="grid g3">
+<div class="card"><h4>它解释「好心谈崩」</h4><p>双方都觉得自己在「公平切饼」，却系统性漏掉偏好互补——不是道德差，是模型错。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>它可被实验钉住</h4><p>Meegan（2010）在绝对评分制下仍诱发「高分已发完」的预测；提醒政策可减弱。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>它有当代综述地图</h4><p>Davidai &amp; Tepper（2023）把诱发通道收成三条：威胁、稀缺、抑制审议——可对症下药。<span class="tag t-fact">事实</span></p></div>
+</div>
+<div class="note amber"><b>最贵的一次误判</b><p>多议题谈判里，把「各议题对半分」当成公平终点。若甲方更重交货期、乙方更重付款条款，logrolling 可比妥协多出 <strong>40%–80%</strong> 联合效用（见可调模型 1，默认权重 0.8/0.2 时增益 <strong>60%</strong>）。固定馅饼信念让这笔增益默认归零。<span class="tag t-inf">推论</span></p></div>
+</section>
+
+<!-- ══════════════ 03 ══════════════ -->
+<section id="s3">
+<h2><span class="num">03</span>世界地图</h2>
+<p>九层：从「有限好」心智模型爬到制度与去偏设计。</p>
+<svg viewBox="0 0 680 520" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="zs9" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#7c848f"/></marker>
+  </defs>
+  <rect x="20" y="12" width="640" height="48" rx="8" fill="#15181d"/><text x="40" y="42" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L9 制度与流程 · 多方案并行报价、事后再优化（PSS）</text>
+  <rect x="20" y="68" width="640" height="48" rx="8" fill="#1d4ed8"/><text x="40" y="98" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">L8 去偏杠杆 · 提醒结构 / 降威胁 / 强制审议</text>
+  <rect x="20" y="124" width="640" height="48" rx="8" fill="#3b6ef5"/><text x="40" y="154" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L7 非对称零和 · 「别人损我，我不损人」</text>
+  <rect x="20" y="180" width="640" height="48" rx="8" fill="#5b8def"/><text x="40" y="210" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">L6 固定馅饼迷思 · 谈判行为实验室主线</text>
+  <rect x="20" y="236" width="640" height="48" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="40" y="266" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L5 诱发通道 · 威胁 × 稀缺 × 欠思虑</text>
+  <rect x="20" y="292" width="640" height="48" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="40" y="322" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L4 Meegan 错觉 · 无限资源仍被当成有限</text>
+  <rect x="20" y="348" width="640" height="48" rx="8" fill="#fef3c7" stroke="#b8730a"/><text x="40" y="378" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L3 有限好形象 · Foster 人类学遗产</text>
+  <rect x="20" y="404" width="640" height="48" rx="8" fill="#f8fdfa" stroke="#0f8a4d"/><text x="40" y="434" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L2 客观结构 · 零和 / 可变和 / 偏好互补</text>
+  <rect x="20" y="460" width="640" height="48" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="40" y="490" font-size="13" font-weight="700" fill="#15181d" font-family="sans-serif">L1 定义 · 信念 ≠ 支付矩阵</text>
+</svg>
+<div class="note blue"><b>读图要点</b><p>入门卡在 <strong>L1→L4</strong>（分清结构与信念）；谈判实务卡在 <strong>L6→L8</strong>；群体政治卡在 <strong>L7</strong>。</p></div>
+</section>
+
+<!-- ══════════════ 04 ══════════════ -->
+<section id="s4">
+<h2><span class="num">04</span>核心概念地图</h2>
+<p>抽象信念 → 机制通道 → 桌上操作。</p>
+<svg viewBox="0 0 680 360" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cmA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cmB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="140" y="16" width="400" height="44" rx="10" fill="#15181d"/><text x="340" y="44" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">主观零和信念 ≠ 客观支付结构</text>
+
+  <rect x="40" y="100" width="180" height="52" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="130" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">抽象：错觉 / 迷思 / 非对称</text>
+  <rect x="250" y="100" width="180" height="52" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="340" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">机制：威胁·稀缺·欠思虑</text>
+  <rect x="460" y="100" width="180" height="52" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="550" y="130" text-anchor="middle" fill="#15181d" font-size="12" font-weight="600" font-family="sans-serif">操作：问·换·提醒·降威胁</text>
+
+  <line x1="280" y1="60" x2="130" y2="100" stroke="#0f8a4d" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="340" y1="60" x2="340" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#cmA)"/>
+  <line x1="400" y1="60" x2="550" y2="100" stroke="#b8730a" stroke-width="1.5" marker-end="url(#cmA)"/>
+
+  <rect x="40" y="200" width="180" height="70" rx="8" fill="#f8fafc" stroke="#94a3b8"/><text x="130" y="228" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">Meegan 年级错觉</text><text x="130" y="248" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">固定馅饼 / 非对称信念</text>
+  <rect x="250" y="200" width="180" height="70" rx="8" fill="#f8fafc" stroke="#94a3b8"/><text x="340" y="228" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">信息藏匿回路</text><text x="340" y="248" text-anchor="middle" fill="#454c56" font-size="11" font-family="sans-serif">自我服务归因</text>
+  <rect x="460" y="200" width="180" height="70" rx="8" fill="#f8fafc" stroke="#94a3b8"/><text x="550" y="228" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">logrolling / 多方案</text><text x="550" y="248" text-anchor="middle" fill="#15181d" font-size="11" font-family="sans-serif">兼容利益探针</text>
+
+  <line x1="130" y1="152" x2="130" y2="200" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#cmA)"/>
+  <line x1="340" y1="152" x2="340" y2="200" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#cmA)"/>
+  <line x1="550" y1="152" x2="550" y2="200" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#cmA)"/>
+
+  <path d="M220 235 C280 270, 400 270, 460 235" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cmB)"/>
+  <text x="340" y="295" text-anchor="middle" fill="#d5342c" font-size="11" font-family="sans-serif">反馈：藏信息 → 证实零和 → 更藏</text>
+  <text x="340" y="330" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">实线=映射 · 红虚线=自我强化回路</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>一句话</th>
+<th>系统角色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">零和错觉</td>
+<td>非零和被判为零和</td>
+<td>入口偏差</td>
+</tr>
+<tr>
+<td class="k">固定馅饼迷思</td>
+<td>谈判利益被假定完全对立</td>
+<td>桌上行为开关</td>
+</tr>
+<tr>
+<td class="k">非对称零和</td>
+<td>别人损我 ≠ 我损别人</td>
+<td>威胁放大器</td>
+</tr>
+<tr>
+<td class="k">整合 / 分配</td>
+<td>做大饼 vs 切饼</td>
+<td>策略分轨</td>
+</tr>
+<tr>
+<td class="k">logrolling</td>
+<td>用偏好差异交换议题</td>
+<td>剩余创造器</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 05 ══════════════ -->
+<section id="s5">
+<h2><span class="num">05</span>核心参与者</h2>
+<div class="grid g3">
+<div class="card"><h4>谈判双方</h4><p>各自带着目标、BATNA 与（常未察觉的）零和先验进场。先验决定开价风格与信息披露。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>组织内竞争者</h4><p>预算、晋升、KPI 常呈局部零和；把局部结构泛化到协作议题，就会扼杀跨部门整合。<span class="tag t-inf">推论</span></p></div>
+<div class="card"><h4>群体 / 政治对手</h4><p>党派、族群、国家叙事里，「对方的得」最易被编码成「我方的失」——Roberts &amp; Davidai 的非对称模式。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>调解人 / 教练</h4><p>职责不是替人切饼，而是<strong>显性化结构</strong>：标出兼容议题、强制提问清单、降威胁话术。<span class="tag t-ana">分析</span></p></div>
+<div class="card"><h4>规则设计者</h4><p>评分曲线、预算封顶、相对排名会<strong>真实制造</strong>零和；绝对标准、增长预算则制造非零和——结构选择塑造信念。<span class="tag t-ana">分析</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 06 ══════════════ -->
+<section id="s6">
+<h2><span class="num">06</span>核心变量</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>符号直觉</th>
+<th>升高时发生什么</th>
+<th>可观测代理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">零和信念强度</td>
+<td>(B_z)</td>
+<td>信息藏匿↑、妥协偏好↑</td>
+<td>问卷 / 「对方多得=我少得」语句</td>
+</tr>
+<tr>
+<td class="k">威胁感</td>
+<td>(T)</td>
+<td>非对称零和↑</td>
+<td>威胁自评、敌意语言密度</td>
+</tr>
+<tr>
+<td class="k">感知稀缺</td>
+<td>(S)</td>
+<td>启发式更易触发</td>
+<td>名额/预算话术、时间压力</td>
+</tr>
+<tr>
+<td class="k">审议深度</td>
+<td>(D)</td>
+<td>信念可修正</td>
+<td>是否问 why、多方案数量</td>
+</tr>
+<tr>
+<td class="k">偏好互补度</td>
+<td>(\Delta w=|w_A-w_B|)</td>
+<td>整合增益天花板↑</td>
+<td>权重差、议题交换空间</td>
+</tr>
+<tr>
+<td class="k">信息分享质量</td>
+<td>(Q)</td>
+<td>增益兑现率↑</td>
+<td>诊断性问题占比（非纯数量）</td>
+</tr>
+</tbody>
+</table></div>
+<p>默认演算（模型 1）：(w_A=0.8,\ w_B=0.2) → logrolling 联合效用 <strong>1.60</strong> vs 各半 <strong>1.00</strong>，增益 <strong>0.60（+60%）</strong>。<span class="tag t-fact">事实</span>（由定义直接算出）</p>
+</section>
+
+<!-- ══════════════ 07 ══════════════ -->
+<section id="s7">
+<h2><span class="num">07</span>因果关系</h2>
+<svg viewBox="0 0 680 300" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="cA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="cR" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="20" y="30" width="120" height="44" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="80" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">威胁 / 稀缺</text>
+  <rect x="200" y="30" width="120" height="44" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="260" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">零和信念 ↑</text>
+  <rect x="380" y="30" width="120" height="44" rx="8" fill="#fee2e2" stroke="#d5342c"/><text x="440" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">藏信息</text>
+  <rect x="540" y="30" width="120" height="44" rx="8" fill="#15181d"/><text x="600" y="57" text-anchor="middle" font-size="12" font-weight="600" fill="#fff" font-family="sans-serif">剩余蒸发</text>
+
+  <line x1="140" y1="52" x2="200" y2="52" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#cA)"/>
+  <line x1="320" y1="52" x2="380" y2="52" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#cA)"/>
+  <line x1="500" y1="52" x2="540" y2="52" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#cA)"/>
+
+  <rect x="200" y="140" width="120" height="44" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="260" y="167" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">提醒 / 降威胁</text>
+  <rect x="380" y="140" width="120" height="44" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="440" y="167" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">问与换</text>
+  <rect x="540" y="140" width="120" height="44" rx="8" fill="#0f8a4d"/><text x="600" y="167" text-anchor="middle" font-size="12" font-weight="600" fill="#fff" font-family="sans-serif">兑现增益</text>
+
+  <line x1="260" y1="74" x2="260" y2="140" stroke="#0f8a4d" stroke-width="1.6" marker-end="url(#cA)"/>
+  <line x1="320" y1="162" x2="380" y2="162" stroke="#0f8a4d" stroke-width="1.6" marker-end="url(#cA)"/>
+  <line x1="500" y1="162" x2="540" y2="162" stroke="#0f8a4d" stroke-width="1.6" marker-end="url(#cA)"/>
+
+  <path d="M440 74 C480 110, 520 110, 560 74" fill="none" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cR)"/>
+  <text x="340" y="230" text-anchor="middle" fill="#d5342c" font-size="12" font-family="sans-serif">红虚线：藏信息回灌「果然是零和」</text>
+  <text x="340" y="260" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">蓝实线=主因果链 · 绿链=干预链</text>
+</svg>
+<p>因果链压缩版：<strong>诱发 → 信念 → 行为 → 结果 →（反馈）信念</strong>。打断任一段都可降低破裂概率。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 08 ══════════════ -->
+<section id="s8">
+<h2><span class="num">08</span>隐藏关系</h2>
+<div class="grid g2">
+<div class="card"><h4>自我服务正义面具</h4><p>即使程序公平被引入，自我中心偏差仍可维持零和解读——「公平设置」不等于「非零和感知」。<span class="tag t-chk">待验证</span>（2025 Social Justice Research 日英样本实验）</p></div>
+<div class="card"><h4>单向启发式（Meegan）</h4><p>高分已发完 → 预测下一人低分（像零和）；低分已发完 → 并不对称地预测高分。启发式主要被<strong>合意资源</strong>触发。<span class="tag t-fact">事实</span></p></div>
+<div class="card"><h4>合作动机 → 信息质量 → 联合收益</h4><p>中国样本一对一谈判：信息分享<strong>质量</strong>完全中介动机倾向与联合收益；质量优于数量。<span class="tag t-fact">事实</span>（心理科学，买卖车任务）</p></div>
+<div class="card"><h4>跨域同构</h4><p>有限好形象 ↔ 固定馅饼 ↔ 零和政治叙事 ↔ 强化学习里「别人探索抢了我的 reward」错觉——同一数学：把可变饼当成常数和。<span class="tag t-inf">推论</span></p></div>
+</div>
+</section>
+
+<!-- ══════════════ 09 ══════════════ -->
+<section id="s9">
+<h2><span class="num">09</span>系统运行机制</h2>
+<p>系统在跑的是一套<strong>默认启发式 + 动机过滤 + 信息闭环</strong>：</p>
+<ol>
+<li><strong>默认</strong>：资源分配场景触发「有限好」启发式（进化对有限猎物合理，对现代可扩展资源常过度）。<span class="tag t-ana">分析</span></li>
+<li><strong>过滤</strong>：威胁感让「对方的得」被优先编码为「我的失」，自己的得则常被编码为「把饼做大」。<span class="tag t-fact">事实</span></li>
+<li><strong>闭环</strong>：因害怕被剥削而不分享偏好 → 无法发现互补 → 结果看起来像零和 → 信念被「证实」。<span class="tag t-inf">推论</span></li>
+<li><strong>结构叠加</strong>：若规则真是相对排名，启发式与结构同向，偏差「看起来正确」；若规则是绝对标准/可扩展预算，偏差纯属错觉。<span class="tag t-ana">分析</span></li>
+</ol>
+<div class="note purple"><b>运行口诀</b><p>先问「饼能不能变」，再问「怎么切」；先问「对方权重」，再问「我要多少」。</p></div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="s10">
+<h2><span class="num">10</span>时间演化</h2>
+<svg viewBox="0 0 680 200" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="tA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+  </defs>
+  <line x1="40" y1="100" x2="640" y2="100" stroke="#e2e6ec" stroke-width="4"/>
+  <circle cx="80" cy="100" r="10" fill="#15181d"/><text x="80" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">1965</text><text x="80" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Foster</text><text x="80" y="156" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">有限好</text>
+  <circle cx="220" cy="100" r="10" fill="#b8730a"/><text x="220" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">1985</text><text x="220" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Bazerman</text><text x="220" y="156" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">固定馅饼</text>
+  <circle cx="360" cy="100" r="10" fill="#1d4ed8"/><text x="360" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">2010</text><text x="360" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Meegan</text><text x="360" y="156" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">命名实验</text>
+  <circle cx="500" cy="100" r="10" fill="#3b6ef5"/><text x="500" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">2022</text><text x="500" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">Roberts</text><text x="500" y="156" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">非对称</text>
+  <circle cx="620" cy="100" r="10" fill="#0f8a4d"/><text x="620" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#15181d" font-family="sans-serif">2023+</text><text x="620" y="140" text-anchor="middle" font-size="11" fill="#454c56" font-family="sans-serif">综述</text><text x="620" y="156" text-anchor="middle" font-size="10" fill="#7c848f" font-family="sans-serif">三通道</text>
+  <line x1="90" y1="100" x2="210" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tA)"/>
+  <line x1="230" y1="100" x2="350" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tA)"/>
+  <line x1="370" y1="100" x2="490" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tA)"/>
+  <line x1="510" y1="100" x2="610" y2="100" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#tA)"/>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>发生什么</th>
+<th>实践含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">人类学萌芽</td>
+<td>Foster「有限好」：好事总量有限</td>
+<td>文化脚本可跨代传递</td>
+</tr>
+<tr>
+<td class="k">谈判行为革命</td>
+<td>固定馅饼成为实验室稳健偏差</td>
+<td>训练整合技巧有实证基础</td>
+</tr>
+<tr>
+<td class="k">认知命名</td>
+<td>Meegan 钉住「无限资源仍竞争」</td>
+<td>提醒结构可干预</td>
+</tr>
+<tr>
+<td class="k">动机转向</td>
+<td>非对称 + 威胁调节</td>
+<td>去偏要管情绪，不只讲道理</td>
+</tr>
+<tr>
+<td class="k">综合期</td>
+<td>三通道模型</td>
+<td>干预可模块化设计</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="s11">
+<h2><span class="num">11</span>利益与激励</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>表面利益</th>
+<th>隐藏激励</th>
+<th>与零和错觉的耦合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">强硬派谈判者</td>
+<td>多拿份额</td>
+<td>用「对抗人设」换组织内声望</td>
+<td>零和话术是身份信号</td>
+</tr>
+<tr>
+<td class="k">合作派</td>
+<td>做大联合收益</td>
+<td>怕被贴「软弱」标签</td>
+<td>可能过度披露被剥削</td>
+</tr>
+<tr>
+<td class="k">代理人（律师/销售）</td>
+<td>成交 + 佣金</td>
+<td>时长计费或相对排名 KPI</td>
+<td>结构可能奖励分配式姿态</td>
+</tr>
+<tr>
+<td class="k">组织</td>
+<td>跨部门效率</td>
+<td>部门预算零和竞赛</td>
+<td>局部零和挤出全局正和</td>
+</tr>
+<tr>
+<td class="k">政治动员者</td>
+<td>选票/动员</td>
+<td>「对方得=我失」最易动员</td>
+<td>非对称信念被策略性放大</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note red"><b>激励陷阱</b><p>相对排名的销售竞赛 + 零和话术文化 = 整合线索被系统性惩罚。改激励（联合 KPI、客户终身价值）往往比「再上一堂双赢课」更狠。<span class="tag t-ana">分析</span></p></div>
+</section>
+
+<!-- ══════════════ 12 ══════════════ -->
+<section id="s12">
+<h2><span class="num">12</span>资源与信息流</h2>
+<svg viewBox="0 0 680 220" width="100%" style="max-width:680px">
+  <defs>
+    <marker id="fA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/></marker>
+    <marker id="fR" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#d5342c"/></marker>
+  </defs>
+  <rect x="30" y="40" width="140" height="60" rx="8" fill="#eaf0ff" stroke="#1d4ed8"/><text x="100" y="75" text-anchor="middle" font-size="13" font-weight="600" fill="#15181d" font-family="sans-serif">偏好信息</text>
+  <rect x="270" y="40" width="140" height="60" rx="8" fill="#fff7e6" stroke="#b8730a"/><text x="340" y="75" text-anchor="middle" font-size="13" font-weight="600" fill="#15181d" font-family="sans-serif">议题交换方案</text>
+  <rect x="510" y="40" width="140" height="60" rx="8" fill="#e8f8ef" stroke="#0f8a4d"/><text x="580" y="75" text-anchor="middle" font-size="13" font-weight="600" fill="#15181d" font-family="sans-serif">联合剩余</text>
+  <line x1="170" y1="70" x2="270" y2="70" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#fA)"/>
+  <line x1="410" y1="70" x2="510" y2="70" stroke="#1d4ed8" stroke-width="1.6" marker-end="url(#fA)"/>
+
+  <rect x="30" y="140" width="140" height="50" rx="8" fill="#fee2e2" stroke="#d5342c"/><text x="100" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#15181d" font-family="sans-serif">零和信念阀门</text>
+  <path d="M100 140 L100 100" stroke="#d5342c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#fR)"/>
+  <text x="340" y="195" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">信念像阀门：关上则偏好信息流不到方案层，剩余被「抽干」</text>
+</svg>
+<p>流的关键不是「钱从谁口袋到谁口袋」，而是<strong>关于权重的信息</strong>能不能流到方案层。零和信念是阀门；打开阀门靠选择性披露 + 诊断性问题，不是无脑全透明。<span class="tag t-ana">分析</span></p>
+</section>
+
+<!-- ══════════════ 13 ══════════════ -->
+<section id="s13">
+<h2><span class="num">13</span>关键杠杆点</h2>
+<p>按「重要性 × 杠杆率 × 可操作性 ÷ 学习成本」排序：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>序</th>
+<th>杠杆</th>
+<th>为何高杠杆</th>
+<th>怎么撬</th>
+<th>成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>先画支付结构图</td>
+<td>结构对了才谈策略</td>
+<td>开谈前列「零和/可变/不确定」三栏</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>诊断性提问</td>
+<td>直接提高 (Q)</td>
+<td>至少 3 个「为什么这对你重要」</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>多方案并行报价</td>
+<td>逼出权重差</td>
+<td>一次给 2–3 套等价包</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>降威胁开场</td>
+<td>砍非对称零和</td>
+<td>先确认对方核心利益不被否定</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>显性提醒非零和</td>
+<td>Meegan Exp3 逻辑</td>
+<td>「评分/预算是绝对/可扩展的」</td>
+<td>低</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>议题拆分与交换</td>
+<td>兑现 (\Delta w)</td>
+<td>logrolling 清单</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>改相对排名激励</td>
+<td>从结构端去偏</td>
+<td>联合 KPI / 客户 LTV</td>
+<td>高</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>事后再优化（PSS）</td>
+<td>已签仍可找帕累托改进</td>
+<td>约定「签后 48h 可再优化」</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>第三方白板</td>
+<td>外化信念</td>
+<td>调解人把假设写上墙供证伪</td>
+<td>中</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>训练「兼容利益探针」</td>
+<td>防漏掉双方同向议题</td>
+<td>每场强制找 1 个共同想要的结果</td>
+<td>低</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 14 ══════════════ -->
+<section id="s14">
+<h2><span class="num">14</span>常见认知陷阱</h2>
+<details><summary>1. 「竞争激烈 = 零和」</summary><div class="dbody"><p>竞争可以是抢扩张中的市场。份额战近似常数和，品类扩张不是。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>2. 「公平就是一人一半」</summary><div class="dbody"><p>各议题对半常帕累托劣于交换。公平应作用于联合剩余分配，而非每个维度切半。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>3. 「对方让步必是圈套」</summary><div class="dbody"><p>反应性贬值（reactive devaluation）会把整合线索读成陷阱。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>4. 「我只是要最好 deal，对方才是零和」</summary><div class="dbody"><p>非对称零和：自己的得被编码为做饼，对方的得被编码为抽水。<span class="tag t-fact">事实</span></p></div></details>
+<details><summary>5. 「藏得越深越强」</summary><div class="dbody"><p>过度藏匿偏好会杀死整合；策略性分享 ≠ 交底。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>6. 「提醒一次就够」</summary><div class="dbody"><p>启发式会回潮；流程化提问比一次性说教更稳。<span class="tag t-inf">推论</span></p></div></details>
+<details><summary>7. 「和谐 = 避免冲突 = 整合」</summary><div class="dbody"><p>回避型和谐动机可能压低个体收益与关系评价；促进型和避免型方向相反。<span class="tag t-fact">事实</span>（和谐动机与整合谈判研究）</p></div></details>
+<details><summary>8. 「程序公平消灭零和感」</summary><div class="dbody"><p>自我中心偏差可在「公平设置」下仍维持零和解读。<span class="tag t-chk">待验证</span></p></div></details>
+<details><summary>9. 「真正的零和也要硬讲双赢」</summary><div class="dbody"><p>名额唯一、单议题纯分配时，整合空间≈0；硬讲双赢会显得虚伪并损害信誉。<span class="tag t-ana">分析</span></p></div></details>
+<details><summary>10. 「文化决定论」</summary><div class="dbody"><p>跨文化差异存在，但威胁与稀缺通道在多情境可复现——别用文化当免检金牌。<span class="tag t-ana">分析</span></p></div></details>
+</section>
+
+<!-- ══════════════ 15 ══════════════ -->
+<section id="s15">
+<h2><span class="num">15</span>从抽象到现实</h2>
+<svg viewBox="0 0 680 240" width="100%" style="max-width:680px">
+  <rect x="30" y="30" width="180" height="80" rx="10" fill="#15181d"/><text x="120" y="65" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">抽象</text><text x="120" y="88" text-anchor="middle" fill="#cbd5e1" font-size="11" font-family="sans-serif">信念 ≠ 结构</text>
+  <rect x="250" y="30" width="180" height="80" rx="10" fill="#1d4ed8"/><text x="340" y="65" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">机制</text><text x="340" y="88" text-anchor="middle" fill="#dbeafe" font-size="11" font-family="sans-serif">威胁·稀缺·欠思虑</text>
+  <rect x="470" y="30" width="180" height="80" rx="10" fill="#0f8a4d"/><text x="560" y="65" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">操作</text><text x="560" y="88" text-anchor="middle" fill="#d1fae5" font-size="11" font-family="sans-serif">问·换·提醒·降威胁</text>
+  <text x="120" y="150" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">薪资+假期包</text>
+  <text x="340" y="150" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">怕被剥削 → 不说权重</text>
+  <text x="560" y="150" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">两套 offer 并行</text>
+  <text x="120" y="190" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">跨部门项目资源</text>
+  <text x="340" y="190" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">预算稀缺话术</text>
+  <text x="560" y="190" text-anchor="middle" fill="#454c56" font-size="12" font-family="sans-serif">联合 OKR</text>
+  <text x="340" y="225" text-anchor="middle" fill="#7c848f" font-size="11" font-family="sans-serif">每一行：抽象偏差 → 触发机制 → 可执行动作</text>
+</svg>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>错觉长什么样</th>
+<th>30 秒干预</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">入职谈薪</td>
+<td>「多给你的钱=公司少赚」</td>
+<td>同时谈成长路径、弹性、签约奖——扩议题</td>
+</tr>
+<tr>
+<td class="k">供应商砍价</td>
+<td>只盯单价</td>
+<td>换交期/批量/付款，测对方权重</td>
+</tr>
+<tr>
+<td class="k">家庭家务</td>
+<td>「谁多做谁亏」</td>
+<td>按偏好与能力再分配，而非分钟对半</td>
+</tr>
+<tr>
+<td class="k">团队表彰</td>
+<td>「名额有限」泛化到协作</td>
+<td>分开「荣誉名额」与「项目资源」两套规则</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 16 ══════════════ -->
+<section id="s16">
+<h2><span class="num">16</span>从理论到行动</h2>
+<div class="tool">
+  <h3>可调模型 1 · Logrolling 增益计算器</h3>
+  <p style="font-size:13px;color:var(--ink2);margin:0 0 10px">两议题、归一化权重。妥协=各议题对半；logrolling=高权重方拿满该议题。增益 = 联合<sub>log</sub> − 1。</p>
+  <div class="ctrl">
+    <label>甲方对议题 X 的权重 \(w_A\) <output id="lg_aO">0.80</output></label>
+    <input type="range" id="lg_a" min="0.5" max="0.95" step="0.05" value="0.80"/>
+    <label>乙方对议题 X 的权重 \(w_B\) <output id="lg_bO">0.20</output></label>
+    <input type="range" id="lg_b" min="0.05" max="0.5" step="0.05" value="0.20"/>
+  </div>
+  <div class="readout">
+    <div class="ro">妥协联合 <b id="lg_jc">1.00</b></div>
+    <div class="ro">logrolling 联合 <b id="lg_jl">1.60</b></div>
+    <div class="ro">增益 <b id="lg_g">+0.60</b></div>
+    <div class="ro">增益% <b id="lg_gp">60%</b></div>
+    <div id="lg_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:var(--green)">判定：默认 0.80/0.20 → 增益 60%；权重越接近，增益越趋近 0</div>
+  </div>
+  <canvas id="lgChart" height="214"></canvas>
+</div>
+<p>行动配方（默认增益 60% 时）：</p>
+<ol>
+<li>列出 ≥2 个可交换议题；</li>
+<li>各自私下给权重（1–10）；</li>
+<li>只交换「排序」不先交换底价；</li>
+<li>用 logrolling 草案代替「各半」；</li>
+<li>最后再谈剩余如何切。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 17 ══════════════ -->
+<section id="s17">
+<h2><span class="num">17</span>技能树</h2>
+<details><summary>S1 结构判别（入门）</summary><div class="dbody"><p>能在 2 分钟内把场景标成：真零和 / 可变和 / 不确定。输出一张三栏表。</p></div></details>
+<details><summary>S2 诊断性提问（核心）</summary><div class="dbody"><p>连续 3 个 why/what-tradeoff，不直接问保留价。记录对方权重线索。</p></div></details>
+<details><summary>S3 多方案打包（核心）</summary><div class="dbody"><p>准备 2–3 套对己近似无差异、对对方可能有差异的包。</p></div></details>
+<details><summary>S4 威胁降温（进阶）</summary><div class="dbody"><p>开场确认「你的 X 不被否定」；把争议框成共同问题。</p></div></details>
+<details><summary>S5 非对称自检（进阶）</summary><div class="dbody"><p>写下「若对方赢了，我失去什么」与「若我赢了，对方失去什么」——两边不对称时报警。</p></div></details>
+<details><summary>S6 激励再设计（高阶）</summary><div class="dbody"><p>把相对排名改成联合指标或客户结果指标。</p></div></details>
+</section>
+
+<!-- ══════════════ 18 ══════════════ -->
+<section id="s18">
+<h2><span class="num">18</span>游戏化世界</h2>
+<p>把每一次谈判当成「打怪升级」：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>副本</th>
+<th>Boss</th>
+<th>通关条件</th>
+<th>掉落</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">新手村</td>
+<td>单议题砍价</td>
+<td>识别「真分配」并守住 BATNA</td>
+<td>结构判别徽章</td>
+</tr>
+<tr>
+<td class="k">双议题谷</td>
+<td>固定馅饼</td>
+<td>至少完成一次有效交换</td>
+<td>+60% 增益体验（权重差大时）</td>
+</tr>
+<tr>
+<td class="k">威胁沼泽</td>
+<td>非对称信念</td>
+<td>用降温话术把 (T) 降一档</td>
+<td>非对称雷达</td>
+</tr>
+<tr>
+<td class="k">组织迷宫</td>
+<td>部门预算战</td>
+<td>提出一条联合 KPI</td>
+<td>激励改写草稿</td>
+</tr>
+<tr>
+<td class="k">终局</td>
+<td>真零和名额</td>
+<td>诚实切饼且不撒谎双赢</td>
+<td>信誉分</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 19 ══════════════ -->
+<section id="s19">
+<h2><span class="num">19</span>任务系统</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>时限</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">T1 结构三栏表</td>
+<td>当天</td>
+<td>生活/工作各 1 例</td>
+</tr>
+<tr>
+<td class="k">T2 三问清单</td>
+<td>48h</td>
+<td>下一场对话用上</td>
+</tr>
+<tr>
+<td class="k">T3 双方案演练</td>
+<td>本周</td>
+<td>书面 2 套包</td>
+</tr>
+<tr>
+<td class="k">T4 非对称日记</td>
+<td>7 天</td>
+<td>≥5 条「别人损我？」记录</td>
+</tr>
+<tr>
+<td class="k">T5 复盘增益</td>
+<td>谈后 24h</td>
+<td>估算若 logrolling 可多得多少</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 20 ══════════════ -->
+<section id="s20">
+<h2><span class="num">20</span>反事实模拟</h2>
+<div class="tabs" data-group="tb1"><button class="tab on" data-pane="tb1-0">若从不分享偏好</button><button class="tab" data-pane="tb1-1">若只降威胁不提问</button><button class="tab" data-pane="tb1-2">若强制多方案</button><button class="tab" data-pane="tb1-3">若规则改为相对强制分布</button><button class="tab" data-pane="tb1-4">若提醒绝对评分（Meegan 逻辑）</button></div>
+<div class="pane on" id="tb1-0"><p>固定馅饼自我实现：联合效用锁在妥协线（模型默认 1.00），增益 0。破裂或劣约概率上升。<span class="tag t-inf">推论</span></p></div><div class="pane" id="tb1-1"><p>非对称信念下降，但仍可能找不到互补——情绪改善 ≠ 信息到位。<span class="tag t-ana">分析</span></p></div><div class="pane" id="tb1-2"><p>即使信念仍偏零和，方案差可<strong>暴露</strong>权重；认知更新滞后于行为。<span class="tag t-ana">分析</span></p></div><div class="pane" id="tb1-3"><p>启发式与结构对齐，「错觉」变成近似正确模型——应改规则而非只改心态。<span class="tag t-fact">事实</span></p></div><div class="pane" id="tb1-4"><p>部分被试更新预测；提醒是低成本干预，但对高威胁群体效力有限。<span class="tag t-fact">事实</span><span class="tag t-ana">分析</span></p></div>
+<div class="tool">
+  <h3>可调模型 2 · 错觉蒸发代价</h3>
+  <p style="font-size:13px;color:var(--ink2);margin:0 0 10px">蒸发剩余 ≈ 潜在增益 × 零和信念强度 × (1 − 信息质量)。默认：0.60 × 0.70 × 0.70 = <strong>0.294</strong>。</p>
+  <div class="ctrl">
+    <label>潜在增益 \(G\) <output id="cs_gO">0.60</output></label>
+    <input type="range" id="cs_g" min="0" max="0.8" step="0.05" value="0.60"/>
+    <label>零和信念 \(B_z\) <output id="cs_bO">0.70</output></label>
+    <input type="range" id="cs_b" min="0" max="1" step="0.05" value="0.70"/>
+    <label>信息质量 \(Q\) <output id="cs_qO">0.30</output></label>
+    <input type="range" id="cs_q" min="0" max="1" step="0.05" value="0.30"/>
+  </div>
+  <div class="readout">
+    <div class="ro">蒸发剩余 <b id="cs_lost">0.294</b></div>
+    <div class="ro">兑现剩余 <b id="cs_keep">0.306</b></div>
+    <div class="ro">兑现率 <b id="cs_rate">51%</b></div>
+    <div id="cs_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:var(--amber)">判定：默认蒸发 0.294；降信念或提质量都能线性回收</div>
+  </div>
+  <canvas id="csChart" height="214"></canvas>
+</div>
+<div class="tool">
+  <h3>可调模型 3 · 威胁 → 非对称零和</h3>
+  <p style="font-size:13px;color:var(--ink2);margin:0 0 10px">示意：对方得益零和评分 \(Z_o = \min(7,\ 2.5 + 0.55\,T)\)；己方得益评分 \(Z_s\) 默认恒为 3.5。非对称度 = \(Z_o - Z_s\)。威胁升高只抬高「别人损我」。【推论】（斜率取自 Roberts & Davidai 威胁交互方向的示意标定，非原文回归系数照搬）</p>
+  <div class="ctrl">
+    <label>威胁感 \(T\)（1–7） <output id="as_tO">5</output></label>
+    <input type="range" id="as_t" min="1" max="7" step="1" value="5"/>
+    <label>己方得分基线 \(Z_s\) <output id="as_sO">3.5</output></label>
+    <input type="range" id="as_s" min="1" max="7" step="0.5" value="3.5"/>
+  </div>
+  <div class="readout">
+    <div class="ro">对方零和分 \(Z_o\) <b id="as_zo">5.25</b></div>
+    <div class="ro">己方零和分 \(Z_s\) <b id="as_zs">3.50</b></div>
+    <div class="ro">非对称度 <b id="as_d">+1.75</b></div>
+    <div id="as_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:var(--red)">判定：T=5 时非对称 +1.75；降威胁或抬升自我基线可抹平</div>
+  </div>
+  <canvas id="asChart" height="214"></canvas>
+</div>
+<div class="tool">
+  <h3>可调模型 4 · 提醒 × 审议 去偏</h3>
+  <p style="font-size:13px;color:var(--ink2);margin:0 0 10px">有效信念 \(B' = B_0(1 - r\cdot e)(1 - d\cdot f)\)。默认 \(B_0=0.70,\ r=0.80,\ e=0.60,\ d=0.50,\ f=0.50\) → \(B'\approx 0.273\)。</p>
+  <div class="ctrl">
+    <label>初始信念 \(B_0\) <output id="db_bO">0.70</output></label>
+    <input type="range" id="db_b" min="0.2" max="1" step="0.05" value="0.70"/>
+    <label>提醒强度 \(r\) <output id="db_rO">0.80</output></label>
+    <input type="range" id="db_r" min="0" max="1" step="0.05" value="0.80"/>
+    <label>提醒效力 \(e\) <output id="db_eO">0.60</output></label>
+    <input type="range" id="db_e" min="0" max="1" step="0.05" value="0.60"/>
+    <label>审议投入 \(d\) <output id="db_dO">0.50</output></label>
+    <input type="range" id="db_d" min="0" max="1" step="0.05" value="0.50"/>
+    <label>审议效力 \(f\) <output id="db_fO">0.50</output></label>
+    <input type="range" id="db_f" min="0" max="1" step="0.05" value="0.50"/>
+  </div>
+  <div class="readout">
+    <div class="ro">有效信念 \(B'\) <b id="db_bp">0.273</b></div>
+    <div class="ro">降幅 <b id="db_drop">61%</b></div>
+    <div id="db_vh" style="grid-column:1/-1;display:flex;gap:12px;align-items:baseline;font-size:13px;color:var(--green)">判定：提醒与审议乘性叠加；单靠提醒打不满时补审议</div>
+  </div>
+  <canvas id="dbChart" height="214"></canvas>
+</div>
+</section>
+
+<!-- ══════════════ 21 ══════════════ -->
+<section id="s21">
+<h2><span class="num">21</span>四级能力路线</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>能力</th>
+<th>验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">L1 能辨</td>
+<td>分清结构零和 vs 信念零和</td>
+<td>口头 60 秒讲清</td>
+</tr>
+<tr>
+<td class="k">L2 会算</td>
+<td>用权重差估增益；用蒸发公式估代价</td>
+<td>与本页模型误差 &lt; 2%</td>
+</tr>
+<tr>
+<td class="k">L3 会谈</td>
+<td>一场真实对话完成提问+双方案</td>
+<td>至少 1 次可验证交换</td>
+</tr>
+<tr>
+<td class="k">L4 会改</td>
+<td>改一条激励或流程降低系统性错觉</td>
+<td>上线并观察 2 周</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 22 ══════════════ -->
+<section id="s22">
+<h2><span class="num">22</span>30分钟最小实践</h2>
+<p>今天就能做，成本≈0：</p>
+<ol>
+<li><strong>5 分钟</strong>：选一件「最近谈崩或别扭」的事，画结构三栏（真零和 / 可变 / 不确定）。</li>
+<li><strong>10 分钟</strong>：列出对方可能更在意、你不太在意的 2 个维度（及反过来）。</li>
+<li><strong>10 分钟</strong>：写 2 套并行方案（对你近似无差）。</li>
+<li><strong>5 分钟</strong>：写一句降温开场 + 一个诊断问题。<br />
+验收：方案与问题能念给同事听而不尬；若当场无对手，预约 48h 内用一次。</li>
+</ol>
+</section>
+
+<!-- ══════════════ 23 ══════════════ -->
+<section id="s23">
+<h2><span class="num">23</span>7天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>天</th>
+<th>焦点</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">D1</td>
+<td>结构判别</td>
+<td>3 个生活案例三栏表</td>
+</tr>
+<tr>
+<td class="k">D2</td>
+<td>非对称日记</td>
+<td>记录 3 次「别人成功时的身体感受」</td>
+</tr>
+<tr>
+<td class="k">D3</td>
+<td>提问操练</td>
+<td>对同事/家人练 3 个 why</td>
+</tr>
+<tr>
+<td class="k">D4</td>
+<td>双方案</td>
+<td>为真实议题写 2 套包</td>
+</tr>
+<tr>
+<td class="k">D5</td>
+<td>实战</td>
+<td>用一套包开谈或邮件</td>
+</tr>
+<tr>
+<td class="k">D6</td>
+<td>复盘</td>
+<td>用模型 2 估蒸发/兑现</td>
+</tr>
+<tr>
+<td class="k">D7</td>
+<td>固化</td>
+<td>把提问清单贴进笔记默认模板</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 24 ══════════════ -->
+<section id="s24">
+<h2><span class="num">24</span>30天计划</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>主题</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">W1</td>
+<td>觉察</td>
+<td>完成 7 天计划；非对称日记 ≥10 条</td>
+</tr>
+<tr>
+<td class="k">W2</td>
+<td>技术</td>
+<td>3 场带双方案的对话；至少 1 次有效交换</td>
+</tr>
+<tr>
+<td class="k">W3</td>
+<td>系统</td>
+<td>在团队引入「议题权重表」或联合指标草案</td>
+</tr>
+<tr>
+<td class="k">W4</td>
+<td>迁移</td>
+<td>处理一场「真零和」名额问题：诚实切饼 + 信誉不损</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 25 ══════════════ -->
+<section id="s25">
+<h2><span class="num">25</span>10 个核心模型</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>模型</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">1</td>
+<td>信念–结构错配</td>
+<td>诊断入口</td>
+</tr>
+<tr>
+<td class="k">2</td>
+<td>固定馅饼迷思</td>
+<td>谈判行为主偏差</td>
+</tr>
+<tr>
+<td class="k">3</td>
+<td>Meegan 合意资源启发式</td>
+<td>解释单向错觉</td>
+</tr>
+<tr>
+<td class="k">4</td>
+<td>三通道（威胁·稀缺·欠思虑）</td>
+<td>干预菜单</td>
+</tr>
+<tr>
+<td class="k">5</td>
+<td>非对称零和</td>
+<td>自我服务视角</td>
+</tr>
+<tr>
+<td class="k">6</td>
+<td>Logrolling 增益</td>
+<td>量化做饼空间</td>
+</tr>
+<tr>
+<td class="k">7</td>
+<td>蒸发代价 (G\cdot B_z\cdot(1-Q))</td>
+<td>估损失</td>
+</tr>
+<tr>
+<td class="k">8</td>
+<td>信息质量中介</td>
+<td>动机如何变结果</td>
+</tr>
+<tr>
+<td class="k">9</td>
+<td>提醒 × 审议乘性去偏</td>
+<td>设计干预剂量</td>
+</tr>
+<tr>
+<td class="k">10</td>
+<td>结构–激励对齐</td>
+<td>何时该改规则而非改心态</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+
+<!-- ══════════════ 26 ══════════════ -->
+<section id="s26">
+<h2><span class="num">26</span>关键问题清单</h2>
+<details><summary>Q1 这件事的联合支付真的恒定吗？</summary><div class="dbody"><p>不恒定 → 优先搜整合；恒定 → 守 BATNA 切饼。</p></div></details>
+<details><summary>Q2 我是否把局部零和泛化到了全局？</summary><div class="dbody"><p>晋升名额零和 ≠ 项目协作零和。</p></div></details>
+<details><summary>Q3 我害怕被剥削到什么程度？（T）</summary><div class="dbody"><p>T 高时先降温再谈数字。</p></div></details>
+<details><summary>Q4 我有没有假设对方权重=我的权重？</summary><div class="dbody"><p>假设相同 → 增益天花板被你自己砍掉。</p></div></details>
+<details><summary>Q5 我问了几个诊断性问题？</summary><div class="dbody"><p>0 个 → 信息质量默认接近地板。</p></div></details>
+<details><summary>Q6 我能否给出两套对己近似无差的包？</summary><div class="dbody"><p>不能 → 还没准备好整合。</p></div></details>
+<details><summary>Q7 「对方的得」是否自动触发损失感？</summary><div class="dbody"><p>是 → 非对称雷达亮灯。</p></div></details>
+<details><summary>Q8 规则是在制造零和吗？</summary><div class="dbody"><p>相对强制分布 / 零和预算 → 先改规则。</p></div></details>
+<details><summary>Q9 妥协方案是否帕累托可改进？</summary><div class="dbody"><p>能改进却停住 = 固定馅饼胜利。</p></div></details>
+<details><summary>Q10 我是否在真零和里硬讲双赢？</summary><div class="dbody"><p>是 → 信誉风险；改回诚实分配。</p></div></details>
+</section>
+
+<!-- ══════════════ 27 ══════════════ -->
+<section id="s27">
+<h2><span class="num">27</span>下一阶段探索</h2>
+<ul>
+<li>深读 Davidai &amp; Tepper（2023）综述，把三通道做成自己的检查表。</li>
+<li>对照 Bazerman 2025 HBR：信任、提问、分享、多方案、PSS 五招，逐项打分。</li>
+<li>连接本引擎相邻手册：【零和 vs 非零和】（结构）、【BATNA】（破裂点）、【纳什讨价还价】（切剩余）。</li>
+<li>进阶：在团队试点「权重表 + 联合 KPI」，用两周前后的僵局率做前后测（小样本，标<span class="tag t-chk">待验证</span>）。</li>
+</ul>
+</section>
+
+<!-- ══════════════ A ══════════════ -->
+<section id="s28">
+<h2><span class="num">A</span>数据来源与标记约定</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>来源类型</th>
+<th>具体来源</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="k">零和错觉定义与年级实验</td>
+<td>同行评审</td>
+<td>Meegan, D. V. (2010). <em>Front. Psychol.</em> 1:191</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">固定馅饼 / 整合谈判</td>
+<td>经典实验与综述</td>
+<td>Bazerman, Magliozzi &amp; Neale (1985)；Bazerman &amp; Neale</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">非对称零和信念</td>
+<td>同行评审</td>
+<td>Roberts &amp; Davidai (2022). <em>JPSP</em> 123:559–575</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">三通道诱发框架</td>
+<td>综述</td>
+<td>Davidai &amp; Tepper (2023). <em>Nature Reviews Psychology</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">有限好形象</td>
+<td>人类学</td>
+<td>Foster, G. M. (1965). <em>Am. Anthropol.</em></td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">信息质量中介联合收益</td>
+<td>中文实验</td>
+<td>《心理学报》买卖车一对一谈判</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">和谐动机双面性</td>
+<td>中文实验</td>
+<td>《心理学报》和谐动机与整合谈判</td>
+<td><span class="tag t-fact">事实</span></td>
+</tr>
+<tr>
+<td class="k">自我中心与公平设置</td>
+<td>近期实验</td>
+<td>Social Justice Research (2025) 日英样本</td>
+<td><span class="tag t-chk">待验证</span></td>
+</tr>
+<tr>
+<td class="k">HBR 做饼五招</td>
+<td>实务综述</td>
+<td>Bazerman (2025) HBR 103(1)</td>
+<td><span class="tag t-ana">分析</span></td>
+</tr>
+<tr>
+<td class="k">模型 1–4 默认数值</td>
+<td>定义演算 / 示意标定</td>
+<td>本页 JS；非调查点估计</td>
+<td><span class="tag t-inf">推论</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>标记约定：<span class="tag t-fact">事实</span>多方一致或可复核原文；<span class="tag t-ana">分析</span>权威框架下的整理；<span class="tag t-inf">推论</span>由模型推出；<span class="tag t-hyp">假设</span>未验证；<span class="tag t-chk">待验证</span>单一来源或外推。</p>
+</section>
+
+<!-- ══════════════ B ══════════════ -->
+<section id="s29">
+<h2><span class="num">B</span>免责声明</h2>
+<p>本手册是认知与决策训练材料，<strong>不是</strong>法律、人力资源、投资或谈判结果承诺。实验效应有样本与情境边界；商业与人事决策请结合本地法规、合同约束与专业意见。交互模型中的系数用于理解机制方向，不应用作考勤、晋升或薪酬的自动化判决依据。</p>
+</section>
+<footer>  <p>《零和错觉（Zero-Sum Bias） · 全景认知与实践操作手册》 · 生成于 2026-09-30 · 耗时 4 分 26 秒 · 数据截至 2026 年 9 月</p>
+  <p>本手册的目标不是替你做判断，而是帮你建立一套可以自己不断运行、探索和更新的思考系统。</p></footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="返回顶部">↑</button>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- 1. 进度条 & 导航高亮 ---------- */
+  var prog = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    prog.style.width = p + '%';
+    var tt = document.getElementById('totop');
+    if (window.scrollY > 600) tt.classList.add('on'); else tt.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  document.getElementById('totop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var id = e.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- 2. Tabs ---------- */
+  document.querySelectorAll('.tabs').forEach(function(group){
+    group.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.tab');
+      if (!btn) return;
+      var paneId = btn.getAttribute('data-pane');
+      var scope = btn.closest('section') || document;
+      group.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      scope.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('on', p.id === paneId);
+      });
+    });
+  });
+  })();
+</script>
+
+<script>/* ============================================================
+   《零和错觉 Zero-Sum Bias》主题脚本
+   四个可调模型：
+     1. Logrolling 增益
+     2. 错觉蒸发代价
+     3. 威胁 → 非对称零和
+     4. 提醒 × 审议 去偏
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = {
+    red: '#d5342c', green: '#0f8a4d', blue: '#1d4ed8', amber: '#b8730a',
+    grid: '#eef1f5', axis: '#e2e6ec', ink3: '#7c848f', ink2: '#454c56', ink: '#15181d'
+  };
+
+  function fit(cv, cssH) {
+    if (!cv) return null;
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(240, cv.clientWidth || (cv.parentNode && cv.parentNode.clientWidth) || 640);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: cssH };
+  }
+  function clear(g) { if (g) g.ctx.clearRect(0, 0, g.w, g.h); }
+  function txt(el, s) { if (el) el.textContent = s; }
+  function tint(el, c) { if (el) el.style.color = c; }
+  function bind(ids, fn) {
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', fn);
+      el.addEventListener('change', fn);
+    });
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t && t.classList && t.classList.contains('tab')) setTimeout(fn, 40);
+    });
+    window.addEventListener('resize', function () { setTimeout(fn, 40); });
+  }
+  function axisY(ctx, pl, y1, pt, bh, ymin, ymax, w) {
+    ctx.strokeStyle = C.grid;
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var span = ymax - ymin || 1;
+    for (var i = 0; i <= 4; i++) {
+      var v = ymin + (span * i) / 4;
+      var y = y1 - ((v - ymin) / span) * bh;
+      ctx.beginPath();
+      ctx.moveTo(pl, y);
+      ctx.lineTo(w - 16, y);
+      ctx.stroke();
+      ctx.fillText(v.toFixed(2), pl - 6, y + 3);
+    }
+  }
+  function bars(cv, items, ymin, ymax) {
+    var g = fit(cv, 214);
+    if (!g) return;
+    clear(g);
+    var ctx = g.ctx, w = g.w, h = g.h;
+    var pl = 52, pr = 20, pt = 24, y1 = h - 46;
+    var bw = w - pl - pr, bh = y1 - pt;
+    if (ymin == null || ymax == null) {
+      var vs = items.map(function (x) { return x.v; });
+      ymin = Math.min.apply(null, vs.concat([0])) - 0.05;
+      ymax = Math.max.apply(null, vs.concat([0])) + 0.05;
+      if (ymax <= ymin) { ymax = ymin + 1; }
+    }
+    axisY(ctx, pl, y1, pt, bh, ymin, ymax, w);
+    var barW = bw / (items.length * 1.45);
+    var span = ymax - ymin || 1;
+    items.forEach(function (it, i) {
+      var x = pl + (i + 0.5) * (bw / items.length) - barW / 2;
+      var y = y1 - ((it.v - ymin) / span) * bh;
+      var zeroY = y1 - ((0 - ymin) / span) * bh;
+      var top = Math.min(y, zeroY), bot = Math.max(y, zeroY);
+      ctx.fillStyle = it.c;
+      ctx.fillRect(x, top, barW, Math.max(2, bot - top));
+      ctx.fillStyle = C.ink;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(it.lab, x + barW / 2, y1 + 13);
+      var lab = (typeof it.v === 'number' ? it.v.toFixed(it.dp != null ? it.dp : 2) : String(it.v));
+      var lw = ctx.measureText(lab).width;
+      var lx = Math.min(Math.max(x + barW / 2, pl + lw / 2 + 2), w - pr - lw / 2 - 2);
+      ctx.fillText(lab, lx, top - 6);
+    });
+    ctx.fillStyle = C.ink3;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(items._axis || '数值', pl + bw, y1 + 31);
+  }
+  function fmt2(x) { return (Math.round(x * 1000) / 1000).toFixed(3).replace(/0$/, '').replace(/\.$/, '.0'); }
+  function fmt2b(x) { return (Math.round(x * 100) / 100).toFixed(2); }
+  function fmt0(x) { return String(Math.round(x)); }
+
+  /* ---- 1. Logrolling ---- */
+  function logroll(a, b) {
+    var ua, ub;
+    if (a >= b) {
+      ua = a;
+      ub = 1 - b;
+    } else {
+      ua = 1 - a;
+      ub = b;
+    }
+    return { ua: ua, ub: ub, j: ua + ub };
+  }
+  function updLg() {
+    var a = +$('lg_a').value, b = +$('lg_b').value;
+    txt($('lg_aO'), fmt2b(a));
+    txt($('lg_bO'), fmt2b(b));
+    var jc = 1.0;
+    var L = logroll(a, b);
+    var g = L.j - jc;
+    var gp = g * 100;
+    txt($('lg_jc'), fmt2b(jc));
+    txt($('lg_jl'), fmt2b(L.j));
+    txt($('lg_g'), (g >= 0 ? '+' : '') + fmt2b(g));
+    txt($('lg_gp'), fmt0(gp) + '%');
+    var vh = $('lg_vh');
+    if (g < 0.05) {
+      txt(vh, '判定：权重接近 → 增益≈0；此时更像纯分配，守 BATNA 切饼');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：wA=' + fmt2b(a) + ' / wB=' + fmt2b(b) + ' → 增益 ' + fmt0(gp) + '%；先交换议题再谈剩余切分');
+      tint(vh, C.green);
+    }
+    var items = [
+      { lab: 'UA_log', v: L.ua, c: C.blue, dp: 2 },
+      { lab: 'UB_log', v: L.ub, c: C.green, dp: 2 },
+      { lab: '联合_log', v: L.j, c: C.amber, dp: 2 },
+      { lab: '妥协', v: jc, c: C.ink2, dp: 2 }
+    ];
+    items._axis = '效用';
+    bars($('lgChart'), items, 0, Math.max(2, L.j + 0.2));
+  }
+
+  /* ---- 2. Cost of bias ---- */
+  function updCs() {
+    var G = +$('cs_g').value, B = +$('cs_b').value, Q = +$('cs_q').value;
+    txt($('cs_gO'), fmt2b(G));
+    txt($('cs_bO'), fmt2b(B));
+    txt($('cs_qO'), fmt2b(Q));
+    var lost = G * B * (1 - Q);
+    var keep = Math.max(0, G - lost);
+    var rate = G > 0 ? (keep / G) * 100 : 0;
+    txt($('cs_lost'), fmt2(lost));
+    txt($('cs_keep'), fmt2(keep));
+    txt($('cs_rate'), fmt0(rate) + '%');
+    var vh = $('cs_vh');
+    if (lost >= G * 0.5) {
+      txt(vh, '判定：蒸发 ' + fmt2(lost) + ' ≥ 潜在增益一半——优先降信念或提信息质量');
+      tint(vh, C.red);
+    } else if (lost >= G * 0.25) {
+      txt(vh, '判定：蒸发 ' + fmt2(lost) + '；降信念或提质量都能线性回收');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：蒸发较小（' + fmt2(lost) + '），兑现率 ' + fmt0(rate) + '%');
+      tint(vh, C.green);
+    }
+    var items = [
+      { lab: '潜在G', v: G, c: C.blue, dp: 2 },
+      { lab: '蒸发', v: lost, c: C.red, dp: 3 },
+      { lab: '兑现', v: keep, c: C.green, dp: 3 }
+    ];
+    items._axis = '剩余';
+    bars($('csChart'), items, 0, Math.max(0.8, G + 0.1));
+  }
+
+  /* ---- 3. Asymmetric zero-sum ---- */
+  function updAs() {
+    var T = +$('as_t').value, zs = +$('as_s').value;
+    txt($('as_tO'), String(T));
+    txt($('as_sO'), fmt2b(zs));
+    var zo = Math.min(7, 2.5 + 0.55 * T);
+    var d = zo - zs;
+    txt($('as_zo'), fmt2b(zo));
+    txt($('as_zs'), fmt2b(zs));
+    txt($('as_d'), (d >= 0 ? '+' : '') + fmt2b(d));
+    var vh = $('as_vh');
+    if (d > 1) {
+      txt(vh, '判定：非对称 +' + fmt2b(d) + ' ——「别人损我」显著强于「我损别人」；先降威胁');
+      tint(vh, C.red);
+    } else if (d > 0) {
+      txt(vh, '判定：轻度非对称 +' + fmt2b(d) + '；监控自我服务叙事');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：非对称已抹平或反转（' + fmt2b(d) + '）');
+      tint(vh, C.green);
+    }
+    var items = [
+      { lab: 'T', v: T, c: C.amber, dp: 0 },
+      { lab: 'Zo对方', v: zo, c: C.red, dp: 2 },
+      { lab: 'Zs己方', v: zs, c: C.blue, dp: 2 },
+      { lab: '非对称', v: d, c: d > 0 ? C.red : C.green, dp: 2 }
+    ];
+    items._axis = '评分 / 差值';
+    bars($('asChart'), items, Math.min(0, d) - 0.5, 7.5);
+  }
+
+  /* ---- 4. Debias ---- */
+  function updDb() {
+    var B0 = +$('db_b').value, r = +$('db_r').value, e = +$('db_e').value;
+    var d = +$('db_d').value, f = +$('db_f').value;
+    txt($('db_bO'), fmt2b(B0));
+    txt($('db_rO'), fmt2b(r));
+    txt($('db_eO'), fmt2b(e));
+    txt($('db_dO'), fmt2b(d));
+    txt($('db_fO'), fmt2b(f));
+    var Bp = B0 * (1 - r * e) * (1 - d * f);
+    var drop = B0 > 0 ? ((B0 - Bp) / B0) * 100 : 0;
+    txt($('db_bp'), fmt2(Bp));
+    txt($('db_drop'), fmt0(drop) + '%');
+    var vh = $('db_vh');
+    if (Bp > 0.45) {
+      txt(vh, '判定：有效信念仍高（' + fmt2(Bp) + '）——加大提醒或审议剂量');
+      tint(vh, C.red);
+    } else if (Bp > 0.3) {
+      txt(vh, '判定：有效信念 ' + fmt2(Bp) + '；提醒与审议乘性叠加中');
+      tint(vh, C.amber);
+    } else {
+      txt(vh, '判定：有效信念降至 ' + fmt2(Bp) + '（降幅 ' + fmt0(drop) + '%）');
+      tint(vh, C.green);
+    }
+    var items = [
+      { lab: 'B0', v: B0, c: C.ink2, dp: 2 },
+      { lab: '仅提醒', v: B0 * (1 - r * e), c: C.amber, dp: 3 },
+      { lab: 'B′合成', v: Bp, c: C.green, dp: 3 }
+    ];
+    items._axis = '信念强度';
+    bars($('dbChart'), items, 0, 1.05);
+  }
+
+  function boot() {
+    bind(['lg_a', 'lg_b'], updLg);
+    bind(['cs_g', 'cs_b', 'cs_q'], updCs);
+    bind(['as_t', 'as_s'], updAs);
+    bind(['db_b', 'db_r', 'db_e', 'db_d', 'db_f'], updDb);
+    updLg();
+    updCs();
+    updAs();
+    updDb();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+</body>
+</html>
