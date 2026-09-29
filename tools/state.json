@@ -1136,11 +1136,14 @@
     {
       "slug": "免费搭便车（Free Riding）：集体收益不可排他时，个体最优是不出力，团队规模越大越严重",
       "title": "免费搭便车（Free Riding）：集体收益不可排他时，个体最优是不出力，团队规模越大越严重",
-      "status": "pending",
-      "started": null,
-      "finished": null,
-      "duration_sec": null,
-      "outputs": [],
+      "status": "done",
+      "started": "2026-09-30 04:40:35",
+      "finished": "2026-09-30 04:47:59",
+      "duration_sec": 444,
+      "outputs": [
+        "reports/免费搭便车（Free Riding）：集体收益不可排他时，个体最优是不出力，团队规模越大越严重.html",
+        "reports/免费搭便车（Free Riding）：集体收益不可排他时，个体最优是不出力，团队规模越大越严重.md"
+      ],
       "error": null
     },
     {
@@ -1951,7 +1954,7 @@
       "error": null
     }
   ],
-  "updated": "2026-09-21 22:21",
+  "updated": "2026-09-30 04:47",
   "batch": {
     "id": "B20260916-190450",
     "started": "2026-09-16 19:04:50",
